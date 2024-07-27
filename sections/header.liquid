@@ -1,0 +1,23 @@
+{{ '01-component-header.css' | asset_url | stylesheet_tag }}
+
+<header>
+  <div class="header__container page-width">
+    <div class="header__main-line">
+      <div class="header__search-desk-container">
+        Search
+      </div>
+      <h1 class="header__logo-container">
+        <a href="{{ routes.root_url }}">
+          <img src="{{ settings.logo | image_url }}" width="{{ settings.logo_width }}" height="">
+        </a>
+      </h1>
+      <div class="header__account-cart-container">
+        <div>Accoumt</div>
+        <div>Minicart</div>
+      </div>
+    </div>
+    <div class="header__menu-line">
+      
+    </div>
+  </div>
+</header>

@@ -20,8 +20,28 @@
 
     <!-- Font settings -->
     {{ settings.font_family }}
+
+
+    <!-- Styles -->
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+
+    <style>
+      :root{
+        --page-width: {{ settings.page_width }}px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body{
+        height: 100%;
+      }
+      
+    </style>
   </head>
   <body>
+    {% sections 'header-group' %}
     <main role="main">
       {{ content_for_layout }}
     </main>

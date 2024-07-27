@@ -1,0 +1,24 @@
+.header__container{
+    width: 100%;
+}
+
+.header__main-line{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header__search-desk-container{
+    flex: 2;
+}
+
+.header__logo-container{
+    flex: 1;
+}
+
+.header__account-cart-container{
+    flex: 2;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
