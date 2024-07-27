@@ -21,11 +21,10 @@
     <!-- Font settings -->
     {{ settings.font_family }}
 
-
     <!-- Styles -->
     {{ 'base.css' | asset_url | stylesheet_tag }}
-    {{ 'application.css' | asset_url | stylesheet_tag }}
-    <link href="{{ 'application.css' | asset_url }}" rel="stylesheet">
+    {{ 'tailwind.css' | asset_url | stylesheet_tag }}
+    <link href="{{ 'tailwind.css' | asset_url }}" rel="stylesheet">
 
     <style>
       :root{
@@ -39,7 +38,6 @@
       body{
         height: 100%;
       }
-      
     </style>
   </head>
   <body>
