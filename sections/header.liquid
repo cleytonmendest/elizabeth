@@ -11,9 +11,13 @@
           <img src="{{ settings.logo | image_url }}" width="{{ settings.logo_width }}" height="">
         </a>
       </h1>
-      <div class="header__account-cart-container">
-        <div>Accoumt</div>
-        <div>Minicart</div>
+      <div class="flex flex">
+        <div>
+          {% render 'icon-user', width: 40, fill:'#FF0000' %}
+        </div>
+        <div>
+          {% render 'icon-bag', width: 40, fill:'#FF0000' %}
+        </div>
       </div>
     </div>
     <div class="header__menu-line">

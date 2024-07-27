@@ -2,7 +2,9 @@
   "name": "header",
   "type": "header",
   "sections": {
-    "header": {}
+    "header": {
+      "type": "header"
+    }
   },
   "order": [
     "header"

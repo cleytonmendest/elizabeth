@@ -24,6 +24,8 @@
 
     <!-- Styles -->
     {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ 'application.css' | asset_url | stylesheet_tag }}
+    <link href="{{ 'application.css' | asset_url }}" rel="stylesheet">
 
     <style>
       :root{
@@ -42,7 +44,7 @@
   </head>
   <body>
     {% sections 'header-group' %}
-    <main role="main">
+    <main role="main" class="bg-red-400 h-5">
       {{ content_for_layout }}
     </main>
   </body>
