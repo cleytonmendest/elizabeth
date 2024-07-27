@@ -1,0 +1,24 @@
+{
+  "name": "elizabeth",
+  "version": "1.0.0",
+  "description": "[![Generic badge](https://img.shields.io/badge/course%20available%3F-yes-green.svg)](https://shields.io/)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "r-tail": "npx tailwindcss -i ./src/tailwind.css -o ./assets/tailwind.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cleytonmendest/elizabeth.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cleytonmendest/elizabeth/issues"
+  },
+  "homepage": "https://github.com/cleytonmendest/elizabeth#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.7"
+  }
+}

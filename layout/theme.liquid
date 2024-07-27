@@ -24,8 +24,7 @@
 
     <!-- Styles -->
     {{ 'base.css' | asset_url | stylesheet_tag }}
-    {{ 'application.css' | asset_url | stylesheet_tag }}
-    <link href="{{ 'application.css' | asset_url }}" rel="stylesheet">
+    {{ 'tailwind.css' | asset_url | stylesheet_tag }}
 
     <style>
       :root{
@@ -42,7 +41,7 @@
       
     </style>
   </head>
-  <body>
+  <body class="bg-slate-700">
     {% sections 'header-group' %}
     <main role="main" class="bg-red-400 h-5">
       {{ content_for_layout }}
