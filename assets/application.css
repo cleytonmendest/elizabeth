@@ -572,3 +572,7 @@ video {
   font-size: 1.25rem;
   line-height: 1.75rem;
 }
+
+.italic {
+  font-style: italic;
+}
