@@ -1,98 +1,10 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Elizabeth",
+    "theme_name": "Themekit template theme",
     "theme_version": "1.0.0",
     "theme_author": "Shopify",
-    "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
-    "theme_support_url": "https://support.shopify.com/"
-  },
-  {
-    "name": "Logo",
-    "settings": [
-      {
-        "type": "image_picker",
-        "id": "logo",
-        "label": "Imagem Logo"
-      },
-      {
-        "type": "range",
-        "id": "logo_width",
-        "min": 50,
-        "max": 300,
-        "step": 10,
-        "default": 200,
-        "unit": "px",
-        "label": "Largura da Logo"
-      },
-      {
-        "type": "image_picker",
-        "id": "favicon",
-        "label": "Favicon",
-        "info": "Favicon para a tab da página"
-      }
-    ]
-  },
-  {
-    "name": "Parcelamento (somente visual)",
-    "settings": [
-      {
-        "type": "checkbox",
-        "id": "show_installments",
-        "label": "Exibe informações de parcelamentos nos produtos?",
-        "info": "Caso desativado, não exibirá nenhuma informação de parcelamento. Nem nas prateleiras nem na Página de Produto",
-        "default": true
-      },
-      {
-        "type": "number",
-        "label": "Quantidade máxima de parcelamento",
-        "info": "Quantidade máxima de parcelas que a loja consegue, ex: 10. Isto quer dizer que pode parcelar até em 10x",
-        "default": 10,
-        "id": "max_installments"
-      },
-      {
-        "type": "number",
-        "label": "Valor mínimo de parcelas",
-        "info": "Valor mínimo por parcela, ex: 100. Se colocar o valor 100 só vai exibir o parcelamento no produto se o valor do produto for no minimo 200, fazendo R$200,00 em 2x = R$100,00 por parcela",
-        "id": "min_value_installment",
-        "default": 100
-      }
-    ]
-  },
-  {
-    "name": "Fontes",
-    "settings": [
-      {
-        "type": "textarea",
-        "id": "font_family",
-        "info": "Insira os links das fonts (Google Fonts)",
-        "label": "Fonte da loja"
-      }
-    ]
-  },
-  {
-    "name": "Layout",
-    "settings": [
-      {
-        "type": "range",
-        "id": "page_width",
-        "min": 1000,
-        "max": 1600,
-        "step": 10,
-        "default": 1440,
-        "unit": "px",
-        "label": "Largura máxima das páginas"
-      },
-      {
-        "type": "range",
-        "id": "spacing_sections",
-        "min": 0,
-        "max": 100,
-        "step": 4,
-        "unit": "px",
-        "label": "Espaçamento entre as seções",
-        "default": 0
-      }
-    ]
-  },
+    "theme_documentation_url": "https://github.com/Shopify/themekit",
+    "theme_support_url": "https://github.com/Shopify/themekit/issues"
+  }
 ]

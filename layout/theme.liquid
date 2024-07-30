@@ -1,47 +1,19 @@
 <!doctype html>
-<html class="js" lang="{{ request.locale.iso_code }}">
+<html>
   <head>
-    <title>
-      {{ page_title }}
-      {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
-      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
-      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
-    </title>
+    <title>{{ page_title }}</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    {% if page_description %}
-      <meta name="description" content="{{ page_description | escape }}">
-    {% endif %}
+    <meta name="description" content="{{ page_description | escape }}">
     <link rel="canonical" href="{{ canonical_url }}">
     <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
     {{ content_for_header }}
-    {% render 'meta-tags' %}
     <!-- Header hook for plugins -->
-
-    <!-- Font settings -->
-    {{ settings.font_family }}
-
-    <!-- Styles -->
-    {{ 'base.css' | asset_url | stylesheet_tag }}
-    {{ 'tailwind.css' | asset_url | stylesheet_tag }}
-
-    <style>
-      :root{
-        --page-width: {{ settings.page_width }}px;
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body{
-        height: 100%;
-      }
-    </style>
+    {{ 'application.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'application.js' | asset_url }}" defer></script>
   </head>
-  <body class="bg-slate-700">
-    {% sections 'header-group' %}
-    <main role="main" class="bg-red-400 h-5">
+  <body class="bg-slate-600 text-xl">
+    <main role="main">
       {{ content_for_layout }}
     </main>
   </body>
