@@ -6,5 +6,172 @@
     "theme_author": "Shopify",
     "theme_documentation_url": "https://github.com/Shopify/themekit",
     "theme_support_url": "https://github.com/Shopify/themekit/issues"
-  }
+  },
+  {
+    "name": "Logo",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo Principal"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "min": 50,
+        "max": 300,
+        "step": 10,
+        "default": 100,
+        "unit": "px",
+        "label": "Largura máxima da Logo (Header)"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "Imagem que exibirá na Tab do navegador"
+      }
+    ]
+  },
+  {
+    "name": "Parcelamento (somente visual)",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_installments",
+        "label": "Exibe informações de parcelamentos nos produtos?",
+        "info": "Caso desativado, não exibirá nenhuma informação de parcelamento. Nem nas prateleiras nem na Página de Produto",
+        "default": true
+      },
+      {
+        "type": "number",
+        "label": "Quantidade máxima de parcelamento",
+        "info": "Quantidade máxima de parcelas que a loja consegue, ex: 10. Isto quer dizer que pode parcelar até em 10x",
+        "default": 10,
+        "id": "max_installments"
+      },
+      {
+        "type": "number",
+        "label": "Valor mínimo de parcelas",
+        "info": "Valor mínimo por parcela, ex: 100. Se colocar o valor 100 só vai exibir o parcelamento no produto se o valor do produto for no minimo 200, fazendo R$200,00 em 2x = R$100,00 por parcela",
+        "id": "min_value_installment",
+        "default": 100
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "range",
+        "id": "page_width",
+        "min": 1000,
+        "max": 1600,
+        "step": 10,
+        "default": 1440,
+        "unit": "px",
+        "label": "Largura máxima da Loja"
+      },
+      {
+        "type": "range",
+        "id": "spacing_sections",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Espaçamento entre Seções",
+        "default": 0
+      }
+    ]
+  },
+  {
+    "name": "Tipografia",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Títulos"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_header_font",
+        "default": "assistant_n4",
+        "label": "Fonte",
+        "info": "A seleção de uma fonte diferente pode afetar a velocidade da loja."
+      },
+      {
+        "type": "header",
+        "content": "Corpo"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "default": "assistant_n4",
+        "label": "Fonte",
+        "info": "A seleção de uma fonte diferente pode afetar a velocidade da loja."
+      },
+    ]
+  },
+  {
+    "name": "Redes Sociais",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Contas de redes sociais"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook_link",
+        "label": "Facebook",
+        "placeholder": "https://facebook.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_instagram_link",
+        "label": "Instagram",
+        "placeholder": "https://instagram.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube_link",
+        "label": "Youtube",
+        "placeholder": "https://www.youtube.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok_link",
+        "label": "Tiktok",
+        "placeholder": "https://tiktok.com/@shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_twitter_link",
+        "label": "X / Twitter",
+        "placeholder": "https://x.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_snapchat_link",
+        "label": "Snapchat",
+        "placeholder": "https://www.snapchat.com/add/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest_link",
+        "label": "Pinterest",
+        "placeholder": "https://pinterest.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_tumblr_link",
+        "label": "Tumblr",
+        "placeholder": "https://shopify.tumblr.com"
+      },
+      {
+        "type": "text",
+        "id": "social_vimeo_link",
+        "label": "Vimeo",
+        "placeholder": "https://vimeo.com/shopify"
+      }
+    ]
+  },
 ]
