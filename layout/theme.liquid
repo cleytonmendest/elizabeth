@@ -88,9 +88,13 @@
 
     {% endstyle %}
   </head>
-  <body class="bg-orange-700 text-xl">
-    <main role="main">
+  <body>
+    {% sections 'header-group' %}
+
+    <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
       {{ content_for_layout }}
     </main>
+
+    {% sections 'footer-group' %}
   </body>
 </html>
