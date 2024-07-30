@@ -46,7 +46,6 @@
     <!-- JS Imports -->
     <script src="{{ 'application.js' | asset_url }}" defer></script>
 
-
     {%- liquid
       assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
       assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
@@ -70,7 +69,7 @@
         --font-heading-style: {{ settings.type_header_font.style }};
         --font-heading-weight: {{ settings.type_header_font.weight }};
 
-        --page-width: {{ settings.page_width | divided_by: 10 }}rem;
+        --page-width: {{ settings.page_width  }}px;
       }
 
       html {
@@ -86,6 +85,11 @@
         font-weight: var(--font-body-weight);
       }
 
+      .page-width {
+        max-width: var(--page-width);
+        margin: 0 auto;
+        padding: 0 16px;
+      }
     {% endstyle %}
   </head>
   <body>
