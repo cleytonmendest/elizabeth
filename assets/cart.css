@@ -1,0 +1,17 @@
+cart-drawer.cart-drawer{
+    visibility: hidden;
+    transition: all .3s ease-in-out;
+}
+
+cart-drawer.cart-drawer.active{
+    visibility: visible;
+}
+
+.cart-inner{
+    transform: translate(100%);
+    transition: all .3s ease-in-out;
+}
+
+cart-drawer.cart-drawer.active .cart-inner{
+    transform: translate(0);
+}

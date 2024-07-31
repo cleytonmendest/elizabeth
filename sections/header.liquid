@@ -1,25 +1,13 @@
-{% comment %}
-  <link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
-
-    {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
-    {{ 'component-cart.css' | asset_url | stylesheet_tag }}
-    {{ 'component-totals.css' | asset_url | stylesheet_tag }}
-    {{ 'component-price.css' | asset_url | stylesheet_tag }}
-    {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
-
-  <script src="{{ 'search-form.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
-{% endcomment %}
-
-<header class="bg-slate-500">
-  <div class="page-width w-full">
+<header class="">
+  <div class="!py-3 page-width w-full">
     <div class="flex justify-between items-center">
-      <div>SEARCH</div>
-      <div>
-        <h1>
+      <div class="flex-[2]">
+        <button>
+          {% render 'icon-search' %}
+        </button>
+      </div>
+      <div class="flex-[1] justify-center items-center flex">
+        <h1 class="w-fit">
           <a href="{{ routes.root_url }}">
             {%- if settings.logo != blank -%}
               <div class="header__heading-logo-wrapper">
@@ -46,9 +34,14 @@
           </a>
         </h1>
       </div>
-      <div class="flex">
-        <div>ACCOUNT</div>
-        <div>MINICART</div>
+      <div class="flex flex-[2] gap-4 justify-end">
+        <a href="{{ routes.account_url }}">
+          {% render 'icon-account', size: 35 %}
+        </a>
+
+        <button id="minicart-button">
+          {% render 'icon-cart', size: 35 %}
+        </button>
       </div>
     </div>
     <div></div>

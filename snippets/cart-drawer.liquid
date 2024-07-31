@@ -1,0 +1,11 @@
+{{ 'cart.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cart.js' | asset_url }}" defer></script>
+
+<cart-drawer class="cart-drawer fixed z-50 left-0 top-0 w-screen h-full flex justify-end bg-[#12121280]">
+  <div class="cart-drawer">
+    <div class="cart-inner h-full w-[385px] bg-white z-10 relative">
+        
+    </div>
+    <div id="minicart-overlay" class="fixed top-0 left-0 right-0 bottom-0"></div>
+  </div>
+</cart-drawer>

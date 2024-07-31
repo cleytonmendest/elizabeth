@@ -90,11 +90,15 @@
         margin: 0 auto;
         padding: 0 16px;
       }
+
+      .overflow-hidden {
+        overflow: hidden;
+      }
     {% endstyle %}
   </head>
   <body>
     {% sections 'header-group' %}
-
+    {% render 'cart-drawer' %}
     <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
       {{ content_for_layout }}
     </main>
