@@ -562,28 +562,28 @@ video {
   position: relative;
 }
 
-.left-0 {
-  left: 0px;
-}
-
-.top-0 {
-  top: 0px;
-}
-
 .bottom-0 {
   bottom: 0px;
+}
+
+.left-0 {
+  left: 0px;
 }
 
 .right-0 {
   right: 0px;
 }
 
-.z-50 {
-  z-index: 50;
+.top-0 {
+  top: 0px;
 }
 
 .z-10 {
   z-index: 10;
+}
+
+.z-50 {
+  z-index: 50;
 }
 
 .flex {
@@ -602,8 +602,8 @@ video {
   height: 100%;
 }
 
-.w-full {
-  width: 100%;
+.w-\[385px\] {
+  width: 385px;
 }
 
 .w-fit {
@@ -611,20 +611,16 @@ video {
   width: fit-content;
 }
 
+.w-full {
+  width: 100%;
+}
+
 .w-screen {
   width: 100vw;
 }
 
-.w-\[40rem\] {
-  width: 40rem;
-}
-
-.w-\[300px\] {
-  width: 300px;
-}
-
-.w-\[385px\] {
-  width: 385px;
+.w-5 {
+  width: 1.25rem;
 }
 
 .flex-\[1\] {
@@ -635,8 +631,8 @@ video {
   flex: 2;
 }
 
-.transform {
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+.flex-col {
+  flex-direction: column;
 }
 
 .items-center {
@@ -663,15 +659,6 @@ video {
   overflow: hidden;
 }
 
-.bg-slate-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(100 116 139 / var(--tw-bg-opacity));
-}
-
-.bg-\[\#\] {
-  background-color: #;
-}
-
 .bg-\[\#12121280\] {
   background-color: #12121280;
 }
@@ -681,42 +668,54 @@ video {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
-.fill-\[\#7ed0ec\] {
-  fill: #7ed0ec;
-}
-
-.fill-none {
-  fill: none;
-}
-
-.fill-\[\#fff0\] {
-  fill: #fff0;
-}
-
-.py-3 {
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-}
-
 .\!py-3 {
   padding-top: 0.75rem !important;
   padding-bottom: 0.75rem !important;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.pt-4 {
+  padding-top: 1rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.font-bold {
+  font-weight: 700;
 }
 
 .italic {
   font-style: italic;
 }
 
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
-.duration-150 {
-  transition-duration: 150ms;
-}
-
-.group:hover .group-hover\:fill-\[\#f35252\] {
-  fill: #f35252;
+.text-gray-700 {
+  --tw-text-opacity: 1;
+  color: rgb(55 65 81 / var(--tw-text-opacity));
 }
