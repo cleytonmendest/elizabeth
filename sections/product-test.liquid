@@ -1,0 +1,61 @@
+<div>
+  <img src="{{ section.settings.product.featured_image | image_url}}" width="200" height="200">
+  <h3>{{ section.settings.product.title }}</h3>
+  <span>{{ section.settings.product.price | money }}</span>
+  <add-to-cart>
+    {%- form 'product',
+      section.settings.product,
+      id: section.settings.product.id,
+      class: 'form',
+      novalidate: 'novalidate',
+      data-type: 'add-to-cart-form'
+    -%}
+      <input
+        type="hidden"
+        name="id"
+        value="{{ section.settings.product.selected_or_first_available_variant.id }}"
+        class="product-variant-id"
+        {% if section.settings.product.selected_or_first_available_variant.available == false %}
+          disabled
+        {% endif %}
+      >
+      <button
+        {% comment %} id="{{ product_form_id }}-submit" {% endcomment %}
+        type="submit"
+        name="add"
+        class="quick-add__submit button button--full-width button--secondary card--horizontal__quick-add"
+        aria-haspopup="dialog"
+        {% comment %} aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}" {% endcomment %}
+        aria-live="polite"
+        data-sold-out-message="true"
+        {% if section.settings.product.selected_or_first_available_variant.available == false %}
+          disabled
+        {% endif %}
+      >
+        BOTA DENTO
+      </button>
+    {%- endform -%}
+  </add-to-cart>
+
+  <update-cart> UPDATEEEEEEEE </update-cart>
+</div>
+
+{% schema %}
+{
+  "name": "prod teste",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "product",
+      "info": "product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "product",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

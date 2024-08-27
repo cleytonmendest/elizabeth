@@ -11,10 +11,7 @@ const PUB_SUB_EVENTS = {
 function fetchConfig(type = 'json') {
     return {
         method: 'POST',
-        headers: {
-            'Content-Type': type === 'json' ? 'application/json' : 'application/x-www-form-urlencoded',
-            Accept: 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json', Accept: `application/${type}` },
     };
 }
 
@@ -35,38 +32,24 @@ class CartManager {
         try {
             const response = await fetch(`${routes.cart_add_url}`, config);
             const result = await response.json();
-            if (result.status) {
-                publish(PUB_SUB_EVENTS.cartError, {
-                    source: 'add-to-cart',
-                    productVariantId: formData.get('id'),
-                    errors: result.errors || result.description,
-                    message: result.message,
-                });
-                throw new Error(result.message);
-            } else {
-                publish(PUB_SUB_EVENTS.cartUpdate, {
-                    source: 'add-to-cart',
-                    productVariantId: formData.get('id'),
-                    cartData: result,
-                });
-                return result;
-            }
+
+            return result
         } catch (error) {
             console.error(error);
             throw error;
         }
     }
 
-    static async removeFromCart(line) {
-        const body = JSON.stringify({ line, quantity: 0 });
-        const response = await fetch(`${routes.cart_change_url}`, { ...fetchConfig(), body });
-        return response.json();
-    }
+    static async updateQuantity(line, quantity) {
+        const body = JSON.stringify({
+            line,
+            quantity
+        });
 
-    static async updateCart(line, quantity) {
-        const body = JSON.stringify({ line, quantity });
-        const response = await fetch(`${routes.cart_change_url}`, { ...fetchConfig(), body });
-        return response.json();
+        const response = await fetch(`${routes.cart_change_url}`, { ...fetchConfig(), ...{ body } })
+        const responseJson = await response.json()
+
+        return responseJson
     }
 }
 
@@ -106,7 +89,7 @@ class CartDrawer extends HTMLElement {
     }
 
     renderContents(cartData) {
-        // Renderizar o conteúdo do carrinho aqui
+
     }
 }
 
@@ -122,29 +105,36 @@ class AddToCart extends HTMLElement {
 
     async submitHandler(event) {
         event.preventDefault();
-        const submitButton = this.form.querySelector('[type="submit"]');
-        submitButton.setAttribute('aria-disabled', true);
-        submitButton.classList.add('loading');
-        this.querySelector('.loading__spinner').classList.remove('hidden');
 
         try {
-            const response = await CartManager.addToCart(this.form);
-            const cartDrawer = document.querySelector('cart-drawer');
-            if (cartDrawer) {
-                cartDrawer.renderContents(response);
-                cartDrawer.open();
-            } else {
-                window.location = window.routes.cart_url;
-            }
+            await CartManager.addToCart(this.form);
         } catch (error) {
             console.error(error);
-            // Tratar erros aqui
         } finally {
-            submitButton.classList.remove('loading');
-            submitButton.removeAttribute('aria-disabled');
-            this.querySelector('.loading__spinner').classList.add('hidden');
+            document.querySelector('cart-drawer').open()
         }
     }
 }
 
 customElements.define('add-to-cart', AddToCart);
+
+class RemoveFromCart extends HTMLElement {
+    constructor() {
+        super();
+        this.addEventListener('click', this.removeHandler.bind(this));
+    }
+
+    async removeHandler(event) {
+        event.preventDefault();
+
+        try {
+            await CartManager.updateQuantity(this.dataset.index, 0);
+
+        } catch (error) {
+            console.error(error);
+        } finally {
+             //ff
+        }
+    }
+}
+customElements.define('remove-from-cart', RemoveFromCart);
