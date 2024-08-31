@@ -137,4 +137,44 @@ class RemoveFromCart extends HTMLElement {
         }
     }
 }
+
 customElements.define('remove-from-cart', RemoveFromCart);
+
+class QuantityInput extends HTMLElement {
+    constructor(){
+        super()
+        this.plus = this.querySelector('#quantity-plus')
+        this.minus = this.querySelector('#quantity-minus')
+        this.input = this.querySelector('#quantity-input')
+        this.debounceTimer = null; // Armazena o ID do timeout
+
+        this.plus.addEventListener('click', this.changeQuantity.bind(this, 1));
+        this.minus.addEventListener('click', this.changeQuantity.bind(this, -1));
+    }
+
+    changeQuantity(change) {
+        const newQuantity = parseInt(this.input.value) + change;
+        if (newQuantity < 1) return;
+
+        this.input.value = newQuantity;
+
+        if (this.debounceTimer) {
+            clearTimeout(this.debounceTimer);
+        }
+
+        this.debounceTimer = setTimeout(() => {
+            this.updateCartQuantity(newQuantity);
+        }, ON_CHANGE_DEBOUNCE_TIMER);
+    }
+
+    async updateCartQuantity(newQuantity) {
+        const itemIndex = this.dataset.index;
+        try {
+            await CartManager.updateQuantity(itemIndex, newQuantity);
+        } catch (error) {
+            console.error('Erro ao atualizar a quantidade no carrinho:', error);
+        }
+    }
+}
+
+customElements.define('quantity-input', QuantityInput);
