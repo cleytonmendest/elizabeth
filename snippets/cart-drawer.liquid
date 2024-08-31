@@ -3,8 +3,9 @@
 
 <cart-drawer class="cart-drawer fixed z-50 left-0 top-0 w-screen h-full flex justify-end bg-[#12121280]">
   <div class="cart-drawer">
-    <div class="cart-inner px-4 pt-4 h-full w-[385px] bg-white z-10 relative">
-      <div class="cart-header flex justify-end">
+    <div class="cart-inner pb-10 h-full w-[385px] bg-white z-10 relative">
+      <div class="cart-header flex h-16 shadow-lg px-4 items-center">
+        <span class="flex-1 flex items-center justify-center font-bold text-lg">Carrinho</span>
         <button
           class="w-5"
           type="button"
@@ -19,10 +20,40 @@
           <p class="text-base text-gray-700">Seu carrinho está vazio :(</p>
         </div>
       {% else %}
-        <div class="flex flex-col">
-          {% for item in cart.items %}
-            {% render 'cart-drawer-item', item: item %}
-          {% endfor %}
+        <div class="flex flex-col h-full">
+          <div class="flex flex-col flex-1 gap-4 p-4">
+            {% for item in cart.items %}
+              {% render 'cart-drawer-item', item: item %}
+            {% endfor %}
+          </div>
+          <div class="p-4 shadow-[0_0_12px_rgba(0,0,0,0.15)] pb-10">
+            <div class="summary flex flex-col">
+              <div class="flex justify-between">
+                <div>DESCONTOS:</div>
+                <div>
+                  {{ cart.total_discount | money }}
+                </div>
+              </div>
+              <div class="flex justify-between">
+                <div>TOTAL:</div>
+                <div>
+                  {{ cart.total_price | money }}
+                </div>
+              </div>
+            </div>
+            <button
+              class="w-full h-10 flex items-center justify-center border border-orange-500 mt-4 text-orange-500 font-bold"
+              type="button"
+              onclick="this.closest('cart-drawer').close()"
+            >
+              CONTINUAR COMPRANDO
+            </button>
+            <a
+              href="/checkout"
+              class="flex cursor-pointer h-10 w-full items-center justify-center mt-4 bg-orange-500 text-white font-bold"
+              >FINALIZAR PEDIDO</a
+            >
+          </div>
         </div>
       {% endif %}
     </div>
