@@ -26,14 +26,25 @@
         {% render 'icon-trash' %}
       </remove-from-cart>
     </div>
-    <div class="flex">
-      <quantity-input class="border border-slate-900 rounded-2xl flex">
-        <input class="m-2" type="number">
-        <div class="flex flex-col">
-          <button>+</button>
-          <button>-</button>
-        </div>
+    <div class="flex justify-between items-center mt-3">
+      <quantity-input class="border border-slate-900 flex">
+        <button class="w-10 h-10 font-bold text-2xl flex items-center justify-center">
+          {% render 'minus-icon' %}
+        </button>
+        <input
+          class="w-10 h-10 outline-none text-center text-base font-bold"
+          type="number"
+          readonly
+          value="{{ item.quantity }}"
+        >
+        <button class="w-10 h-10 font-bold text-2xl flex items-center justify-center">
+          {% render 'plus-icon' %}
+        </button>
       </quantity-input>
+
+      <div class="text-lg font-medium">
+        {{ item.final_line_price | money }}
+      </div>
     </div>
   </div>
 </div>
