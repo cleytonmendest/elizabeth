@@ -564,6 +564,10 @@ input[type="number"]::-webkit-inner-spin-button,
   position: fixed;
 }
 
+.absolute {
+  position: absolute;
+}
+
 .relative {
   position: relative;
 }
@@ -584,12 +588,21 @@ input[type="number"]::-webkit-inner-spin-button,
   top: 0px;
 }
 
+.left-5 {
+  left: 1.25rem;
+}
+
 .z-10 {
   z-index: 10;
 }
 
 .z-50 {
   z-index: 50;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .mt-3 {
@@ -636,6 +649,14 @@ input[type="number"]::-webkit-inner-spin-button,
   height: 4rem;
 }
 
+.h-4 {
+  height: 1rem;
+}
+
+.h-5 {
+  height: 1.25rem;
+}
+
 .w-10 {
   width: 2.5rem;
 }
@@ -667,6 +688,14 @@ input[type="number"]::-webkit-inner-spin-button,
 
 .w-7 {
   width: 1.75rem;
+}
+
+.w-4 {
+  width: 1rem;
+}
+
+.max-w-\[980px\] {
+  max-width: 980px;
 }
 
 .flex-1 {
@@ -715,6 +744,10 @@ input[type="number"]::-webkit-inner-spin-button,
 
 .overflow-hidden {
   overflow: hidden;
+}
+
+.rounded-full {
+  border-radius: 9999px;
 }
 
 .border {
@@ -812,6 +845,11 @@ input[type="number"]::-webkit-inner-spin-button,
   line-height: 1.75rem;
 }
 
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
 .font-bold {
   font-weight: 700;
 }
@@ -864,4 +902,10 @@ input[type="number"]::-webkit-inner-spin-button,
 .outline-none {
   outline: 2px solid transparent;
   outline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+  .md\:flex-row {
+    flex-direction: row;
+  }
 }

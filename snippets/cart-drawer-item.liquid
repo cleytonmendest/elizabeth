@@ -1,4 +1,4 @@
-<div class="flex">
+<div class="flex cart-item" data-index="{{ item.index | plus: 1 }}" data-product="{{ item.id }}">
   <div>
     {% if item.image %}
       <a href="{{ item.url }}" class="">
@@ -21,13 +21,12 @@
       </a>
       <remove-from-cart
         class="cursor-pointer w-6 h-6 flex items-center justify-center"
-        data-index="{{ item.index | plus: 1 }}"
       >
         {% render 'icon-trash' %}
       </remove-from-cart>
     </div>
     <div class="flex justify-between items-center mt-3">
-      <quantity-input class="border border-slate-900 flex" data-index="{{ item.index | plus: 1 }}">
+      <quantity-input class="border border-slate-900 flex">
         <button class="w-10 h-10 font-bold text-2xl flex items-center justify-center" id="quantity-minus">
           {% render 'minus-icon' %}
         </button>
@@ -43,7 +42,7 @@
         </button>
       </quantity-input>
 
-      <div class="text-lg font-medium">
+      <div class="item-total-price text-lg font-medium">
         {{ item.final_line_price | money }}
       </div>
     </div>

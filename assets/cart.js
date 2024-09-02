@@ -7,7 +7,13 @@ const PUB_SUB_EVENTS = {
     cartError: 'cart-error',
 };
 
-// Função utilitária para configuração de fetch
+function formatPrice(value) {
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(value / 100);
+}
+
 function fetchConfig(type = 'json') {
     return {
         method: 'POST',
@@ -15,13 +21,31 @@ function fetchConfig(type = 'json') {
     };
 }
 
-// Publicação de eventos
 function publish(event, detail) {
     document.dispatchEvent(new CustomEvent(event, { detail }));
 }
 
-// Classe principal para gerenciar o carrinho
+function debounce(fn, delay) {
+    let timer = null;
+    return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+    };
+}
+
 class CartManager {
+    static async getCart() {
+        try {
+            const response = await fetch(`${routes.cart_url}.js`);
+            const cart = await response.json();
+            publish(PUB_SUB_EVENTS.cartUpdate, cart);
+            return cart;
+        } catch (error) {
+            console.error('Erro ao obter o carrinho:', error);
+            throw error;
+        }
+    }
+
     static async addToCart(form) {
         const formData = new FormData(form);
         const config = fetchConfig('javascript');
@@ -32,44 +56,75 @@ class CartManager {
         try {
             const response = await fetch(`${routes.cart_add_url}`, config);
             const result = await response.json();
-
-            return result
+            publish(PUB_SUB_EVENTS.cartUpdate, result);
+            return result;
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao adicionar ao carrinho:', error);
             throw error;
         }
     }
 
     static async updateQuantity(line, quantity) {
-        const body = JSON.stringify({
-            line,
-            quantity
-        });
+        const body = JSON.stringify({ line, quantity });
 
-        const response = await fetch(`${routes.cart_change_url}`, { ...fetchConfig(), ...{ body } })
-        const responseJson = await response.json()
+        try {
+            const response = await fetch(`${routes.cart_change_url}`, { ...fetchConfig(), body });
+            const cart = await response.json();
+            publish(PUB_SUB_EVENTS.quantityUpdate, cart);
 
-        return responseJson
+            return cart;
+        } catch (error) {
+            console.error('Erro ao atualizar a quantidade:', error);
+            publish(PUB_SUB_EVENTS.cartError, error);
+            throw error;
+        }
     }
 }
 
-// Classe para o drawer do carrinho
 class CartDrawer extends HTMLElement {
     constructor() {
         super();
-        this.addEventListener('keyup', (evt) => evt.code === 'Escape' && this.close());
-        this.querySelector('#minicart-overlay').addEventListener('click', this.close.bind(this));
+        this.setupEventListeners();
         this.setHeaderCartIconAccessibility();
+        this.setupEventSubscriptions();
+    }
+
+    setupEventListeners() {
+        this.addEventListener('keyup', (evt) => {
+            if (evt.code === 'Escape') this.close();
+        });
+        this.querySelector('#minicart-overlay').addEventListener('click', this.close.bind(this));
+    }
+
+    setupEventSubscriptions() {
+        document.addEventListener(PUB_SUB_EVENTS.cartUpdate, (event) => {
+            this.updateCartSummary(event.detail);
+            this.updateQtdBubble(event.detail.item_count)
+        });
+
+        document.addEventListener(PUB_SUB_EVENTS.quantityUpdate, (event) => {
+            const cart = event.detail;
+
+            cart.items.forEach((item, index) => {
+                this.updateItemTotalPrice(index + 1, item.final_line_price);
+            });
+            this.updateCartSummary(cart);
+            this.updateQtdBubble(cart.item_count)
+        });
+
+        document.addEventListener(PUB_SUB_EVENTS.cartError, (event) => {
+            console.error('Erro detectado:', event.detail);
+        });
     }
 
     open() {
-        this.classList.add('animate', 'active');
         document.body.classList.add('overflow-hidden');
+        this.classList.add('animate', 'active');
     }
 
     close() {
-        this.classList.remove('active');
         document.body.classList.remove('overflow-hidden');
+        this.classList.remove('active');
     }
 
     setHeaderCartIconAccessibility() {
@@ -88,14 +143,51 @@ class CartDrawer extends HTMLElement {
         });
     }
 
-    renderContents(cartData) {
+    updateItemIndexes() {
+        this.querySelectorAll('.cart-item').forEach((item, index) => {
+            item.setAttribute('data-index', index + 1);
+        });
+    }
 
+    removeItem(line) {
+        const itemElement = this.querySelector(`[data-index="${line}"]`);
+        if (itemElement) {
+            itemElement.closest('.cart-item').remove();
+        }
+
+        this.updateItemIndexes();
+        this.updateCartSummary();
+    }
+
+    updateItemTotalPrice(line, newPrice) {
+        const itemElement = this.querySelector(`[data-index="${line}"]`);
+        const priceElement = itemElement.querySelector('.item-total-price');
+        if (priceElement) {
+            priceElement.textContent = formatPrice(newPrice);
+        }
+    }
+
+    async updateCartSummary(cart) {
+        const summaryElement = document.querySelector('#cart-summary-total');
+        const itemsSubtotalPriceElement = summaryElement.querySelector('.subtotal');
+        const totalDiscountElement = summaryElement.querySelector('.discounts');
+        const totalPriceElement = summaryElement.querySelector('.total-price');
+
+        const { items_subtotal_price, total_discount, total_price } = cart;
+
+        itemsSubtotalPriceElement.textContent = formatPrice(items_subtotal_price);
+        totalDiscountElement.textContent = formatPrice(total_discount);
+        totalPriceElement.textContent = formatPrice(total_price);
+    }
+
+    updateQtdBubble(newQtd){
+        const qtdBubble = document.querySelector('#qtd-bubble')
+        qtdBubble.textContent = newQtd
     }
 }
 
 customElements.define('cart-drawer', CartDrawer);
 
-// Classe para adicionar produtos ao carrinho
 class AddToCart extends HTMLElement {
     constructor() {
         super();
@@ -105,13 +197,13 @@ class AddToCart extends HTMLElement {
 
     async submitHandler(event) {
         event.preventDefault();
-
         try {
-            await CartManager.addToCart(this.form);
+            const response = await CartManager.addToCart(this.form);
+            console.log(response);
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao adicionar o produto ao carrinho:', error);
         } finally {
-            document.querySelector('cart-drawer').open()
+            document.querySelector('cart-drawer').open();
         }
     }
 }
@@ -126,14 +218,14 @@ class RemoveFromCart extends HTMLElement {
 
     async removeHandler(event) {
         event.preventDefault();
+        const itemElement = this.closest('.cart-item');
+        const itemIndex = itemElement.getAttribute('data-index');
 
         try {
-            await CartManager.updateQuantity(this.dataset.index, 0);
-
+            await CartManager.updateQuantity(itemIndex, 0);
+            document.querySelector('cart-drawer').removeItem(itemIndex);
         } catch (error) {
-            console.error(error);
-        } finally {
-             //ff
+            console.error('Erro ao remover o item do carrinho:', error);
         }
     }
 }
@@ -141,36 +233,32 @@ class RemoveFromCart extends HTMLElement {
 customElements.define('remove-from-cart', RemoveFromCart);
 
 class QuantityInput extends HTMLElement {
-    constructor(){
-        super()
-        this.plus = this.querySelector('#quantity-plus')
-        this.minus = this.querySelector('#quantity-minus')
-        this.input = this.querySelector('#quantity-input')
-        this.debounceTimer = null; // Armazena o ID do timeout
+    constructor() {
+        super();
+        this.plus = this.querySelector('#quantity-plus');
+        this.minus = this.querySelector('#quantity-minus');
+        this.input = this.querySelector('#quantity-input');
 
-        this.plus.addEventListener('click', this.changeQuantity.bind(this, 1));
-        this.minus.addEventListener('click', this.changeQuantity.bind(this, -1));
+        this.plus.addEventListener('click', debounce(this.changeQuantity.bind(this, 1), ON_CHANGE_DEBOUNCE_TIMER));
+        this.minus.addEventListener('click', debounce(this.changeQuantity.bind(this, -1), ON_CHANGE_DEBOUNCE_TIMER));
     }
 
-    changeQuantity(change) {
+    async changeQuantity(change) {
         const newQuantity = parseInt(this.input.value) + change;
         if (newQuantity < 1) return;
 
         this.input.value = newQuantity;
 
-        if (this.debounceTimer) {
-            clearTimeout(this.debounceTimer);
-        }
+        const itemElement = this.closest('.cart-item');
+        const itemIndex = itemElement.getAttribute('data-index');
 
-        this.debounceTimer = setTimeout(() => {
-            this.updateCartQuantity(newQuantity);
-        }, ON_CHANGE_DEBOUNCE_TIMER);
-    }
-
-    async updateCartQuantity(newQuantity) {
-        const itemIndex = this.dataset.index;
         try {
-            await CartManager.updateQuantity(itemIndex, newQuantity);
+            const response = await CartManager.updateQuantity(itemIndex, newQuantity);
+            const final_price = response.items[itemIndex - 1].final_line_price;
+
+            const cartDrawer = document.querySelector('cart-drawer');
+            cartDrawer.updateItemTotalPrice(itemIndex, final_price);
+            cartDrawer.updateCartSummary(response);
         } catch (error) {
             console.error('Erro ao atualizar a quantidade no carrinho:', error);
         }
