@@ -156,7 +156,6 @@ class CartDrawer extends HTMLElement {
         }
 
         this.updateItemIndexes();
-        this.updateCartSummary();
     }
 
     updateItemTotalPrice(line, newPrice) {
@@ -172,8 +171,6 @@ class CartDrawer extends HTMLElement {
         const itemsSubtotalPriceElement = summaryElement.querySelector('.subtotal');
         const totalDiscountElement = summaryElement.querySelector('.discounts');
         const totalPriceElement = summaryElement.querySelector('.total-price');
-
-        console.log(cart, 'cart')
 
         const { items_subtotal_price, total_discount, total_price } = cart;
 
@@ -254,8 +251,6 @@ class RemoveFromCart extends HTMLElement {
         event.preventDefault();
         const itemElement = this.closest('.cart-item');
         const itemIndex = itemElement.getAttribute('data-index');
-
-        console.log('remover chamado')
 
         try {
             await CartManager.updateQuantity(itemIndex, 0);
