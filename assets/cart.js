@@ -173,6 +173,8 @@ class CartDrawer extends HTMLElement {
         const totalDiscountElement = summaryElement.querySelector('.discounts');
         const totalPriceElement = summaryElement.querySelector('.total-price');
 
+        console.log(cart, 'cart')
+
         const { items_subtotal_price, total_discount, total_price } = cart;
 
         itemsSubtotalPriceElement.textContent = formatPrice(items_subtotal_price);
@@ -180,9 +182,22 @@ class CartDrawer extends HTMLElement {
         totalPriceElement.textContent = formatPrice(total_price);
     }
 
-    updateQtdBubble(newQtd){
-        const qtdBubble = document.querySelector('#qtd-bubble')
-        qtdBubble.textContent = newQtd
+    updateQtdBubble(newQtd) {
+        const qtdBubble = document.querySelector('#qtd-bubble');
+        const cartEmpty = this.querySelector('#cart-empty');
+        const cartContainer = this.querySelector('#cart-container');
+        const isVisible = newQtd > 0;
+    
+        const toggleVisibility = (element, visible) => {
+            element.classList.toggle('flex', visible);
+            element.classList.toggle('hidden', !visible);
+        };
+    
+        toggleVisibility(qtdBubble, isVisible);
+        toggleVisibility(cartEmpty, !isVisible);
+        toggleVisibility(cartContainer, isVisible);
+    
+        qtdBubble.textContent = newQtd;
     }
 }
 
@@ -198,12 +213,31 @@ class AddToCart extends HTMLElement {
     async submitHandler(event) {
         event.preventDefault();
         try {
-            const response = await CartManager.addToCart(this.form);
-            console.log(response);
+            await CartManager.addToCart(this.form);
+            await this.updateCartDrawer();
+            await CartManager.getCart()
         } catch (error) {
             console.error('Erro ao adicionar o produto ao carrinho:', error);
         } finally {
             document.querySelector('cart-drawer').open();
+        }
+    }
+
+    async updateCartDrawer() {
+        try {
+            const response = await fetch('/cart');
+            const text = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, 'text/html');
+            const newCartItem = doc.querySelector('.cart-item'); // Supondo que o novo item tenha a classe 'cart-item'
+            
+            if (newCartItem) {
+                const cartContainer = document.querySelector('#cart-items-container');
+                cartContainer.appendChild(newCartItem);
+                document.querySelector('cart-drawer').updateItemIndexes(); // Atualiza os índices no minicart
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar o minicart:', error);
         }
     }
 }
@@ -220,6 +254,8 @@ class RemoveFromCart extends HTMLElement {
         event.preventDefault();
         const itemElement = this.closest('.cart-item');
         const itemIndex = itemElement.getAttribute('data-index');
+
+        console.log('remover chamado')
 
         try {
             await CartManager.updateQuantity(itemIndex, 0);
@@ -253,12 +289,8 @@ class QuantityInput extends HTMLElement {
         const itemIndex = itemElement.getAttribute('data-index');
 
         try {
-            const response = await CartManager.updateQuantity(itemIndex, newQuantity);
-            const final_price = response.items[itemIndex - 1].final_line_price;
+            await CartManager.updateQuantity(itemIndex, newQuantity);
 
-            const cartDrawer = document.querySelector('cart-drawer');
-            cartDrawer.updateItemTotalPrice(itemIndex, final_price);
-            cartDrawer.updateCartSummary(response);
         } catch (error) {
             console.error('Erro ao atualizar a quantidade no carrinho:', error);
         }
