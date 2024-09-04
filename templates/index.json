@@ -9,7 +9,25 @@
 */
 {
   "sections": {
+    "product_slider_XKcxw3": {
+      "type": "product-slider",
+      "settings": {
+        "collection": "tintas-acrilicas-1",
+        "title": "teste",
+        "subtitle": "<p>testando subtitlo<\/p>",
+        "loop": true,
+        "nav": true,
+        "dot": true,
+        "qty-desk": 5,
+        "qty-tablet": 3,
+        "qty-mob": 1,
+        "autoplay": true,
+        "play-time": 5,
+        "pause-hover": true
+      }
+    }
   },
   "order": [
+    "product_slider_XKcxw3"
   ]
 }
