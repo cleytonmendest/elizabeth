@@ -1,0 +1,17 @@
+<div class="card-product-slider">
+  <a class="card-product-slider__card-link" href="{{ card_product.url }}">
+    <div class="card-product-slider__image-container">
+      <img
+        class="card-product-slider__image"
+        src="{{ card_product.featured_image | image_url }}"
+        width="1500"
+        height=""
+      >
+    </div>
+    <div class="card-product-slider__info-container">
+      <h3 class="card-product-slider__product-name">
+        {{ card_product.title | escape }}
+      </h3>
+    </div>
+  </a>
+</div>

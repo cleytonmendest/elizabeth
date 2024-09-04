@@ -1,0 +1,147 @@
+{{ 'carousel-style.css' | asset_url | stylesheet_tag }}
+
+{% assign loop = section.settings.loop %}
+{% assign nav = section.settings.nav %}
+{% assign qty_desk = section.settings['qty-desk'] %}
+{% assign qty_tab = section.settings['qty-tablet'] %}
+{% assign qty_mob = section.settings['qty-mob'] %}
+{% assign autoplay = section.settings.autoplay %}
+{% assign play_time = section.settings['play-time'] %}
+{% assign pause_hover = section.settings['pause-hover'] %}
+{% assign dot = section.settings.dot %}
+
+<div class="product-slider-infos page-width{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+  <h3 class="product-slider-infos__title">{{ section.settings.title }}</h3>
+  <div class="product-slider-infos__subtitle">
+    {{ section.settings.subtitle }}
+  </div>
+</div>
+<div class="product-slider-container slider-container page-width{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+  <div
+    class="owl-carousel"
+    data-loop="{{ loop }}"
+    data-nav-arrows="{{ nav }}"
+    data-qty-desk="{{ qty_desk }}"
+    data-qty-tab="{{ qty_tab }}"
+    data-qty-mob="{{ qty_mob }}"
+    data-autoplay="{{ autoplay }}"
+    data-ap-time="{{ play_time }}"
+    data-pause-hover="{{ pause_hover }}"
+    data-dot="{{ dot }}"
+  >
+    {%- for product in section.settings.collection.products -%}
+      <div class="carousel-item">
+        {% render 'card-product-slider', card_product: product %}
+      </div>
+    {% endfor %}
+  </div>
+  {% if nav %}
+    <div class="custom-prev-slide product-slider__arrow"> prev </div>
+    <div class="custom-next-slide product-slider__arrow"> next </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Slider de Produtos",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Coleção de Produtos"
+    },
+    {
+      "type": "inline_richtext",
+      "label": "Título da prateleira",
+      "id": "title"
+    },
+    {
+      "type": "richtext",
+      "id": "subtitle",
+      "label": "Subtítulo da prateleira"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Ativa loop infinito?",
+      "info": "Quando chega no ultimo slider volta para o inicio automaticamente",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "nav",
+      "label": "Exibe Flechas de Navegação",
+      "info": "Exibe botões de proximo e anterior",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "dot",
+      "label": "Exibe Pontos de Navegação",
+      "info": "Exibe botões",
+      "default": true
+    },
+    {
+      "type": "range",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Quantidade de Produtos quando desktop",
+      "id": "qty-desk",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Quantidade de Produtos quando Tablet",
+      "id": "qty-tablet",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Quantidade de Produtos quando mobile",
+      "id": "qty-mob",
+      "default": 1
+    },
+    {
+      "type": "checkbox",
+      "label": "Ativa Autoplay",
+      "id": "autoplay",
+      "info": "Autoplay mantém o slider ativo, sempre passando as produtos automaticamente",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "play-time",
+      "max": 20,
+      "min": 1,
+      "step": 1,
+      "label": "Tempo entre os sliders (autoplay ativo)",
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "pause-hover",
+      "label": "Pausa autoplay quando o mouse estiver no Produto",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Slider de Produtos",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

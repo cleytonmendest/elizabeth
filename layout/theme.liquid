@@ -42,9 +42,9 @@
 
     <!-- CSS Imports -->
     {{ 'application.css' | asset_url | stylesheet_tag }}
-
-    <!-- JS Imports -->
-    <script src="{{ 'application.js' | asset_url }}" defer></script>
+    {{ 'owl.carousel.min.css' | asset_url | stylesheet_tag }}
+    {{ 'owl.theme.default.min.css' | asset_url | stylesheet_tag }}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
 
     {%- liquid
       assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
@@ -115,5 +115,9 @@
     </main>
 
     {% sections 'footer-group' %}
+
+    <!-- JS Imports -->
+    <script src="{{ 'owl.carousel.min.js' | asset_url }}" defer></script>
+    <script src="{{ 'carousel-manager.js' | asset_url }}" defer></script>
   </body>
 </html>
