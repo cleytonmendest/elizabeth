@@ -13,5 +13,41 @@
         {{ card_product.title | escape }}
       </h3>
     </div>
+    <div>
+      <add-to-cart>
+        {%- form 'product',
+          card_product,
+          id: card_product.id,
+          class: 'form',
+          novalidate: 'novalidate',
+          data-type: 'add-to-cart-form'
+        -%}
+          <input
+            type="hidden"
+            name="id"
+            value="{{ card_product.selected_or_first_available_variant.id }}"
+            class="product-variant-id"
+            {% if card_product.selected_or_first_available_variant.available == false %}
+              disabled
+            {% endif %}
+          >
+          <button
+            {% comment %} id="{{ product_form_id }}-submit" {% endcomment %}
+            type="submit"
+            name="add"
+            class="quick-add__submit button button--full-width button--secondary card--horizontal__quick-add"
+            aria-haspopup="dialog"
+            {% comment %} aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}" {% endcomment %}
+            aria-live="polite"
+            data-sold-out-message="true"
+            {% if card_product.selected_or_first_available_variant.available == false %}
+              disabled
+            {% endif %}
+          >
+            ADICIONAR AO CARRINHO
+          </button>
+        {%- endform -%}
+      </add-to-cart>
+    </div>
   </a>
 </div>

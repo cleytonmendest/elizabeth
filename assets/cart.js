@@ -269,27 +269,37 @@ class QuantityInput extends HTMLElement {
         this.plus = this.querySelector('#quantity-plus');
         this.minus = this.querySelector('#quantity-minus');
         this.input = this.querySelector('#quantity-input');
+        this.maxQtd = this.getAttribute('data-max-qtd')
 
-        this.plus.addEventListener('click', debounce(this.changeQuantity.bind(this, 1), ON_CHANGE_DEBOUNCE_TIMER));
-        this.minus.addEventListener('click', debounce(this.changeQuantity.bind(this, -1), ON_CHANGE_DEBOUNCE_TIMER));
+        this.plus.addEventListener('click', this.changeQuantity.bind(this, 1));
+        this.minus.addEventListener('click', this.changeQuantity.bind(this, -1));
+
+        // Debounced version of the update function
+        this.debouncedUpdateQuantity = debounce(this.updateCartQuantity.bind(this), ON_CHANGE_DEBOUNCE_TIMER);
     }
 
-    async changeQuantity(change) {
+    changeQuantity(change) {
         const newQuantity = parseInt(this.input.value) + change;
-        if (newQuantity < 1) return;
+        if (newQuantity < 1 || newQuantity > this.maxQtd) return;
 
         this.input.value = newQuantity;
 
+        // Call the debounced update function
+        this.debouncedUpdateQuantity();
+    }
+
+    async updateCartQuantity() {
+        const newQuantity = parseInt(this.input.value);
         const itemElement = this.closest('.cart-item');
         const itemIndex = itemElement.getAttribute('data-index');
 
         try {
             await CartManager.updateQuantity(itemIndex, newQuantity);
-
         } catch (error) {
             console.error('Erro ao atualizar a quantidade no carrinho:', error);
         }
     }
 }
+
 
 customElements.define('quantity-input', QuantityInput);
