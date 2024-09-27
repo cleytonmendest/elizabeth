@@ -55,7 +55,7 @@
         "label": "Valor mínimo de parcelas",
         "info": "Valor mínimo por parcela, ex: 100. Se colocar o valor 100 só vai exibir o parcelamento no produto se o valor do produto for no minimo 200, fazendo R$200,00 em 2x = R$100,00 por parcela",
         "id": "min_value_installment",
-        "default": 100
+        "default": 50
       }
     ]
   },

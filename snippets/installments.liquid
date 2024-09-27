@@ -1,0 +1,27 @@
+{%- liquid
+  if use_variant
+    assign target = product.selected_or_first_available_variant
+  else
+    assign target = product
+  endif
+
+  assign price = target.price | default: 1999
+  assign money_price = price | money
+  assign min_value = settings.min_value_installment | default: 0
+  assign max_installment = settings.max_installments
+
+  assign installment_value = price | divided_by: max_installment
+
+  if min_value > 0
+    assign new_min_value = min_value | times: 100
+    assign max_possible_installments = price | divided_by: new_min_value | floor
+    assign max_installment = max_possible_installments | floor
+    assign installment_value = price | divided_by: max_installment
+  endif
+
+  assign formatted_installment_value = installment_value | money
+-%}
+
+{% if max_installment > 1 %}
+  <p class="text-sm">Em até {{ max_installment }}x de {{ formatted_installment_value }}</p>
+{% endif %}

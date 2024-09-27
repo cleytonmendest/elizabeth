@@ -1,8 +1,8 @@
 <div class="border border-black p-4">
   <a class="" href="{{ card_product.url }}">
-    <div class="w-full h-60 flex items-center justify-center">
+    <div class="w-full h-60 flex items-center justify-center overflow-hidden">
       <img
-        class="!w-auto h-full"
+        class="!w-auto h-full hover:scale-110 transition-all"
         src="{{ card_product.featured_image | image_url }}"
         width="1500"
         height=""
@@ -11,8 +11,11 @@
     <h3 class="h-12 line-clamp-2">
       {{ card_product.title | escape }}
     </h3>
-    <div>
+    <div class="my-2">
       {% render 'price-v2', product: card_product, price_class: '', show_compare_at_price: true %}
+      <div class="h-5">
+        {% render 'installments', product: card_product%}
+      </div>
     </div>
   </a>
   <div>
@@ -37,7 +40,7 @@
           {% comment %} id="{{ product_form_id }}-submit" {% endcomment %}
           type="submit"
           name="add"
-          class="bg-orange-500 text-white w-full h-10 font-bold"
+          class="bg-orange-500 opacity-80 hover:opacity-100 text-white w-full h-10 font-bold transition-all"
           aria-haspopup="dialog"
           {% comment %} aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}" {% endcomment %}
           aria-live="polite"
