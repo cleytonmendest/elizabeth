@@ -1,53 +1,54 @@
-<div class="card-product-slider">
-  <a class="card-product-slider__card-link" href="{{ card_product.url }}">
-    <div class="card-product-slider__image-container">
+<div class="border border-black p-4">
+  <a class="" href="{{ card_product.url }}">
+    <div class="w-full h-60 flex items-center justify-center">
       <img
-        class="card-product-slider__image"
+        class="!w-auto h-full"
         src="{{ card_product.featured_image | image_url }}"
         width="1500"
         height=""
       >
     </div>
-    <div class="card-product-slider__info-container">
-      <h3 class="card-product-slider__product-name">
-        {{ card_product.title | escape }}
-      </h3>
-    </div>
+    <h3 class="h-12 line-clamp-2">
+      {{ card_product.title | escape }}
+    </h3>
     <div>
-      <add-to-cart>
-        {%- form 'product',
-          card_product,
-          id: card_product.id,
-          class: 'form',
-          novalidate: 'novalidate',
-          data-type: 'add-to-cart-form'
-        -%}
-          <input
-            type="hidden"
-            name="id"
-            value="{{ card_product.selected_or_first_available_variant.id }}"
-            class="product-variant-id"
-            {% if card_product.selected_or_first_available_variant.available == false %}
-              disabled
-            {% endif %}
-          >
-          <button
-            {% comment %} id="{{ product_form_id }}-submit" {% endcomment %}
-            type="submit"
-            name="add"
-            class="quick-add__submit button button--full-width button--secondary card--horizontal__quick-add"
-            aria-haspopup="dialog"
-            {% comment %} aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}" {% endcomment %}
-            aria-live="polite"
-            data-sold-out-message="true"
-            {% if card_product.selected_or_first_available_variant.available == false %}
-              disabled
-            {% endif %}
-          >
-            ADICIONAR AO CARRINHO
-          </button>
-        {%- endform -%}
-      </add-to-cart>
+      {% render 'price-v2', product: card_product, price_class: '', show_compare_at_price: true %}
     </div>
   </a>
+  <div>
+    <add-to-cart>
+      {%- form 'product',
+        card_product,
+        id: card_product.id,
+        class: 'form',
+        novalidate: 'novalidate',
+        data-type: 'add-to-cart-form'
+      -%}
+        <input
+          type="hidden"
+          name="id"
+          value="{{ card_product.selected_or_first_available_variant.id }}"
+          class="product-variant-id"
+          {% if card_product.selected_or_first_available_variant.available == false %}
+            disabled
+          {% endif %}
+        >
+        <button
+          {% comment %} id="{{ product_form_id }}-submit" {% endcomment %}
+          type="submit"
+          name="add"
+          class="bg-orange-500 text-white w-full h-10 font-bold"
+          aria-haspopup="dialog"
+          {% comment %} aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}" {% endcomment %}
+          aria-live="polite"
+          data-sold-out-message="true"
+          {% if card_product.selected_or_first_available_variant.available == false %}
+            disabled
+          {% endif %}
+        >
+          ADICIONAR AO CARRINHO
+        </button>
+      {%- endform -%}
+    </add-to-cart>
+  </div>
 </div>

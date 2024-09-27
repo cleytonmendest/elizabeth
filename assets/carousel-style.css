@@ -24,11 +24,11 @@
 }
 
 .custom-prev-slide {
-    left: 60px;
+    left: 0px;
 }
 
 .custom-next-slide {
-    right: 60px;
+    right: 0px;
 }
 
 @media (max-width: 1024px) {
@@ -69,4 +69,9 @@
 
 .owl-item {
     height: 100%;
+}
+
+.carousel-item{
+    height: inherit;
+    padding: 1px;
 }
