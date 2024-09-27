@@ -60,11 +60,14 @@
     height: 12px;
     border: 1px solid #3a3a3a;
     border-radius: 100%;
+    transition: all ease-in-out .4s;
 }
 
 .slider-container .owl-dots .owl-dot.active {
     background: #EB1F24;
     border-color: #EB1F24;
+    width: 35px;
+    border-radius: 20px;
 }
 
 .owl-item {
