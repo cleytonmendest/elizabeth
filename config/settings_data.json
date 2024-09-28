@@ -9,6 +9,10 @@
 */
 {
   "current": {
+    "logo": "shopify://shop_images/Coral-e1690902180174.png",
+    "content_for_index": [
+
+    ]
   },
   "presets": {
     "Default": {
