@@ -13,8 +13,8 @@
       "type": "product-slider",
       "settings": {
         "collection": "tintas-acrilicas-1",
-        "title": "teste",
-        "subtitle": "<p>testando subtitlo<\/p>",
+        "title": "Tintas Acrílicas",
+        "subtitle": "<p>Cores vibrantes para transformar sua casa em uma obra de arte!</p>",
         "loop": true,
         "nav": true,
         "dot": true,
