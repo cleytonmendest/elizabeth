@@ -580,6 +580,10 @@ input[type="number"]::-webkit-inner-spin-button,
   left: 0px;
 }
 
+.left-3 {
+  left: 0.75rem;
+}
+
 .left-5 {
   left: 1.25rem;
 }
@@ -588,16 +592,12 @@ input[type="number"]::-webkit-inner-spin-button,
   right: 0px;
 }
 
-.top-0 {
-  top: 0px;
-}
-
-.left-3 {
-  left: 0.75rem;
-}
-
 .right-3 {
   right: 0.75rem;
+}
+
+.top-0 {
+  top: 0px;
 }
 
 .z-10 {
@@ -618,6 +618,14 @@ input[type="number"]::-webkit-inner-spin-button,
   margin-bottom: 0.5rem;
 }
 
+.\!mb-6 {
+  margin-bottom: 1.5rem !important;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
 .mb-4 {
   margin-bottom: 1rem;
 }
@@ -634,27 +642,15 @@ input[type="number"]::-webkit-inner-spin-button,
   margin-top: 1rem;
 }
 
-.mb-3 {
-  margin-bottom: 0.75rem;
-}
-
-.mb-6 {
-  margin-bottom: 1.5rem;
-}
-
-.\!mb-6 {
-  margin-bottom: 1.5rem !important;
-}
-
-.mb-2 {
-  margin-bottom: 0.5rem;
-}
-
 .line-clamp-2 {
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+.block {
+  display: block;
 }
 
 .flex {
@@ -868,6 +864,11 @@ input[type="number"]::-webkit-inner-spin-button,
   line-height: 2rem;
 }
 
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
 .text-base {
   font-size: 1rem;
   line-height: 1.5rem;
@@ -888,26 +889,12 @@ input[type="number"]::-webkit-inner-spin-button,
   line-height: 1rem;
 }
 
-.text-xl {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-}
-
-.text-3xl {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-}
-
 .font-bold {
   font-weight: 700;
 }
 
 .font-medium {
   font-weight: 500;
-}
-
-.font-semibold {
-  font-weight: 600;
 }
 
 .uppercase {
@@ -958,12 +945,6 @@ input[type="number"]::-webkit-inner-spin-button,
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
-.shadow-sm {
-  --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
 .outline-none {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -1008,7 +989,15 @@ input[type="number"]::-webkit-inner-spin-button,
     left: 0px;
   }
 
+  .lg\:left-20 {
+    left: 5rem;
+  }
+
   .lg\:right-0 {
     right: 0px;
+  }
+
+  .lg\:right-20 {
+    right: 5rem;
   }
 }
