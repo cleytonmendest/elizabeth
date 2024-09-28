@@ -1,5 +1,3 @@
-{{ 'carousel-style.css' | asset_url | stylesheet_tag }}
-
 {% assign loop = section.settings.loop %}
 {% assign nav = section.settings.nav %}
 {% assign qty_desk = section.settings['qty-desk'] %}
@@ -10,13 +8,13 @@
 {% assign pause_hover = section.settings['pause-hover'] %}
 {% assign dot = section.settings.dot %}
 
-<div class="product-slider-infos page-width{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-  <h3 class="product-slider-infos__title">{{ section.settings.title }}</h3>
-  <div class="product-slider-infos__subtitle">
+<div class="page-width !mb-6">
+  <h3 class="text-3xl font-bold mb-2">{{ section.settings.title }}</h3>
+  <div class="text-base">
     {{ section.settings.subtitle }}
   </div>
 </div>
-<div class="product-slider-container slider-container page-width{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+<div class="product-slider-container slider-container page-width">
   <div
     class="owl-carousel"
     data-loop="{{ loop }}"
@@ -36,8 +34,12 @@
     {% endfor %}
   </div>
   {% if nav %}
-    <div class="custom-prev-slide product-slider__arrow"> prev </div>
-    <div class="custom-next-slide product-slider__arrow"> next </div>
+    <div class="custom-prev-slide cursor-pointer flex items-center justify-center bg-white shadow-lg h-10 w-10 absolute z-10 rounded-full duration-300 transition-all ease-in-out left-3 lg:left-0">
+      {% render 'icon-angle-left', width: 16 %}
+    </div>
+    <div class="custom-next-slide cursor-pointer flex items-center justify-center bg-white shadow-lg h-10 w-10 absolute z-10 rounded-full duration-300 transition-all ease-in-out right-3 lg:right-0 ">
+      {% render 'icon-angle-right', width: 16 %}
+    </div>
   {% endif %}
 </div>
 

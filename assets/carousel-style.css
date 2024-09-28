@@ -4,7 +4,7 @@
     align-items: center;
 }
 
-.custom-prev-slide,
+/* .custom-prev-slide,
 .custom-next-slide {
     position: absolute;
     z-index: 10;
@@ -39,7 +39,7 @@
     .custom-next-slide {
         right: 10px;
     }
-}
+} */
 
 .slider-container .icon-angle-right,
 .slider-container .icon-angle-left {
@@ -56,8 +56,8 @@
 }
 
 .slider-container .owl-dots .owl-dot {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border: 1px solid #3a3a3a;
     border-radius: 100%;
     transition: all ease-in-out .4s;
