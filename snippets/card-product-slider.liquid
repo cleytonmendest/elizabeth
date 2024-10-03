@@ -14,44 +14,11 @@
     <div class="my-2">
       {% render 'price-v2', product: card_product, price_class: '', show_compare_at_price: true %}
       <div class="h-5">
-        {% render 'installments', product: card_product%}
+        {% render 'installments', product: card_product %}
       </div>
     </div>
   </a>
   <div>
-    <add-to-cart>
-      {%- form 'product',
-        card_product,
-        id: card_product.id,
-        class: 'form',
-        novalidate: 'novalidate',
-        data-type: 'add-to-cart-form'
-      -%}
-        <input
-          type="hidden"
-          name="id"
-          value="{{ card_product.selected_or_first_available_variant.id }}"
-          class="product-variant-id"
-          {% if card_product.selected_or_first_available_variant.available == false %}
-            disabled
-          {% endif %}
-        >
-        <button
-          {% comment %} id="{{ product_form_id }}-submit" {% endcomment %}
-          type="submit"
-          name="add"
-          class="bg-orange-500 opacity-80 hover:opacity-100 text-white w-full h-10 font-bold transition-all"
-          aria-haspopup="dialog"
-          {% comment %} aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}" {% endcomment %}
-          aria-live="polite"
-          data-sold-out-message="true"
-          {% if card_product.selected_or_first_available_variant.available == false %}
-            disabled
-          {% endif %}
-        >
-          ADICIONAR AO CARRINHO
-        </button>
-      {%- endform -%}
-    </add-to-cart>
+    {% render 'add-to-cart', product: card_product %}
   </div>
 </div>

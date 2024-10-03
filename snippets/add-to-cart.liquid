@@ -1,0 +1,32 @@
+<add-to-cart>
+  {%- form 'product',
+    product,
+    id: product.id,
+    class: 'form',
+    novalidate: 'novalidate',
+    data-type: 'add-to-cart-form'
+  -%}
+    <input
+      type="hidden"
+      name="id"
+      value="{{ product.selected_or_first_available_variant.id }}"
+      class="product-variant-id"
+      {% if product.selected_or_first_available_variant.available == false %}
+        disabled
+      {% endif %}
+    >
+    <button
+      type="submit"
+      name="add"
+      class="bg-orange-500 opacity-80 hover:opacity-100 text-white w-full h-10 font-bold transition-all"
+      aria-haspopup="dialog"
+      aria-live="polite"
+      data-sold-out-message="true"
+      {% if product.selected_or_first_available_variant.available == false %}
+        disabled
+      {% endif %}
+    >
+      ADICIONAR AO CARRINHO
+    </button>
+  {%- endform -%}
+</add-to-cart>

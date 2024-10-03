@@ -677,6 +677,10 @@ input[type="number"]::-webkit-inner-spin-button,
   height: 4rem;
 }
 
+.h-4 {
+  height: 1rem;
+}
+
 .h-5 {
   height: 1.25rem;
 }
@@ -704,6 +708,10 @@ input[type="number"]::-webkit-inner-spin-button,
 
 .w-10 {
   width: 2.5rem;
+}
+
+.w-4 {
+  width: 1rem;
 }
 
 .w-5 {
@@ -877,6 +885,10 @@ input[type="number"]::-webkit-inner-spin-button,
 .text-3xl {
   font-size: 1.875rem;
   line-height: 2.25rem;
+}
+
+.text-\[10px\] {
+  font-size: 10px;
 }
 
 .text-base {

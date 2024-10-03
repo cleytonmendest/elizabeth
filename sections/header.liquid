@@ -41,7 +41,7 @@
 
         <button id="minicart-button" class="relative">
           {% render 'icon-cart', size: 28 %}
-          <div id="qtd-bubble" class="{% if cart.item_count > 0 %}flex{% else %}hidden{% endif %} w-5 h-5 rounded-full text-sm font-medium items-center justify-center bg-orange-500 text-white absolute top-0 left-5">{{ cart.item_count }}</div>
+          <div id="qtd-bubble" class="{% if cart.item_count > 0 %}flex{% else %}hidden{% endif %} w-4 h-4 rounded-full text-[10px] font-medium items-center justify-center bg-orange-500 text-white absolute top-0 left-5">{{ cart.item_count }}</div>
         </button>
       </div>
     </div>
