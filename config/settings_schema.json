@@ -34,6 +34,37 @@
     ]
   },
   {
+    "name": "Header",
+    "settings": [
+      {
+        "type": "checkbox",
+        "default": true,
+        "id": "fixed_header",
+        "label": "Header acompanha scroll?",
+        "info": "Se ativado, o header sempre acompanhará o scroll"
+      },
+      {
+        "type": "checkbox",
+        "default": true,
+        "id": "transparent-header",
+        "label": "Header transparente?",
+        "info": "Se ativado, o header será transparente e ficará por cima da primeira seção."
+      },
+      {
+        "type": "color",
+        "id": "header_bg",
+        "label": "Cor background do Header",
+        "info": "Caso seja header transparente e acompanhar scroll, essa cor exibirá quando o usuário 'scrollar' a página",
+        "default": "#FFF"
+      },
+      {
+        "type": "color",
+        "id": "icons_color",
+        "label": "Cor dos ícones no header"
+      }
+    ]
+  },
+  {
     "name": "Parcelamento (somente visual)",
     "settings": [
       {
