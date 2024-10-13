@@ -1,56 +1,121 @@
-<header class="{% if settings.fixed_header and settings.transparent-header %}fixed top-0 z-10 w-full {% endif %} {% if settings.transparent-header %} bg-transparent {% else %} bg-[--bg-header] {% endif %}">
-  <div class="{% if settings.fixed_header and settings.transparent-header == false %} fixed top-0 z-10 w-full {% endif %}">
-    <div class="!py-3 page-width w-full">
-      <div class="flex justify-between items-center">
-        <div class="flex-[2]">
-          <button>
-            {% render 'icon-search', size: 25 %}
-          </button>
-        </div>
-        <div class="flex-[1] justify-center items-center flex">
-          <h1 class="w-fit">
-            <a href="{{ routes.root_url }}">
-              {%- if settings.logo != blank -%}
-                <div class="header__heading-logo-wrapper">
-                  {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
-                  {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
-                  {% capture sizes %}(max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ settings.logo_width }}px{% endcapture %}
-                  {% capture widths %}{{ settings.logo_width }}, {{ settings.logo_width | times: 1.5 | round }}, {{ settings.logo_width | times: 2 }}{% endcapture %}
-                  {{
-                    settings.logo
-                    | image_url: width: 600
-                    | image_tag:
-                      class: 'header__heading-logo motion-reduce',
-                      widths: widths,
-                      height: logo_height,
-                      width: settings.logo_width,
-                      alt: logo_alt,
-                      sizes: sizes,
-                      preload: true
-                  }}
-                </div>
-              {%- else -%}
-                <span class="h2">{{ shop.name }}</span>
-              {%- endif -%}
-            </a>
-          </h1>
-        </div>
-        <div class="flex flex-[2] gap-4 justify-end">
-          <a href="{{ routes.account_url }}">
-            {% render 'icon-user', size: 28 %}
-          </a>
+<script src="{{ 'header.js' | asset_url }}" async></script>
+{{ 'header.css' | asset_url | stylesheet_tag }}
 
-          <button id="minicart-button" class="relative">
-            {% render 'icon-cart', size: 28 %}
-            <div
-              id="qtd-bubble"
-              class="{% if cart.item_count > 0 %}flex{% else %}hidden{% endif %} w-4 h-4 rounded-full text-[10px] font-medium items-center justify-center bg-orange-500 text-white absolute top-0 left-5"
-            >
-              {{ cart.item_count }}
-            </div>
-          </button>
+{% assign bg_header = section.settings.header_bg | default: '#FFFFFF' %}
+{% assign icons_color = section.settings.icons_color| default: '#000000' %}
+
+<style>
+  :root{
+    --bg-header: {{ bg_header }};
+    --icons_color: {{ icons_color }};
+  }
+</style>
+
+{%- liquid
+  assign fixed = section.settings.fixed_header
+  assign transparent = section.settings.transparent-header
+
+  if fixed and transparent 
+    assign header_type = "fixed-transparent"
+  elsif fixed and transparent == false
+    assign header_type = "fixed"
+  elsif fixed == false and transparent
+    assign header_type = "transparent"
+  else
+    assign header_type = "basic"
+  endif
+-%}
+
+<header class="w-full">
+  <main-header class="w-full block relative z-10" data-type="{{ header_type }}">
+    <div id="main-header-container" class="w-full transition-all duration-300 {% if transparent == false %}bg-color{% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %}">
+      <div class="!py-3 page-width w-full">
+        <div class="flex justify-between items-center">
+          <div class="flex-[2]">
+            <button>
+              {% render 'icon-search', size: 25 %}
+            </button>
+          </div>
+          <div class="flex-[1] justify-center items-center flex">
+            <h1 class="w-fit">
+              <a href="{{ routes.root_url }}">
+                {%- if settings.logo != blank -%}
+                  <div class="header__heading-logo-wrapper">
+                    {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
+                    {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
+                    {% capture sizes %}(max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ settings.logo_width }}px{% endcapture %}
+                    {% capture widths %}{{ settings.logo_width }}, {{ settings.logo_width | times: 1.5 | round }}, {{ settings.logo_width | times: 2 }}{% endcapture %}
+                    {{
+                      settings.logo
+                      | image_url: width: 600
+                      | image_tag:
+                        class: 'header__heading-logo motion-reduce',
+                        widths: widths,
+                        height: logo_height,
+                        width: settings.logo_width,
+                        alt: logo_alt,
+                        sizes: sizes,
+                        preload: true
+                    }}
+                  </div>
+                {%- else -%}
+                  <span class="h2">{{ shop.name }}</span>
+                {%- endif -%}
+              </a>
+            </h1>
+          </div>
+          <div class="flex flex-[2] gap-4 justify-end">
+            <a href="{{ routes.account_url }}">
+              {% render 'icon-user', size: 28 %}
+            </a>
+
+            <button id="minicart-button" class="relative">
+              {% render 'icon-cart', size: 28 %}
+              <div
+                id="qtd-bubble"
+                class="{% if cart.item_count > 0 %}flex{% else %}hidden{% endif %} w-4 h-4 rounded-full text-[10px] font-medium items-center justify-center bg-orange-500 text-white absolute top-0 left-5"
+              >
+                {{ cart.item_count }}
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </main-header>
 </header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "checkbox",
+      "default": true,
+      "id": "fixed_header",
+      "label": "Header acompanha scroll?",
+      "info": "Se ativado, o header sempre acompanhará o scroll"
+    },
+    {
+      "type": "checkbox",
+      "default": true,
+      "id": "transparent-header",
+      "label": "Header transparente?",
+      "info": "Se ativado, o header será transparente e ficará por cima da primeira seção."
+    },
+    {
+      "type": "color",
+      "id": "header_bg",
+      "label": "Cor background do Header",
+      "info": "Caso seja header transparente e acompanhar scroll, essa cor exibirá quando o usuário 'scrollar' a página",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "icons_color",
+      "label": "Cor dos ícones no header",
+      "default": "#000000"
+    }
+  ]
+}
+{% endschema %}
