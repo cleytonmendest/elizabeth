@@ -9,4 +9,8 @@
         -webkit-appearance: none;
         margin: 0;
     }
+
+    .is-scrolling {
+        background-color: var(--bg-header);
+    }
 }

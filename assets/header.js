@@ -52,11 +52,11 @@ class MainHeader extends HTMLElement {
         if (this.headerType === 'fixed-transparent') {
             const scrollY = window.scrollY;
             if (scrollY > 0) {
-                this.classList.add('main-header__onScroll');
-                this.container.classList.add('main-header__onScroll');
+                this.classList.add('is-scrolling');
+                this.container.classList.add('is-scrolling');
             } else {
-                this.classList.remove('main-header__onScroll');
-                this.container.classList.remove('main-header__onScroll');
+                this.classList.remove('is-scrolling');
+                this.container.classList.remove('is-scrolling');
             }
         }
     }

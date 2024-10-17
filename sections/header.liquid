@@ -1,13 +1,18 @@
 <script src="{{ 'header.js' | asset_url }}" async></script>
-{{ 'header.css' | asset_url | stylesheet_tag }}
 
 {% assign bg_header = section.settings.header_bg | default: '#FFFFFF' %}
-{% assign icons_color = section.settings.icons_color| default: '#000000' %}
+{% assign icons_color = section.settings.icons_color | default: '#000000' %}
+{% assign icons_color_2 = section.settings.icons_color_secondary | default: '#000000' %}
 
 <style>
   :root{
     --bg-header: {{ bg_header }};
     --icons_color: {{ icons_color }};
+    --icons_color2: {{ icons_color_2 }}
+  }
+
+  .is-scrolling {
+    @apply bg-white;
   }
 </style>
 
@@ -28,11 +33,11 @@
 
 <header class="w-full">
   <main-header class="w-full block relative z-10" data-type="{{ header_type }}">
-    <div id="main-header-container" class="w-full transition-all duration-300 {% if transparent == false %}bg-color{% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %}">
+    <div id="main-header-container" class="w-full transition-all duration-300 {% if transparent == false %}bg-color{% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %} {% if header_type == "fixed-transparent" %} hover:bg-[--bg-header] {% endif %} group ">
       <div class="!py-3 page-width w-full">
         <div class="flex justify-between items-center">
           <div class="flex-[2]">
-            <button>
+            <button class="{% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}">
               {% render 'icon-search', size: 25 %}
             </button>
           </div>
@@ -65,11 +70,11 @@
             </h1>
           </div>
           <div class="flex flex-[2] gap-4 justify-end">
-            <a href="{{ routes.account_url }}">
+            <a class="{% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}" href="{{ routes.account_url }}">
               {% render 'icon-user', size: 28 %}
             </a>
 
-            <button id="minicart-button" class="relative">
+            <button id="minicart-button" class="relative {% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}">
               {% render 'icon-cart', size: 28 %}
               <div
                 id="qtd-bubble"
@@ -113,8 +118,14 @@
     {
       "type": "color",
       "id": "icons_color",
-      "label": "Cor dos ícones no header",
+      "label": "Cor dos ícones header (Primário)",
       "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "icons_color_secondary",
+      "label": "Cor dos Ícones header (Secundário)",
+      "default": "#FFFFFF"
     }
   ]
 }

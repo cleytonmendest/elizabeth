@@ -452,6 +452,10 @@ input[type="number"]::-webkit-inner-spin-button,
   margin: 0;
 }
 
+.is-scrolling {
+  background-color: var(--bg-header);
+}
+
 *, ::before, ::after {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -851,10 +855,6 @@ input[type="number"]::-webkit-inner-spin-button,
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
-.bg-\[--bg-header\] {
-  background-color: var(--bg-header);
-}
-
 .p-3 {
   padding: 0.75rem;
 }
@@ -931,6 +931,14 @@ input[type="number"]::-webkit-inner-spin-button,
   font-style: italic;
 }
 
+.text-\[--icons_color2\] {
+  color: var(--icons_color2);
+}
+
+.text-\[--icons_color\] {
+  color: var(--icons_color);
+}
+
 .text-gray-500 {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity));
@@ -996,8 +1004,24 @@ input[type="number"]::-webkit-inner-spin-button,
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.hover\:bg-\[--bg-header\]:hover {
+  background-color: var(--bg-header);
+}
+
 .hover\:opacity-100:hover {
   opacity: 1;
+}
+
+.group:hover .group-hover\:text-\[--icons_color\] {
+  color: var(--icons_color);
+}
+
+.group.is-scrolling .group-\[\.is-scrolling\]\:bg-\[--bg-header\] {
+  background-color: var(--bg-header);
+}
+
+.group.is-scrolling .group-\[\.is-scrolling\]\:text-\[--icons_color\] {
+  color: var(--icons_color);
 }
 
 @media (min-width: 768px) {
