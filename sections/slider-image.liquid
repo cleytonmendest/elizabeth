@@ -48,6 +48,7 @@
                 src="{{ block.settings.imgMob | image_url }}"
                 width="{{ block.settings.imgMobWidth | default: 500 }}"
                 height="{{ block.settings.imgMobHeight | default: 540 }}"
+                loading="lazy"
               >
             </picture>
           </a>
@@ -73,6 +74,7 @@
               src="{{ block.settings.imgMob | image_url }}"
               width="{{ block.settings.imgMobWidth | default: 500 }}"
               height="{{ block.settings.imgMobHeight | default: 540 }}"
+              loading="lazy"
             >
           </picture>
         {% endif %}

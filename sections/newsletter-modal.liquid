@@ -1,0 +1,46 @@
+<div class="page-width !mb-6">
+  
+</div>
+
+{% schema %}
+{
+  "name": "Modal Newsletter",
+  "tag": "section",
+  "class": "section",
+  "limit": 1,
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+        "type": "number",
+        "id": "modalWidth",
+        "label": "Largura máxima do Modal",
+        "default": 500
+    },
+    {
+        "type": "number",
+        "id": "modalHeight",
+        "label": "Altura máxima do Modal",
+        "default": 500
+    },
+    {
+        "type": "inline_richtext",
+        "label": "Título do Modal",
+        "id": "modal_title",
+        "default": "Title"
+    },
+    {
+        "type": "richtext",
+        "id": "modal_text",
+        "label": "Texto do Modal"
+    },
+  ],
+  "presets": [
+    {
+      "name": "Modal Newsletter",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

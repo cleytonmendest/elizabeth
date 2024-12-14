@@ -4,8 +4,9 @@
       <img
         class="!w-auto h-full hover:scale-110 transition-all"
         src="{{ card_product.featured_image | image_url }}"
-        width="1500"
-        height=""
+        width="{{ card_product.featured_image.width }}"
+        height="{{ card_product.featured_image.height }}"
+        loading="lazy"
       >
     </div>
     <h3 class="h-12 line-clamp-2">
