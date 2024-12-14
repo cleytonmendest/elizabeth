@@ -53,6 +53,10 @@
       assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
     %}
 
+    {%- if settings.custom_font_body != blank -%}
+      {{ settings.custom_font_body }}
+    {% endif %}
+
     {% style %}
       {{ settings.type_body_font | font_face: font_display: 'swap' }}
       {{ body_font_bold | font_face: font_display: 'swap' }}
@@ -61,14 +65,17 @@
       {{ settings.type_header_font | font_face: font_display: 'swap' }}
 
       :root {
-        --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
-        --font-body-style: {{ settings.type_body_font.style }};
-        --font-body-weight: {{ settings.type_body_font.weight }};
-        --font-body-weight-bold: {{ settings.type_body_font.weight | plus: 300 | at_most: 1000 }};
+        {%- if settings.custom_font_body == blank and settings.custom_font_body_name == blank -%}
+          --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+        {% else %}
+          --font-body-family: {{ settings.custom_font_body_name }}, {{ settings.type_body_font.fallback_families }};
+        {%- endif -%}
 
-        --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
-        --font-heading-style: {{ settings.type_header_font.style }};
-        --font-heading-weight: {{ settings.type_header_font.weight }};
+        {%- if settings.custom_font_head == blank and settings.custom_font_head_name == blank -%}
+          --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+        {% else %}
+          --font-body-family: {{ settings.custom_font_head_name }}, {{ settings.type_header_font.fallback_families }};
+        {%- endif -%}
 
         --page-width: {{ settings.page_width  }}px;
       }
@@ -84,16 +91,11 @@
 
       h1,h2,h3,h4,h5{
         font-family: var(--font-heading-family);
-        font-style: var(--font-heading-style);
-        font-weight: var(--font-heading-weight);
       }
 
       body {
         margin: 0;
-        line-height: calc(1 + 0.8 / var(--font-body-scale));
         font-family: var(--font-body-family);
-        font-style: var(--font-body-style);
-        font-weight: var(--font-body-weight);
       }
 
       .page-width {
@@ -126,7 +128,6 @@
     </main>
 
     {% sections 'footer-group' %}
-
     <!-- JS Imports -->
     <script src="{{ 'owl.carousel.min.js' | asset_url }}" defer></script>
     <script src="{{ 'carousel-manager.js' | asset_url }}" defer></script>

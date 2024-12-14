@@ -73,6 +73,11 @@
             "default": "#FFFFFF"
           },
           {
+            "type": "color_background",
+            "id": "background_gradient",
+            "label": "Cor de Background gradiente"
+          },
+          {
             "type": "color",
             "id": "text",
             "label": "Cor de texto",
@@ -106,7 +111,8 @@
         "role": {
           "text": "text",
           "background": {
-            "solid": "background"
+            "solid": "background",
+            "gradient": "background_gradient"
           },
           "links": "secondary_button_label",
           "icons": "text",
@@ -157,7 +163,7 @@
         "id": "type_header_font",
         "default": "assistant_n4",
         "label": "Fonte",
-        "info": "A seleção de uma fonte diferente pode afetar a velocidade da loja."
+        "info": "A seleção de uma fonte diferente pode afetar a velocidade da loja. As fontes padrão da Shopify só exibem peso 400 ou 700. Caso queira mais pesos de fontes, necessitará incluir uma fonte custom."
       },
       {
         "type": "header",
@@ -168,7 +174,39 @@
         "id": "type_body_font",
         "default": "assistant_n4",
         "label": "Fonte",
-        "info": "A seleção de uma fonte diferente pode afetar a velocidade da loja."
+        "info": "A seleção de uma fonte diferente pode afetar a velocidade da loja. As fontes padrão da Shopify só exibem peso 400 ou 700. Caso queira mais pesos de fontes, necessitará incluir uma fonte custom."
+      },
+      {
+        "type": "header",
+        "content": "Fonte Customizada Títulos"
+      },
+      {
+        "type": "text",
+        "id": "custom_font_head_name",
+        "label": "Nome da Fonte Custom",
+        "default": "Poppins"
+      },
+      {
+        "type": "textarea",
+        "id": "custom_font_head",
+        "label": "URL",
+        "default": "<link href='https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap' rel='stylesheet'>"
+      },
+      {
+        "type": "header",
+        "content": "Fonte Customizada Corpo"
+      },
+      {
+        "type": "text",
+        "id": "custom_font_body_name",
+        "label": "Nome da Fonte Custom",
+        "default": "Poppins"
+      },
+      {
+        "type": "textarea",
+        "id": "custom_font_body",
+        "label": "URL",
+        "default": "<link href='https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap' rel='stylesheet'>"
       },
     ]
   },
