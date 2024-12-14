@@ -178,7 +178,8 @@
       },
       {
         "type": "header",
-        "content": "Fonte Customizada Títulos"
+        "content": "Fonte Customizada Títulos",
+        "info": "Caso as fontes padrão não sejam suficiente, pode adicionar um link para uma fonte google por exemplo. Esse campo é prioridade, se estiver preenchido, sobrescreverá a fonte padrão. Caso não queira, remova todos os campos"
       },
       {
         "type": "text",
@@ -190,11 +191,12 @@
         "type": "textarea",
         "id": "custom_font_head",
         "label": "URL",
-        "default": "<link href='https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap' rel='stylesheet'>"
+        "default": "<link href='https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap' rel='stylesheet'>",
       },
       {
         "type": "header",
-        "content": "Fonte Customizada Corpo"
+        "content": "Fonte Customizada Corpo",
+        "info": "Caso as fontes padrão não sejam suficiente, pode adicionar um link para uma fonte google por exemplo. Esse campo é prioridade, se estiver preenchido, sobrescreverá a fonte padrão. Caso não queira, remova todos os campos",
       },
       {
         "type": "text",
@@ -206,7 +208,7 @@
         "type": "textarea",
         "id": "custom_font_body",
         "label": "URL",
-        "default": "<link href='https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap' rel='stylesheet'>"
+        "default": "<link href='https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap' rel='stylesheet'>",
       },
     ]
   },
