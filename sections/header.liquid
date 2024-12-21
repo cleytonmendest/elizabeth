@@ -1,8 +1,50 @@
 <script src="{{ 'header.js' | asset_url }}" async></script>
 
-{% assign bg_header = section.settings.header_bg | default: '#FFFFFF' %}
-{% assign icons_color = section.settings.icons_color | default: '#000000' %}
-{% assign icons_color_2 = section.settings.icons_color_secondary | default: '#000000' %}
+{%- liquid
+  assign fixed = section.settings.fixed_header
+  assign transparent = section.settings['transparent-header']
+  assign bg_header = section.settings.header_bg | default: '#FFFFFF'
+  assign icons_color = section.settings.icons_color | default: '#000000'
+  assign icons_color_2 = section.settings.icons_color_secondary | default: '#000000'
+
+  if fixed and transparent
+    assign header_type = 'fixed-transparent'
+  elsif fixed and transparent == false
+    assign header_type = 'fixed'
+  elsif fixed == false and transparent
+    assign header_type = 'transparent'
+  else
+    assign header_type = 'basic'
+  endif
+
+  case section.settings['menu-type']
+    when 'centered-logo-menu-under'
+      assign logo_center = true
+      assign menu_under = true
+      assign search_position = 'left'
+      assign search_hidden = false
+    when 'logo-left-centered-menu'
+      assign logo_center = false
+      assign menu_under = false
+      assign search_position = 'right'
+      assign search_hidden = false
+    when 'logo-left-centered-menu-search-hidden'
+      assign logo_center = false
+      assign menu_under = false
+      assign search_position = 'right'
+      assign search_hidden = true
+    when 'logo-left-menu-under-centered-search'
+      assign logo_center = false
+      assign menu_under = true
+      assign search_position = 'center'
+      assign search_hidden = false
+    else
+      assign logo_center = false
+      assign menu_under = true
+      assign search_position = 'center'
+      assign search_hidden = false
+  endcase
+-%}
 
 <style>
   :root{
@@ -16,74 +58,28 @@
   }
 </style>
 
-{%- liquid
-  assign fixed = section.settings.fixed_header
-  assign transparent = section.settings.transparent-header
-
-  if fixed and transparent 
-    assign header_type = "fixed-transparent"
-  elsif fixed and transparent == false
-    assign header_type = "fixed"
-  elsif fixed == false and transparent
-    assign header_type = "transparent"
-  else
-    assign header_type = "basic"
-  endif
--%}
-
 <header class="w-full">
   <main-header class="w-full block relative z-10" data-type="{{ header_type }}">
-    <div id="main-header-container" class="w-full transition-all duration-300 {% if transparent == false %}bg-color{% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %} {% if header_type == "fixed-transparent" %} hover:bg-[--bg-header] {% endif %} group ">
+    <div
+      id="main-header-container"
+      class="w-full transition-all duration-300 {% if transparent == false %}bg-color{% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %} {% if header_type == "fixed-transparent" %} hover:bg-[--bg-header] {% endif %} group "
+    >
       <div class="!py-3 page-width w-full">
         <div class="flex justify-between items-center">
-          <div class="flex-[2]">
-            <button class="{% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}">
-              {% render 'icon-search', size: 25 %}
-            </button>
-          </div>
-          <div class="flex-[1] justify-center items-center flex">
-            <h1 class="w-fit">
-              <a href="{{ routes.root_url }}">
-                {%- if settings.logo != blank -%}
-                  <div class="header__heading-logo-wrapper">
-                    {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
-                    {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
-                    {% capture sizes %}(max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ settings.logo_width }}px{% endcapture %}
-                    {% capture widths %}{{ settings.logo_width }}, {{ settings.logo_width | times: 1.5 | round }}, {{ settings.logo_width | times: 2 }}{% endcapture %}
-                    {{
-                      settings.logo
-                      | image_url: width: 600
-                      | image_tag:
-                        class: 'header__heading-logo motion-reduce',
-                        widths: widths,
-                        height: logo_height,
-                        width: settings.logo_width,
-                        alt: logo_alt,
-                        sizes: sizes,
-                        preload: true
-                    }}
-                  </div>
-                {%- else -%}
-                  <span class="h2">{{ shop.name }}</span>
-                {%- endif -%}
-              </a>
-            </h1>
-          </div>
-          <div class="flex flex-[2] gap-4 justify-end">
-            <a class="{% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}" href="{{ routes.account_url }}">
-              {% render 'icon-user', size: 28 %}
-            </a>
+          {% if logo_center == false %}
+            {% render 'logo' %}
+          {% endif %}
+          {% if search_position == 'left' %}
+            {% render 'search-component', flex:2 %}
+          {% endif %}
+          {% if logo_center %}
+            {% render 'logo' %}
+          {% endif %}
+          {% if search_position == 'center' %}
+            {% render 'search-component', flex:3 %}
+          {% endif %}
 
-            <button id="minicart-button" class="relative {% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}">
-              {% render 'icon-cart', size: 28 %}
-              <div
-                id="qtd-bubble"
-                class="{% if cart.item_count > 0 %}flex{% else %}hidden{% endif %} w-4 h-4 rounded-full text-[10px] font-medium items-center justify-center bg-orange-500 text-white absolute top-0 left-5"
-              >
-                {{ cart.item_count }}
-              </div>
-            </button>
-          </div>
+          {% render 'header-icons', header_type: header_type, flex:1 %}
         </div>
       </div>
     </div>
@@ -94,6 +90,30 @@
 {
   "name": "Header",
   "settings": [
+    {
+      "type": "select",
+      "id": "menu-type",
+      "label": "Tipo de header desktop",
+      "options": [
+        {
+          "value": "centered-logo-menu-under",
+          "label": "Logo centralizada, menu abaixo, busca a esquerda"
+        },
+        {
+          "value": "logo-left-centered-menu",
+          "label": "Logo a esquerda, menu central, busca minimizada"
+        },
+        {
+          "value": "logo-left-centered-menu-search-hidden",
+          "label": "Logo a esquerda, menu central, busca escondida"
+        },
+        {
+          "value": "logo-left-menu-under-centered-search",
+          "label": "Logo a esquerda, menu abaixo, busca centralizada"
+        }
+      ],
+      "default": "logo-left-menu-under-centered-search"
+    },
     {
       "type": "checkbox",
       "default": true,

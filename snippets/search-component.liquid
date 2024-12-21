@@ -1,0 +1,21 @@
+<div class="flex-[{{ flex }}]" style="flex: {{ flex }};">
+  <search-component class="w-full">
+    <form action="{{ routes.search_url }}" method="get" role="search" class="search">
+      <div class="field">
+        <input
+          class="search__input field__input"
+          id="Search-In-Template"
+          type="search"
+          name="q"
+          value="{{ search.terms | escape }}"
+        >
+        <button
+          type="submit"
+          class="{% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
+        >
+          {% render 'icon-search', size: 25 %}
+        </button>
+      </div>
+    </form>
+  </search-component>
+</div>

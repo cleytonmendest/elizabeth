@@ -1,0 +1,21 @@
+<div class="flex gap-4 justify-end" style="flex: {{ flex }};">
+  <a
+    class="{% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
+    href="{{ routes.account_url }}"
+  >
+    {% render 'icon-user', size: 28 %}
+  </a>
+
+  <button
+    id="minicart-button"
+    class="relative {% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
+  >
+    {% render 'icon-cart', size: 28 %}
+    <div
+      id="qtd-bubble"
+      class="{% if cart.item_count > 0 %}flex{% else %}hidden{% endif %} w-4 h-4 rounded-full text-[10px] font-medium items-center justify-center bg-orange-500 text-white absolute top-0 left-5"
+    >
+      {{ cart.item_count }}
+    </div>
+  </button>
+</div>
