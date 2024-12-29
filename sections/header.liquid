@@ -7,14 +7,22 @@
   assign icons_color = section.settings.icons_color | default: '#000000'
   assign icons_color_2 = section.settings.icons_color_secondary | default: '#000000'
 
-  if fixed and transparent
-    assign header_type = 'fixed-transparent'
-  elsif fixed and transparent == false
-    assign header_type = 'fixed'
-  elsif fixed == false and transparent
-    assign header_type = 'transparent'
+  if template.name == 'index'
+    if fixed and transparent
+      assign header_type = 'fixed-transparent'
+    elsif fixed and transparent == false
+      assign header_type = 'fixed'
+    elsif fixed == false and transparent
+      assign header_type = 'transparent'
+    else
+      assign header_type = 'basic'
+    endif
   else
-    assign header_type = 'basic'
+    if fixed
+      assign header_type = 'fixed'
+    else
+      assign header_type = 'basic'
+    endif
   endif
 
   case section.settings['menu-type']
@@ -70,16 +78,16 @@
             {% render 'logo' %}
           {% endif %}
           {% if search_position == 'left' %}
-            {% render 'search-component', flex:2 %}
+            {% render 'search-component', flex: 2 %}
           {% endif %}
           {% if logo_center %}
             {% render 'logo' %}
           {% endif %}
           {% if search_position == 'center' %}
-            {% render 'search-component', flex:3 %}
+            {% render 'search-component', flex: 3 %}
           {% endif %}
 
-          {% render 'header-icons', header_type: header_type, flex:1 %}
+          {% render 'header-icons', header_type: header_type, flex: 1 %}
         </div>
       </div>
     </div>
