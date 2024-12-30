@@ -1,12 +1,12 @@
 /*
-* ------------------------------------------------------------
-* IMPORTANT: The contents of this file are auto-generated.
-*
-* This file may be updated by the Shopify admin theme editor
-* or related systems. Please exercise caution as any changes
-* made to this file may be overwritten.
-* ------------------------------------------------------------
-*/
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "slider_image_9WNq4K": {
@@ -61,17 +61,17 @@
     "slider_product_iqrCEN": {
       "type": "slider-product",
       "settings": {
-        "collection": "tintas-acrilicas-1",
-        "title": "Tintas Acrílicas",
-        "subtitle": "<p>Cores vibrantes para transformar sua casa em uma obra de arte!</p>",
+        "collection": "camisas",
+        "title": "Camisas",
+        "subtitle": "<p>Experience Luxury in Every Stitch: Premium Quality Shirts</p>",
         "loop": true,
         "nav": true,
         "dot": true,
-        "qty-desk": 5,
-        "qty-tablet": 3,
+        "qty-desk": 3,
+        "qty-tablet": 2,
         "qty-mob": 1,
         "autoplay": true,
-        "play-time": 5,
+        "play-time": 20,
         "pause-hover": true
       }
     }
