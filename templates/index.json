@@ -31,13 +31,13 @@
           "type": "test",
           "settings": {
             "link": "",
-            "imgDesktop": "shopify://shop_images/model-in-neutral-colors-by-window.jpg",
+            "imgDesktop": "shopify://shop_images/Banner_2_desktop.png",
             "imgDesktopWidth": 1920,
             "imgDesktopHeight": 540,
-            "imgTablet": "shopify://shop_images/tablet_banner_black.png",
+            "imgTablet": "shopify://shop_images/Banner_2_tablet.png",
             "imgTabletWidth": 1024,
             "imgTabletHeight": 540,
-            "imgMob": "shopify://shop_images/phone_banner_black.png",
+            "imgMob": "shopify://shop_images/banner_2_mobile.png",
             "imgMobWidth": 500,
             "imgMobHeight": 540
           }
