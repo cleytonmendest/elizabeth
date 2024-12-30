@@ -16,9 +16,15 @@
           "type": "test",
           "settings": {
             "link": "",
-            "imgDesktop": "shopify://shop_images/model-with-leather-jacket-over-shoulders.jpg",
-            "imgTablet": "shopify://shop_images/model-with-leather-jacket-over-shoulders.jpg",
-            "imgMob": "shopify://shop_images/model-with-leather-jacket-over-shoulders.jpg"
+            "imgDesktop": "shopify://shop_images/Banner_1_desktop.png",
+            "imgDesktopWidth": 1920,
+            "imgDesktopHeight": 540,
+            "imgTablet": "shopify://shop_images/Banner_1_tablet.png",
+            "imgTabletWidth": 1024,
+            "imgTabletHeight": 540,
+            "imgMob": "shopify://shop_images/Banner_1_mobile.png",
+            "imgMobWidth": 500,
+            "imgMobHeight": 540
           }
         },
         "test_Y8DFBc": {
