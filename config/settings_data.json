@@ -12,6 +12,10 @@
     "logo": "shopify://shop_images/ELIZABETH_f28b3762-0256-4554-94c9-9bf7be80acc3.png",
     "logo_width": 120,
     "favicon": "shopify://shop_images/eb.png",
+    "custom_font_head_name": "Open Sans",
+    "custom_font_head": "<link href=\"https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap\" rel=\"stylesheet\">",
+    "custom_font_body_name": "Open Sans",
+    "custom_font_body": "<link href=\"https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap\" rel=\"stylesheet\">",
     "content_for_index": []
   }
 }
