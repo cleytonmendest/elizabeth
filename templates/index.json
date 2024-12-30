@@ -31,25 +31,21 @@
           "type": "test",
           "settings": {
             "link": "",
-            "imgDesktop": "shopify://shop_images/desktop_banner_black.png",
+            "imgDesktop": "shopify://shop_images/model-in-neutral-colors-by-window.jpg",
+            "imgDesktopWidth": 1920,
+            "imgDesktopHeight": 540,
             "imgTablet": "shopify://shop_images/tablet_banner_black.png",
-            "imgMob": "shopify://shop_images/phone_banner_black.png"
-          }
-        },
-        "test_xaWRkz": {
-          "type": "test",
-          "settings": {
-            "link": "",
-            "imgDesktop": "shopify://shop_images/desktop_banner_blue.png",
-            "imgTablet": "shopify://shop_images/tablet_banner_blue.png",
-            "imgMob": "shopify://shop_images/phone_banner_blue.png"
+            "imgTabletWidth": 1024,
+            "imgTabletHeight": 540,
+            "imgMob": "shopify://shop_images/phone_banner_black.png",
+            "imgMobWidth": 500,
+            "imgMobHeight": 540
           }
         }
       },
       "block_order": [
         "test_eTDrLU",
-        "test_Y8DFBc",
-        "test_xaWRkz"
+        "test_Y8DFBc"
       ],
       "settings": {
         "fullwidth": true,
