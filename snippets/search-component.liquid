@@ -1,3 +1,5 @@
+<script src="{{ 'search-component.js' | asset_url }}" defer></script>
+
 <div class="flex-[{{ flex }}]" style="flex: {{ flex }};">
   <search-component class="w-full">
     <form action="{{ routes.search_url }}" method="get" role="search">
@@ -10,6 +12,7 @@
           autocomplete="off"
           name="q"
           value="{{ search.terms | escape }}"
+          placeholder="O que você procura?"
         >
         <button
           type="submit"
@@ -17,6 +20,8 @@
         >
           {% render 'icon-search', size: 25 %}
         </button>
+
+        <div id="search-component" tabindex="-1"></div>
       </div>
     </form>
   </search-component>

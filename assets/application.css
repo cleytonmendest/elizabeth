@@ -609,6 +609,18 @@ input[type="number"]::-webkit-inner-spin-button,
   top: 0px;
 }
 
+.left-4 {
+  left: 1rem;
+}
+
+.left-\[14px\] {
+  left: 14px;
+}
+
+.top-\[-3px\] {
+  top: -3px;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -711,6 +723,10 @@ input[type="number"]::-webkit-inner-spin-button,
   height: 100%;
 }
 
+.h-\[18px\] {
+  height: 18px;
+}
+
 .\!w-auto {
   width: auto !important;
 }
@@ -746,6 +762,10 @@ input[type="number"]::-webkit-inner-spin-button,
 
 .w-screen {
   width: 100vw;
+}
+
+.w-\[18px\] {
+  width: 18px;
 }
 
 .max-w-\[1080px\] {
@@ -846,8 +866,8 @@ input[type="number"]::-webkit-inner-spin-button,
   background-color: #12121280;
 }
 
-.bg-\[\#f7f7f7bd\] {
-  background-color: #f7f7f7bd;
+.bg-\[\#f1f1f180\] {
+  background-color: #f1f1f180;
 }
 
 .bg-orange-500 {
@@ -862,10 +882,6 @@ input[type="number"]::-webkit-inner-spin-button,
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-\[\#f1f1f180\] {
-  background-color: #f1f1f180;
 }
 
 .p-3 {
@@ -960,6 +976,11 @@ input[type="number"]::-webkit-inner-spin-button,
 
 .text-\[--icons_color\] {
   color: var(--icons_color);
+}
+
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .text-gray-500 {
