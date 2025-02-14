@@ -1,6 +1,6 @@
 <div class="flex gap-4 justify-end" style="flex: {{ flex }};">
   <a
-    class="{% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
+    class="transition-colors {% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
     href="{{ routes.account_url }}"
   >
     {% render 'icon-user', size: 24 %}
@@ -8,12 +8,14 @@
 
   <button
     id="minicart-button"
-    class="relative {% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
+    class="relative transition-colors {% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
   >
     {% render 'icon-cart', size: 24 %}
     <div
       id="qtd-bubble"
-      class="{% if cart.item_count > 0 %}flex{% else %}hidden{% endif %} w-[18px] h-[18px] rounded-full text-xs font-medium items-center justify-center bg-white text-black absolute top-[-3px] left-[14px]"
+      class="{% if cart.item_count > 0 %}flex{% else %}hidden{% endif %}
+      w-[18px] h-[18px] rounded-full transition-colors text-xs font-medium items-center justify-center  absolute top-[-3px] left-[14px]
+      {% if header_type == "fixed-transparent" %}bg-[--icons_color2] text-[--icons_color] group-hover:text-[--icons_color2] group-hover:bg-[--icons_color] group-[.is-scrolling]:text-[--icons_color2] group-[.is-scrolling]:bg-[--icons_color]{% else %}text-[--icons_color] bg-[--icons_color2]{% endif %}"
     >
       {{ cart.item_count }}
     </div>
