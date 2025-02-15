@@ -1,13 +1,63 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "name": "Header",
   "type": "header",
   "sections": {
     "header": {
       "type": "header",
-      "settings": {}
+      "settings": {
+        "menu-type": "logo-left-menu-under-centered-search",
+        "fixed_header": true,
+        "transparent-header": true,
+        "header_bg": "#FFFFFF",
+        "icons_color": "#000000",
+        "icons_color_secondary": "#FFFFFF"
+      }
+    },
+    "announcement_bar_ndFKWT": {
+      "type": "announcement-bar",
+      "blocks": {
+        "text_yEXBGj": {
+          "type": "text",
+          "settings": {
+            "text_item": "<p>Em até <strong>12x sem juros!</strong></p>"
+          }
+        },
+        "text_TAtTn3": {
+          "type": "text",
+          "settings": {
+            "text_item": "<p>Em até <strong>12x sem juros!</strong></p>"
+          }
+        },
+        "text_W7Lma4": {
+          "type": "text",
+          "settings": {
+            "text_item": "<p>Em até <strong>12x sem juros!</strong></p>"
+          }
+        }
+      },
+      "block_order": [
+        "text_yEXBGj",
+        "text_TAtTn3",
+        "text_W7Lma4"
+      ],
+      "settings": {
+        "speed": "60",
+        "bg_color": "#000000",
+        "text_color": "#ffffff"
+      }
     }
   },
   "order": [
-    "header"
+    "header",
+    "announcement_bar_ndFKWT"
   ]
 }
