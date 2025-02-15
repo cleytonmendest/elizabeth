@@ -1,0 +1,75 @@
+<script src="{{ 'announcement-bar.js' | asset_url }}" defer></script>
+
+<announcement-bar
+  data-section-id="{{ section.id }}"
+  data-speed="{{ section.settings.speed | default: 60 }}"
+  style="background-color: {{ section.settings.bg_color }}; color: {{ section.settings.text_color }};"
+  class="w-full overflow-hidden py-2 flex"
+>
+  <!-- Você ainda precisa dos blocos duplicados para o loop infinito -->
+  <div class="flex flex-nowrap whitespace-nowrap announcement-inner items-center">
+    {%- for block in section.blocks -%}
+      <div class="inline-block px-2">
+        {{ block.settings.text_item }}
+      </div>
+      <span class="inline-block px-2">•</span>
+    {%- endfor -%}
+  </div>
+
+  <div class="flex flex-nowrap whitespace-nowrap announcement-inner items-center">
+    {%- for block in section.blocks -%}
+      <div class="inline-block px-2">
+        {{ block.settings.text_item }}
+      </div>
+      <span class="inline-block px-2">•</span>
+    {%- endfor -%}
+  </div>
+</announcement-bar>
+
+{% schema %}
+{
+  "name": "Barra de Anuncios",
+  "max_blocks": 15,
+  "settings": [
+    {
+      "type": "text",
+      "id": "speed",
+      "label": "Velocidade de rolagem (px/s)",
+      "default": "60",
+      "info": "Define quantos pixels por segundo o texto se moverá."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Cor de fundo",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Cor do texto",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Texto",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text_item",
+          "label": "Texto do anúncio",
+          "default": "<p>Em até <strong>12x sem juros!</strong></p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Barra de Anuncios",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

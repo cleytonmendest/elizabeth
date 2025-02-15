@@ -17,5 +17,6 @@
 
     .is-scrolling {
         background-color: var(--bg-header);
+        top: 0;
     }
 }

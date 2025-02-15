@@ -70,7 +70,7 @@
   <main-header class="w-full block relative z-10" data-type="{{ header_type }}">
     <div
       id="main-header-container"
-      class="w-full transition-all duration-300 {% if transparent == false %}bg-color{% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %} {% if header_type == "fixed-transparent" %} hover:bg-[--bg-header] {% endif %} group "
+      class="w-full transition-all duration-300 {% if transparent == false %}bg-color{% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %} {% if header_type == "fixed-transparent" %} hover:bg-[--bg-header] {% endif %} group group-[.is-scrolling]"
     >
       <div class="!py-3 page-width w-full">
         <div class="flex justify-between items-center">
