@@ -23,13 +23,13 @@
         "text_TAtTn3": {
           "type": "text",
           "settings": {
-            "text_item": "<p>Em até <strong>12x sem juros!</strong></p>"
+            "text_item": "<p><strong>DESCONTO</strong> em pagamento a vista</p>"
           }
         },
         "text_W7Lma4": {
           "type": "text",
           "settings": {
-            "text_item": "<p>Em até <strong>12x sem juros!</strong></p>"
+            "text_item": "<p><strong>FRETE GRÁTIS</strong> para todo o Brasil</p>"
           }
         }
       },
