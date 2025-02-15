@@ -1,9 +1,13 @@
 class AnnouncementBar extends HTMLElement {
   constructor() {
     super();
+    this._initialized = false;
   }
 
   connectedCallback() {
+    if (this._initialized) return; 
+    this._initialized = true;
+
     const inner = this.querySelector('.announcement-inner');
     if (!inner) return;
 
@@ -18,10 +22,6 @@ class AnnouncementBar extends HTMLElement {
       totalWidth += firstBlockWidth;
     }
 
-    // Agora temos vários .announcement-inner dentro <announcement-bar>,
-    // sem precisar duplicar manualmente no HTML.
-
-    // Em seguida, você aplica a animação:
     this.initMarquee(totalWidth);
   }
 
@@ -46,6 +46,10 @@ class AnnouncementBar extends HTMLElement {
     this.querySelectorAll('.announcement-inner').forEach(inner => {
       inner.classList.add(`marquee-${sectionId}`, 'inline-flex', 'whitespace-nowrap');
     });
+  }
+
+  disconnectedCallback() {
+    this._initialized = false;
   }
 }
 
