@@ -11,17 +11,6 @@
   "name": "Header",
   "type": "header",
   "sections": {
-    "header": {
-      "type": "header",
-      "settings": {
-        "menu-type": "logo-left-menu-under-centered-search",
-        "fixed_header": true,
-        "transparent-header": true,
-        "header_bg": "#FFFFFF",
-        "icons_color": "#000000",
-        "icons_color_secondary": "#FFFFFF"
-      }
-    },
     "announcement_bar_ndFKWT": {
       "type": "announcement-bar",
       "blocks": {
@@ -54,10 +43,21 @@
         "bg_color": "#000000",
         "text_color": "#ffffff"
       }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu-type": "logo-left-menu-under-centered-search",
+        "fixed_header": true,
+        "transparent-header": true,
+        "header_bg": "#ffffff",
+        "icons_color": "#000000",
+        "icons_color_secondary": "#ffffff"
+      }
     }
   },
   "order": [
-    "header",
-    "announcement_bar_ndFKWT"
+    "announcement_bar_ndFKWT",
+    "header"
   ]
 }
