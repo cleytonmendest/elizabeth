@@ -30,6 +30,12 @@
         "id": "favicon",
         "label": "Favicon",
         "info": "Imagem que exibirá na Tab do navegador"
+      },
+      {
+        "type": "textarea",
+        "id": "logo_svg",
+        "label": "Logo SVG (Header)",
+        "info": "Caso incluído, utilizará o svg inserido desconsiderando campo 'Logo principal'. Melhor para alterações de cores"
       }
     ]
   },

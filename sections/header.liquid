@@ -75,7 +75,7 @@
       <div class="!py-3 page-width w-full">
         <div class="flex justify-between items-center">
           {% if logo_center == false %}
-            {% render 'logo' %}
+            {% render 'logo', header_type: header_type %}
           {% endif %}
           {% if search_position == 'left' %}
             {% render 'search-component', flex: 2 %}
