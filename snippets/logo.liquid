@@ -2,7 +2,9 @@
   <h1 class="w-fit">
     <a href="{{ routes.root_url }}" class="transition-colors {% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}">
       {% if settings['logo_svg'] != blank %}
-        {{ settings['logo_svg'] }}
+        <div style="max-width: {{ settings.logo_width }}px;" class="w-full">
+          {{ settings['logo_svg'] }}
+        </div>
       {%- elsif settings.logo != blank -%}
         <div class="header__heading-logo-wrapper">
           {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
