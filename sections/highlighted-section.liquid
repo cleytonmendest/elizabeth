@@ -1,0 +1,78 @@
+<section class="page-width flex">
+  {% for block in section.blocks %}
+    {% if block.type == 'image' %}
+      <div class="flex-1">
+        {{ block.settings.image | image_url: width: 1500 | image_tag }}
+      </div>
+    {% elsif block.type == 'text' %}
+      <div class="flex-1">
+        <p>{{ block.settings.pre_title }}</p>
+        <h3>{{ block.settings.title }}</h3>
+        <p>{{ block.settings.text }}</p>
+      </div>
+    {% endif %}
+  {% endfor %}
+</section>
+
+{% schema %}
+{
+  "name": "Seção Destaque",
+  "settings": [
+    {
+      "type": "url",
+      "id": "url",
+      "label": "URL de Redirecionamento"
+    }
+  ],
+  "max_blocks": 2,
+  "blocks": [
+    {
+      "name": "Imagem",
+      "type": "image",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagem"
+        }
+      ]
+    },
+    {
+      "name": "Texto",
+      "type": "text",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "pre_title",
+          "label": "Pré título"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Texto"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Seção Destaque",
+      "blocks": [
+        {
+          "type": "image"
+        },
+        {
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
