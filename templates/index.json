@@ -128,12 +128,39 @@
       "settings": {
         "url": "shopify://pages/contact"
       }
+    },
+    "section_images_link_hGgn7V": {
+      "type": "section-images-link",
+      "blocks": {
+        "image_fQAhyC": {
+          "type": "image",
+          "settings": {
+            "link": "shopify://collections/calcas",
+            "image": "shopify://shop_images/new-in.png",
+            "label": "NEW IN"
+          }
+        },
+        "image_LCEnJw": {
+          "type": "image",
+          "settings": {
+            "link": "shopify://collections/camisas",
+            "image": "shopify://shop_images/sale.png",
+            "label": "SALE"
+          }
+        }
+      },
+      "block_order": [
+        "image_fQAhyC",
+        "image_LCEnJw"
+      ],
+      "settings": {}
     }
   },
   "order": [
     "slider_image_9WNq4K",
     "slider_product_iqrCEN",
     "highlighted_section_8DTzni",
+    "section_images_link_hGgn7V",
     "highlighted_section_6tn9tz"
   ]
 }
