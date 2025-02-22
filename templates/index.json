@@ -77,6 +77,32 @@
         "pause-hover": true
       }
     },
+    "highlighted_section_8DTzni": {
+      "type": "highlighted-section",
+      "blocks": {
+        "text_PhyGYF": {
+          "type": "text",
+          "settings": {
+            "pre_title": "Coleção Fiesta",
+            "title": "Vestidos para momentos inesquecíveis",
+            "text": "Descubra a elegância em cada detalhe com nossos vestidos para ocasiões especiais. Modelos que unem luxo e simplicidade, realçando sua beleza com sofisticação e conforto. Encontre o equilíbrio perfeito entre estilo e exclusividade."
+          }
+        },
+        "image_z4KWVE": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/highlighted.png"
+          }
+        }
+      },
+      "block_order": [
+        "text_PhyGYF",
+        "image_z4KWVE"
+      ],
+      "settings": {
+        "url": "shopify://collections"
+      }
+    },
     "highlighted_section_6tn9tz": {
       "type": "highlighted-section",
       "blocks": {
@@ -107,6 +133,7 @@
   "order": [
     "slider_image_9WNq4K",
     "slider_product_iqrCEN",
+    "highlighted_section_8DTzni",
     "highlighted_section_6tn9tz"
   ]
 }
