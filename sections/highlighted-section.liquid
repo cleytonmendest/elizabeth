@@ -18,7 +18,7 @@
           <h3 class="text-black text-2xl lg:text-4xl mb-4 lg:mb-6">{{ block.settings.title }}</h3>
           <p class="text-sm text-black flex-1">{{ block.settings.text }}</p>
           {% if section.settings.url != blank %}
-            <a href="{{ section.settings.url }}" class="group inline-block">
+            <a href="{{ section.settings.url }}" class="group inline-block mt-4">
               <span class="inline-block transition-all duration-300 transform group-hover:translate-x-2">
                 {% render 'icon-arrow-right', size: 54 %}
               </span>
