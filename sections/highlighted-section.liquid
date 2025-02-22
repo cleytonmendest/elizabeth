@@ -1,4 +1,4 @@
-<section class="page-width flex">
+<section class="page-width flex flex-col lg:flex-row py-4 lg:py-6">
   {% for block in section.blocks %}
     {% if block.type == 'image' %}
       <div class="flex-1">
@@ -11,14 +11,17 @@
         {% endif %}
       </div>
     {% elsif block.type == 'text' %}
-      <div class="flex-1 flex items-center justify-center">
-        <div class="max-w-xl">
+      <div class="flex-1 flex relative items-center justify-center order-2 lg:order-none">
+        <div class="absolute bg-[#F1F1F180] lg:top-auto top-0 w-full h-2/3 z-0 {% if forloop.index == 1 %} lg:rounded-tl-[800px] lg:rounded-br-none {% else %} lg:rounded-tr-[800px] lg:rounded-bl-none {% endif %} rounded-br-[800px] rounded-bl-[800px]"></div>
+        <div class="max-w-xl relative z-[2] p-5 {% if forloop.index == 1 %} lg:pl-16 {% endif %}">
           <h2 class="text-sm text-black lg:text-2xl">{{ block.settings.pre_title }}</h2>
           <h3 class="text-black text-2xl lg:text-4xl mb-4 lg:mb-6">{{ block.settings.title }}</h3>
-          <p class="text-sm text-black">{{ block.settings.text }}</p>
+          <p class="text-sm text-black flex-1">{{ block.settings.text }}</p>
           {% if section.settings.url != blank %}
-            <a href="{{ section.settings.url }}">
-              {% render 'icon-arrow-right', size: 54 %}
+            <a href="{{ section.settings.url }}" class="group inline-block">
+              <span class="inline-block transition-all duration-300 transform group-hover:translate-x-2">
+                {% render 'icon-arrow-right', size: 54 %}
+              </span>
             </a>
           {% endif %}
         </div>
