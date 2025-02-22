@@ -76,10 +76,37 @@
         "play-time": 20,
         "pause-hover": true
       }
+    },
+    "highlighted_section_6tn9tz": {
+      "type": "highlighted-section",
+      "blocks": {
+        "image_yC3UPt": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/about-us.png"
+          }
+        },
+        "text_PwNqGA": {
+          "type": "text",
+          "settings": {
+            "pre_title": "Sobre Nós",
+            "title": "Elegância que inspira",
+            "text": "Na Elizabeth, acreditamos que a moda é uma extensão da personalidade, um reflexo da sofisticação e do encanto de cada mulher. Nossas modelagem é criada para celebrar momentos especiais, combinando luxo e simplicidade em cada detalhe.Com um olhar atento às tendências e um compromisso com a qualidade, selecionamos tecidos nobres e cortes impecáveis para garantir peças que realçam a beleza e a confiança feminina. Seja para um evento marcante ou uma ocasião única, nossos designs exclusivos traduzem o equilíbrio perfeito entre modernidade e atemporalidade.Vista-se com elegância. Vista-se com Elizabeth."
+          }
+        }
+      },
+      "block_order": [
+        "image_yC3UPt",
+        "text_PwNqGA"
+      ],
+      "settings": {
+        "url": "shopify://pages/contact"
+      }
     }
   },
   "order": [
     "slider_image_9WNq4K",
-    "slider_product_iqrCEN"
+    "slider_product_iqrCEN",
+    "highlighted_section_6tn9tz"
   ]
 }
