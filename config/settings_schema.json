@@ -138,10 +138,10 @@
       {
         "type": "range",
         "id": "page_width",
-        "min": 1000,
-        "max": 1600,
-        "step": 10,
-        "default": 1440,
+        "min": 1400,
+        "max": 2560,
+        "step": 20,
+        "default": 1920,
         "unit": "px",
         "label": "Largura máxima da Loja"
       },

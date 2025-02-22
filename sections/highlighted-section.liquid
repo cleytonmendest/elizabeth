@@ -2,13 +2,26 @@
   {% for block in section.blocks %}
     {% if block.type == 'image' %}
       <div class="flex-1">
-        {{ block.settings.image | image_url: width: 1500 | image_tag }}
+        {% if section.settings.url != blank %}
+          <a href="{{ section.settings.url }}">
+            {{ block.settings.image | image_url: width: 1500 | image_tag }}
+          </a>
+          {% else %}
+            {{ block.settings.image | image_url: width: 1500 | image_tag }}
+        {% endif %}
       </div>
     {% elsif block.type == 'text' %}
-      <div class="flex-1">
-        <p>{{ block.settings.pre_title }}</p>
-        <h3>{{ block.settings.title }}</h3>
-        <p>{{ block.settings.text }}</p>
+      <div class="flex-1 flex items-center justify-center">
+        <div class="max-w-xl">
+          <h2 class="text-sm text-black lg:text-2xl">{{ block.settings.pre_title }}</h2>
+          <h3 class="text-black text-2xl lg:text-4xl mb-4 lg:mb-6">{{ block.settings.title }}</h3>
+          <p class="text-sm text-black">{{ block.settings.text }}</p>
+          {% if section.settings.url != blank %}
+            <a href="{{ section.settings.url }}">
+              {% render 'icon-arrow-right', size: 54 %}
+            </a>
+          {% endif %}
+        </div>
       </div>
     {% endif %}
   {% endfor %}
