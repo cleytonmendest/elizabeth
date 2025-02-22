@@ -1,0 +1,51 @@
+<section class="!lg:py-6 !py-4 flex flex-col lg:flex-row page-width">
+    {% for block in section.blocks %}
+        <a href="{{ block.settings.link }}" class="flex-1 flex relative items-center justify-center group overflow-hidden">
+            {{ block.settings.image | image_url: width: 1500 | image_tag: class:"group-hover:scale-125 transition-all duration-500 "}}
+
+            <span class="absolute z-[1] py-2 px-12 bg-[#FFFFFF80] text-xl lg:text-4xl text-black font-light rounded-[50px] group-hover:bg-black group-hover:text-white transition-all duration-500 ">
+                {{ block.settings.label }}
+            </span>
+        </a>
+    {% endfor %}
+</section>
+
+{% schema %}
+{
+  "name": "Seção Imagens-Link",
+  "max_blocks": 2,
+  "blocks": [
+    {
+      "name": "Imagem",
+      "type": "image",
+      "settings": [
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link de direcionamento"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagem"
+        },
+        {
+            "type": "text",
+            "id": "label",
+            "label": "Texto de Exibição"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Seção Imagens-Link",
+      "blocks": [
+        {
+          "type": "image"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
