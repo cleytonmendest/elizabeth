@@ -756,6 +756,10 @@ input[type="number"]::-webkit-inner-spin-button,
   height: 66.666667%;
 }
 
+.h-5\/6 {
+  height: 83.333333%;
+}
+
 .max-h-\[55\%\] {
   max-height: 55%;
 }
