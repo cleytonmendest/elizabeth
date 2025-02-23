@@ -626,12 +626,12 @@ input[type="number"]::-webkit-inner-spin-button,
   z-index: 50;
 }
 
-.z-\[2\] {
-  z-index: 2;
-}
-
 .z-\[1\] {
   z-index: 1;
+}
+
+.z-\[2\] {
+  z-index: 2;
 }
 
 .order-2 {
@@ -811,10 +811,6 @@ input[type="number"]::-webkit-inner-spin-button,
   cursor: pointer;
 }
 
-.flex-row {
-  flex-direction: row;
-}
-
 .flex-col {
   flex-direction: column;
 }
@@ -859,12 +855,12 @@ input[type="number"]::-webkit-inner-spin-button,
   white-space: nowrap;
 }
 
-.rounded-full {
-  border-radius: 9999px;
-}
-
 .rounded-\[50px\] {
   border-radius: 50px;
+}
+
+.rounded-full {
+  border-radius: 9999px;
 }
 
 .rounded-bl-\[800px\] {
@@ -911,6 +907,10 @@ input[type="number"]::-webkit-inner-spin-button,
   background-color: #F1F1F180;
 }
 
+.bg-\[\#FFFFFF80\] {
+  background-color: #FFFFFF80;
+}
+
 .bg-\[\#f1f1f180\] {
   background-color: #f1f1f180;
 }
@@ -933,14 +933,6 @@ input[type="number"]::-webkit-inner-spin-button,
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
-.bg-\[\] {
-  background-color: ;
-}
-
-.bg-\[\#FFFFFF80\] {
-  background-color: #FFFFFF80;
-}
-
 .p-3 {
   padding: 0.75rem;
 }
@@ -953,6 +945,11 @@ input[type="number"]::-webkit-inner-spin-button,
   padding: 1.25rem;
 }
 
+.\!px-0 {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}
+
 .\!py-3 {
   padding-top: 0.75rem !important;
   padding-bottom: 0.75rem !important;
@@ -961,6 +958,11 @@ input[type="number"]::-webkit-inner-spin-button,
 .\!py-4 {
   padding-top: 1rem !important;
   padding-bottom: 1rem !important;
+}
+
+.px-12 {
+  padding-left: 3rem;
+  padding-right: 3rem;
 }
 
 .px-2 {
@@ -986,11 +988,6 @@ input[type="number"]::-webkit-inner-spin-button,
 .py-2 {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
-}
-
-.px-12 {
-  padding-left: 3rem;
-  padding-right: 3rem;
 }
 
 .pb-10 {
@@ -1026,26 +1023,26 @@ input[type="number"]::-webkit-inner-spin-button,
   line-height: 1.25rem;
 }
 
-.text-xs {
-  font-size: 0.75rem;
-  line-height: 1rem;
-}
-
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
 }
 
 .font-bold {
   font-weight: 700;
 }
 
-.font-medium {
-  font-weight: 500;
-}
-
 .font-light {
   font-weight: 300;
+}
+
+.font-medium {
+  font-weight: 500;
 }
 
 .uppercase {
