@@ -78,3 +78,7 @@
     height: inherit;
     padding: 1px;
 }
+
+.categories-slider__owl-container .owl-stage{
+    display: flex;
+}

@@ -106,3 +106,46 @@ document.addEventListener('DOMContentLoaded', function () {
         .on("shopify:block:select", initializeOwl)
         .on("shopify:block:deselect", initializeOwl);
 });
+
+class CategoriesSlider extends HTMLElement {
+    constructor() {
+        super();
+    }
+
+    connectedCallback() {
+        if (typeof jQuery === 'undefined' || typeof jQuery.fn.owlCarousel === 'undefined') {
+            console.warn('Owl Carousel ou jQuery não estão prontos');
+            return;
+        }
+
+        const $container = jQuery(this).find('.categories-slider__owl-container');
+        if (!$container.length) {
+            console.warn('Não encontrou .categories-slider__owl-container dentro <categories-slider>');
+            return;
+        }
+
+        // Pegar as opções do data-owl-options e converter de string p/ objeto
+        let owlOptions = {};
+        if (this.dataset.owlOptions) {
+            try {
+                owlOptions = JSON.parse(this.dataset.owlOptions);
+            } catch (e) {
+                console.error('Erro ao fazer parse do data-owl-options', e);
+            }
+        }
+
+        // Inicializar o Owl
+        $container.owlCarousel(owlOptions);
+    }
+
+    disconnectedCallback() {
+        // Opcional: se quiser destruir o carousel quando remover o elemento do DOM
+        const $container = jQuery(this).find('.categories-slider__owl-container');
+        if ($container.length && $container.data('owl.carousel')) {
+            $container.owlCarousel('destroy');
+        }
+    }
+}
+
+// Registrar o elemento
+customElements.define('categories-slider', CategoriesSlider);

@@ -1,0 +1,73 @@
+<section
+  data-section-id="{{ section.id }}"
+  style="padding: {{ section.settings.section_padding }};"
+>
+  <!-- Nosso custom element -->
+  <categories-slider
+    class="block w-full"
+    data-section-id="{{ section.id }}"
+    data-owl-options='
+      {
+        "loop": true,
+        "margin": 10,
+        "nav": true,
+        "dots": false,
+        "items": {{ section.settings.items_per_view | default: 4 }}
+      }
+    '
+  >
+    <div class="categories-slider__owl-container">
+      {%- for block in section.blocks -%}
+        <div class="item p-2 text-center">
+          <a href="{{ block.settings.link }}">
+            {%- if block.settings.image != blank -%}
+              {{
+                block.settings.image
+                | image_url: width: 300
+                | image_tag: alt: block.settings.title, class: 'mx-auto mb-2'
+              }}
+            {%- endif -%}
+            <h4 class="font-semibold">
+              {{ block.settings.title }}
+            </h4>
+          </a>
+        </div>
+      {%- endfor -%}
+    </div>
+  </categories-slider>
+</section>
+
+{% schema %}
+{
+  "name": "Categories Slider",
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Categoria",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagem"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Slider de Categorias",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}
