@@ -15,27 +15,29 @@
   style="padding: {{ section.settings.section_padding }};"
   class="page-width"
 >
-  <div class="flex items-center {% if section.settings.title == blank and nav %}justify-end{% else %}justify-between{% endif %}">
-    {% if section.settings.title != blank %}
-      <h2 class="font-semibold text-base lg:text-2xl text-[#1E1E1E]">{{ section.settings.title }}</h2>
-    {% endif %}
-    {% if nav %}
-      <div class="flex">
-        <button
-          onclick="sliderPrev('{{ section.id }}')"
-          class="text-[#1E1E1E]"
-        >
-          {% render 'icon-short-arrow-left', size: 40 %}
-        </button>
-        <button
-          onclick="sliderNext('{{ section.id }}')"
-          class="text-[#1E1E1E]"
-        >
-          {% render 'icon-short-arrow-right', size: 40 %}
-        </button>
-      </div>
-    {% endif %}
-  </div>
+  {% if section.settings.title == blank or nav %}
+    <div class="flex items-center mt-4 lg:mt-8 {% if section.settings.title == blank and nav %}justify-end{% else %}justify-between{% endif %}">
+      {% if section.settings.title != blank %}
+        <h2 class="font-semibold text-base lg:text-2xl text-[#1E1E1E]">{{ section.settings.title }}</h2>
+      {% endif %}
+      {% if nav %}
+        <div class="flex">
+          <button
+            onclick="sliderPrev('{{ section.id }}')"
+            class="text-[#1E1E1E]"
+          >
+            {% render 'icon-short-arrow-left', size: 40 %}
+          </button>
+          <button
+            onclick="sliderNext('{{ section.id }}')"
+            class="text-[#1E1E1E]"
+          >
+            {% render 'icon-short-arrow-right', size: 40 %}
+          </button>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
   <my-slider
     class="block w-full overflow-hidden mt-4 lg:mt-8"
     data-section-id="{{ section.id }}"
