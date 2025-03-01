@@ -155,48 +155,95 @@
         "url": "shopify://pages/contact"
       }
     },
-    "slider_categories_DzpfTQ": {
+    "slider_cards_6ciA3G": {
       "type": "slider-cards",
       "blocks": {
-        "category_r4KjpY": {
-          "type": "category",
+        "card_XkTxwi": {
+          "type": "card",
           "settings": {
-            "title": "Categoria 1",
+            "title": "ACESSÓRIOS",
+            "link": "shopify://products/camisa-social-algodao-paccata",
+            "image": "shopify://shop_images/minibanner-ACESSORIOS.png"
+          }
+        },
+        "card_8nYbGH": {
+          "type": "card",
+          "settings": {
+            "title": "BLUSAS",
             "link": "shopify://collections/calcas",
-            "image": "shopify://shop_images/new-in.png"
+            "image": "shopify://shop_images/minibanner-BLUSAS.png"
           }
         },
-        "category_96WPLV": {
-          "type": "category",
+        "card_GaYrHN": {
+          "type": "card",
           "settings": {
-            "title": "Categoria 2",
+            "title": "CASACOS",
             "link": "shopify://collections/camisas",
-            "image": "shopify://shop_images/sale.png"
+            "image": "shopify://shop_images/minibanner-CASACOS.png"
           }
         },
-        "category_FgUpMp": {
-          "type": "category",
+        "card_a7yFWE": {
+          "type": "card",
           "settings": {
-            "title": "Categoria 3",
-            "link": "shopify://collections/camisetas",
-            "image": "shopify://shop_images/about-us.png"
+            "title": "KITS",
+            "link": "shopify://collections/coletes",
+            "image": "shopify://shop_images/minibanner-KITS.png"
+          }
+        },
+        "card_n7VpaF": {
+          "type": "card",
+          "settings": {
+            "title": "CALÇAS",
+            "link": "shopify://collections/coletes",
+            "image": "shopify://shop_images/minibanner-CALCAS.png"
+          }
+        },
+        "card_eRcrJe": {
+          "type": "card",
+          "settings": {
+            "title": "VESTIDOS",
+            "link": "shopify://collections/jaquetas",
+            "image": "shopify://shop_images/minibanner-VESTIDOS.png"
+          }
+        },
+        "card_MJ79rW": {
+          "type": "card",
+          "settings": {
+            "title": "SHORTS",
+            "link": "shopify://collections/regatas",
+            "image": "shopify://shop_images/minibanner-SHORTS.png"
           }
         }
       },
       "block_order": [
-        "category_r4KjpY",
-        "category_96WPLV",
-        "category_FgUpMp"
+        "card_XkTxwi",
+        "card_8nYbGH",
+        "card_GaYrHN",
+        "card_a7yFWE",
+        "card_n7VpaF",
+        "card_eRcrJe",
+        "card_MJ79rW"
       ],
-      "settings": {}
+      "settings": {
+        "title": "",
+        "loop": true,
+        "nav": false,
+        "dot": false,
+        "qty-desk": 6,
+        "qty-tablet": 3,
+        "qty-mob": 2,
+        "autoplay": false,
+        "play-time": 5,
+        "pause-hover": false
+      }
     }
   },
   "order": [
     "slider_image_9WNq4K",
     "slider_product_iqrCEN",
     "highlighted_section_8DTzni",
+    "slider_cards_6ciA3G",
     "section_images_link_hGgn7V",
-    "highlighted_section_6tn9tz",
-    "slider_categories_DzpfTQ"
+    "highlighted_section_6tn9tz"
   ]
 }
