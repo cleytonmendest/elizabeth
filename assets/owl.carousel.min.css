@@ -216,3 +216,15 @@
     height: 100%;
     width: 100%
 }
+
+.my-slider__container .owl-stage{
+    display: flex;
+}
+
+.my-slider__container .owl-nav.disabled{
+    display: none;
+}
+
+.my-slider__container .owl-dots.disabled{
+    display: none;
+}

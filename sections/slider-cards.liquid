@@ -1,0 +1,187 @@
+{{ 'carousel-style.css' | asset_url | stylesheet_tag }}
+
+{% assign loop = section.settings.loop %}
+{% assign nav = section.settings.nav %}
+{% assign qty_desk = section.settings['qty-desk'] %}
+{% assign qty_tab = section.settings['qty-tablet'] %}
+{% assign qty_mob = section.settings['qty-mob'] %}
+{% assign autoplay = section.settings.autoplay %}
+{% assign play_time = section.settings['play-time'] %}
+{% assign pause_hover = section.settings['pause-hover'] %}
+{% assign dot = section.settings.dot %}
+
+<div
+  data-section-id="{{ section.id }}"
+  style="padding: {{ section.settings.section_padding }};"
+  class="page-width"
+>
+  <div class="flex items-center {% if section.settings.title == blank and nav %}justify-end{% else %}justify-between{% endif %}">
+    {% if section.settings.title != blank %}
+      <h2 class="font-semibold text-base lg:text-2xl text-[#1E1E1E]">{{ section.settings.title }}</h2>
+    {% endif %}
+    {% if nav %}
+      <div class="flex">
+        <button
+          onclick="sliderPrev('{{ section.id }}')"
+          class="text-[#1E1E1E]"
+        >
+          {% render 'icon-short-arrow-left', size: 40 %}
+        </button>
+        <button
+          onclick="sliderNext('{{ section.id }}')"
+          class="text-[#1E1E1E]"
+        >
+          {% render 'icon-short-arrow-right', size: 40 %}
+        </button>
+      </div>
+    {% endif %}
+  </div>
+  <my-slider
+    class="block w-full overflow-hidden mt-4 lg:mt-8"
+    data-section-id="{{ section.id }}"
+    data-loop="{{ loop }}"
+    data-nav-arrows="{{ nav }}"
+    data-qty-desk="{{ qty_desk }}"
+    data-qty-tab="{{ qty_tab }}"
+    data-qty-mob="{{ qty_mob }}"
+    data-autoplay="{{ autoplay }}"
+    data-ap-time="{{ play_time }}"
+    data-pause-hover="{{ pause_hover }}"
+    data-dot="{{ dot }}"
+  >
+    {% comment %} OBRIGATORIO TER A DIV "my-slider__container" PARA O CORRETO FUNCIONAMENTO {% endcomment %}
+    <div class="my-slider__container">
+      {%- for block in section.blocks -%}
+        <div class="item px-3">
+          <a href="{{ block.settings.link }}" class="relative flex justify-center group">
+            {%- if block.settings.image != blank -%}
+              {{
+                block.settings.image
+                | image_url: width: 300
+                | image_tag: alt: block.settings.title, class: 'mx-auto mb-2'
+              }}
+            {%- endif -%}
+            <h3 class="font-medium absolute text-center bg-[#FFFFFF80] transition-all duration-300 ease-in-out py-2 text-[#23170E] bottom-6 w-5/6 rounded-[50px] text-sm backdrop-blur-xs group-hover:text-white group-hover:bg-black">
+              {{ block.settings.title }}
+            </h3>
+          </a>
+        </div>
+      {%- endfor -%}
+    </div>
+  </my-slider>
+</div>
+
+{% schema %}
+{
+  "name": "Slider de Cards",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título da Seção",
+      "default": "Título da Seção"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Ativa loop infinito?",
+      "info": "Quando chega no ultimo slider volta para o inicio automaticamente",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "nav",
+      "label": "Exibe Flechas de Navegação",
+      "info": "Exibe botões de proximo e anterior",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "dot",
+      "label": "Exibe Pontos de Navegação",
+      "info": "Exibe botões",
+      "default": true
+    },
+    {
+      "type": "range",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Quantidade de Imagens quando desktop",
+      "id": "qty-desk",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Quantidade de Imagens quando Tablet",
+      "id": "qty-tablet",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Quantidade de Imagens quando mobile",
+      "id": "qty-mob",
+      "default": 1
+    },
+    {
+      "type": "checkbox",
+      "label": "Ativa Autoplay",
+      "id": "autoplay",
+      "info": "Autoplay mantém o slider ativo, sempre passando as imagens automaticamente",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "play-time",
+      "max": 20,
+      "min": 1,
+      "step": 1,
+      "label": "Tempo entre os sliders (autoplay ativo)",
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "pause-hover",
+      "label": "Pausa autoplay quando o mouse estiver no imagem",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Categoria",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagem"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Slider de Cards",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}
