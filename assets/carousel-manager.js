@@ -128,6 +128,7 @@ class MySlider extends HTMLElement {
         const loop = this.dataset.loop === 'true';
         // const nav = this.dataset.navArrows === 'true';
         const dots = this.dataset.dot === 'true';
+        const items = parseInt(this.dataset.items) || 0
         const autoplay = this.dataset.autoplay === 'true';
         const pauseHover = this.dataset.pauseHover === 'true';
 
@@ -161,6 +162,19 @@ class MySlider extends HTMLElement {
         };
 
         this.$container.owlCarousel(owlOptions);
+
+        if (items > 0) {
+            this.$container.on('changed.owl.carousel', (event) => {
+                const total = event.item.count;
+                const clones = event.relatedTarget._clones.length / total
+                const realIndex = event.item.index - clones + 1;
+
+                const spanActive = this.querySelector('.index-active');
+                if (spanActive) {
+                    spanActive.textContent = realIndex;
+                }
+            });
+        }
     }
 
     disconnectedCallback() {
@@ -178,7 +192,7 @@ class MySlider extends HTMLElement {
     prevSlide() {
         if (this.$container && this.$container.data('owl.carousel')) {
             this.$container.trigger('prev.owl.carousel');
-          }
+        }
     }
 }
 
