@@ -33,7 +33,7 @@ class AnnouncementBar extends HTMLElement {
             duplicated: true,
             pauseOnHover: pauseOnHover,
             startVisible: true,
-            duplicateCount: 3
+            duplicateCount: 5
         });
     }
     disconnectedCallback() {
