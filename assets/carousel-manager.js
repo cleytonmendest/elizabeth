@@ -2,52 +2,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Inicializar Owl Carousels
     function initializeOwl() {
-        // Itera sobre cada .image-slider-container
-        $(".image-slider-container").each(function () {
-            // Aqui, `this` refere-se ao .image-slider-container atual na iteração
-            const $container = $(this); // Guarda o jQuery object do container atual
-
-            // Captura os dados do owl-carousel dentro deste image-slider-container
-            const loop = $container.find('.owl-carousel').data("loop");
-            const qtyDesk = $container.find('.owl-carousel').data("qty-desk");
-            const qtyTab = $container.find('.owl-carousel').data("qty-tab");
-            const qtyMob = $container.find('.owl-carousel').data("qty-mob");
-            const autoplay = $container.find('.owl-carousel').data("autoplay");
-            const playTime = $container.find('.owl-carousel').data("ap-time") * 1000;
-            const pauseHover = $container.find('.owl-carousel').data("pause-hover");
-            const dot = $container.find('.owl-carousel').data("dot");
-
-            // Inicializa o Owl Carousel no owl-carousel dentro deste image-slider-container
-            $container.find('.owl-carousel').owlCarousel({
-                loop: loop,
-                margin: 10,
-                dots: dot,
-                autoplayHoverPause: pauseHover,
-                autoplay: autoplay,
-                autoplayTimeout: playTime,
-                responsive: {
-                    0: {
-                        items: qtyMob
-                    },
-                    500: {
-                        items: qtyTab
-                    },
-                    1024: {
-                        items: qtyDesk
-                    }
-                }
-            });
-
-            // Evento de clique para navegar para o próximo slide
-            $container.find('.custom-next-slide').on('click', function () {
-                $container.find('.owl-carousel').trigger('next.owl.carousel');
-            });
-
-            // Evento de clique para navegar para o slide anterior
-            $container.find('.custom-prev-slide').on('click', function () {
-                $container.find('.owl-carousel').trigger('prev.owl.carousel');
-            });
-        });
 
         $(".product-slider-container").each(function () {
             // Aqui, `this` refere-se ao .image-slider-container atual na iteração
@@ -124,11 +78,14 @@ class MySlider extends HTMLElement {
             console.warn('MySlider: .my-slider__container não encontrado dentro do elemento!');
             return;
         }
+        const items = parseInt(this.dataset.items) || 0
+
+        //Não inicia o Owl se não houver itens suficientes para o slider
+        if(items < 2) return
 
         const loop = this.dataset.loop === 'true';
         // const nav = this.dataset.navArrows === 'true';
         const dots = this.dataset.dot === 'true';
-        const items = parseInt(this.dataset.items) || 0
         const autoplay = this.dataset.autoplay === 'true';
         const pauseHover = this.dataset.pauseHover === 'true';
 
@@ -163,16 +120,21 @@ class MySlider extends HTMLElement {
 
         this.$container.owlCarousel(owlOptions);
 
-        if (items > 0) {
-            this.$container.on('changed.owl.carousel', (event) => {
+        // Lógica para alteração de span para casos de exibição de index do slider ativo
+        const spanActive = this.querySelector('.index-active');
+        if (spanActive) {
+            this.$container.on('translated.owl.carousel', (event) => {
                 const total = event.item.count;
-                const clones = event.relatedTarget._clones.length / total
-                const realIndex = event.item.index - clones + 1;
 
-                const spanActive = this.querySelector('.index-active');
-                if (spanActive) {
-                    spanActive.textContent = realIndex;
-                }
+                const cloneCount = event.relatedTarget._clones.length / 2;
+
+                let realIndex = event.item.index - cloneCount;
+
+                realIndex = ((realIndex % total) + total) % total;
+
+                realIndex += 1;
+
+                spanActive.textContent = realIndex;
             });
         }
     }
