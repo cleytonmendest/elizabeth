@@ -1,3 +1,53 @@
+class AnnouncementBar extends HTMLElement {
+    constructor() {
+        super()
+        this._initialized = false
+    }
+
+    connectedCallback() {
+        if (this._initialized) return;
+        this._initialized = true
+
+        if (typeof jQuery === 'undefined' || typeof jQuery.fn.marquee === 'undefined') {
+            console.warn('jQuery ou jQuery.Marquee não encontrado!');
+            return;
+        }
+
+        const $marquee = jQuery(this).find('.announcement-content');
+        if (!$marquee.length) {
+            console.warn('Não encontrou .announcement-content dentro de <my-marquee>!');
+            return;
+        }
+
+        const duration = parseInt(this.dataset.duration) * 1000 || 15000;
+        const gap = parseInt(this.dataset.gap) || 0;
+        const direction = this.dataset.direction || 'left';
+        const pauseOnHover = this.dataset.pauseHover !== 'false';
+
+        console.log(duration, gap, direction, pauseOnHover, 'marqueeee')
+
+        $marquee.marquee({
+            duration: duration,
+            gap: gap,
+            direction: direction,
+            duplicated: true,
+            pauseOnHover: pauseOnHover,
+            startVisible: true,
+            duplicateCount: 3
+        });
+    }
+    disconnectedCallback() {
+        this._initialized = false;
+
+        const $marquee = jQuery(this).find('.announcement-content');
+        if ($marquee.length) {
+            $marquee.marquee('destroy');
+        }
+    }
+}
+
+customElements.define('announcement-bar', AnnouncementBar);
+
 class MySlider extends HTMLElement {
     constructor() {
         super();
@@ -5,20 +55,20 @@ class MySlider extends HTMLElement {
 
     connectedCallback() {
         if (typeof jQuery === 'undefined' || typeof jQuery.fn.owlCarousel === 'undefined') {
-            console.warn('Não encontrou jQuery ou Owl Carousel');
+            console.warn('Não encontrou jQuery ou Owl Carousel')
             return;
         }
 
         // Pega o container que terá o slider
-        this.$container = jQuery(this).find('.my-slider__container');
+        this.$container = jQuery(this).find('.my-slider__container')
         if (!this.$container.length) {
-            console.warn('MySlider: .my-slider__container não encontrado dentro do elemento!');
+            console.warn('MySlider: .my-slider__container não encontrado dentro do elemento!')
             return;
         }
         const items = parseInt(this.dataset.items) || 0
 
         //Não inicia o Owl se não houver itens suficientes para o slider
-        if(items < 2) return
+        if (items < 2) return
 
         const loop = this.dataset.loop === 'true';
         // const nav = this.dataset.navArrows === 'true';
