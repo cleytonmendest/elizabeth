@@ -598,20 +598,12 @@ input[type="number"]::-webkit-inner-spin-button,
   left: 0px;
 }
 
-.left-3 {
-  left: 0.75rem;
-}
-
 .left-\[14px\] {
   left: 14px;
 }
 
 .right-0 {
   right: 0px;
-}
-
-.right-3 {
-  right: 0.75rem;
 }
 
 .top-0 {
@@ -833,6 +825,10 @@ input[type="number"]::-webkit-inner-spin-button,
 
 .items-center {
   align-items: center;
+}
+
+.justify-start {
+  justify-content: flex-start;
 }
 
 .justify-end {
@@ -1271,14 +1267,6 @@ input[type="number"]::-webkit-inner-spin-button,
 }
 
 @media (min-width: 1024px) {
-  .lg\:left-0 {
-    left: 0px;
-  }
-
-  .lg\:right-0 {
-    right: 0px;
-  }
-
   .lg\:top-auto {
     top: auto;
   }

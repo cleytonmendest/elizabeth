@@ -8,39 +8,59 @@
 {% assign pause_hover = section.settings['pause-hover'] %}
 {% assign dot = section.settings.dot %}
 
-<div class="page-width !mb-6">
-  <h3 class="text-3xl font-bold mb-2">{{ section.settings.title }}</h3>
-  <div class="text-base">
-    {{ section.settings.subtitle }}
-  </div>
-</div>
-<div class="product-slider-container slider-container page-width">
-  <div
-    class="owl-carousel"
-    data-loop="{{ loop }}"
-    data-nav-arrows="{{ nav }}"
-    data-qty-desk="{{ qty_desk }}"
-    data-qty-tab="{{ qty_tab }}"
-    data-qty-mob="{{ qty_mob }}"
-    data-autoplay="{{ autoplay }}"
-    data-ap-time="{{ play_time }}"
-    data-pause-hover="{{ pause_hover }}"
-    data-dot="{{ dot }}"
-  >
-    {%- for product in section.settings.collection.products -%}
-      <div class="carousel-item">
-        {% render 'card-product-slider', card_product: product %}
+<div class="page-width">
+  <div class="flex
+    {% if section.settings.title == blank and nav %} justify-end
+    {% elsif section.settings.title != blank and nav == false %} justify-start
+    {% else %} justify-between
+     {% endif %}">
+    <div class="!mb-6">
+      <h3 class="text-3xl font-bold mb-2">{{ section.settings.title }}</h3>
+      <div class="text-base">
+        {{ section.settings.subtitle }}
       </div>
-    {% endfor %}
+    </div>
+    {% if nav %}
+      <div class="flex">
+        <button
+          onclick="sliderPrev('{{ section.id }}')"
+          class="text-[#1E1E1E]"
+        >
+          {% render 'icon-short-arrow-left', size: 40 %}
+        </button>
+        <button
+          onclick="sliderNext('{{ section.id }}')"
+          class="text-[#1E1E1E]"
+        >
+          {% render 'icon-short-arrow-right', size: 40 %}
+        </button>
+      </div>
+    {% endif %}
   </div>
-  {% if nav %}
-    <div class="custom-prev-slide cursor-pointer flex items-center justify-center bg-white shadow-lg h-10 w-10 absolute z-10 rounded-full duration-300 transition-all ease-in-out left-3 lg:left-0">
-      {% render 'icon-angle-left', size: 26 %}
-    </div>
-    <div class="custom-next-slide cursor-pointer flex items-center justify-center bg-white shadow-lg h-10 w-10 absolute z-10 rounded-full duration-300 transition-all ease-in-out right-3 lg:right-0 ">
-      {% render 'icon-angle-right', size: 26 %}
-    </div>
-  {% endif %}
+  <div class="product-slider-container slider-container">
+    <my-slider
+      class="w-full relative"
+      data-section-id="{{ section.id }}"
+      data-loop="{{ loop }}"
+      data-items="{{ section.settings.collection.products_count }}"
+      data-qty-desk="{{ qty_desk }}"
+      data-qty-tab="{{ qty_tab }}"
+      data-qty-mob="{{ qty_mob }}"
+      data-autoplay="{{ autoplay }}"
+      data-ap-time="{{ play_time }}"
+      data-pause-hover="{{ pause_hover }}"
+      data-dot="{{ dot }}"
+    >
+      {% comment %} OBRIGATORIO TER A DIV "my-slider__container" PARA O CORRETO FUNCIONAMENTO {% endcomment %}
+      <div class="my-slider__container overflow-hidden">
+        {%- for product in section.settings.collection.products -%}
+          <div class="carousel-item">
+            {% render 'card-product-slider', card_product: product %}
+          </div>
+        {% endfor %}
+      </div>
+    </my-slider>
+  </div>
 </div>
 
 {% schema %}
