@@ -69,9 +69,9 @@
         "loop": true,
         "nav": true,
         "dot": true,
-        "qty-desk": 3,
-        "qty-tablet": 2,
-        "qty-mob": 1,
+        "qty-desk": 4,
+        "qty-tablet": 3,
+        "qty-mob": 2,
         "autoplay": true,
         "play-time": 20,
         "pause-hover": true
@@ -101,58 +101,6 @@
       ],
       "settings": {
         "url": "shopify://collections"
-      }
-    },
-    "section_images_link_hGgn7V": {
-      "type": "section-images-link",
-      "blocks": {
-        "image_fQAhyC": {
-          "type": "image",
-          "settings": {
-            "link": "shopify://collections/calcas",
-            "image": "shopify://shop_images/new-in.png",
-            "label": "NEW IN"
-          }
-        },
-        "image_LCEnJw": {
-          "type": "image",
-          "settings": {
-            "link": "shopify://collections/camisas",
-            "image": "shopify://shop_images/sale.png",
-            "label": "SALE"
-          }
-        }
-      },
-      "block_order": [
-        "image_fQAhyC",
-        "image_LCEnJw"
-      ],
-      "settings": {}
-    },
-    "highlighted_section_6tn9tz": {
-      "type": "highlighted-section",
-      "blocks": {
-        "image_yC3UPt": {
-          "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/about-us.png"
-          }
-        },
-        "text_PwNqGA": {
-          "type": "text",
-          "settings": {
-            "pre_title": "Sobre Nós",
-            "title": "Elegância que inspira",
-            "text": "Na Elizabeth, acreditamos que a moda é uma extensão da personalidade, um reflexo da sofisticação e do encanto de cada mulher. Nossas modelagem é criada para celebrar momentos especiais, combinando luxo e simplicidade em cada detalhe.Com um olhar atento às tendências e um compromisso com a qualidade, selecionamos tecidos nobres e cortes impecáveis para garantir peças que realçam a beleza e a confiança feminina. Seja para um evento marcante ou uma ocasião única, nossos designs exclusivos traduzem o equilíbrio perfeito entre modernidade e atemporalidade.Vista-se com elegância. Vista-se com Elizabeth."
-          }
-        }
-      },
-      "block_order": [
-        "image_yC3UPt",
-        "text_PwNqGA"
-      ],
-      "settings": {
-        "url": "shopify://pages/contact"
       }
     },
     "slider_cards_6ciA3G": {
@@ -235,6 +183,58 @@
         "autoplay": false,
         "play-time": 5,
         "pause-hover": false
+      }
+    },
+    "section_images_link_hGgn7V": {
+      "type": "section-images-link",
+      "blocks": {
+        "image_fQAhyC": {
+          "type": "image",
+          "settings": {
+            "link": "shopify://collections/calcas",
+            "image": "shopify://shop_images/new-in.png",
+            "label": "NEW IN"
+          }
+        },
+        "image_LCEnJw": {
+          "type": "image",
+          "settings": {
+            "link": "shopify://collections/camisas",
+            "image": "shopify://shop_images/sale.png",
+            "label": "SALE"
+          }
+        }
+      },
+      "block_order": [
+        "image_fQAhyC",
+        "image_LCEnJw"
+      ],
+      "settings": {}
+    },
+    "highlighted_section_6tn9tz": {
+      "type": "highlighted-section",
+      "blocks": {
+        "image_yC3UPt": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/about-us.png"
+          }
+        },
+        "text_PwNqGA": {
+          "type": "text",
+          "settings": {
+            "pre_title": "Sobre Nós",
+            "title": "Elegância que inspira",
+            "text": "Na Elizabeth, acreditamos que a moda é uma extensão da personalidade, um reflexo da sofisticação e do encanto de cada mulher. Nossas modelagem é criada para celebrar momentos especiais, combinando luxo e simplicidade em cada detalhe.Com um olhar atento às tendências e um compromisso com a qualidade, selecionamos tecidos nobres e cortes impecáveis para garantir peças que realçam a beleza e a confiança feminina. Seja para um evento marcante ou uma ocasião única, nossos designs exclusivos traduzem o equilíbrio perfeito entre modernidade e atemporalidade.Vista-se com elegância. Vista-se com Elizabeth."
+          }
+        }
+      },
+      "block_order": [
+        "image_yC3UPt",
+        "text_PwNqGA"
+      ],
+      "settings": {
+        "url": "shopify://pages/contact"
       }
     }
   },
