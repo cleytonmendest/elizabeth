@@ -63,7 +63,7 @@
     "slider_product_iqrCEN": {
       "type": "slider-product",
       "settings": {
-        "collection": "camisas",
+        "collection": "new-in",
         "title": "Camisas",
         "subtitle": "<p>Experience Luxury in Every Stitch: Premium Quality Shirts</p>",
         "loop": true,
