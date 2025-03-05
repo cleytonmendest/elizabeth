@@ -130,6 +130,36 @@
         "name": "list.metaobject_reference",
         "category": "REFERENCE"
       }
+    },
+    {
+      "key": "pants-length-type",
+      "namespace": "shopify",
+      "name": "Tipo de comprimento da calça",
+      "description": "Used to defines the length of pants, such as cropped or long",
+      "type": {
+        "name": "list.metaobject_reference",
+        "category": "REFERENCE"
+      }
+    },
+    {
+      "key": "neckline",
+      "namespace": "shopify",
+      "name": "Decote",
+      "description": "Used to describe the neck shape of a garment, such as V-neck or boat",
+      "type": {
+        "name": "list.metaobject_reference",
+        "category": "REFERENCE"
+      }
+    },
+    {
+      "key": "skirt-dress-length-type",
+      "namespace": "shopify",
+      "name": "Tipo de comprimento de saia/vestido",
+      "description": "Defines the length of skirts or dresses, such as mini or maxi",
+      "type": {
+        "name": "list.metaobject_reference",
+        "category": "REFERENCE"
+      }
     }
   ],
   "variant": [],

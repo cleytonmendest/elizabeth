@@ -1,15 +1,25 @@
-<div class="border border-black p-4">
-  <a class="" href="{{ card_product.url }}">
-    <div class="w-full h-60 flex items-center justify-center overflow-hidden">
+<div class="border border-black p-4 group">
+  <a class="block" href="{{ card_product.url }}">
+    <div class="relative w-full flex items-center justify-center">
       <img
-        class="!w-auto h-full hover:scale-110 transition-all"
+        class="w-full h-auto aspect-[2/3] object-cover transition-opacity duration-500 ease-in-out {% if card_product.images.size > 1 %} group-hover:opacity-0 {% endif %}"
         src="{{ card_product.featured_image | image_url }}"
         width="{{ card_product.featured_image.width }}"
         height="{{ card_product.featured_image.height }}"
         loading="lazy"
       >
+      {% if card_product.images.size > 1 %}
+        {% assign second_image = card_product.images[1] %}
+        <img
+          class="absolute top-0 left-0 w-full h-auto aspect-[2/3] object-cover opacity-0 transition-opacity ease-in-out duration-500 group-hover:opacity-100"
+          src="{{ second_image | image_url }}"
+          width="{{ second_image.width }}"
+          height="{{ second_image.height }}"
+          loading="lazy"
+        >
+      {% endif %}
     </div>
-    <h3 class="h-12 line-clamp-2">
+    <h3 class="h-6 line-clamp-1 uppercase font-light text-[#616161] mt-2 text-sm">
       {{ card_product.title | escape }}
     </h3>
     <div class="my-2">
@@ -19,7 +29,7 @@
       </div>
     </div>
   </a>
-  <div>
+  {% comment %} <div>
     {% render 'add-to-cart', product: card_product %}
-  </div>
+  </div> {% endcomment %}
 </div>
