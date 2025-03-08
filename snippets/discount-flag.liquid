@@ -1,0 +1,16 @@
+{% comment %}
+  Snippet: discount-percentage.liquid
+
+  Espera receber:
+  - "product": objeto produto que tenha price_max e compare_at_price_max
+    (ou price_min / compare_at_price_min, dependendo de como você lidar com variações)
+{% endcomment %}
+
+{%- assign compare_price = product.compare_at_price_max -%}
+{%- assign actual_price = product.price_max -%}
+
+{%- assign difference = compare_price | minus: actual_price -%}
+{%- assign discount_raw = difference | times: 100 | divided_by: compare_price -%}
+{%- assign discount = discount_raw | floor -%}
+
+<span class=" bg-[#E7ECF0] rounded-[50px] text-xs text-black py-1 px-2"> {{ discount }}% OFF </span>

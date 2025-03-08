@@ -1,4 +1,4 @@
-<div class="border border-black p-4 group">
+<div class="group px-4">
   <a class="block" href="{{ card_product.url }}">
     <div class="relative w-full flex items-center justify-center">
       <img
@@ -22,11 +22,14 @@
     <h3 class="h-6 line-clamp-1 uppercase font-light text-[#616161] mt-2 text-sm">
       {{ card_product.title | escape }}
     </h3>
-    <div class="my-2">
+    <div class="my-2 flex gap-2">
+      {% if card_product.compare_at_price_max > card_product.price_max %}
+        {% render 'discount-flag', product: card_product %}
+      {% endif %}
       {% render 'price-v2', product: card_product, price_class: '', show_compare_at_price: true %}
-      <div class="h-5">
+      {% comment %} <div class="h-5">
         {% render 'installments', product: card_product %}
-      </div>
+      </div> {% endcomment %}
     </div>
   </a>
   {% comment %} <div>
