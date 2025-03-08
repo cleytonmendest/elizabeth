@@ -68,11 +68,11 @@
         "subtitle": "<p>Experience Luxury in Every Stitch: Premium Quality Shirts</p>",
         "loop": true,
         "nav": true,
-        "dot": true,
+        "dot": false,
         "qty-desk": 4,
         "qty-tablet": 3,
         "qty-mob": 2,
-        "autoplay": true,
+        "autoplay": false,
         "play-time": 20,
         "pause-hover": true
       }
