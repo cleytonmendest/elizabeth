@@ -34,13 +34,13 @@
   <div class="">
     <div class="flex gap-2 items-center">
       {%- if compare_at_price > price -%}
-        <span class="line-through text-gray-500 text-sm">{{ compare_at_price | money }}</span>
+        <span class="line-through text-[#A9A9A9] text-sm font-light">{{ compare_at_price | money }}</span>
       {%- endif -%}
       <span class="price-item price-item--sale price-item--last price-v2">
-        {% if product.price_varies %}
+        {% comment %} {% if product.price_varies %}
           <span>A partir de:</span>
-        {% endif %}
-        <span class="font-bold text-base">
+        {% endif %} {% endcomment %}
+        <span class="text-sm text-[#1E1E1E]">
           {{ money_price }}
         </span>
       </span>

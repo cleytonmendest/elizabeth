@@ -1126,6 +1126,11 @@ input[type="number"]::-webkit-inner-spin-button,
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
+.text-\[\#A9A9A9\] {
+  --tw-text-opacity: 1;
+  color: rgb(169 169 169 / var(--tw-text-opacity));
+}
+
 .line-through {
   text-decoration-line: line-through;
 }
