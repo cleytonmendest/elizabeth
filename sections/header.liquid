@@ -6,10 +6,12 @@
   assign bg_header = section.settings.header_bg | default: '#FFFFFF'
   assign icons_color = section.settings.icons_color | default: '#000000'
   assign icons_color_2 = section.settings.icons_color_secondary | default: '#000000'
+  assign fixed_transparent = false
 
   if template.name == 'index'
     if fixed and transparent
       assign header_type = 'fixed-transparent'
+      assign fixed_transparent = true
     elsif fixed and transparent == false
       assign header_type = 'fixed'
     elsif fixed == false and transparent
@@ -73,22 +75,31 @@
       class="w-full transition-all duration-300 {% if transparent == false %}bg-color{% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %} {% if header_type == "fixed-transparent" %} hover:bg-[--bg-header] {% endif %} group group-[.is-scrolling]"
     >
       <div class="!py-3 page-width w-full">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between">
           {% if logo_center == false %}
             {% render 'logo', header_type: header_type %}
           {% endif %}
-          {% if search_position == 'left' %}
-            {% render 'search-component', flex: 2 %}
+          {% if search_position == 'left' and search_hidden == false %}
+            {% render 'search-component', flex: 1 %}
           {% endif %}
           {% if logo_center %}
             {% render 'logo' %}
           {% endif %}
-          {% if search_position == 'center' %}
+          {% if search_position == 'center' and search_hidden == false %}
             {% render 'search-component', flex: 3 %}
+          {% endif %}
+          {% if menu_under == false %}
+            {% render 'main-menu', linklist: section.settings.menu, flex: 5, fixed_transparent: fixed_transparent %}
+          {% endif %}
+          {% if search_position == 'right' and search_hidden == false %}
+            {% render 'search-component', flex: 1.5 %}
           {% endif %}
 
           {% render 'header-icons', header_type: header_type, flex: 1 %}
         </div>
+        {% if menu_under %}
+          {% render 'main-menu', linklist: section.settings.menu, flex: 1, fixed_transparent: fixed_transparent  %}
+        {% endif %}
       </div>
     </div>
   </main-header>
@@ -100,6 +111,11 @@
   "tag": "header",
   "class": "header",
   "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu Principal",
+    },
     {
       "type": "select",
       "id": "menu-type",
