@@ -39,7 +39,10 @@
         "text_W7Lma4"
       ],
       "settings": {
-        "speed": "60",
+        "duration": 40,
+        "gap": 0,
+        "direction": "left",
+        "pause_hover": false,
         "bg_color": "#000000",
         "text_color": "#ffffff"
       }
@@ -47,7 +50,8 @@
     "header": {
       "type": "header",
       "settings": {
-        "menu-type": "logo-left-menu-under-centered-search",
+        "menu": "menu-principal",
+        "menu-type": "logo-left-centered-menu",
         "fixed_header": true,
         "transparent-header": true,
         "header_bg": "#ffffff",
