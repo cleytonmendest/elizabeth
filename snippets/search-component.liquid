@@ -1,12 +1,10 @@
-<script src="{{ 'search-component.js' | asset_url }}" defer></script>
-
 <div class="flex items-center" style="flex: {{ flex }};">
   <search-component class="w-full">
     <form action="{{ routes.search_url }}" method="get" role="search">
-      <div class="flex rounded-full py-1 px-3 bg-[#f1f1f180]">
+      <div class="flex rounded-full py-2 px-4 bg-[#f1f1f180] h-10 group-hover:bg-[#f1f1f1]">
         <input
           class="w-full bg-transparent focus:outline-none focus:ring-0 focus:border-transparent
-          focus-visible:outline-none focus-visible:ring-0"
+          focus-visible:outline-none focus-visible:ring-0 placeholder:font-light placeholder:text-sm placeholder:text-black"
           id="Search-In-Template"
           type="text"
           autocomplete="off"
@@ -16,7 +14,7 @@
         >
         <button
           type="submit"
-          class="{% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
+          class="text-[--icons_color]"
         >
           {% render 'icon-search', size: 25 %}
         </button>
