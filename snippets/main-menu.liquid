@@ -1,4 +1,4 @@
-<div style="flex: {{ flex }}" class="flex items-center justify-around">
+<nav style="flex: {{ flex }}" class="flex items-center justify-around max-lg:!flex-1 max-lg:order-1">
   {% for link in linklist.links %}
     {% if link.links.size > 0 %}
       <div class="relative flex justify-center items-center h-full group/menu ">
@@ -8,7 +8,7 @@
         >
           {{ link.title }}
         </a>
-        <ul class="transition-all duration-300 min-w-52 absolute p-3 -translate-y-full top-full bg-white pointer-events-none opacity-0 group-hover/menu:opacity-100 group-hover/menu:translate-y-0 group-hover/menu:pointer-events-auto">
+        <ul class="transition-all duration-300 min-w-52 absolute p-3 -translate-y-full top-full bg-[--bg-header] pointer-events-none opacity-0 group-hover/menu:opacity-100 group-hover/menu:translate-y-0 group-hover/menu:pointer-events-auto">
           {% for sublink in link.links %}
             <li class="py-1">
               <a class="text-sm" href="{{ sublink.url }}">
@@ -27,4 +27,4 @@
       </a>
     {% endif %}
   {% endfor %}
-</div>
+</nav>

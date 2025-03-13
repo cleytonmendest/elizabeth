@@ -5,11 +5,11 @@
   data-gap="{{ section.settings.gap }}"
   data-pauseHover="{{ section.settings.pause_hover }}"
   style="background-color: {{ section.settings.bg_color }}; color: {{ section.settings.text_color }};"
-  class="w-full overflow-hidden py-2 flex"
+  class="w-full overflow-hidden py-1 lg:py-2 flex"
 >
   <div class="announcement-content flex flex-nowrap whitespace-nowrap announcement-inner items-center">
     {%- for block in section.blocks -%}
-      <div class="inline-block px-2">
+      <div class="inline-block px-2 text-xs lg:text-base">
         {{ block.settings.text_item }}
       </div>
       <span class="inline-block px-2">•</span>

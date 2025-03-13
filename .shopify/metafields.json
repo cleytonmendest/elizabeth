@@ -65,7 +65,7 @@
       "key": "target-gender",
       "namespace": "shopify",
       "name": "Gênero alvo",
-      "description": "Identifies the intended gender for a product, such as female, male or unisex",
+      "description": "Identifica o gênero a que um produto se destina, como feminino, masculino ou unissex",
       "type": {
         "name": "list.metaobject_reference",
         "category": "REFERENCE"
@@ -75,7 +75,7 @@
       "key": "color-pattern",
       "namespace": "shopify",
       "name": "Cor",
-      "description": "Defines the primary color or pattern, such as blue or striped",
+      "description": "Define a cor ou padrão principal, como azul ou listrado",
       "type": {
         "name": "list.metaobject_reference",
         "category": "REFERENCE"
@@ -85,7 +85,7 @@
       "key": "size",
       "namespace": "shopify",
       "name": "Tamanho",
-      "description": "Used to specify the size of a product, such as 0-3 months or Extra large (XL)",
+      "description": "Usado para especificar o tamanho de um produto, como 0-3 meses ou Extra grande (XL)",
       "type": {
         "name": "list.metaobject_reference",
         "category": "REFERENCE"
@@ -95,7 +95,7 @@
       "key": "age-group",
       "namespace": "shopify",
       "name": "Grupo de idade",
-      "description": "Defines the target age range for a product, such as adults or kids",
+      "description": "Define a faixa etária alvo de um produto, como adultos ou crianças",
       "type": {
         "name": "list.metaobject_reference",
         "category": "REFERENCE"
@@ -105,7 +105,7 @@
       "key": "top-length-type",
       "namespace": "shopify",
       "name": "Tipo de comprimento do top",
-      "description": "Defines the length of tops or shirts, like crop top or long",
+      "description": "Define o comprimento de tops ou camisas, como cropped ou longo",
       "type": {
         "name": "list.metaobject_reference",
         "category": "REFERENCE"
@@ -115,7 +115,7 @@
       "key": "fabric",
       "namespace": "shopify",
       "name": "Tecido",
-      "description": "Identifies the type of fabric used in a product, for example, cotton or denim",
+      "description": "Identifica o tipo de tecido utilizado em um produto, por exemplo, algodão ou jeans",
       "type": {
         "name": "list.metaobject_reference",
         "category": "REFERENCE"
@@ -125,7 +125,7 @@
       "key": "sleeve-length-type",
       "namespace": "shopify",
       "name": "Tipo de comprimento da manga",
-      "description": "Specifies the style of sleeves on clothing items, such as short or sleeveless",
+      "description": "Especifica o estilo das mangas em itens de vestuário, como curtas ou sem mangas",
       "type": {
         "name": "list.metaobject_reference",
         "category": "REFERENCE"
@@ -135,7 +135,7 @@
       "key": "pants-length-type",
       "namespace": "shopify",
       "name": "Tipo de comprimento da calça",
-      "description": "Used to defines the length of pants, such as cropped or long",
+      "description": "Utilizado para definir o comprimento da calça, como cropped ou longa",
       "type": {
         "name": "list.metaobject_reference",
         "category": "REFERENCE"
@@ -145,7 +145,7 @@
       "key": "neckline",
       "namespace": "shopify",
       "name": "Decote",
-      "description": "Used to describe the neck shape of a garment, such as V-neck or boat",
+      "description": "Usado para descrever a forma da gola de uma peça de roupa, como decote em V ou canoa",
       "type": {
         "name": "list.metaobject_reference",
         "category": "REFERENCE"
@@ -155,7 +155,7 @@
       "key": "skirt-dress-length-type",
       "namespace": "shopify",
       "name": "Tipo de comprimento de saia/vestido",
-      "description": "Defines the length of skirts or dresses, such as mini or maxi",
+      "description": "Define o comprimento de saias ou vestidos, como mini ou maxi",
       "type": {
         "name": "list.metaobject_reference",
         "category": "REFERENCE"

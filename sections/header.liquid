@@ -60,11 +60,13 @@
   :root{
     --bg-header: {{ bg_header }};
     --icons_color: {{ icons_color }};
-    --icons_color2: {{ icons_color_2 }}
+    --icons_color2: {{ icons_color_2 }};
+    --bg-search: #f1f1f180;
+    --bg-search-hover: #f1f1f1;
   }
 
   .is-scrolling {
-    @apply bg-white;
+    @apply bg-[--bg-header];
   }
 </style>
 
@@ -72,7 +74,7 @@
   <main-header class="w-full block relative z-10" data-type="{{ header_type }}">
     <div
       id="main-header-container"
-      class="w-full transition-all duration-300 {% if transparent == false %}bg-color{% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %} {% if header_type == "fixed-transparent" %} hover:bg-[--bg-header] {% endif %} group group-[.is-scrolling]"
+      class="w-full transition-all duration-300 {% if transparent == false %}bg-[--bg-header]{% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %} {% if header_type == "fixed-transparent" %} hover:bg-[--bg-header] {% endif %} group group-[.is-scrolling]"
     >
       <div class="!py-3 page-width w-full">
         <div class="flex justify-between">
@@ -92,7 +94,7 @@
             {% render 'main-menu', linklist: section.settings.menu, flex: 5, fixed_transparent: fixed_transparent %}
           {% endif %}
           {% if search_position == 'right' and search_hidden == false %}
-            {% render 'search-component', flex: 1.5 %}
+            {% render 'search-component', flex: 1.5, showMobile: false %}
           {% endif %}
 
           {% render 'header-icons', header_type: header_type, flex: 1 %}

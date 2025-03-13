@@ -1,7 +1,8 @@
-<div class="flex items-center" style="flex: {{ flex }};">
+
+<div class="items-center max-lg:!flex-1 lg:flex {% if showMobile %} flex {% else %} hidden {% endif %}" style="flex: {{ flex }};">
   <search-component class="w-full">
     <form action="{{ routes.search_url }}" method="get" role="search">
-      <div class="flex rounded-full py-2 px-4 bg-[#f1f1f180] h-10 group-hover:bg-[#f1f1f1]">
+      <div class="flex rounded-full transition-all duration-300 py-2 px-4 bg-[#f1f1f1] lg:bg-[#f1f1f180] h-10 lg:group-hover:bg-[#f1f1f1]">
         <input
           class="w-full bg-transparent focus:outline-none focus:ring-0 focus:border-transparent
           focus-visible:outline-none focus-visible:ring-0 placeholder:font-light placeholder:text-sm placeholder:text-black"

@@ -1,6 +1,6 @@
-<div class="flex gap-4 justify-end items-center" style="flex: {{ flex }};">
+<div class="flex gap-4 justify-end items-center max-lg:!flex-1 max-lg:order-3" style="flex: {{ flex }};">
   <a
-    class="transition-colors {% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
+    class="transition-colors hidden lg:block {% if header_type == "fixed-transparent" %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
     href="{{ routes.account_url }}"
   >
     {% render 'icon-wishlist', size: 24 %}
