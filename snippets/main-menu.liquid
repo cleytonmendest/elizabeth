@@ -67,9 +67,11 @@
               >
                 {{ link.title }}
                 <!-- Ícone que indica abertura/fechamento, por exemplo uma seta -->
-                <span class="transition-transform duration-300">&#9660;</span>
+                <span class="transition-transform duration-300">
+                  {% render 'icon-angle-down', size: 16 %}
+                </span>
               </button>
-              <ul class="submenu overflow-hidden transition-all duration-300 ml-2" style="height: 0;" aria-hidden="true">
+              <ul class="submenu overflow-hidden transition-all duration-300 ml-4" style="height: 0;" aria-hidden="true">
                 {% for sublink in link.links %}
                   <li class="py-1">
                     <a href="{{ sublink.url }}" class="text-sm text-[--icons_color] block h-8">
