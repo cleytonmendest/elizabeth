@@ -4,7 +4,10 @@
     {% for link in linklist.links %}
       {% if link.links.size > 0 %}
         <div class="relative flex justify-center items-center h-full group/menu">
-          <a href="{{ link.url }}" class="transition-colors text-sm flex items-center {% if fixed_transparent %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}">
+          <a
+            href="{{ link.url }}"
+            class="transition-colors text-sm flex items-center {% if fixed_transparent %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
+          >
             {{ link.title }}
           </a>
           <ul class="transition-all duration-300 min-w-52 absolute p-3 -translate-y-full top-full bg-[--bg-header] pointer-events-none opacity-0 group-hover/menu:opacity-100 group-hover/menu:translate-y-0 group-hover/menu:pointer-events-auto">
@@ -18,7 +21,10 @@
           </ul>
         </div>
       {% else %}
-        <a class="transition-colors text-sm flex items-center {% if fixed_transparent %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}" href="{{ link.url }}">
+        <a
+          class="transition-colors text-sm flex items-center {% if fixed_transparent %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
+          href="{{ link.url }}"
+        >
           {{ link.title }}
         </a>
       {% endif %}
@@ -27,7 +33,10 @@
 
   <!-- Botão para abrir o menu mobile -->
   <div class="menu-toggle lg:hidden">
-    <button id="mobile-menu-open" class="p-2 text-xl {% if fixed_transparent %}text-[--icons_color2] lg:group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}">
+    <button
+      id="mobile-menu-open"
+      class="p-2 text-xl {% if fixed_transparent %}text-[--icons_color2] lg:group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
+    >
       <!-- Ícone do menu, por exemplo, um hamburger -->
       {% render 'icon-menu', size: 24 %}
     </button>
@@ -35,7 +44,11 @@
 </nav>
 
 <!-- Estrutura do menu mobile off-canvas -->
-<div id="mobile-menu" class="menu-mob fixed w-full max-w-md inset-0 bg-[--bg-header] z-50 transform -translate-x-full transition-transform duration-300 lg:hidden mb-5 h-full" aria-hidden="true">
+<div
+  id="mobile-menu"
+  class="menu-mob fixed w-full max-w-md inset-0 bg-[--bg-header] z-50 transform -translate-x-full transition-transform duration-300 lg:hidden mb-5 h-full"
+  aria-hidden="true"
+>
   <div class="p-4">
     <div class="flex items-center justify-center gap-2 mb-5">
       {% render 'search-component', flex: 1, showMobile: true %}
@@ -47,19 +60,28 @@
       <ul class="flex flex-col gap-4">
         {% for link in linklist.links %}
           <li>
-            <a href="{{ link.url }}" class="text-sm text-[--icons_color] h-8 flex items-center">
-              {{ link.title }}
-            </a>
             {% if link.links.size > 0 %}
-              <ul class="ml-4 mt-2">
+              <button
+                type="button"
+                class="submenu-toggle text-sm text-[--icons_color] flex items-center w-full justify-between h-8"
+              >
+                {{ link.title }}
+                <!-- Ícone que indica abertura/fechamento, por exemplo uma seta -->
+                <span class="transition-transform duration-300">&#9660;</span>
+              </button>
+              <ul class="submenu overflow-hidden transition-all duration-300 ml-2" style="height: 0;" aria-hidden="true">
                 {% for sublink in link.links %}
-                  <li>
-                    <a href="{{ sublink.url }}" class="block text-sm text-[--icons_color]">
+                  <li class="py-1">
+                    <a href="{{ sublink.url }}" class="text-sm text-[--icons_color] block h-8">
                       {{ sublink.title }}
                     </a>
                   </li>
                 {% endfor %}
               </ul>
+            {% else %}
+              <a href="{{ link.url }}" class="text-sm text-[--icons_color] h-8 flex items-center">
+                {{ link.title }}
+              </a>
             {% endif %}
           </li>
         {% endfor %}
