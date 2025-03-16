@@ -1530,4 +1530,12 @@ input[type="number"]::-webkit-inner-spin-button,
     --tw-bg-opacity: 1;
     background-color: rgb(241 241 241 / var(--tw-bg-opacity));
   }
+
+  .group:hover .lg\:group-hover\:text-\[--icons_color2\] {
+    color: var(--icons_color2);
+  }
+
+  .group:hover .lg\:group-hover\:text-\[--icons_color\] {
+    color: var(--icons_color);
+  }
 }

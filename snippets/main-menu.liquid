@@ -27,7 +27,7 @@
 
   <!-- Botão para abrir o menu mobile -->
   <div class="menu-toggle lg:hidden">
-    <button id="mobile-menu-open" class="p-2 text-xl {% if fixed_transparent %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}">
+    <button id="mobile-menu-open" class="p-2 text-xl {% if fixed_transparent %}text-[--icons_color2] lg:group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}">
       <!-- Ícone do menu, por exemplo, um hamburger -->
       {% render 'icon-menu', size: 24 %}
     </button>
