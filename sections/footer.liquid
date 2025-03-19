@@ -1,8 +1,5 @@
-{% comment %}theme-check-disable UndefinedObject{% endcomment %}
-{% comment %} {{ 'section-footer.css' | asset_url | stylesheet_tag }}
-{{ 'component-newsletter.css' | asset_url | stylesheet_tag }}
-{{ 'component-list-menu.css' | asset_url | stylesheet_tag }}
-{{ 'component-list-payment.css' | asset_url | stylesheet_tag }}
-{{ 'component-list-social.css' | asset_url | stylesheet_tag }} {% endcomment %}
-
-<div>FOOOTER</div>
+<div>
+    <div>
+        {% render 'newsletter' %}
+    </div>
+</div>

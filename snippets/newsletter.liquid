@@ -1,0 +1,63 @@
+<div id="newsletter-signup" class="newsletter w-full bg-black flex min-h-56 items-center">
+  <div class="flex page-width w-full items-center lg:flex-row flex-col !py-6 gap-7">
+    <div class="flex-1 w-full">
+      <h2 class="text-white font-semibold lg:text-2xl text-xl">INSCREVA-SE EM NOSSA NEWSLETTER</h2>
+      <p class="text-white lg:text-sm text-xs">Fique por dentro das novidades, promoções e muito mais.</p>
+    </div>
+    <form
+      method="post"
+      action="/contact#newsletter-signup"
+      accept-charset="UTF-8"
+      class="w-full flex bg-[#FFFFFF80] backdrop-blur-sm p-4 contact-form lg:flex-[2] rounded gap-2 h-fit lg:items-center lg:flex-row flex-col items-start"
+    >
+      <!-- Indica ao Shopify que é um formulário de cadastro de contato -->
+      <input type="hidden" name="form_type" value="customer">
+      <input type="hidden" name="utf8" value="✓">
+
+      <!-- Define a tag "newsletter" para esse contato -->
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <!-- Nome -->
+      <div class="form-field flex-1 w-full">
+        {% comment %} <label for="NewsletterFirstName">Nome</label> {% endcomment %}
+        <input
+          type="text"
+          name="contact[first_name]"
+          id="NewsletterFirstName"
+          class="h-10 bg-white rounded px-3 w-full text-sm placeholder:text-sm placeholder:text-[#696969]"
+          placeholder="Digite seu Nome"
+          required
+        >
+      </div>
+
+      <!-- Sobrenome -->
+      <div class="form-field flex-1 w-full">
+        {% comment %} <label for="NewsletterLastName">Sobrenome</label> {% endcomment %}
+        <input
+          type="text"
+          name="contact[last_name]"
+          id="NewsletterLastName"
+          placeholder="Digite seu Sobrenome"
+          class="h-10 bg-white rounded px-3 w-full text-sm placeholder:text-sm placeholder:text-[#696969]"
+        >
+      </div>
+
+      <!-- Email -->
+      <div class="form-field flex-1 w-full">
+        {% comment %} <label for="NewsletterEmail">Email</label> {% endcomment %}
+        <input
+          type="email"
+          name="contact[email]"
+          id="NewsletterEmail"
+          placeholder="Digite seu E-mail"
+          class="h-10 bg-white rounded px-3 w-full text-sm placeholder:text-sm placeholder:text-[#696969]"
+          required
+        >
+      </div>
+
+      <!-- Botão de enviar -->
+      <button type="submit" class="text-black">
+        {% render 'icon-arrow-right', size: 40 %}
+      </button>
+    </form>
+  </div>
+</div>
