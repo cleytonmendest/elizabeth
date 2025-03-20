@@ -1,5 +1,212 @@
 <div>
-    <div>
-        {% render 'newsletter' %}
-    </div>
+  <div>
+    {% if section.settings.active_newsletter %}
+      {% render 'newsletter', text: section.settings.newsletter_text %}
+    {% endif %}
+  </div>
+  <div class="flex">
+    {% for block in section.blocks %}
+      {% if block.type == 'links' %}
+        <!-- Cada bloco de links_column gera uma coluna -->
+        <div class="flex-1">
+          <h4>{{ block.settings.sublink_title }}</h4>
+          {% if block.settings.linklist %}
+            <ul>
+              {% for link in block.settings.linklist.links %}
+                <li>
+                  <a href="{{ link.url }}">{{ link.title }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+
+      {% elsif block.type == 'extra' %}
+        <div class="flex-1 footer-extra">
+          <!-- Formas de Pagamento -->
+          <h4>Formas de Pagamento</h4>
+          <div class="payment-methods flex gap-2">
+            {% if block.settings.pay_mastercard %}
+              ain
+            {% endif %}
+            {% if block.settings.pay_visa %}
+              ain 2
+            {% endif %}
+            <!-- ... e assim por diante ... -->
+          </div>
+
+          <!-- Redes Sociais -->
+          <h4>Redes Sociais</h4>
+          <div class="social-links flex gap-2">
+            {% if block.settings.social_facebook %}
+              <a href="{{ block.settings.facebook_url }}" target="_blank">Facebook Icon</a>
+            {% endif %}
+            {% if block.settings.social_instagram %}
+              <a href="{{ block.settings.instagram_url }}" target="_blank">Instagram Icon</a>
+            {% endif %}
+            <!-- etc. -->
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
 </div>
+
+{% schema %}
+{
+  "name": "Footer",
+  "class": "footer",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Newsletter",
+      "info": "Informações sobre Newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "active_newsletter",
+      "label": "Exibe Newsletter?",
+      "default": true,
+      "info": "Exibe ou não a Newsletter"
+    },
+    {
+      "type": "richtext",
+      "id": "newsletter_text",
+      "label": "Texto da Newsletter",
+      "default": "<h2>INSCREVA-SE EM NOSSA NEWSLETTER</h2><p>Fique por dentro das novidades, promoções e muito mais.</p>"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Sub-links",
+      "type": "links",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "sublink_title",
+          "label": "Título dos Links",
+          "placeholder": "ex: Institucionais"
+        },
+        {
+          "type": "link_list",
+          "id": "linklist",
+          "label": "Lista de Links"
+        }
+      ]
+    },
+    {
+      "name": "Pagamentos e Social",
+      "type": "extra",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Redes Sociais"
+        },
+        {
+          "type": "checkbox",
+          "id": "active_social_media",
+          "label": "Exibe Redes Sociais?",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "title_social_media",
+          "label": "Título do bloco das Rede Sociais",
+          "default": "SIGA-NOS"
+        },
+        {
+          "type": "header",
+          "content": "Formas de Pagamento",
+          "info": "Selecione as bandeiras aceitas"
+        },
+        {
+          "type": "text",
+          "id": "title_payments",
+          "label": "Título do bloco de Formas de Pagamento",
+          "default": "FORMAS DE PAGAMENTO"
+        },
+        {
+          "type": "checkbox",
+          "id": "pay_mastercard",
+          "label": "Exibe bandeira Mastercard?",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "pay_visa",
+          "label": "Exibe bandeira Visa?",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "pay_elo",
+          "label": "Exibe bandeira Elo?",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "pay_dinners",
+          "label": "Exibe bandeira Dinners?",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "pay_american",
+          "label": "Exibe bandeira American Express?",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "pay_jcb",
+          "label": "Exibe bandeira JCB?",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "pay_aura",
+          "label": "Exibe bandeira Aura?",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "pay_hiper",
+          "label": "Exibe bandeira Hipercard?",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "pay_sodexo",
+          "label": "Exibe bandeira Sodexo?",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "pay_boleto",
+          "label": "Exibe Boleto?",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "pay_pix",
+          "label": "Exibe Pix?",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "pay_gpay",
+          "label": "Exibe bandeira GPay?",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "pay_yapay",
+          "label": "Exibe bandeira Yapay?",
+          "default": true
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

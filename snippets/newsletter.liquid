@@ -1,8 +1,12 @@
 <div id="newsletter-signup" class="newsletter w-full bg-black flex min-h-56 items-center">
   <div class="flex page-width w-full items-center lg:flex-row flex-col !py-6 gap-7">
-    <div class="flex-1 w-full">
-      <h2 class="text-white font-semibold lg:text-2xl text-xl">INSCREVA-SE EM NOSSA NEWSLETTER</h2>
-      <p class="text-white lg:text-sm text-xs">Fique por dentro das novidades, promoções e muito mais.</p>
+    <div class="flex-1 w-full text-white
+        [&_h2]:font-semibold [&_h2]:lg:text-2xl [&_h2]:text-xl
+        [&_h3]:font-semibold [&_h3]:lg:text-xl [&_h3]:text-lg
+        [&_h4]:font-semibold [&_h4]:lg:text-lg [&_h4]:text-base
+        [&_p]:lg:text-sm [&_p]:text-xs
+      ">
+      {{ text }}
     </div>
     <form
       method="post"
