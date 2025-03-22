@@ -71,9 +71,19 @@
           {% if block.settings.active_social_media %}
             <h3 class="text-sm text-black font-normal">{{ block.settings.title_social_media }}</h3>
             <div class="social-links flex gap-2">
+              {% if settings.social_instagram_link != blank %}
+                <a href="{{ settings.social_instagram_link }}" target="_blank">
+                  {% render 'icon-social-instagram' %}
+                </a>
+              {% endif %}
               {% if settings.social_facebook_link != blank %}
                 <a href="{{ settings.social_facebook_link }}" target="_blank">
                   {% render 'icon-social-facebook' %}
+                </a>
+              {% endif %}
+              {% if settings.social_youtube_link != blank %}
+                <a href="{{ settings.social_youtube_link }}" target="_blank">
+                  {% render 'icon-social-youtube' %}
                 </a>
               {% endif %}
             </div>
