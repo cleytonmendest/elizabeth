@@ -17,6 +17,9 @@
     "custom_font_head": "<link href=\"https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap\" rel=\"stylesheet\">",
     "custom_font_body_name": "Work Sans",
     "custom_font_body": "<link href=\"https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap\" rel=\"stylesheet\">",
+    "social_facebook_link": "https://facebook.com.br",
+    "social_instagram_link": "https://instagram.com.br",
+    "social_youtube_link": "https://www.youtube.com.br",
     "content_for_index": []
   }
 }
