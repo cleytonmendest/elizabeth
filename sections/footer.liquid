@@ -4,17 +4,17 @@
       {% render 'newsletter', text: section.settings.newsletter_text %}
     {% endif %}
   </div>
-  <div class="flex">
+  <div class="flex page-width !py-8 flex-col lg:flex-row gap-8 lg:gap-0">
     {% for block in section.blocks %}
       {% if block.type == 'links' %}
         <!-- Cada bloco de links_column gera uma coluna -->
-        <div class="flex-1">
-          <h4>{{ block.settings.sublink_title }}</h4>
+        <div class="flex-1 flex flex-col gap-8">
+          <h3 class="text-sm text-black font-normal">{{ block.settings.sublink_title }}</h3>
           {% if block.settings.linklist %}
             <ul>
               {% for link in block.settings.linklist.links %}
                 <li>
-                  <a href="{{ link.url }}">{{ link.title }}</a>
+                  <a class="text-sm text-[#505050]" href="{{ link.url }}">{{ link.title }}</a>
                 </li>
               {% endfor %}
             </ul>
@@ -22,30 +22,62 @@
         </div>
 
       {% elsif block.type == 'extra' %}
-        <div class="flex-1 footer-extra">
+        <div class="flex-1 footer-extra flex flex-col gap-8">
           <!-- Formas de Pagamento -->
-          <h4>Formas de Pagamento</h4>
-          <div class="payment-methods flex gap-2">
-            {% if block.settings.pay_mastercard %}
-              ain
-            {% endif %}
+          <h3 class="text-sm text-black font-normal">{{ block.settings.title_payments }}</h3>
+          <div class="payment-methods flex flex-wrap gap-4">
             {% if block.settings.pay_visa %}
-              ain 2
+              {% render 'icon-pay-visa' %}
             {% endif %}
-            <!-- ... e assim por diante ... -->
+            {% if block.settings.pay_mastercard %}
+              {% render 'icon-pay-master' %}
+            {% endif %}
+            {% if block.settings.pay_elo %}
+              {% render 'icon-pay-elo' %}
+            {% endif %}
+            {% if block.settings.pay_dinners %}
+              {% render 'icon-pay-dinners' %}
+            {% endif %}
+            {% if block.settings.pay_american %}
+              {% render 'icon-pay-american' %}
+            {% endif %}
+            {% if block.settings.pay_jcb %}
+              {% render 'icon-pay-jcb' %}
+            {% endif %}
+            {% if block.settings.pay_aura %}
+              {% render 'icon-pay-aura' %}
+            {% endif %}
+            {% if block.settings.pay_hiper %}
+              {% render 'icon-pay-hiper' %}
+            {% endif %}
+            {% if block.settings.pay_sodexo %}
+              {% render 'icon-pay-sodexo' %}
+            {% endif %}
+            {% if block.settings.pay_boleto %}
+              {% render 'icon-pay-boleto' %}
+            {% endif %}
+            {% if block.settings.pay_pix %}
+              {% render 'icon-pay-pix' %}
+            {% endif %}
+            {% if block.settings.pay_gpay %}
+              {% render 'icon-pay-gpay' %}
+            {% endif %}
+            {% if block.settings.pay_yapay %}
+              {% render 'icon-pay-yapay' %}
+            {% endif %}
           </div>
 
           <!-- Redes Sociais -->
-          <h4>Redes Sociais</h4>
-          <div class="social-links flex gap-2">
-            {% if block.settings.social_facebook %}
-              <a href="{{ block.settings.facebook_url }}" target="_blank">Facebook Icon</a>
-            {% endif %}
-            {% if block.settings.social_instagram %}
-              <a href="{{ block.settings.instagram_url }}" target="_blank">Instagram Icon</a>
-            {% endif %}
-            <!-- etc. -->
-          </div>
+          {% if block.settings.active_social_media %}
+            <h3 class="text-sm text-black font-normal">{{ block.settings.title_social_media }}</h3>
+            <div class="social-links flex gap-2">
+              {% if settings.social_facebook_link != blank %}
+                <a href="{{ settings.social_facebook_link }}" target="_blank">
+                  {% render 'icon-social-facebook' %}
+                </a>
+              {% endif %}
+            </div>
+          {% endif %}
         </div>
       {% endif %}
     {% endfor %}
