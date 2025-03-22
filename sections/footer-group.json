@@ -1,21 +1,72 @@
 /*
-* ------------------------------------------------------------
-* IMPORTANT: The contents of this file are auto-generated.
-*
-* This file may be updated by the Shopify admin theme editor
-* or related systems. Please exercise caution as any changes
-* made to this file may be overwritten.
-* ------------------------------------------------------------
-*/
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "name": "Footer",
   "type": "footer",
   "sections": {
     "footer": {
       "type": "footer",
-      "blocks": {},
-      "block_order": [],
-      "settings": {}
+      "blocks": {
+        "links_VA9WrW": {
+          "type": "links",
+          "settings": {
+            "sublink_title": "INSTITUCIONAL",
+            "linklist": "institucional"
+          }
+        },
+        "links_V9fbij": {
+          "type": "links",
+          "settings": {
+            "sublink_title": "POLITICAS",
+            "linklist": "politicas"
+          }
+        },
+        "links_wef9mJ": {
+          "type": "links",
+          "settings": {
+            "sublink_title": "CENTRAL DO CLIENTE",
+            "linklist": "central-do-cliente"
+          }
+        },
+        "extra_zDmDmh": {
+          "type": "extra",
+          "settings": {
+            "active_social_media": true,
+            "title_social_media": "SIGA-NOS",
+            "title_payments": "FORMAS DE PAGAMENTO",
+            "pay_mastercard": true,
+            "pay_visa": true,
+            "pay_elo": true,
+            "pay_dinners": true,
+            "pay_american": true,
+            "pay_jcb": true,
+            "pay_aura": true,
+            "pay_hiper": true,
+            "pay_sodexo": true,
+            "pay_boleto": true,
+            "pay_pix": true,
+            "pay_gpay": true,
+            "pay_yapay": true
+          }
+        }
+      },
+      "block_order": [
+        "links_VA9WrW",
+        "links_V9fbij",
+        "links_wef9mJ",
+        "extra_zDmDmh"
+      ],
+      "settings": {
+        "active_newsletter": true,
+        "newsletter_text": "<h2>INSCREVA-SE EM NOSSA NEWSLETTER</h2><p>Fique por dentro das novidades, promoções e muito mais.</p>"
+      }
     }
   },
   "order": [
