@@ -1,0 +1,240 @@
+<div>
+  <div></div>
+  <div></div>
+</div>
+
+{% schema %}
+{
+  "name": "Produto",
+  "class": "section",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Mídia (Imagens do produto)"
+    },
+    {
+      "type": "select",
+      "id": "media_size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Pequeno (1/3 da tela)"
+        },
+        {
+          "value": "medium",
+          "label": "Médio (1/2 da tela)"
+        },
+        {
+          "value": "large",
+          "label": "Largo (2/3 da tela)"
+        }
+      ],
+      "default": "medium",
+      "label": "Largura da mídia para desktop",
+      "info": "A mídia é otimizada automaticamente para dispositivos móveis."
+    },
+    {
+      "type": "select",
+      "id": "gallery_layout",
+      "options": [
+        {
+          "value": "stacked",
+          "label": "Empilhado"
+        },
+        {
+          "value": "columns",
+          "label": "Colunas"
+        },
+        {
+          "value": "thumbnail",
+          "label": "Miniaturas"
+        },
+        {
+          "value": "thumbnail_slider",
+          "label": "Carrosel de miniaturas"
+        }
+      ],
+      "default": "stacked",
+      "label": "Layout para desktop"
+    },
+    {
+        "type": "select",
+        "id": "media_position",
+        "options": [
+          {
+            "value": "left",
+            "label": "Esquerda"
+          },
+          {
+            "value": "right",
+            "label": "Direita"
+          }
+        ],
+        "default": "left",
+        "label": "Posição da mídia no desktop",
+        "info": "A posição é otimizada automaticamente para dispositivos móveis."
+      },
+      {
+        "type": "select",
+        "id": "image_zoom",
+        "options": [
+          {
+            "value": "lightbox",
+            "label": "Abrir Modal"
+          },
+          {
+            "value": "hover",
+            "label": "Clicar e passar o cursor"
+          },
+          {
+            "value": "none",
+            "label": "Sem zoom"
+          }
+        ],
+        "default": "lightbox",
+        "label": "Zoom de imagem",
+        "info": "Clique e passe o cursor para abrir a janela modal no celular."
+      },
+      {
+        "type": "select",
+        "id": "mobile_thumbnails",
+        "options": [
+          {
+            "value": "columns",
+            "label": "Colunas"
+          },
+          {
+            "value": "show",
+            "label": "Exibir miniaturas"
+          },
+          {
+            "value": "hide",
+            "label": "Ocultar miniaturas"
+          }
+        ],
+        "default": "hide",
+        "label": "Layout em dispositivos móveis"
+      }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Texto",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "Texto"
+        }
+      ]
+    },
+    {
+      "type": "title",
+      "name": "Nome do Produto",
+      "limit": 1
+    },
+    {
+      "type": "price",
+      "name": "Preço do Produto",
+      "limit": 1
+    },
+    {
+      "type": "sku",
+      "name": "SKU",
+      "limit": 1
+    },
+    {
+      "type": "inventory",
+      "name": "Status de Estoque",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "text_style",
+          "options": [
+            {
+              "value": "body",
+              "label": "Corpo"
+            },
+            {
+              "value": "subtitle",
+              "label": "Legenda"
+            },
+            {
+              "value": "uppercase",
+              "label": "Letras Maipusculas"
+            }
+          ],
+          "default": "body",
+          "label": "Corpo"
+        },
+        {
+          "type": "range",
+          "id": "inventory_threshold",
+          "label": "Limite de Estoque",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "info": "Escolha 0 para sempre mostrar no estoque, se disponível",
+          "default": 10
+        },
+        {
+          "type": "checkbox",
+          "id": "show_inventory_quantity",
+          "label": "Mostrar contagem de estoque",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "quantity_selector",
+      "name": "Seletor de quantidade",
+      "limit": 1
+    },
+    {
+      "type": "variant_picker",
+      "name": "Seletor de variante",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "picker_type",
+          "options": [
+            {
+              "value": "dropdown",
+              "label": "Menu suspenso"
+            },
+            {
+              "value": "button",
+              "label": "Pílulas (Botões)"
+            }
+          ],
+          "default": "button",
+          "label": "Estilo"
+        },
+        {
+          "id": "swatch_shape",
+          "label": "Amostra",
+          "type": "select",
+          "options": [
+            {
+              "value": "circle",
+              "label": "Círculo"
+            },
+            {
+              "value": "square",
+              "label": "Quadrado"
+            },
+            {
+              "value": "none",
+              "label": "Nenhum"
+            }
+          ],
+          "default": "circle"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
