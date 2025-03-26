@@ -83,6 +83,8 @@ class MySlider extends HTMLElement {
         const itemsTab = parseInt(this.dataset.qtyTab) || 2;
         const itemsMob = parseInt(this.dataset.qtyMob) || 1;
 
+        console.log(itemsDesk, itemsTab, itemsMob, loop, dots, autoplay, pauseHover, autoplay, autoplayTimeout, 'slider')
+
         // Monta o owlOptions
         const owlOptions = {
             loop: loop,

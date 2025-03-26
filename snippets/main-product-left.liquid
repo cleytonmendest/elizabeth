@@ -1,0 +1,24 @@
+<div>
+  <my-slider
+    class="block w-full"
+    data-section-id="{{ id }}"
+    data-loop="true"
+    data-items="{{ product.images.size }}"
+    data-qty-desk="1"
+    data-qty-tab="1"
+    data-qty-mob="1"
+    data-autoplay="false"
+    data-ap-time=""
+    data-pause-hover=""
+    data-dot=""
+  >
+    {% comment %} OBRIGATORIO TER A DIV "my-slider__container" PARA O CORRETO FUNCIONAMENTO {% endcomment %}
+    <div class="my-slider__container overflow-hidden">
+      {%- for image in product.images -%}
+        <div class="carousel-item flex justify-center">
+            <img src="{{ image | image_url }}" alt="{{ product.title }}" width="{{ image.width }}" height="{{ image.height }}">
+        </div>
+      {% endfor %}
+    </div>
+  </my-slider>
+</div>

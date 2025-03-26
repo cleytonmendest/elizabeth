@@ -37,9 +37,6 @@
         <span class="line-through text-[#A9A9A9] text-sm font-light">{{ compare_at_price | money }}</span>
       {%- endif -%}
       <span class="price-item price-item--sale price-item--last price-v2">
-        {% comment %} {% if product.price_varies %}
-          <span>A partir de:</span>
-        {% endif %} {% endcomment %}
         <span class="text-sm text-[#1E1E1E]">
           {{ money_price }}
         </span>
