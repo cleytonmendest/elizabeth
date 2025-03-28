@@ -74,7 +74,7 @@
   <main-header class="w-full block relative z-10" data-type="{{ header_type }}">
     <div
       id="main-header-container"
-      class="w-full transition-all duration-300 {% if transparent == false %}bg-[--bg-header]{% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %} {% if header_type == "fixed-transparent" %} lg:hover:bg-[--bg-header] {% endif %} group group-[.is-scrolling]"
+      class="w-full transition-all duration-300 {% if transparent == false or template.name != 'index' %}bg-[--bg-header]{% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %} {% if header_type == "fixed-transparent" %} lg:hover:bg-[--bg-header] {% endif %} group group-[.is-scrolling]"
     >
       <div class="!py-3 page-width w-full">
         <div class="flex justify-between">
