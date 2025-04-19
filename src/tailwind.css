@@ -16,7 +16,7 @@
     }
 
     .is-scrolling {
-        background-color: var(--bg-header);
+        background-color: var(--bg-header)!important;
         top: 0;
     }
 }

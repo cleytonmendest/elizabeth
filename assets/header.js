@@ -20,31 +20,23 @@ class MainHeader extends HTMLElement {
     initHeader() {
         if (this.initialized) return;
 
-        this.classList.add('main-header');
         this.updateHeight();
-
-        switch (this.headerType) {
-            case 'fixed':
-                this.classList.add('main-header__fixed');
-                break;
-            case 'transparent':
-                this.container.classList.add('main-header__transparent');
-                break;
-            case 'fixed-transparent':
-                this.classList.add('main-header__fixed-transparent');
-                break;
-            case 'basic':
-            default:
-                // Não faz nada para 'basic'
-                break;
-        }
         this.initialized = true;
     }
 
     updateHeight() {
-        if (this.headerType === 'fixed') {
+        const desktopBreakpoint = 1024;
+        const isDesktop = window.innerWidth >= desktopBreakpoint;
+
+        const needsHeight =
+            (this.headerType === 'fixed') ||
+            (this.headerType === 'fixed-transparent' && !isDesktop);
+
+        if (needsHeight) {
             const headerHeight = this.container.offsetHeight;
             this.style.height = `${headerHeight}px`;
+        } else {
+            this.style.height = '';
         }
     }
 

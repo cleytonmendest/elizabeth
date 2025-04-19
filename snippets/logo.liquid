@@ -1,6 +1,6 @@
 <div class="flex-[1] justify-center items-center flex max-lg:order-2">
   <h1 class="w-fit">
-    <a href="{{ routes.root_url }}" class="transition-colors {% if header_type == "fixed-transparent" %}text-[--icons_color2] lg:group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}">
+    <a href="{{ routes.root_url }}" class="transition-colors {% if header_type == "fixed-transparent" %} text-[--icons_color] lg:text-[--icons_color2] lg:group-hover:text-[--icons_color] lg:group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}">
       {% if settings['logo_svg'] != blank %}
         <div style="max-width: {{ settings.logo_width }}px;" class="w-full">
           {{ settings['logo_svg'] }}
