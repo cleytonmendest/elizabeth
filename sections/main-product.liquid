@@ -2,7 +2,7 @@
 {% assign media_position = section.settings.media_position %}
 
 <div class="page-width">
-  <div class="flex flex-col {% if media_position == 'left' %} lg:flex-row {% else %} lg:flex-row-reverse {% endif %}">
+  <div class="flex flex-col gap-5 {% if media_position == 'left' %} lg:flex-row {% else %} lg:flex-row-reverse {% endif %}">
     <div
       class="overflow-hidden {% if media_size == 'small' or media_size == 'medium' %} lg:flex-1 {% elsif media_size == 'large' %} lg:flex-[2] {% endif %}"
     >
@@ -255,7 +255,7 @@
     },
     {
       "type": "description",
-      "name": "t:sections.main-product.blocks.description.name",
+      "name": "Descrição do produto",
       "limit": 1
     },
     {

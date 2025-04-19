@@ -1,0 +1,58 @@
+{%- liquid
+  assign variants_json = product.variants | json
+  assign current_variant = product.selected_or_first_available_variant
+  assign variable_name = 
+-%}
+
+{%- unless product.has_only_default_variant -%}
+  <variant-selects
+    id="variant-selects-{{ section.id }}"
+    data-section="{{ section.id }}"
+    data-url="{{ product.url }}"
+    data-url="{{ product.url }}?variant={{ current_variant.id }}"
+    class="flex flex-col"
+  >
+    {%- for option in product.options_with_values -%}
+      {%- liquid
+        assign swatch_count = option.values | map: 'swatch' | compact | size
+        assign picker_type = block.settings.picker_type
+
+        if swatch_count > 0 and block.settings.swatch_shape != 'none'
+          if block.settings.picker_type == 'dropdown'
+            assign picker_type = 'swatch_dropdown'
+          else
+            assign picker_type = 'swatch'
+          endif
+        endif
+      -%}
+
+      <div>
+        <fieldset>
+          <legend class="">
+            {% if picker_type == "swatch" %}
+              <span>
+                {{ option.name }}:
+              </span>
+              <span data-selected-swatch-value="{{ option.name }}">
+                {{- option.selected_value -}}
+              </span>
+            {% else %}
+              <span>
+                {{ option.name }}
+              </span>
+            {% endif %}
+          </legend>
+          {% render 'product-variant-options',
+            product: product,
+            option: option,
+            block: block,
+            picker_type: picker_type
+          %}
+        </fieldset>
+      </div>
+    {%- endfor -%}
+    <script type="application/json">
+      {{ product.variants | json }}
+    </script>
+  </variant-selects>
+{%- endunless -%}

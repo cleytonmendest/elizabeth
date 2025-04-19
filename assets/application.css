@@ -768,6 +768,10 @@ input[type="number"]::-webkit-inner-spin-button,
   height: 100%;
 }
 
+.h-11 {
+  height: 2.75rem;
+}
+
 .min-h-56 {
   min-height: 14rem;
 }
@@ -807,6 +811,14 @@ input[type="number"]::-webkit-inner-spin-button,
 
 .w-screen {
   width: 100vw;
+}
+
+.w-11 {
+  width: 2.75rem;
+}
+
+.w-8 {
+  width: 2rem;
 }
 
 .min-w-52 {
@@ -972,6 +984,11 @@ input[type="number"]::-webkit-inner-spin-button,
   border-color: rgb(15 23 42 / var(--tw-border-opacity));
 }
 
+.border-black {
+  --tw-border-opacity: 1;
+  border-color: rgb(0 0 0 / var(--tw-border-opacity));
+}
+
 .bg-\[\#12121280\] {
   background-color: #12121280;
 }
@@ -1004,6 +1021,10 @@ input[type="number"]::-webkit-inner-spin-button,
 
 .bg-\[--icons_color2\] {
   background-color: var(--icons_color2);
+}
+
+.bg-\[swatch_value\] {
+  background-color: swatch value;
 }
 
 .bg-black {

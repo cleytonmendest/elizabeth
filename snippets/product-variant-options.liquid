@@ -1,0 +1,38 @@
+{%- liquid
+  assign variants_available = product.variants | map: 'available'
+
+  assign product_form_id = 'product-form-' | append: section.id
+-%}
+<div class="flex gap-2">
+  {%- for value in option.values -%}
+    {%- liquid
+      assign option_disabled = true
+
+      assign checked = false
+      if option.selected_value == value
+        assign checked = true
+      endif
+
+      if value.swatch.image
+        assign image_url = value.swatch.image | image_url: width: 50
+        assign swatch_value = 'url(' | append: image_url | append: ')'
+      elsif value.swatch.color
+        assign swatch_value = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+      else
+        assign swatch_value = null
+      endif
+    -%}
+
+    {%- capture input_id -%}
+      {{ section.id }}-{{ option.position }}-{{ forloop.index0 -}}
+    {%- endcapture -%}
+
+    {% if swatch_value != null %}
+      <div class="w-8 h-8 border border-black">
+        <span style="background-color: {{ swatch_value }}" class="w-full h-full block"> </span>
+      </div>
+    {% else %}
+      <div class="px-3 py-1 border border-black">{{ value }}</div>
+    {% endif %}
+  {% endfor %}
+</div>

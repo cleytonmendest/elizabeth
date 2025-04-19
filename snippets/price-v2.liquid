@@ -34,10 +34,10 @@
   <div class="">
     <div class="flex gap-2 items-center">
       {%- if compare_at_price > price -%}
-        <span class="line-through text-[#A9A9A9] text-sm font-light">{{ compare_at_price | money }}</span>
+        <span class="line-through {% if pdp %} text-lg {% else %} text-sm {% endif %} text-[#A9A9A9] font-light">{{ compare_at_price | money }}</span>
       {%- endif -%}
       <span class="price-item price-item--sale price-item--last price-v2">
-        <span class="text-sm text-[#1E1E1E]">
+        <span class="{% if pdp %} text-lg font-semibold {% else %} text-sm {% endif %} text-[#1E1E1E]">
           {{ money_price }}
         </span>
       </span>
