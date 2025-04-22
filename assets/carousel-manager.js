@@ -24,8 +24,6 @@ class AnnouncementBar extends HTMLElement {
         const direction = this.dataset.direction || 'left';
         const pauseOnHover = this.dataset.pauseHover !== 'false';
 
-        console.log(duration, gap, direction, pauseOnHover, 'marqueeee')
-
         $marquee.marquee({
             duration: duration,
             gap: gap,
@@ -82,8 +80,6 @@ class MySlider extends HTMLElement {
         const itemsDesk = parseInt(this.dataset.qtyDesk) || 4;
         const itemsTab = parseInt(this.dataset.qtyTab) || 2;
         const itemsMob = parseInt(this.dataset.qtyMob) || 1;
-
-        console.log(itemsDesk, itemsTab, itemsMob, loop, dots, autoplay, pauseHover, autoplay, autoplayTimeout, 'slider')
 
         // Monta o owlOptions
         const owlOptions = {

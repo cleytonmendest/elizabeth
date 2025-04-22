@@ -1,7 +1,7 @@
 {%- liquid
   assign variants_json = product.variants | json
+
   assign current_variant = product.selected_or_first_available_variant
-  assign variable_name = 
 -%}
 
 {%- unless product.has_only_default_variant -%}
@@ -46,7 +46,7 @@
             product: product,
             option: option,
             block: block,
-            picker_type: picker_type
+            picker_type: picker_type,
           %}
         </fieldset>
       </div>
@@ -56,3 +56,5 @@
     </script>
   </variant-selects>
 {%- endunless -%}
+
+<script src="{{ 'variations-selector.js' | asset_url }}" defer></script>

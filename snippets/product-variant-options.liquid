@@ -1,7 +1,10 @@
 {%- liquid
   assign variants_available = product.variants | map: 'available'
+  assign variants_id = product.variants | map: 'id'
 
   assign product_form_id = 'product-form-' | append: section.id
+
+  assign shape = block.settings.swatch_shape
 -%}
 <div class="flex gap-2">
   {%- for value in option.values -%}
@@ -27,12 +30,26 @@
       {{ section.id }}-{{ option.position }}-{{ forloop.index0 -}}
     {%- endcapture -%}
 
-    {% if swatch_value != null %}
-      <div class="w-8 h-8 border border-black">
-        <span style="background-color: {{ swatch_value }}" class="w-full h-full block"> </span>
-      </div>
-    {% else %}
-      <div class="px-3 py-1 border border-black">{{ value }}</div>
-    {% endif %}
+    <div>
+      <input
+        type="radio"
+        id="{{ input_id }}"
+        name="{{ option.name }}"
+        value="{{ value | escape }}"
+        form="{{ product_form_id }}"
+        class="sr-only peer"
+        {% if checked %}
+          checked
+        {% endif %}
+      >
+
+      {% if swatch_value != null %}
+        <label for="{{ input_id }}" class="w-8 h-8 block cursor-pointer peer-checked:ring-1 peer-checked:ring-offset-2 peer-checked:ring-gray-800 {% if shape == 'circle' %} rounded-[100%] overflow-hidden {% endif %}">
+          <span style="background-color: {{ swatch_value }}" class="w-full h-full border block border-gray-600 {% if shape == 'circle' %} rounded-[100%] overflow-hidden {% endif %}"> </span>
+        </label>
+      {% else %}
+        <label for="{{ input_id }}" class="px-3 py-1 border border-black cursor-pointer peer-checked:bg-gray-900 peer-checked:text-white">{{ value }}</label>
+      {% endif %}
+    </div>
   {% endfor %}
 </div>
