@@ -32,6 +32,8 @@ class VariantSelects extends HTMLElement {
         this.updateOptions();
         this.currentVariant = this._findCurrentVariant();
 
+        this._updateAvailability();
+
         this.changeHandler = this.onVariantChange.bind(this);
         this.addEventListener('change', this.changeHandler);
     }
@@ -47,7 +49,8 @@ class VariantSelects extends HTMLElement {
         this.updateOptions();
 
         this.currentVariant = this._findCurrentVariant();
-        console.log('Variante atualizada encontrada:', this.currentVariant);
+
+        this._updateAvailability();
 
         this.dispatchEvent(new CustomEvent('variant:change', {
             detail: {
@@ -76,6 +79,45 @@ class VariantSelects extends HTMLElement {
             });
             return optionsMatchLength && optionsMatchValues;
         });
+    }
+
+    _updateAvailability() {
+        const currentSelections = [...this.options];
+
+        const availableVariantMap = new Map();
+        this.variants.forEach(variant => {
+            const key = variant.options.join('|');
+            availableVariantMap.set(key, variant.available);
+        });
+
+        console.log('VariantSelects: Atualizando disponibilidade...', availableVariantMap);
+
+        this.querySelectorAll('select, fieldset').forEach((element, optionIndex) => {
+
+            const inputsOrOptions = element.tagName === 'SELECT'
+                ? Array.from(element.options)
+                : Array.from(element.querySelectorAll('input[type="radio"]'));
+
+            inputsOrOptions.forEach(inputOrOption => {
+                const valueToCheck = inputOrOption.value;
+                const potentialOptions = [...currentSelections];
+                potentialOptions[optionIndex] = valueToCheck;
+                const potentialKey = potentialOptions.join('|');
+                const isAvailable = availableVariantMap.has(potentialKey) && availableVariantMap.get(potentialKey) === true;
+
+                let targetElementForClass = null;
+                if (element.tagName === 'FIELDSET') {
+                    targetElementForClass = element.querySelector(`label[for="${inputOrOption.id}"]`);
+                } else if (element.tagName === 'SELECT') {
+                    targetElementForClass = inputOrOption; // Aplica classe na <option>
+                }
+
+                if(targetElementForClass) {
+                    targetElementForClass.classList.toggle('is-unavailable', !isAvailable);
+                }
+            });
+        });
+        console.log('VariantSelects: Disponibilidade atualizada.'); // Debug
     }
 }
 
