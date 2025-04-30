@@ -52,13 +52,17 @@ class VariantSelects extends HTMLElement {
 
         this._updateAvailability();
 
-        this.dispatchEvent(new CustomEvent('variant:change', {
+        console.log('variant change after')
+
+        document.dispatchEvent(new CustomEvent('variant:change', {
             detail: {
                 variant: this.currentVariant
             },
             bubbles: true,
             composed: true
         }));
+
+        console.log('variant change before')
     }
 
     updateOptions() {
@@ -90,8 +94,6 @@ class VariantSelects extends HTMLElement {
             availableVariantMap.set(key, variant.available);
         });
 
-        console.log('VariantSelects: Atualizando disponibilidade...', availableVariantMap);
-
         this.querySelectorAll('select, fieldset').forEach((element, optionIndex) => {
 
             const inputsOrOptions = element.tagName === 'SELECT'
@@ -109,7 +111,7 @@ class VariantSelects extends HTMLElement {
                 if (element.tagName === 'FIELDSET') {
                     targetElementForClass = element.querySelector(`label[for="${inputOrOption.id}"]`);
                 } else if (element.tagName === 'SELECT') {
-                    targetElementForClass = inputOrOption; // Aplica classe na <option>
+                    targetElementForClass = inputOrOption;
                 }
 
                 if(targetElementForClass) {
@@ -117,7 +119,6 @@ class VariantSelects extends HTMLElement {
                 }
             });
         });
-        console.log('VariantSelects: Disponibilidade atualizada.'); // Debug
     }
 }
 

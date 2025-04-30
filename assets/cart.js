@@ -203,8 +203,53 @@ customElements.define('cart-drawer', CartDrawer);
 class AddToCart extends HTMLElement {
     constructor() {
         super();
+
         this.form = this.querySelector('form');
-        this.form.addEventListener('submit', this.submitHandler.bind(this));
+        this.button = this.querySelector('button[name="add"]');
+        this.hiddenInput = this.form ? this.form.querySelector('input[name="id"]') : null;
+        this.variantChangeHandler = this._onVariantChange.bind(this)
+    }
+
+    connectedCallback() {
+        if (this.form) {
+            this.form.addEventListener('submit', this.submitHandler.bind(this));
+        }
+
+        console.log('connected')
+        document.addEventListener('variant:change', this._onVariantChange.bind(this));
+    }
+
+    disconnectedCallback() {
+        if (this.form) {
+            this.form.removeEventListener('submit', this.submitHandler);
+        }
+        document.removeEventListener('variant:change', this._onVariantChange.bind(this));
+    }
+
+    _onVariantChange(event) {
+        const variant = event.detail.variant;
+
+        console.log(variant, 'onvariantchange')
+        this._updateInputAndButton(variant);
+    }
+
+    _updateInputAndButton(variant) {
+        // Atualiza o Input Hidden
+        if (this.hiddenInput) {
+            this.hiddenInput.value = variant ? variant.id : '';
+        }
+
+        // Atualiza o Botão
+        if (this.button) {
+            if (variant && variant.available) {
+                // Variante existe e está disponível
+                this.button.disabled = false;
+                this.button.textContent = 'ADICIONAR AO CARRINHO';
+            } else {
+                this.button.disabled = true;
+                this.button.textContent = variant ? 'ESGOTADO' : 'INDISPONÍVEL';
+            }
+        }
     }
 
     async submitHandler(event) {

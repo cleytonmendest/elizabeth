@@ -458,8 +458,26 @@ input[type="number"]::-webkit-inner-spin-button,
 }
 
 .is-scrolling {
-  background-color: var(--bg-header)!important;
+  background-color: var(--bg-header) !important;
   top: 0;
+}
+
+label.swatch-label.is-unavailable {
+  border-style: dashed;
+  border-color: #9ca3af;
+}
+
+label.swatch-label.is-unavailable::after {
+  content: '';
+  width: calc(40px * 1.414);
+  height: 1px;
+  background-color: rgb(18,18,18);
+  transform: rotate(-45deg);
+  position: absolute;
+}
+
+label.not-swatch.is-unavailable {
+  text-decoration: line-through;
 }
 
 *, ::before, ::after {
@@ -1485,25 +1503,6 @@ input[type="number"]::-webkit-inner-spin-button,
 
 .peer:checked ~ .peer-checked\:ring-offset-2 {
   --tw-ring-offset-width: 2px;
-}
-
-.peer:disabled ~ .peer-disabled\:block {
-  display: block;
-}
-
-.peer:disabled ~ .peer-disabled\:bg-slate-400 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(148 163 184 / var(--tw-bg-opacity));
-}
-
-.peer:disabled ~ .peer-disabled\:opacity-50 {
-  opacity: 0.5;
-}
-
-.peer:disabled ~ .peer-disabled\:ring-0 {
-  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
-  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color);
-  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
 }
 
 @media not all and (min-width: 1024px) {
