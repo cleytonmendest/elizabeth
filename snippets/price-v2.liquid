@@ -4,10 +4,6 @@
   Accepts:
   - product: {Object} Product Liquid object (optional)
   - use_variant: {Boolean} Renders selected or first variant price instead of overall product pricing (optional)
-  - show_badges: {Boolean} Renders 'Sale' and 'Sold Out' tags if the product matches the condition (optional)
-  - price_class: {String} Adds a price class to the price element (optional)
-  - show_compare_at_price: {Boolean} Renders the compare at price if the product matches the condition (optional)
-
   Usage:
   {% render 'price', product: product %}
 {% endcomment %}
@@ -20,27 +16,48 @@
 
   assign compare_at_price = target.compare_at_price
   assign price = target.price | default: 1999
-  assign price_min = product.price_min
-  assign price_max = product.price_max
-  assign available = target.available | default: false
   assign money_price = price | money
-  assign money_price_min = price_min | money
-  assign money_price_max = price_max | money
+  assign min_value = settings.min_value_installment | times: 100
+  assign max_installment = settings.max_installments | default: 1
+
+  assign show_installments = settings.show_installments | default: true
+  assign actual_installments = 1
+  assign final_installment_value = 0
+
+  if price > 0 and max_installment > 1 and min_value >= 0
+    for i in (2..max_installment) reversed
+      assign installment_value_check = price | divided_by: i
+      if installment_value_check >= min_value
+        assign actual_installments = i
+        assign final_installment_value = installment_value_check
+        break
+      endif
+    endfor
+  endif
+
+  assign final_installment_value = price | divided_by: actual_installments
 -%}
 
-<div
-  class="price"
+<price-component
+  class="flex flex-col"
+  id="{{ product.id }}"
 >
-  <div class="">
-    <div class="flex gap-2 items-center">
-      {%- if compare_at_price > price -%}
-        <span class="line-through {% if pdp %} text-lg {% else %} text-sm {% endif %} text-[#A9A9A9] font-light">{{ compare_at_price | money }}</span>
-      {%- endif -%}
-      <span class="price-item price-item--sale price-item--last price-v2">
-        <span class="{% if pdp %} text-lg font-semibold {% else %} text-sm {% endif %} text-[#1E1E1E]">
-          {{ money_price }}
-        </span>
-      </span>
-    </div>
+  <div class="flex gap-2 items-center">
+    <span class="listing-price line-through {% if compare_at_price > price %} block {% else %} hidden {%- endif -%} {% if pdp %} text-lg {% else %} text-sm {% endif %} text-[#A9A9A9] font-light">
+      {{- compare_at_price | money -}}
+    </span>
+    <span class="selling-price {% if pdp %} text-lg font-semibold {% else %} text-sm {% endif %} text-[#1E1E1E]">
+      {{ money_price }}
+    </span>
   </div>
-</div>
+  {%- if show_installments %}
+    <div>
+      <p class="instalment">
+        Em até
+        <span class="installment-value">{{ actual_installments }}x</span>
+        de
+        <span class="installment-price-value">{{ final_installment_value | money }}</span>
+      </p>
+    </div>
+  {%- endif %}
+</price-component>

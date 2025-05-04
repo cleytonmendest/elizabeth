@@ -1,4 +1,4 @@
-<div>
+<div class="relative flex items-center">
   <my-slider
     class="block w-full"
     data-section-id="{{ id }}"
@@ -16,9 +16,29 @@
     <div class="my-slider__container overflow-hidden">
       {%- for image in product.images -%}
         <div class="carousel-item flex justify-center">
-            <img src="{{ image | image_url }}" alt="{{ product.title }}" width="{{ image.width }}" height="{{ image.height }}">
+          <img
+            class="w-full"
+            src="{{ image | image_url }}"
+            alt="{{ product.title }}"
+            width="{{ image.width }}"
+            height="{{ image.height }}"
+          >
         </div>
       {% endfor %}
     </div>
   </my-slider>
+  <div class="flex absolute w-full justify-between">
+    <button
+      onclick="sliderPrev('{{ section.id }}')"
+      class="text-[#1E1E1E]"
+    >
+      {% render 'icon-short-arrow-left', size: 40 %}
+    </button>
+    <button
+      onclick="sliderNext('{{ section.id }}')"
+      class="text-[#1E1E1E]"
+    >
+      {% render 'icon-short-arrow-right', size: 40 %}
+    </button>
+  </div>
 </div>

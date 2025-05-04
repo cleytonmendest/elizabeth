@@ -2,14 +2,15 @@
 {% assign media_position = section.settings.media_position %}
 
 <div class="page-width">
-  <div class="flex flex-col gap-5 {% if media_position == 'left' %} lg:flex-row {% else %} lg:flex-row-reverse {% endif %}">
+  <div
+    product-context
+    class="flex flex-col gap-5 {% if media_position == 'left' %} lg:flex-row {% else %} lg:flex-row-reverse {% endif %}">
     <div
       class="overflow-hidden {% if media_size == 'small' or media_size == 'medium' %} lg:flex-1 {% elsif media_size == 'large' %} lg:flex-[2] {% endif %}"
     >
       {% render 'main-product-left', id: section.id %}
     </div>
-    <div
-      class="{% if media_size == 'medium' or media_size == 'large' %} lg:flex-1 {% elsif media_size == 'small' %} lg:flex-[2] {% endif %}"
+    <div class="{% if media_size == 'medium' or media_size == 'large' %} lg:flex-1 {% elsif media_size == 'small' %} lg:flex-[2] {% endif %}"
     >
       {% render 'main-product-right', blocks: section.blocks %}
     </div>

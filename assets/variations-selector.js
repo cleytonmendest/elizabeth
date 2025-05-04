@@ -9,6 +9,9 @@ class VariantSelects extends HTMLElement {
 
     connectedCallback() {
         const variantDataElement = this.querySelector('[data-variants]');
+        this.productContext = this.closest('[product-context]');
+
+        console.log(this.productContext, 'productContext')
 
         if (!variantDataElement) {
             console.error('VariantSelects: Elemento <script data-variants> não encontrado!');
@@ -17,7 +20,6 @@ class VariantSelects extends HTMLElement {
 
         try {
             this.variants = JSON.parse(variantDataElement.textContent);
-            // console.log('VariantSelects: Dados das variantes carregados:', this.variants); // Debug
 
             if (!Array.isArray(this.variants) || this.variants.length === 0) {
                 console.warn('VariantSelects: Nenhum dado de variante válido encontrado no JSON.');
@@ -33,6 +35,17 @@ class VariantSelects extends HTMLElement {
         this.currentVariant = this._findCurrentVariant();
 
         this._updateAvailability();
+
+        this._updateURL();
+
+        this.productContext.dispatchEvent(new CustomEvent('variant:change', {
+            detail: {
+                variant: this.currentVariant
+            },
+            bubbles: true,
+            composed: true
+        }));
+        console.log('evento disparado')
 
         this.changeHandler = this.onVariantChange.bind(this);
         this.addEventListener('change', this.changeHandler);
@@ -52,17 +65,22 @@ class VariantSelects extends HTMLElement {
 
         this._updateAvailability();
 
-        console.log('variant change after')
-
-        document.dispatchEvent(new CustomEvent('variant:change', {
+        this.productContext.dispatchEvent(new CustomEvent('variant:change', {
             detail: {
                 variant: this.currentVariant
-            },
-            bubbles: true,
-            composed: true
+            }
         }));
 
-        console.log('variant change before')
+        this._updateURL();
+    }
+
+    _updateURL() {
+        // Só atualiza a URL se uma variante válida foi encontrada
+        if (this.currentVariant) {
+            // Constrói a nova URL com o parâmetro ?variant=ID
+            const newUrl = `${window.location.pathname}?variant=${this.currentVariant.id}`;
+            window.history.replaceState({ path: newUrl }, '', newUrl);
+        }
     }
 
     updateOptions() {

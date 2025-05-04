@@ -211,25 +211,25 @@ class AddToCart extends HTMLElement {
     }
 
     connectedCallback() {
+        this.productContext = this.closest('[product-context]');
+
         if (this.form) {
             this.form.addEventListener('submit', this.submitHandler.bind(this));
         }
 
-        console.log('connected')
-        document.addEventListener('variant:change', this._onVariantChange.bind(this));
+        this.productContext.addEventListener('variant:change', this._onVariantChange.bind(this));
     }
 
     disconnectedCallback() {
         if (this.form) {
             this.form.removeEventListener('submit', this.submitHandler);
         }
-        document.removeEventListener('variant:change', this._onVariantChange.bind(this));
+        this.productContext.removeEventListener('variant:change', this._onVariantChange.bind(this));
     }
 
     _onVariantChange(event) {
         const variant = event.detail.variant;
 
-        console.log(variant, 'onvariantchange')
         this._updateInputAndButton(variant);
     }
 

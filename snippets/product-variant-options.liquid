@@ -43,8 +43,8 @@
         {% endif %}
       >
 
-      {% if swatch_value != null %}
-        <label for="{{ input_id }}" class="swatch-label relative flex items-center justify-center w-8 h-8 cursor-pointer peer-checked:ring-1 peer-checked:ring-offset-2 peer-checked:ring-gray-800 {% if shape == 'circle' %} rounded-[100%] overflow-hidden {% endif %}">
+      {% if swatch_value != null and picker_type == 'swatch' %}
+        <label for="{{ input_id }}" class="swatch-label relative flex items-center justify-center w-8 h-8 cursor-pointer peer-checked:ring-1 peer-checked:ring-offset-2 peer-checked:ring-gray-800 overflow-hidden {% if shape == 'circle' %} rounded-[100%] {% endif %}">
           <span style="background-color: {{ swatch_value }}" class="w-full h-full border block border-gray-600 {% if shape == 'circle' %} rounded-[100%] overflow-hidden {% endif %}"> </span>
           <div class="hidden w-full h-full bg-red-400"></div>
         </label>

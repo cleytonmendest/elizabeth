@@ -10,7 +10,7 @@
     data-section="{{ section.id }}"
     data-url="{{ product.url }}"
     data-url="{{ product.url }}?variant={{ current_variant.id }}"
-    class="flex flex-col"
+    class="flex flex-col gap-4 my-4"
   >
     {%- for option in product.options_with_values -%}
       {%- liquid
@@ -28,25 +28,17 @@
 
       <div>
         <fieldset>
-          <legend class="">
-            {% if picker_type == "swatch" %}
-              <span>
-                {{ option.name }}:
-              </span>
-              <span data-selected-swatch-value="{{ option.name }}">
-                {{- option.selected_value -}}
-              </span>
-            {% else %}
-              <span>
-                {{ option.name }}
-              </span>
-            {% endif %}
+          <legend class="mb-2">
+            <span> {{ option.name }}: </span>
+            <span data-selected-swatch-value="{{ option.name }}">
+              {{- option.selected_value -}}
+            </span>
           </legend>
           {% render 'product-variant-options',
             product: product,
             option: option,
             block: block,
-            picker_type: picker_type,
+            picker_type: picker_type
           %}
         </fieldset>
       </div>
@@ -56,5 +48,3 @@
     </script>
   </variant-selects>
 {%- endunless -%}
-
-<script src="{{ 'variations-selector.js' | asset_url }}" defer></script>
