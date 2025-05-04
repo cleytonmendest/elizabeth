@@ -45,7 +45,6 @@ class VariantSelects extends HTMLElement {
             bubbles: true,
             composed: true
         }));
-        console.log('evento disparado')
 
         this.changeHandler = this.onVariantChange.bind(this);
         this.addEventListener('change', this.changeHandler);

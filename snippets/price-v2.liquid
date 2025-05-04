@@ -41,9 +41,11 @@
 <price-component
   class="flex flex-col"
   id="{{ product.id }}"
+  data-mv="{{ min_value }}"
+  data-mi="{{ max_installment }}"
 >
   <div class="flex gap-2 items-center">
-    <span class="listing-price line-through {% if compare_at_price > price %} block {% else %} hidden {%- endif -%} {% if pdp %} text-lg {% else %} text-sm {% endif %} text-[#A9A9A9] font-light">
+    <span class="listing-price line-through {% if compare_at_price > price %}{% else %} hidden {%- endif -%} {% if pdp %} text-lg {% else %} text-sm {% endif %} text-[#A9A9A9] font-light">
       {{- compare_at_price | money -}}
     </span>
     <span class="selling-price {% if pdp %} text-lg font-semibold {% else %} text-sm {% endif %} text-[#1E1E1E]">
@@ -52,7 +54,7 @@
   </div>
   {%- if show_installments %}
     <div>
-      <p class="instalment">
+      <p class="instalment-container">
         Em até
         <span class="installment-value">{{ actual_installments }}x</span>
         de
