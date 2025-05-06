@@ -1,0 +1,25 @@
+<quantity-selector>
+  <button
+    type="button"
+    name="minus"
+    aria-label="Diminuir quantidade"
+  >
+    {% render 'icon-minus', size: 16 %}
+  </button>
+  <input
+    type="number"
+    name="quantity"
+    value="1"
+    min="1"
+    aria-label="Quantidade"
+    inputmode="numeric"
+    pattern="[0-9]*"
+  >
+  <button
+    type="button"
+    name="plus"
+    aria-label="Aumentar quantidade"
+  >
+    {% render 'icon-plus', size: 16 %}
+  </button>
+</quantity-selector>
