@@ -11,8 +11,6 @@ class VariantSelects extends HTMLElement {
         const variantDataElement = this.querySelector('[data-variants]');
         this.productContext = this.closest('[product-context]');
 
-        console.log(this.productContext, 'productContext')
-
         if (!variantDataElement) {
             console.error('VariantSelects: Elemento <script data-variants> não encontrado!');
             return;

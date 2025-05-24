@@ -1,3 +1,13 @@
+{% liquid
+  assign qtdSideBuy = false
+
+  for block in blocks
+    if block.type == 'quantity_selector'
+      assign qtdSideBuy = block.settings.sideToBuyButton
+    endif
+  endfor
+%}
+
 {% for block in blocks %}
   {% case block.type %}
     {%- when '@app' -%}
@@ -11,7 +21,9 @@
       </p>
     
     {%- when 'quantity_selector' -%}
-      {%- render 'quantity-selector' -%}
+      {% if qtdSideBuy != true %}
+        {%- render 'quantity-selector' -%}
+      {% endif %}
 
     {%- when 'sku' -%}
       <div>SKU não implementado</div>
@@ -55,6 +67,6 @@
         </details>
       </div>
     {%- when 'buy_button' -%}
-      {%- render 'add-to-cart', product: product -%}
+      {%- render 'add-to-cart', product: product, hasQtd: qtdSideBuy  -%}
   {% endcase %}
 {% endfor %}

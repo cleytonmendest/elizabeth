@@ -38,8 +38,6 @@ class PriceComponent extends HTMLElement {
     _onVariantChange(event) {
         const variant = event.detail.variant;
 
-        console.log(variant, 'variant')
-
         this._updatePriceDisplay(variant.price, variant.compare_at_price);
 
         //Altera Installments (Parcelamento)

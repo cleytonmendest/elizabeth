@@ -2,7 +2,7 @@
   {%- form 'product',
     product,
     id: product.id,
-    class: 'form',
+    class: 'form flex gap-8',
     novalidate: 'novalidate',
     data-type: 'add-to-cart-form'
   -%}
@@ -15,7 +15,11 @@
         disabled
       {% endif %}
     >
-    <input class="hidden" type="number" name="quantity" value="1" min="1">
+    {% if hasQtd %}
+      {% render 'quantity-selector', addToCart: true %}
+    {% else %}
+      <input class="hidden" type="number" name="quantity" value="1" min="1">
+    {% endif %}
     <button
       type="submit"
       name="add"

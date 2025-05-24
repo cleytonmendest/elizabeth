@@ -21,46 +21,6 @@
   "page": [],
   "product": [
     {
-      "key": "queries",
-      "namespace": "shopify--discovery--product_search_boost",
-      "name": "Pesquisar impulsos de produtos",
-      "description": "Lista de consultas de pesquisa em que um produto tem melhor classificação nos resultados de pesquisa",
-      "type": {
-        "name": "list.single_line_text_field",
-        "category": "TEXT"
-      }
-    },
-    {
-      "key": "related_products",
-      "namespace": "shopify--discovery--product_recommendation",
-      "name": "Produtos relacionados",
-      "description": "Lista de produtos relacionados",
-      "type": {
-        "name": "list.product_reference",
-        "category": "REFERENCE"
-      }
-    },
-    {
-      "key": "related_products_display",
-      "namespace": "shopify--discovery--product_recommendation",
-      "name": "Configurações de produtos relacionados",
-      "description": "Determina como produtos relacionados são exibidos com recomendações algorítmicas do produto",
-      "type": {
-        "name": "single_line_text_field",
-        "category": "TEXT"
-      }
-    },
-    {
-      "key": "complementary_products",
-      "namespace": "shopify--discovery--product_recommendation",
-      "name": "Produtos complementares",
-      "description": "Lista de produtos complementares",
-      "type": {
-        "name": "list.product_reference",
-        "category": "REFERENCE"
-      }
-    },
-    {
       "key": "target-gender",
       "namespace": "shopify",
       "name": "Gênero alvo",

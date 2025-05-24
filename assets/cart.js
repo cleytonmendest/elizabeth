@@ -27,7 +27,7 @@ function publish(event, detail) {
 
 function debounce(fn, delay) {
     let timer = null;
-    return function(...args) {
+    return function (...args) {
         clearTimeout(timer);
         timer = setTimeout(() => fn(...args), delay);
     };
@@ -184,16 +184,16 @@ class CartDrawer extends HTMLElement {
         const cartEmpty = this.querySelector('#cart-empty');
         const cartContainer = this.querySelector('#cart-container');
         const isVisible = newQtd > 0;
-    
+
         const toggleVisibility = (element, visible) => {
             element.classList.toggle('flex', visible);
             element.classList.toggle('hidden', !visible);
         };
-    
+
         toggleVisibility(qtdBubble, isVisible);
         toggleVisibility(cartEmpty, !isVisible);
         toggleVisibility(cartContainer, isVisible);
-    
+
         qtdBubble.textContent = newQtd;
     }
 }
@@ -207,17 +207,24 @@ class AddToCart extends HTMLElement {
         this.form = this.querySelector('form');
         this.button = this.querySelector('button[name="add"]');
         this.hiddenInput = this.form ? this.form.querySelector('input[name="id"]') : null;
+        this.formQuantityInput = this.form ? this.form.querySelector('input[name="quantity"]') : null;
+
         this.variantChangeHandler = this._onVariantChange.bind(this)
+        this.quantityChangeHandler = this._onQuantityChange.bind(this);
     }
 
     connectedCallback() {
-        this.productContext = this.closest('[product-context]');
-
         if (this.form) {
             this.form.addEventListener('submit', this.submitHandler.bind(this));
         }
 
-        this.productContext.addEventListener('variant:change', this._onVariantChange.bind(this));
+        this.productContext = this.closest('[product-context]');
+        if (this.productContext) {
+            this.productContext.addEventListener('variant:change', this._onVariantChange.bind(this));
+            this.productContext.addEventListener('quantity:change', this.quantityChangeHandler);
+        } else {
+            console.warn('AddToCart: product-context não encontrado.');
+        }
     }
 
     disconnectedCallback() {
@@ -231,6 +238,13 @@ class AddToCart extends HTMLElement {
         const variant = event.detail.variant;
 
         this._updateInputAndButton(variant);
+    }
+
+    _onQuantityChange(event) {
+        const newQuantity = event.detail.quantity;
+        if (this.formQuantityInput) {
+            this.formQuantityInput.value = newQuantity;
+        }
     }
 
     _updateInputAndButton(variant) {
@@ -272,7 +286,7 @@ class AddToCart extends HTMLElement {
             const parser = new DOMParser();
             const doc = parser.parseFromString(text, 'text/html');
             const newCartItem = doc.querySelector('.cart-item'); // Supondo que o novo item tenha a classe 'cart-item'
-            
+
             if (newCartItem) {
                 const cartContainer = document.querySelector('#cart-items-container');
                 cartContainer.appendChild(newCartItem);

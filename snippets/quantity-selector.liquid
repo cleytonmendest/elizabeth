@@ -1,8 +1,9 @@
-<quantity-selector>
+<quantity-selector class="border border-black p-1 flex h-10 w-fit max-w-28">
   <button
     type="button"
     name="minus"
     aria-label="Diminuir quantidade"
+    class="h-full flex items-center justify-center w-[25px]"
   >
     {% render 'icon-minus', size: 16 %}
   </button>
@@ -14,11 +15,13 @@
     aria-label="Quantidade"
     inputmode="numeric"
     pattern="[0-9]*"
+    class="h-full text-center w-[50px]"
   >
   <button
     type="button"
     name="plus"
     aria-label="Aumentar quantidade"
+    class="h-full flex items-center justify-center w-[25px]"
   >
     {% render 'icon-plus', size: 16 %}
   </button>
