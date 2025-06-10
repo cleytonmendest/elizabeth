@@ -4,14 +4,14 @@
 <div class="page-width">
   <div
     product-context
-    class="flex flex-col gap-5 {% if media_position == 'left' %} lg:flex-row {% else %} lg:flex-row-reverse {% endif %}">
+    class="flex flex-col gap-5 {% if media_position == 'left' %} lg:flex-row {% else %} lg:flex-row-reverse {% endif %}"
+  >
     <div
       class="overflow-hidden {% if media_size == 'small' or media_size == 'medium' %} lg:flex-1 {% elsif media_size == 'large' %} lg:flex-[2] {% endif %}"
     >
       {% render 'main-product-left', id: section.id %}
     </div>
-    <div class="{% if media_size == 'medium' or media_size == 'large' %} lg:flex-1 {% elsif media_size == 'small' %} lg:flex-[2] {% endif %}"
-    >
+    <div class="{% if media_size == 'medium' or media_size == 'large' %} lg:flex-1 {% elsif media_size == 'small' %} lg:flex-[2] {% endif %}">
       {% render 'main-product-right', blocks: section.blocks %}
     </div>
   </div>
@@ -207,7 +207,7 @@
       "limit": 1,
       "settings": [
         {
-          "type":"checkbox",
+          "type": "checkbox",
           "id": "sideToBuyButton",
           "label": "Seletor de Quantidade ao lado do Botão Comprar?",
           "info": "Caso ativado, incluirá o Seletor de Quantidade ao lado do Botão Comprar",
@@ -266,7 +266,21 @@
     {
       "type": "description",
       "name": "Descrição do produto",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_title",
+          "label": "Mostrar título?",
+          "default":true
+        },
+        {
+          "type": "text",
+          "id": "title_text",
+          "label": "Título",
+          "default": "Descrição",
+        }
+      ]
     },
     {
       "type": "collapsible_tab",

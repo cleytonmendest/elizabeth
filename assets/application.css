@@ -831,8 +831,16 @@ label.not-swatch.is-unavailable {
   width: 18px;
 }
 
+.w-\[25px\] {
+  width: 25px;
+}
+
 .w-\[385px\] {
   width: 385px;
+}
+
+.w-\[50px\] {
+  width: 50px;
 }
 
 .w-fit {
@@ -848,16 +856,12 @@ label.not-swatch.is-unavailable {
   width: 100vw;
 }
 
-.w-\[25px\] {
-  width: 25px;
-}
-
-.w-\[50px\] {
-  width: 50px;
-}
-
 .min-w-52 {
   min-width: 13rem;
+}
+
+.max-w-28 {
+  max-width: 7rem;
 }
 
 .max-w-\[1080px\] {
@@ -870,14 +874,6 @@ label.not-swatch.is-unavailable {
 
 .max-w-xl {
   max-width: 36rem;
-}
-
-.max-w-24 {
-  max-width: 6rem;
-}
-
-.max-w-28 {
-  max-width: 7rem;
 }
 
 .flex-1 {
@@ -1108,6 +1104,10 @@ label.not-swatch.is-unavailable {
      object-fit: cover;
 }
 
+.p-1 {
+  padding: 0.25rem;
+}
+
 .p-2 {
   padding: 0.5rem;
 }
@@ -1122,10 +1122,6 @@ label.not-swatch.is-unavailable {
 
 .p-5 {
   padding: 1.25rem;
-}
-
-.p-1 {
-  padding: 0.25rem;
 }
 
 .\!px-0 {

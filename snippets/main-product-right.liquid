@@ -19,7 +19,7 @@
       >
         {{- block.settings.text -}}
       </p>
-    
+
     {%- when 'quantity_selector' -%}
       {% if qtdSideBuy != true %}
         {%- render 'quantity-selector' -%}
@@ -42,31 +42,38 @@
       <p>inventory (Falta implementar)</p>
 
     {%- when 'variant_picker' -%}
-      {% render 'product-variant-picker', product:product, block:block %}
+      {% render 'product-variant-picker', product: product, block: block %}
 
     {%- when 'description' -%}
       {%- if product.description != blank -%}
-        <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
-          {{ product.description }}
+        <div class="my-4">
+          {% if block.settings.show_title == true %}
+            <h2 class="font-semibold text-base">{{ block.settings.title_text | default: 'Descrição' }}</h2>
+          {% endif %}
+          <div class="text-sm" {{ block.shopify_attributes }}>
+            {{ product.description }}
+          </div>
         </div>
       {%- endif -%}
     {%- when 'collapsible_tab' -%}
       <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
-        <details id="Details-{{ block.id }}-{{ section.id }}">
-          <summary>
-            <div class="summary__title">
-              <h2 class="h4 accordion__title inline-richtext">
-                {{ block.settings.heading | default: block.settings.page.title | escape }}
-              </h2>
+        {% if block.settings.content != blank or block.settings.page.content != blank %}
+          <details id="Details-{{ block.id }}-{{ section.id }}">
+            <summary>
+              <div class="summary__title">
+                <h2 class="h4 accordion__title inline-richtext">
+                  {{ block.settings.heading | default: block.settings.page.title | escape }}
+                </h2>
+              </div>
+            </summary>
+            <div class="accordion__content rte" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
+              {{ block.settings.content }}
+              {{ block.settings.page.content }}
             </div>
-          </summary>
-          <div class="accordion__content rte" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
-            {{ block.settings.content }}
-            {{ block.settings.page.content }}
-          </div>
-        </details>
+          </details>
+        {% endif %}
       </div>
     {%- when 'buy_button' -%}
-      {%- render 'add-to-cart', product: product, hasQtd: qtdSideBuy  -%}
+      {%- render 'add-to-cart', product: product, hasQtd: qtdSideBuy -%}
   {% endcase %}
 {% endfor %}
