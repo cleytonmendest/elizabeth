@@ -73,6 +73,6 @@
         {% endif %}
       </div>
     {%- when 'buy_button' -%}
-      {%- render 'add-to-cart', product: product, hasQtd: qtdSideBuy -%}
+      {%- render 'add-to-cart', product: product, hasQtd: qtdSideBuy, block:block -%}
   {% endcase %}
 {% endfor %}

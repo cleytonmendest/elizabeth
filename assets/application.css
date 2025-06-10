@@ -1638,6 +1638,10 @@ label.not-swatch.is-unavailable {
     gap: 0px;
   }
 
+  .lg\:gap-8 {
+    gap: 2rem;
+  }
+
   .lg\:rounded-bl-none {
     border-bottom-left-radius: 0px;
   }

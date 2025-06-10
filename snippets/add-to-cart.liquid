@@ -1,8 +1,22 @@
-<add-to-cart>
+<add-to-cart
+  {% if block and block.settings.floating_button == true %}
+    class="fixed bottom-0 right-0 w-full bg-white p-4 z-50 flex"
+  {% endif %}
+>
+  {% if block and block.settings.floating_button == true %}
+    <div>
+      {% if block.settings.show_product_name == true %}
+        <h3>{{ product.title | escape }}</h3>
+      {% endif %}
+      {% if block.settings.show_product_price == true %}
+        {% render 'price-v2', product: product, use_variant: true %}
+      {% endif %}
+    </div>
+  {% endif %}
   {%- form 'product',
     product,
     id: product.id,
-    class: 'form flex gap-8',
+    class: 'form flex lg:gap-8 gap-2',
     novalidate: 'novalidate',
     data-type: 'add-to-cart-form'
   -%}
@@ -31,7 +45,7 @@
         disabled
       {% endif %}
     >
-      ADICIONAR AO CARRINHO
+      {{ block.settings.button_text | default: 'ADICIONAR AO CARRINHO' }}
     </button>
   {%- endform -%}
 </add-to-cart>

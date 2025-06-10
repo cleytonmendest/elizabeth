@@ -25,7 +25,7 @@
   "settings": [
     {
       "type": "header",
-      "content": "Mídia (Imagens do produto)"
+      "content": "Mídia (Imagens do produto)",
     },
     {
       "type": "select",
@@ -210,7 +210,7 @@
           "type": "checkbox",
           "id": "sideToBuyButton",
           "label": "Seletor de Quantidade ao lado do Botão Comprar?",
-          "info": "Caso ativado, incluirá o Seletor de Quantidade ao lado do Botão Comprar",
+          "info": "Caso ativado, incluirá o Seletor de Quantidade ao lado do Botão Comprar e sua localização dentro dos blocos não afetará sua localização na página.",
           "default": true
         }
       ]
@@ -261,7 +261,48 @@
     {
       "type": "buy_button",
       "name": "Botão Comprar",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Configurações de botão"
+        },
+        {
+          "type": "text",
+          "label": "Texto do botão",
+          "id": "button_text",
+          "default": "ADICIONAR AO CARRINHO"
+        },
+        {
+          "type": "header",
+          "content": "Configurações de botão flutuante"
+        },
+        {
+          "type": "checkbox",
+          "label": "Ativa botão de comprar flutuante?",
+          "info": "Somente quando mobile",
+          "id": "floating_button",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "label": "Exibe Seletor de quantidade?",
+          "id": "show_quantity_selector",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "label": "Exibe Nome do produto?",
+          "id": "show_product_name",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "label": "Exibe Preço do produto?",
+          "id": "show_product_price",
+          "default": true
+        }
+      ]
     },
     {
       "type": "description",
