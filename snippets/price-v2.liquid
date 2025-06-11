@@ -20,7 +20,7 @@
   assign min_value = settings.min_value_installment | times: 100
   assign max_installment = settings.max_installments | default: 1
 
-  assign show_installments = settings.show_installments | default: true
+  assign show_installments_settings = settings.show_installments | default: true
   assign actual_installments = 1
   assign final_installment_value = 0
 
@@ -52,7 +52,7 @@
       {{ money_price }}
     </span>
   </div>
-  {%- if show_installments %}
+  {%- if show_installments and show_installments_settings %}
     <div>
       <p class="instalment-container">
         Em até
