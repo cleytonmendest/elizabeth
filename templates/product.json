@@ -22,7 +22,9 @@
         },
         "quantity_selector_XF4zQk": {
           "type": "quantity_selector",
-          "settings": {}
+          "settings": {
+            "sideToBuyButton": true
+          }
         },
         "variant_picker_xzjJXf": {
           "type": "variant_picker",
@@ -41,7 +43,12 @@
         },
         "buy_button_HnrRzY": {
           "type": "buy_button",
-          "settings": {}
+          "settings": {
+            "button_text": "ADICIONAR AO CARRINHO",
+            "floating_button": true,
+            "show_product_name": true,
+            "show_product_price": true
+          }
         }
       },
       "block_order": [
@@ -59,9 +66,28 @@
         "image_zoom": "lightbox",
         "mobile_thumbnails": "hide"
       }
+    },
+    "slider_product_FViMFk": {
+      "type": "slider-product",
+      "name": "Você pode gostar (Slider de Produtos)",
+      "settings": {
+        "collection": "new-in",
+        "title": "Você pode gostar",
+        "subtitle": "",
+        "loop": true,
+        "nav": true,
+        "dot": true,
+        "qty-desk": 4,
+        "qty-tablet": 3,
+        "qty-mob": 1,
+        "autoplay": true,
+        "play-time": 5,
+        "pause-hover": true
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "slider_product_FViMFk"
   ]
 }
