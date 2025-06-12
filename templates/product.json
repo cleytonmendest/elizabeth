@@ -49,6 +49,13 @@
             "show_product_name": true,
             "show_product_price": true
           }
+        },
+        "description_m7ryRj": {
+          "type": "description",
+          "settings": {
+            "show_title": true,
+            "title_text": "Descrição"
+          }
         }
       },
       "block_order": [
@@ -57,7 +64,8 @@
         "quantity_selector_XF4zQk",
         "variant_picker_xzjJXf",
         "inventory_EUwjX6",
-        "buy_button_HnrRzY"
+        "buy_button_HnrRzY",
+        "description_m7ryRj"
       ],
       "settings": {
         "media_size": "medium",
