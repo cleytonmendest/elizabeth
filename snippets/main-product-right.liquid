@@ -8,71 +8,76 @@
   endfor
 %}
 
-{% for block in blocks %}
-  {% case block.type %}
-    {%- when '@app' -%}
-      {% render block %}
-    {%- when 'text' -%}
-      <p
-        class="product__text inline-richtext{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}"
-        {{ block.shopify_attributes }}
-      >
-        {{- block.settings.text -}}
-      </p>
+<div class="sticky top-24 w-full">
+  {% for block in blocks %}
+    {% case block.type %}
+      {%- when '@app' -%}
+        {% render block %}
+      {%- when 'text' -%}
+        <p
+          class="product__text inline-richtext{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}"
+          {{ block.shopify_attributes }}
+        >
+          {{- block.settings.text -}}
+        </p>
 
-    {%- when 'quantity_selector' -%}
-      {% if qtdSideBuy != true %}
-        {%- render 'quantity-selector' -%}
-      {% endif %}
-
-    {%- when 'sku' -%}
-      <div>SKU não implementado</div>
-
-    {%- when 'title' -%}
-      <div class="product__title" {{ block.shopify_attributes }}>
-        <h1 class="text-3xl">{{ product.title | escape }}</h1>
-      </div>
-
-    {%- when 'price' -%}
-      <div role="status" {{ block.shopify_attributes }}>
-        {%- render 'price-v2', product: product, use_variant: true, pdp: true -%}
-      </div>
-
-    {%- when 'inventory' -%}
-      <p>inventory (Falta implementar)</p>
-
-    {%- when 'variant_picker' -%}
-      {% render 'product-variant-picker', product: product, block: block %}
-
-    {%- when 'description' -%}
-      {%- if product.description != blank -%}
-        <div class="my-4">
-          {% if block.settings.show_title == true %}
-            <h2 class="font-semibold text-base">{{ block.settings.title_text | default: 'Descrição' }}</h2>
-          {% endif %}
-          <div class="text-sm" {{ block.shopify_attributes }}>
-            {{ product.description }}
-          </div>
-        </div>
-      {%- endif -%}
-    {%- when 'collapsible_tab' -%}
-      <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
-        {% if block.settings.content != blank or block.settings.page.content != blank %}
-          <details id="Details-{{ block.id }}-{{ section.id }}" class="group">
-            <summary class="flex cursor-pointer justify-between items-center">
-              <h2 class="text-base font-semibold">
-                {{ block.settings.heading | default: block.settings.page.title | escape }}
-              </h2>
-              {% render 'icon-angle-down', size: 16, class: 'transition-transform duration-300 group-open:rotate-180' %}
-            </summary>
-            <div class="text-sm" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
-              {{ block.settings.content }}
-              {{ block.settings.page.content }}
-            </div>
-          </details>
+      {%- when 'quantity_selector' -%}
+        {% if qtdSideBuy != true %}
+          {%- render 'quantity-selector' -%}
         {% endif %}
-      </div>
-    {%- when 'buy_button' -%}
-      {%- render 'add-to-cart', product: product, hasQtd: qtdSideBuy, block:block -%}
-  {% endcase %}
-{% endfor %}
+
+      {%- when 'sku' -%}
+        <div>SKU não implementado</div>
+
+      {%- when 'title' -%}
+        <div class="product__title" {{ block.shopify_attributes }}>
+          <h1 class="text-3xl">{{ product.title | escape }}</h1>
+        </div>
+
+      {%- when 'price' -%}
+        <div role="status" {{ block.shopify_attributes }}>
+          {%- render 'price-v2', product: product, use_variant: true, pdp: true -%}
+        </div>
+
+      {%- when 'inventory' -%}
+        <p>inventory (Falta implementar)</p>
+
+      {%- when 'variant_picker' -%}
+        {% render 'product-variant-picker', product: product, block: block %}
+
+      {%- when 'description' -%}
+        {%- if product.description != blank -%}
+          <div class="my-4">
+            {% if block.settings.show_title == true %}
+              <h2 class="font-semibold text-base">{{ block.settings.title_text | default: 'Descrição' }}</h2>
+            {% endif %}
+            <div class="text-sm" {{ block.shopify_attributes }}>
+              {{ product.description }}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- when 'collapsible_tab' -%}
+        <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
+          {% if block.settings.content != blank or block.settings.page.content != blank %}
+            <details id="Details-{{ block.id }}-{{ section.id }}" class="group">
+              <summary class="flex cursor-pointer justify-between items-center">
+                <h2 class="text-base font-semibold">
+                  {{ block.settings.heading | default: block.settings.page.title | escape }}
+                </h2>
+                {% render 'icon-angle-down',
+                  size: 16,
+                  class: 'transition-transform duration-300 group-open:rotate-180'
+                %}
+              </summary>
+              <div class="text-sm" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
+                {{ block.settings.content }}
+                {{ block.settings.page.content }}
+              </div>
+            </details>
+          {% endif %}
+        </div>
+      {%- when 'buy_button' -%}
+        {%- render 'add-to-cart', product: product, hasQtd: qtdSideBuy, block: block -%}
+    {% endcase %}
+  {% endfor %}
+</div>

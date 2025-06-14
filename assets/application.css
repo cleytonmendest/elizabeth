@@ -616,6 +616,10 @@ label.not-swatch.is-unavailable {
   position: relative;
 }
 
+.sticky {
+  position: sticky;
+}
+
 .inset-0 {
   inset: 0px;
 }
@@ -654,6 +658,10 @@ label.not-swatch.is-unavailable {
 
 .top-full {
   top: 100%;
+}
+
+.top-24 {
+  top: 6rem;
 }
 
 .z-0 {
