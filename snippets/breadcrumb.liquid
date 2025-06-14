@@ -1,0 +1,90 @@
+{%- comment -%}
+  snippets/breadcrumb.liquid
+{%- endcomment -%}
+{%- if template.name != 'index' -%}
+  <nav aria-label="Breadcrumb" class="breadcrumb-nav text-sm w-full">
+    <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+      <li>
+        <a href="{{ routes.root_url }}" class="text-gray-500 hover:underline hover:text-black">Home</a>
+      </li>
+
+      {%- case template.name -%}
+          {%- comment -%} ADICIONE ESTE NOVO BLOCO {%- endcomment -%}
+        {%- when 'list-collections' -%}
+          <li class="text-gray-500 hover:text-black">
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <span class="breadcrumb-current" aria-current="page">Todas as Coleções</span>
+          </li>
+
+        {%- when 'product' -%}
+          {%- assign product_collection = product.collections.first -%}
+          {%- if product_collection -%}
+            <li class="text-gray-500 hover:text-black">
+              <span class="breadcrumb-separator" aria-hidden="true">/</span>
+              <a href="{{ product_collection.url }}" class="breadcrumb-link hover:underline">
+                {{- product_collection.title -}}
+              </a>
+            </li>
+          {%- else -%}
+            <li class="text-gray-500 hover:text-black">
+              <span class="breadcrumb-separator" aria-hidden="true">/</span>
+              <a href="{{ routes.all_products_collection_url }}" class="breadcrumb-link hover:underline">Produtos</a>
+            </li>
+          {%- endif -%}
+          <li class="text-gray-500 hover:text-black">
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <span class="breadcrumb-current" aria-current="page">{{ product.title }}</span>
+          </li>
+
+        {%- when 'collection' -%}
+          <li class="text-gray-500 hover:text-black">
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <span class="breadcrumb-current" aria-current="page">{{ collection.title }}</span>
+          </li>
+
+          {%- comment -%} ... resto dos seus 'when' para article, blog, page, search ... {%- endcomment -%}
+        {%- when 'article' -%}
+          {%- if blog -%}
+            <li class="text-gray-500 hover:text-black">
+              <span class="breadcrumb-separator" aria-hidden="true">/</span>
+              <a href="{{ blog.url }}" class="breadcrumb-link hover:underline">{{ blog.title }}</a>
+            </li>
+          {%- endif -%}
+          <li class="text-gray-500 hover:text-black">
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <span class="breadcrumb-current" aria-current="page">{{ article.title }}</span>
+          </li>
+
+        {%- when 'blog' -%}
+          <li class="text-gray-500 hover:text-black">
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <span class="breadcrumb-current" aria-current="page">{{ blog.title }}</span>
+          </li>
+
+        {%- when 'page' -%}
+          <li class="text-gray-500 hover:text-black">
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <span class="breadcrumb-current" aria-current="page">{{ page.title }}</span>
+          </li>
+
+        {%- when 'search' -%}
+          <li class="text-gray-500 hover:text-black">
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <a href="{{ routes.search_url }}" class="breadcrumb-link hover:underline">Busca</a>
+          </li>
+          {%- if search.performed -%}
+            <li class="text-gray-500 hover:text-black">
+              <span class="breadcrumb-separator" aria-hidden="true">/</span>
+              <span class="breadcrumb-current" aria-current="page">{{ search.terms | escape }}</span>
+            </li>
+          {%- endif -%}
+
+        {%- else -%}
+          <li class="text-gray-500 hover:text-black">
+            <span class="breadcrumb-separator" aria-hidden="true">/</span>
+            <span class="breadcrumb-current" aria-current="page">{{ page_title }}</span>
+          </li>
+      {%- endcase -%}
+    </ol>
+  </nav>
+{%- endif -%}
