@@ -9,7 +9,7 @@
     <div
       class="overflow-hidden {% if media_size == 'small' or media_size == 'medium' %} lg:flex-1 {% elsif media_size == 'large' %} lg:flex-[2] {% endif %}"
     >
-      {% render 'main-product-left', id: section.id %}
+      {% render 'main-product-left' %}
     </div>
     <div class="{% if media_size == 'medium' or media_size == 'large' %} lg:flex-1 {% elsif media_size == 'small' %} lg:flex-[2] {% endif %}">
       {% render 'main-product-right', blocks: section.blocks %}
@@ -57,17 +57,17 @@
           "label": "Empilhado"
         },
         {
-          "value": "columns",
-          "label": "Colunas"
+          "value": "two_columns",
+          "label": "2 colunas"
         },
         {
-          "value": "thumbnail",
-          "label": "Miniaturas"
+          "value": "one_images_slider",
+          "label": "Carrosel 1 imagem"
         },
         {
-          "value": "thumbnail_slider",
-          "label": "Carrosel de miniaturas"
-        }
+          "value": "two_images_slider",
+          "label": "Carrosel 2 imagens"
+        },
       ],
       "default": "stacked",
       "label": "Layout para desktop"
