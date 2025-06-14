@@ -33,14 +33,6 @@
             "swatch_shape": "circle"
           }
         },
-        "inventory_EUwjX6": {
-          "type": "inventory",
-          "settings": {
-            "text_style": "body",
-            "inventory_threshold": 10,
-            "show_inventory_quantity": true
-          }
-        },
         "buy_button_HnrRzY": {
           "type": "buy_button",
           "settings": {
@@ -63,13 +55,12 @@
         "price_Pk6bTQ",
         "quantity_selector_XF4zQk",
         "variant_picker_xzjJXf",
-        "inventory_EUwjX6",
         "buy_button_HnrRzY",
         "description_m7ryRj"
       ],
       "settings": {
-        "media_size": "medium",
-        "gallery_layout": "stacked",
+        "media_size": "large",
+        "gallery_layout": "two_images_slider",
         "media_position": "left",
         "image_zoom": "lightbox",
         "mobile_thumbnails": "hide"
