@@ -616,10 +616,6 @@ label.not-swatch.is-unavailable {
   position: relative;
 }
 
-.sticky {
-  position: sticky;
-}
-
 .inset-0 {
   inset: 0px;
 }
@@ -652,16 +648,16 @@ label.not-swatch.is-unavailable {
   top: 0px;
 }
 
+.top-24 {
+  top: 6rem;
+}
+
 .top-\[-3px\] {
   top: -3px;
 }
 
 .top-full {
   top: 100%;
-}
-
-.top-24 {
-  top: 6rem;
 }
 
 .z-0 {
@@ -1323,6 +1319,11 @@ label.not-swatch.is-unavailable {
   color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
+.text-gray-500 {
+  --tw-text-opacity: 1;
+  color: rgb(107 114 128 / var(--tw-text-opacity));
+}
+
 .text-gray-700 {
   --tw-text-opacity: 1;
   color: rgb(55 65 81 / var(--tw-text-opacity));
@@ -1336,11 +1337,6 @@ label.not-swatch.is-unavailable {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.text-gray-500 {
-  --tw-text-opacity: 1;
-  color: rgb(107 114 128 / var(--tw-text-opacity));
 }
 
 .line-through {
@@ -1614,6 +1610,10 @@ label.not-swatch.is-unavailable {
     position: relative;
   }
 
+  .lg\:sticky {
+    position: sticky;
+  }
+
   .lg\:top-auto {
     top: auto;
   }
@@ -1698,12 +1698,12 @@ label.not-swatch.is-unavailable {
     gap: 0px;
   }
 
-  .lg\:gap-8 {
-    gap: 2rem;
-  }
-
   .lg\:gap-4 {
     gap: 1rem;
+  }
+
+  .lg\:gap-8 {
+    gap: 2rem;
   }
 
   .lg\:rounded-bl-none {
