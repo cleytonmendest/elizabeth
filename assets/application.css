@@ -880,12 +880,20 @@ label.not-swatch.is-unavailable {
   max-width: 36rem;
 }
 
+.max-w-\[66\%\] {
+  max-width: 66%;
+}
+
 .flex-1 {
   flex: 1 1 0%;
 }
 
 .flex-\[1\] {
   flex: 1;
+}
+
+.flex-\[2\] {
+  flex: 2;
 }
 
 .-translate-x-full {

@@ -1,9 +1,9 @@
 {% liquid
-  assign qtdSideBuy = false
+  assign qtd_side_buy = false
 
   for block in blocks
     if block.type == 'quantity_selector'
-      assign qtdSideBuy = block.settings.sideToBuyButton
+      assign qtd_side_buy = block.settings.sideToBuyButton
     endif
   endfor
 %}
@@ -22,7 +22,7 @@
         </p>
 
       {%- when 'quantity_selector' -%}
-        {% if qtdSideBuy != true %}
+        {% if qtd_side_buy != true %}
           {%- render 'quantity-selector' -%}
         {% endif %}
 
@@ -77,7 +77,7 @@
           {% endif %}
         </div>
       {%- when 'buy_button' -%}
-        {%- render 'add-to-cart', product: product, hasQtd: qtdSideBuy, block: block -%}
+        {%- render 'add-to-cart', product: product, hasQtd: qtd_side_buy, block: block -%}
     {% endcase %}
   {% endfor %}
 </div>

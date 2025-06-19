@@ -1,3 +1,7 @@
+{% if product_ref != blank %}
+  {% assign product = product_ref %}
+{% endif %}
+
 <my-slider
   class="block w-full"
   data-section-id="{{ section.id }}"

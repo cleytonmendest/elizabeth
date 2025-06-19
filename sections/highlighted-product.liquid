@@ -1,0 +1,292 @@
+{% assign qtd_side_buy = false %}
+{% assign product = section.settings.product %}
+
+{% for block in section.blocks %}
+  {% if block.type == 'quantity_selector' %}
+    {% assign qtd_side_buy = block.settings.sideToBuyButton %}''
+  {% endif %}
+{% endfor %}
+
+{% if product != blank %}
+  <div class="page-width" product-context>
+    <div class="flex max-w-[66%] mx-auto">
+      <div class="w-full relative flex items-center flex-[2] overflow-hidden">
+        {% render 'product-page-slider', qtd: 2, product_ref: product %}
+      </div>
+      <div class="flex-1 w-full">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {%- when '@app' -%}
+              {% render block %}
+            {%- when 'text' -%}
+              <p
+                class="product__text inline-richtext{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}"
+                {{ block.shopify_attributes }}
+              >
+                {{- block.settings.text -}}
+              </p>
+
+            {%- when 'quantity_selector' -%}
+              {% if qtd_side_buy != true %}
+                {%- render 'quantity-selector' -%}
+              {% endif %}
+
+            {%- when 'sku' -%}
+              <div>SKU não implementado</div>
+
+            {%- when 'title' -%}
+              <div class="product__title" {{ block.shopify_attributes }}>
+                <h1 class="text-3xl">{{ product.title | escape }}</h1>
+              </div>
+
+            {%- when 'price' -%}
+              <div role="status" {{ block.shopify_attributes }}>
+                {%- render 'price-v2', product: product, use_variant: true, pdp: true -%}
+              </div>
+
+            {%- when 'inventory' -%}
+              <p>inventory (Falta implementar)</p>
+
+            {%- when 'variant_picker' -%}
+              {% render 'product-variant-picker', product: product, block: block %}
+
+            {%- when 'description' -%}
+              {%- if product.description != blank -%}
+                <div class="my-4">
+                  {% if block.settings.show_title == true %}
+                    <h2 class="font-semibold text-base">{{ block.settings.title_text | default: 'Descrição' }}</h2>
+                  {% endif %}
+                  <div class="text-sm" {{ block.shopify_attributes }}>
+                    {{ product.description }}
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- when 'collapsible_tab' -%}
+              <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
+                {% if block.settings.content != blank or block.settings.page.content != blank %}
+                  <details id="Details-{{ block.id }}-{{ section.id }}" class="group">
+                    <summary class="flex cursor-pointer justify-between items-center">
+                      <h2 class="text-base font-semibold">
+                        {{ block.settings.heading | default: block.settings.page.title | escape }}
+                      </h2>
+                      {% render 'icon-angle-down',
+                        size: 16,
+                        class: 'transition-transform duration-300 group-open:rotate-180'
+                      %}
+                    </summary>
+                    <div class="text-sm" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
+                      {{ block.settings.content }}
+                      {{ block.settings.page.content }}
+                    </div>
+                  </details>
+                {% endif %}
+              </div>
+            {%- when 'buy_button' -%}
+              {%- render 'add-to-cart', product: product, hasQtd: qtd_side_buy, block: block -%}
+          {% endcase %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Produto Destaque",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Texto",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "Texto"
+        }
+      ]
+    },
+    {
+      "type": "title",
+      "name": "Nome do Produto",
+      "limit": 1
+    },
+    {
+      "type": "price",
+      "name": "Preço do Produto",
+      "limit": 1
+    },
+    {
+      "type": "quantity_selector",
+      "name": "Seletor de quantidade",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "sideToBuyButton",
+          "label": "Seletor de Quantidade ao lado do Botão Comprar?",
+          "info": "Caso ativado, incluirá o Seletor de Quantidade ao lado do Botão Comprar e sua localização dentro dos blocos não afetará sua localização na página.",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "variant_picker",
+      "name": "Seletor de variante",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "picker_type",
+          "options": [
+            {
+              "value": "dropdown",
+              "label": "Menu suspenso"
+            },
+            {
+              "value": "button",
+              "label": "Pílulas (Botões)"
+            }
+          ],
+          "default": "button",
+          "label": "Estilo"
+        },
+        {
+          "id": "swatch_shape",
+          "label": "Amostra",
+          "type": "select",
+          "options": [
+            {
+              "value": "circle",
+              "label": "Círculo"
+            },
+            {
+              "value": "square",
+              "label": "Quadrado"
+            },
+            {
+              "value": "none",
+              "label": "Nenhum"
+            }
+          ],
+          "default": "circle"
+        }
+      ]
+    },
+    {
+      "type": "buy_button",
+      "name": "Botão Comprar",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Configurações de botão"
+        },
+        {
+          "type": "text",
+          "label": "Texto do botão",
+          "id": "button_text",
+          "default": "ADICIONAR AO CARRINHO"
+        },
+        {
+          "type": "header",
+          "content": "Configurações de botão flutuante"
+        },
+        {
+          "type": "checkbox",
+          "label": "Ativa botão de comprar flutuante?",
+          "info": "Somente quando mobile",
+          "id": "floating_button",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "label": "Exibe Nome do produto?",
+          "id": "show_product_name",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "label": "Exibe Preço do produto?",
+          "id": "show_product_price",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "description",
+      "name": "Descrição do produto",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_title",
+          "label": "Mostrar título?",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "title_text",
+          "label": "Título",
+          "default": "Descrição"
+        }
+      ]
+    },
+    {
+      "type": "collapsible_tab",
+      "name": "Linha recolhível",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "Linha recolhível",
+          "label": "Título"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Texto"
+        },
+        {
+          "type": "page",
+          "id": "page",
+          "label": "Conteúdo de página"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Produto"
+    },
+    {
+      "type": "select",
+      "id": "media_position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Esquerda"
+        },
+        {
+          "value": "right",
+          "label": "Direita"
+        }
+      ],
+      "default": "left",
+      "label": "Posição da mídia no desktop",
+      "info": "A posição é otimizada automaticamente para dispositivos móveis."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Produto Destaque",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}
