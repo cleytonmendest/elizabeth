@@ -2,30 +2,60 @@ class Search extends HTMLElement {
     constructor() {
         super();
         this.form = this.querySelector('form');
+        this.input = this.querySelector('input[name="q"]');
         this.form.addEventListener('submit', this.submitSearch.bind(this));
+        this.debounceTimeout = null;
+        this.debounceDelay = 300;
 
-        // console.log(this.form, 'fooooooooorm')
+        this.boundOnInput = this._onInput.bind(this);
+        this.boundOnSubmit = this._onSubmit.bind(this);
     }
 
-    async submitSearch(event) {
-        console.log('submit handler')
-        event.preventDefault();
-        try {
-            const fetchs = await fetch(`/search/suggest.json?q=camisa`)
-            const responses = await fetchs.json()
-
-            console.log('entrou try', responses)
-            // await CartManager.addToCart(this.form);
-            // await this.updateCartDrawer();
-            // await CartManager.getCart()
-        } catch (error) {
-            console.error('Erro ao adicionar o produto ao carrinho:', error);
-        } finally {
-            0
-            console.log('entrou finally')
-            // document.querySelector('cart-drawer').open();
+    connectedCallback() {
+        if (this.input) {
+            this.input.addEventListener('input', this.boundOnInput);
         }
+        if (this.form) {
+            this.form.addEventListener('submit', this.boundOnSubmit);
+        }
+    }
+
+    disconnectedCallback() {
+        if (this.input) {
+            this.input.removeEventListener('input', this.boundOnInput);
+        }
+        if (this.form) {
+            this.form.removeEventListener('submit', this.boundOnSubmit);
+        }
+
+        clearTimeout(this.debounceTimeout);
+    }
+
+    _onInput(event) {
+        clearTimeout(this.debounceTimeout);
+        this.debounceTimeout = setTimeout(() => {
+            this._performSuggestiveSearch();
+        }, this.debounceDelay);
+    }
+
+    _performSuggestiveSearch() {
+        const query = this.input.value.trim();
+        if (!query) {
+            // Lógica para limpar resultados
+            return;
+        }
+        console.log(`Buscando sugestões para: "${query}"`);
+        // Lógica fetch futura aqui...
+    }
+
+    _onSubmit(event) {
+        if (!this.input.value.trim()) {
+            event.preventDefault();
+        }
+        // Deixa o form ser enviado para /search
     }
 }
 
-customElements.define('search-component', Search);
+if (!customElements.get('search-component')) {
+    customElements.define('search-component', Search);
+}

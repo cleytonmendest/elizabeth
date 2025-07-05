@@ -872,16 +872,16 @@ label.not-swatch.is-unavailable {
   max-width: 1080px;
 }
 
+.max-w-\[66\%\] {
+  max-width: 66%;
+}
+
 .max-w-md {
   max-width: 28rem;
 }
 
 .max-w-xl {
   max-width: 36rem;
-}
-
-.max-w-\[66\%\] {
-  max-width: 66%;
 }
 
 .flex-1 {
