@@ -82,19 +82,19 @@
             {% render 'logo', header_type: header_type %}
           {% endif %}
           {% if search_position == 'left' and search_hidden == false %}
-            {% render 'search-component', flex: 1 %}
+            {% render 'search-component', flex: 1, large:false %}
           {% endif %}
           {% if logo_center %}
             {% render 'logo' %}
           {% endif %}
           {% if search_position == 'center' and search_hidden == false %}
-            {% render 'search-component', flex: 3 %}
+            {% render 'search-component', flex: 3, large:true %}
           {% endif %}
           {% if menu_under == false %}
             {% render 'main-menu', linklist: section.settings.menu, flex: 5, fixed_transparent: fixed_transparent %}
           {% endif %}
           {% if search_position == 'right' and search_hidden == false %}
-            {% render 'search-component', flex: 1.5, showMobile: false %}
+            {% render 'search-component', flex: 1.5, showMobile: false, large:false %}
           {% endif %}
 
           {% render 'header-icons', header_type: header_type, flex: 1 %}

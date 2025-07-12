@@ -723,6 +723,10 @@ label.not-swatch.is-unavailable {
   margin-left: 1rem;
 }
 
+.mr-4 {
+  margin-right: 1rem;
+}
+
 .mt-2 {
   margin-top: 0.5rem;
 }
@@ -770,6 +774,10 @@ label.not-swatch.is-unavailable {
   height: 2.5rem;
 }
 
+.h-12 {
+  height: 3rem;
+}
+
 .h-16 {
   height: 4rem;
 }
@@ -813,6 +821,10 @@ label.not-swatch.is-unavailable {
 
 .w-10 {
   width: 2.5rem;
+}
+
+.w-12 {
+  width: 3rem;
 }
 
 .w-5 {
@@ -860,6 +872,14 @@ label.not-swatch.is-unavailable {
   width: 100vw;
 }
 
+.w-\[120\%\] {
+  width: 120%;
+}
+
+.w-\[150\%\] {
+  width: 150%;
+}
+
 .min-w-52 {
   min-width: 13rem;
 }
@@ -882,6 +902,10 @@ label.not-swatch.is-unavailable {
 
 .max-w-xl {
   max-width: 36rem;
+}
+
+.max-w-\[90vw\] {
+  max-width: 90vw;
 }
 
 .flex-1 {
@@ -1122,6 +1146,14 @@ label.not-swatch.is-unavailable {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.bg-opacity-25 {
+  --tw-bg-opacity: 0.25;
+}
+
+.bg-opacity-40 {
+  --tw-bg-opacity: 0.4;
 }
 
 .object-cover {
@@ -1460,6 +1492,11 @@ label.not-swatch.is-unavailable {
   color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
+.hover\:bg-gray-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
+
 .hover\:text-black:hover {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
@@ -1548,6 +1585,10 @@ label.not-swatch.is-unavailable {
 
 .group:hover .group-hover\:opacity-100 {
   opacity: 1;
+}
+
+.group.is-searching .group-\[\.is-searching\]\:z-\[1\] {
+  z-index: 1;
 }
 
 .group.is-scrolling .group-\[\.is-scrolling\]\:text-\[--icons_color\] {
@@ -1806,6 +1847,11 @@ label.not-swatch.is-unavailable {
 
   .group.is-scrolling .lg\:group-\[\.is-scrolling\]\:bg-\[--icons_color\] {
     background-color: var(--icons_color);
+  }
+
+  .group.is-searching .lg\:group-\[\.is-searching\]\:bg-\[\#f1f1f1\] {
+    --tw-bg-opacity: 1;
+    background-color: rgb(241 241 241 / var(--tw-bg-opacity));
   }
 
   .group.is-scrolling .lg\:group-\[\.is-scrolling\]\:text-\[--icons_color2\] {
