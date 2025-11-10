@@ -1,11 +1,20 @@
+{% if flex == blank %}
+  {% assign flex = 1 %}
+{% endif %}
 
-<div class="items-center max-lg:!flex-1 lg:flex {% if showMobile %} flex {% else %} hidden {% endif %}" style="flex: {{ flex }};">
-  <search-component class="w-full">
+<div
+  class="items-center max-lg:!flex-1 lg:flex {% if showMobile %} flex {% else %} hidden {% endif %}"
+  style="flex: {{ flex }};"
+>
+  <search-component class="w-full relative flex justify-center group group-[.is-searching]">
     <form action="{{ routes.search_url }}" method="get" role="search">
-      <div class="flex rounded-full transition-all duration-300 py-2 px-4 bg-[#f1f1f1] lg:bg-[#f1f1f180] h-10 lg:group-hover:bg-[#f1f1f1]">
+      <div class="search-overlay fixed inset-0 bg-black bg-opacity-40 z-0 hidden"></div>
+      <div class="flex rounded-full transition-all duration-300 py-2 px-4 bg-[#f1f1f1] lg:bg-[#f1f1f180] h-10 lg:group-hover:bg-[#f1f1f1] group-[.is-searching]:z-[1] relative">
         <input
-          class="w-full bg-transparent focus:outline-none focus:ring-0 focus:border-transparent
-          focus-visible:outline-none focus-visible:ring-0 placeholder:font-light placeholder:text-sm placeholder:text-black"
+          class="
+            w-full bg-transparent focus:outline-none focus:ring-0 focus:border-transparent
+            focus-visible:outline-none focus-visible:ring-0 placeholder:font-light placeholder:text-sm placeholder:text-black
+          "
           id="Search-In-Template"
           type="text"
           autocomplete="off"
@@ -14,14 +23,28 @@
           placeholder="O que você procura?"
         >
         <button
+          name="q"
           type="submit"
           class="text-[--icons_color]"
         >
           {% render 'icon-search', size: 25 %}
         </button>
-
-        <div id="search-component" tabindex="-1"></div>
       </div>
     </form>
+    <div
+      id="search-component-dropdown"
+      tabindex="-1"
+      class="search-results absolute w-[150%] max-w-[90vw] bg-white top-full hidden"
+    >
+      <template id="search-result-template">
+        <a href="#" class="search-result-item flex items-center p-2 hover:bg-gray-100">
+          <img src="" alt="" class="search-result-image w-12 h-12 object-cover mr-4">
+          <span class="search-result-title font-medium"></span>
+        </a>
+      </template>
+      <template class="collection-result-item">
+        <a href="#" ></a>
+      </template>
+    </div>
   </search-component>
 </div>
