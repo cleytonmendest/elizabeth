@@ -1016,6 +1016,10 @@ label.not-swatch.is-unavailable {
   height: 100%;
 }
 
+.max-h-\[60vh\] {
+  max-height: 60vh;
+}
+
 .min-h-56 {
   min-height: 14rem;
 }
@@ -2128,6 +2132,14 @@ label.not-swatch.is-unavailable {
   opacity: 0.8;
 }
 
+.opacity-25 {
+  opacity: 0.25;
+}
+
+.opacity-75 {
+  opacity: 0.75;
+}
+
 .shadow-\[0_0_12px_rgba\(0\2c 0\2c 0\2c 0\.15\)\] {
   --tw-shadow: 0 0 12px rgba(0,0,0,0.15);
   --tw-shadow-colored: 0 0 12px var(--tw-shadow-color);
@@ -2616,6 +2628,10 @@ label.not-swatch.is-unavailable {
 
   .sm\:w-full {
     width: 100%;
+  }
+
+  .sm\:w-\[150\%\] {
+    width: 150%;
   }
 
   .sm\:max-w-2xl {

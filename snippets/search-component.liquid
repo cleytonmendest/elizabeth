@@ -34,17 +34,59 @@
     <div
       id="search-component-dropdown"
       tabindex="-1"
-      class="search-results absolute w-[150%] max-w-[90vw] bg-white top-full hidden"
+      class="search-results absolute w-full sm:w-[150%] max-w-[90vw] bg-white top-full mt-2 rounded-lg shadow-xl border border-gray-200 hidden overflow-hidden z-50"
     >
+      {%- comment -%} Loading State {%- endcomment -%}
+      <div class="search-loading hidden">
+        <div class="flex items-center justify-center p-6">
+          <svg class="animate-spin h-8 w-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span class="ml-3 text-gray-600">Buscando...</span>
+        </div>
+      </div>
+
+      {%- comment -%} Template para Produtos {%- endcomment -%}
       <template id="search-result-template">
-        <a href="#" class="search-result-item flex items-center p-2 hover:bg-gray-100">
-          <img src="" alt="" class="search-result-image w-12 h-12 object-cover mr-4">
-          <span class="search-result-title font-medium"></span>
+        <a href="#" class="search-result-item flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0">
+          <div class="flex-shrink-0 w-16 h-16 bg-gray-100 rounded overflow-hidden">
+            <img src="" alt="" class="search-result-image w-full h-full object-cover">
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="search-result-title font-medium text-sm text-gray-900 line-clamp-2"></p>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="search-result-price text-sm font-semibold text-gray-900"></span>
+              <span class="search-result-badge hidden text-xs px-2 py-0.5 rounded font-medium"></span>
+            </div>
+          </div>
         </a>
       </template>
-      <template class="collection-result-item">
-        <a href="#" ></a>
+
+      {%- comment -%} Template para Coleções {%- endcomment -%}
+      <template id="collection-result-template">
+        <a href="#" class="collection-result-item flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors border-b border-gray-100">
+          <div class="flex-shrink-0">
+            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <p class="collection-result-title font-medium text-sm text-gray-900"></p>
+            <p class="text-xs text-gray-500">Coleção</p>
+          </div>
+        </a>
       </template>
+
+      {%- comment -%} Container de Resultados {%- endcomment -%}
+      <div class="search-results-content max-h-[60vh] overflow-y-auto"></div>
+
+      {%- comment -%} Footer com "Ver todos" {%- endcomment -%}
+      <div class="search-footer hidden border-t border-gray-200">
+        <a href="#" class="block p-3 text-center text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+          Ver todos os resultados →
+        </a>
+      </div>
     </div>
   </search-component>
 </div>
