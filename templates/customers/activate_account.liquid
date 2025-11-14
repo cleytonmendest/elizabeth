@@ -1,17 +1,351 @@
 <!-- /templates/customers/activate_account.liquid -->
-{% form 'activate_customer_password' %}
-{{ form.errors | default_errors }}
-<div class="password">
-  <label for="password">Password</label>
-  <input type="password" name="customer[password]" />
+
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+  <div class="max-w-md w-full space-y-8">
+
+    {%- comment -%} Header {%- endcomment -%}
+    <div class="text-center">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        Ative sua Conta
+      </h1>
+      <p class="text-sm text-gray-600">
+        Crie uma senha para começar a usar sua conta
+      </p>
+    </div>
+
+    {%- comment -%} Welcome Message {%- endcomment -%}
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-blue-800">
+            Bem-vindo!
+          </h3>
+          <div class="mt-1 text-xs text-blue-700">
+            <p>Você foi convidado a criar uma conta. Defina uma senha segura para continuar.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%} Form Card {%- endcomment -%}
+    <div class="bg-white rounded-lg shadow-lg p-8">
+
+      {%- comment -%} Error Messages {%- endcomment -%}
+      {% form 'activate_customer_password' %}
+        {% if form.errors %}
+          <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">
+                  Erro ao ativar conta
+                </h3>
+                <div class="mt-2 text-xs text-red-700">
+                  {{ form.errors | default_errors }}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        {%- comment -%} Password Field {%- endcomment -%}
+        <div class="mb-6">
+          <label for="customer_password" class="block text-sm font-medium text-gray-700 mb-2">
+            Senha *
+          </label>
+          <div class="relative">
+            <input
+              type="password"
+              id="customer_password"
+              name="customer[password]"
+              required
+              autocomplete="new-password"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+              aria-describedby="password-requirements"
+            >
+            <button
+              type="button"
+              onclick="togglePassword('customer_password', 'toggle-icon-1')"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center"
+              aria-label="Mostrar senha"
+            >
+              <svg id="toggle-icon-1" class="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+          </div>
+
+          {%- comment -%} Password Strength Indicator {%- endcomment -%}
+          <div id="password-strength" class="mt-2 hidden">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-medium text-gray-700">Força da senha:</span>
+              <span id="strength-text" class="text-xs font-medium"></span>
+            </div>
+            <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <div id="strength-bar" class="h-full transition-all duration-300 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+
+        {%- comment -%} Password Confirmation Field {%- endcomment -%}
+        <div class="mb-6">
+          <label for="customer_password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
+            Confirmar Senha *
+          </label>
+          <div class="relative">
+            <input
+              type="password"
+              id="customer_password_confirmation"
+              name="customer[password_confirmation]"
+              required
+              autocomplete="new-password"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
+            >
+            <button
+              type="button"
+              onclick="togglePassword('customer_password_confirmation', 'toggle-icon-2')"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center"
+              aria-label="Mostrar confirmação de senha"
+            >
+              <svg id="toggle-icon-2" class="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+            <div id="password-match-icon" class="absolute inset-y-0 right-10 flex items-center pr-3 hidden pointer-events-none">
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+          </div>
+          <p id="password-match-message" class="mt-1 text-xs"></p>
+        </div>
+
+        {%- comment -%} Password Requirements {%- endcomment -%}
+        <div class="mb-6 bg-gray-50 rounded-lg p-4">
+          <p class="text-xs font-medium text-gray-700 mb-2" id="password-requirements">Sua senha deve conter:</p>
+          <ul class="text-xs text-gray-600 space-y-1">
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              Mínimo de 8 caracteres
+            </li>
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              Pelo menos uma letra maiúscula
+            </li>
+            <li class="flex items-start">
+              <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              Pelo menos um número ou caractere especial
+            </li>
+          </ul>
+        </div>
+
+        {%- comment -%} Buttons {%- endcomment -%}
+        <div class="space-y-3">
+          <button
+            type="submit"
+            id="activate-button"
+            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Ativar Minha Conta
+          </button>
+
+          <button
+            type="submit"
+            name="decline"
+            value="decline"
+            class="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-900 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors"
+          >
+            Recusar Convite
+          </button>
+        </div>
+
+      {% endform %}
+    </div>
+
+    {%- comment -%} Back to Login {%- endcomment -%}
+    <div class="text-center">
+      <a href="{{ routes.account_login_url }}" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+        Já tem uma conta? Faça login
+      </a>
+    </div>
+
+  </div>
 </div>
-<div class="password_confirm">
-  <label for="password_confirmation">Password Confirmation</label>
-  <input type="password" name="customer[password_confirmation]" />
-</div>
-<div class="action_bottom">
-  <input type="submit" value="Activate Account" />
-  <span>or</span>
-  <input type="submit" name="decline" value="Decline Invitation" />
-</div>
-{% endform %}
+
+<script>
+// Toggle password visibility
+function togglePassword(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.innerHTML = `
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+    `;
+  } else {
+    input.type = 'password';
+    icon.innerHTML = `
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+    `;
+  }
+}
+
+// Password strength checker
+function checkPasswordStrength(password) {
+  let strength = 0;
+  const checks = {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[^A-Za-z0-9]/.test(password)
+  };
+
+  if (checks.length) strength += 20;
+  if (checks.uppercase) strength += 20;
+  if (checks.lowercase) strength += 20;
+  if (checks.number) strength += 20;
+  if (checks.special) strength += 20;
+
+  let level = 'Muito Fraca';
+  let color = 'bg-red-500';
+  let textColor = 'text-red-600';
+
+  if (strength >= 80) {
+    level = 'Muito Forte';
+    color = 'bg-green-500';
+    textColor = 'text-green-600';
+  } else if (strength >= 60) {
+    level = 'Forte';
+    color = 'bg-blue-500';
+    textColor = 'text-blue-600';
+  } else if (strength >= 40) {
+    level = 'Média';
+    color = 'bg-yellow-500';
+    textColor = 'text-yellow-600';
+  } else if (strength >= 20) {
+    level = 'Fraca';
+    color = 'bg-orange-500';
+    textColor = 'text-orange-600';
+  }
+
+  return { strength, level, color, textColor };
+}
+
+// Validate password match
+function validatePasswordMatch() {
+  const password = document.getElementById('customer_password').value;
+  const confirmation = document.getElementById('customer_password_confirmation').value;
+  const matchIcon = document.getElementById('password-match-icon');
+  const matchMessage = document.getElementById('password-match-message');
+  const confirmInput = document.getElementById('customer_password_confirmation');
+
+  if (confirmation.length === 0) {
+    matchIcon.classList.add('hidden');
+    matchMessage.textContent = '';
+    matchMessage.className = 'mt-1 text-xs';
+    confirmInput.classList.remove('border-green-500', 'border-red-500');
+    confirmInput.classList.add('border-gray-300');
+    return false;
+  }
+
+  if (password === confirmation) {
+    matchIcon.classList.remove('hidden', 'text-red-500');
+    matchIcon.classList.add('text-green-500');
+    matchMessage.textContent = '✓ As senhas coincidem';
+    matchMessage.className = 'mt-1 text-xs text-green-600';
+    confirmInput.classList.remove('border-gray-300', 'border-red-500');
+    confirmInput.classList.add('border-green-500');
+    return true;
+  } else {
+    matchIcon.classList.remove('hidden', 'text-green-500');
+    matchIcon.classList.add('text-red-500');
+    matchIcon.querySelector('svg').innerHTML = `
+      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+    `;
+    matchMessage.textContent = '✗ As senhas não coincidem';
+    matchMessage.className = 'mt-1 text-xs text-red-600';
+    confirmInput.classList.remove('border-gray-300', 'border-green-500');
+    confirmInput.classList.add('border-red-500');
+    return false;
+  }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  const passwordInput = document.getElementById('customer_password');
+  const confirmationInput = document.getElementById('customer_password_confirmation');
+  const strengthIndicator = document.getElementById('password-strength');
+  const strengthBar = document.getElementById('strength-bar');
+  const strengthText = document.getElementById('strength-text');
+  const activateButton = document.getElementById('activate-button');
+  const form = document.querySelector('form');
+
+  // Password strength on input
+  passwordInput.addEventListener('input', function() {
+    const password = this.value;
+
+    if (password.length > 0) {
+      strengthIndicator.classList.remove('hidden');
+      const result = checkPasswordStrength(password);
+
+      strengthBar.style.width = result.strength + '%';
+      strengthBar.className = 'h-full transition-all duration-300 rounded-full ' + result.color;
+      strengthText.textContent = result.level;
+      strengthText.className = 'text-xs font-medium ' + result.textColor;
+    } else {
+      strengthIndicator.classList.add('hidden');
+    }
+
+    // Validate match if confirmation has value
+    if (confirmationInput.value.length > 0) {
+      validatePasswordMatch();
+    }
+  });
+
+  // Password match validation on input
+  confirmationInput.addEventListener('input', validatePasswordMatch);
+
+  // Form validation before submit
+  form.addEventListener('submit', function(e) {
+    const password = passwordInput.value;
+    const confirmation = confirmationInput.value;
+
+    // Only validate on activate (not decline)
+    if (!e.submitter || e.submitter.name !== 'decline') {
+      if (password !== confirmation) {
+        e.preventDefault();
+        alert('As senhas não coincidem. Por favor, verifique e tente novamente.');
+        confirmationInput.focus();
+        return false;
+      }
+
+      if (password.length < 8) {
+        e.preventDefault();
+        alert('A senha deve ter no mínimo 8 caracteres.');
+        passwordInput.focus();
+        return false;
+      }
+    }
+  });
+});
+</script>
