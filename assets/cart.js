@@ -175,7 +175,9 @@ class CartDrawer extends HTMLElement {
         const { items_subtotal_price, total_discount, total_price } = cart;
 
         itemsSubtotalPriceElement.textContent = formatPrice(items_subtotal_price);
-        totalDiscountElement.textContent = formatPrice(total_discount);
+        if (totalDiscountElement) {
+            totalDiscountElement.textContent = `-${formatPrice(total_discount)}`;
+        }
         totalPriceElement.textContent = formatPrice(total_price);
     }
 
@@ -285,12 +287,12 @@ class AddToCart extends HTMLElement {
             const text = await response.text();
             const parser = new DOMParser();
             const doc = parser.parseFromString(text, 'text/html');
-            const newCartItem = doc.querySelector('.cart-item'); // Supondo que o novo item tenha a classe 'cart-item'
+            const cartItemsContainer = doc.querySelector('#cart-items-container');
 
-            if (newCartItem) {
-                const cartContainer = document.querySelector('#cart-items-container');
-                cartContainer.appendChild(newCartItem);
-                document.querySelector('cart-drawer').updateItemIndexes(); // Atualiza os índices no minicart
+            if (cartItemsContainer) {
+                const targetContainer = document.querySelector('#cart-items-container');
+                targetContainer.innerHTML = cartItemsContainer.innerHTML;
+                document.querySelector('cart-drawer').updateItemIndexes();
             }
         } catch (error) {
             console.error('Erro ao atualizar o minicart:', error);

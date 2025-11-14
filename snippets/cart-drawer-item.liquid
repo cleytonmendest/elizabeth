@@ -1,48 +1,53 @@
-<div class="flex cart-item" data-index="{{ item.index | plus: 1 }}" data-product="{{ item.id }}" data-product-id="{{ item. }}" data-key="{{ item.key }}">
-  <div>
+<div class="flex gap-3 cart-item p-4 border-b border-gray-200 last:border-b-0" data-index="{{ item.index | plus: 1 }}" data-product="{{ item.id }}" data-product-id="{{ item. }}" data-key="{{ item.key }}">
+  <div class="flex-shrink-0">
     {% if item.image %}
-      <a href="{{ item.url }}" class="">
+      <a href="{{ item.url }}" class="block hover:opacity-80 transition-opacity">
         <img
-          class="cart-item__image"
+          class="cart-item__image rounded"
           src="{{ item.image | image_url: width: 200 }}"
           alt="{{ item.image.alt | escape }}"
           loading="lazy"
-          width="100"
-          height="{{ 100 | divided_by: item.image.aspect_ratio | ceil }}"
+          width="120"
+          height="{{ 120 | divided_by: item.image.aspect_ratio | ceil }}"
         >
       </a>
     {% endif %}
   </div>
-  <div class="flex-[1]">
-    <small class="uppercase text-xs text-gray-700">{{ item.vendor }}</small>
-    <div class="flex gap-5">
-      <a href="{{ item.url }}" class="flex-1">
-        <h3>{{ item.title }}</h3>
+  <div class="flex-[1] min-w-0">
+    <small class="uppercase text-xs text-gray-500">{{ item.vendor }}</small>
+    <div class="flex gap-3">
+      <a href="{{ item.url }}" class="flex-1 min-w-0">
+        <h3 class="font-medium text-sm hover:underline line-clamp-2">{{ item.product.title }}</h3>
       </a>
       <remove-from-cart
-        class="cursor-pointer w-6 h-6 flex items-center justify-center"
+        class="cursor-pointer w-5 h-5 flex items-center justify-center hover:text-red-500 transition-colors flex-shrink-0"
       >
         {% render 'icon-trash' %}
       </remove-from-cart>
     </div>
+    {% unless item.product.has_only_default_variant %}
+      <div class="text-xs text-gray-500 mt-1">
+        {{ item.variant.title }}
+      </div>
+    {% endunless %}
     <div class="flex justify-between items-center mt-3">
-      <quantity-input class="border border-slate-900 flex" data-max-qtd="{{ item.variant.inventory_quantity }}">
-        <button class="w-10 h-10 font-bold text-2xl flex items-center justify-center" id="quantity-minus">
+      <quantity-input class="border border-slate-900 flex rounded overflow-hidden" data-max-qtd="{{ item.variant.inventory_quantity }}">
+        <button class="w-9 h-9 flex items-center justify-center hover:bg-gray-100 transition-colors" id="quantity-minus">
           {% render 'minus-icon' %}
         </button>
         <input
           id="quantity-input"
-          class="w-10 h-10 outline-none text-center text-base font-bold"
+          class="w-9 h-9 outline-none text-center text-sm font-semibold"
           type="number"
           readonly
           value="{{ item.quantity }}"
         >
-        <button class="w-10 h-10 font-bold text-2xl flex items-center justify-center" id="quantity-plus">
-          {% render 'plus-icon' %} 
+        <button class="w-9 h-9 flex items-center justify-center hover:bg-gray-100 transition-colors" id="quantity-plus">
+          {% render 'plus-icon' %}
         </button>
       </quantity-input>
 
-      <div class="item-total-price text-lg font-medium">
+      <div class="item-total-price font-semibold">
         {{ item.final_line_price | money }}
       </div>
     </div>

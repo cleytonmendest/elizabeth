@@ -3,13 +3,14 @@
 
 <cart-drawer class="cart-drawer fixed z-50 left-0 top-0 w-screen h-full flex justify-end bg-[#12121280]">
   <div class="cart-drawer">
-    <div class="cart-inner pb-10 h-full w-[385px] bg-white z-10 relative">
+    <div class="cart-inner pb-10 h-full w-full sm:w-[385px] bg-white z-10 relative">
       <div class="cart-header flex h-16 shadow-lg px-4 items-center">
         <span class="flex-1 flex items-center justify-center font-bold text-lg">Carrinho</span>
         <button
-          class="w-5"
+          class="w-5 hover:opacity-70 transition-opacity"
           type="button"
           onclick="this.closest('cart-drawer').close()"
+          aria-label="Fechar carrinho"
         >
           {% render 'icon-close' %}
         </button>
@@ -21,34 +22,36 @@
       </div>
 
       <div id="cart-container" class="{% if cart == empty %}hidden{% else %}flex{% endif %} flex-col h-full">
-        <div class="flex flex-col flex-1 gap-4 p-4" id="cart-items-container">
+        <div class="flex flex-col flex-1 overflow-y-auto" id="cart-items-container">
           {% for item in cart.items %}
             {% render 'cart-drawer-item', item: item %}
           {% endfor %}
         </div>
-        <div class="p-4 shadow-[0_0_12px_rgba(0,0,0,0.15)] pb-10">
-          <div id="cart-summary-total" class="summary flex flex-col">
-            <div class="flex justify-between">
-              <div>SUBTOTAL:</div>
-              <div class="subtotal">
+        <div class="p-4 shadow-[0_0_12px_rgba(0,0,0,0.15)]">
+          <div id="cart-summary-total" class="summary flex flex-col gap-2 mb-4">
+            <div class="flex justify-between text-sm">
+              <div class="text-gray-600">Subtotal:</div>
+              <div class="subtotal font-medium">
                 {{ cart.items_subtotal_price | money }}
               </div>
             </div>
-            <div class="flex justify-between">
-              <div>DESCONTOS:</div>
-              <div class="discounts">
-                {{ cart.total_discount | money }}
+            {% if cart.total_discount > 0 %}
+              <div class="flex justify-between text-sm">
+                <div class="text-gray-600">Descontos:</div>
+                <div class="discounts font-medium text-green-600">
+                  -{{ cart.total_discount | money }}
+                </div>
               </div>
-            </div>
-            <div class="flex justify-between">
-              <div>TOTAL:</div>
-              <div class="total-price">
+            {% endif %}
+            <div class="flex justify-between pt-2 border-t border-gray-200">
+              <div class="font-semibold">Total:</div>
+              <div class="total-price font-bold text-lg">
                 {{ cart.total_price | money }}
               </div>
             </div>
           </div>
           <button
-            class="w-full h-10 flex items-center justify-center border border-orange-500 mt-4 text-orange-500 font-bold"
+            class="w-full h-10 flex items-center justify-center border border-orange-500 mt-4 text-orange-500 font-bold hover:bg-orange-50 transition-colors rounded"
             type="button"
             onclick="this.closest('cart-drawer').close()"
           >
@@ -56,7 +59,7 @@
           </button>
           <a
             href="/checkout"
-            class="flex cursor-pointer h-10 w-full items-center justify-center mt-4 bg-orange-500 text-white font-bold"
+            class="flex cursor-pointer h-10 w-full items-center justify-center mt-4 bg-orange-500 text-white font-bold hover:bg-orange-600 transition-colors rounded"
             >FINALIZAR PEDIDO</a
           >
         </div>
