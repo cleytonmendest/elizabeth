@@ -1,6 +1,118 @@
-<div class="page-width !mb-6">
-  
-</div>
+{%- comment -%}
+  Modal de Newsletter com triggers inteligentes
+  - Trigger por tempo (delay configurável)
+  - Trigger por scroll (% da página)
+  - Exit intent detection
+  - Cookie para não mostrar novamente
+{%- endcomment -%}
+
+{%- if section.settings.enable_modal -%}
+<newsletter-modal
+  class="newsletter-modal fixed inset-0 z-[9999] hidden items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
+  data-delay="{{ section.settings.delay_seconds }}"
+  data-scroll-trigger="{{ section.settings.scroll_percentage }}"
+  data-enable-exit-intent="{{ section.settings.enable_exit_intent }}"
+  data-cookie-days="{{ section.settings.cookie_days }}"
+>
+  <div
+    class="newsletter-modal-content bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 relative overflow-hidden transform transition-all"
+    style="max-width: {{ section.settings.modalWidth }}px;"
+  >
+    {%- comment -%} Botão Fechar {%- endcomment -%}
+    <button
+      type="button"
+      class="close-modal absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors z-10"
+      aria-label="Fechar modal"
+    >
+      <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+
+    <div class="p-8 md:p-10">
+      {%- comment -%} Imagem/Ícone {%- endcomment -%}
+      {%- if section.settings.modal_image != blank -%}
+        <div class="mb-6 flex justify-center">
+          <img
+            src="{{ section.settings.modal_image | image_url: width: 200 }}"
+            alt="{{ section.settings.modal_title }}"
+            class="w-32 h-32 object-contain"
+            loading="lazy"
+          >
+        </div>
+      {%- else -%}
+        <div class="mb-6 flex justify-center">
+          <svg class="w-16 h-16 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Título {%- endcomment -%}
+      <h2 class="text-2xl md:text-3xl font-bold text-center mb-3">
+        {{ section.settings.modal_title }}
+      </h2>
+
+      {%- comment -%} Texto {%- endcomment -%}
+      {%- if section.settings.modal_text != blank -%}
+        <div class="text-center text-gray-600 mb-6">
+          {{ section.settings.modal_text }}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Formulário {%- endcomment -%}
+      <form
+        class="newsletter-form"
+        id="newsletter-modal-form"
+        data-success-message="{{ section.settings.success_message }}"
+        data-error-message="{{ section.settings.error_message }}"
+      >
+        <div class="mb-4">
+          <input
+            type="email"
+            name="email"
+            id="newsletter-email"
+            placeholder="Seu melhor e-mail"
+            required
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+          >
+        </div>
+
+        {%- comment -%} Botão Submit {%- endcomment -%}
+        <button
+          type="submit"
+          class="submit-btn w-full bg-orange-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span class="submit-text">{{ section.settings.button_text }}</span>
+          <span class="loading-spinner hidden">
+            <svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </span>
+        </button>
+
+        {%- comment -%} Mensagens de Feedback {%- endcomment -%}
+        <div class="feedback-message mt-4 hidden">
+          <p class="text-sm text-center"></p>
+        </div>
+      </form>
+
+      {%- comment -%} Checkbox "Não mostrar novamente" {%- endcomment -%}
+      {%- if section.settings.show_dont_show_again -%}
+        <div class="mt-6 text-center">
+          <label class="inline-flex items-center cursor-pointer text-sm text-gray-600 hover:text-gray-900">
+            <input type="checkbox" class="dont-show-again mr-2 rounded border-gray-300 text-orange-500 focus:ring-orange-500">
+            Não mostrar novamente
+          </label>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</newsletter-modal>
+
+<script src="{{ 'newsletter-modal.js' | asset_url }}" defer></script>
+{%- endif -%}
 
 {% schema %}
 {
@@ -13,33 +125,124 @@
   },
   "settings": [
     {
-        "type": "number",
-        "id": "modalWidth",
-        "label": "Largura máxima do Modal",
-        "default": 500
+      "type": "header",
+      "content": "Configurações Gerais"
     },
     {
-        "type": "number",
-        "id": "modalHeight",
-        "label": "Altura máxima do Modal",
-        "default": 500
+      "type": "checkbox",
+      "id": "enable_modal",
+      "label": "Ativar modal",
+      "default": true,
+      "info": "Ative ou desative o modal de newsletter globalmente"
     },
     {
-        "type": "inline_richtext",
-        "label": "Título do Modal",
-        "id": "modal_title",
-        "default": "Title"
+      "type": "number",
+      "id": "modalWidth",
+      "label": "Largura máxima do Modal (px)",
+      "default": 500
     },
     {
-        "type": "richtext",
-        "id": "modal_text",
-        "label": "Texto do Modal"
+      "type": "header",
+      "content": "Conteúdo"
     },
+    {
+      "type": "image_picker",
+      "id": "modal_image",
+      "label": "Imagem do modal",
+      "info": "Opcional. Se vazio, mostra ícone de email"
+    },
+    {
+      "type": "inline_richtext",
+      "label": "Título do Modal",
+      "id": "modal_title",
+      "default": "Receba ofertas exclusivas!"
+    },
+    {
+      "type": "richtext",
+      "id": "modal_text",
+      "label": "Texto do Modal",
+      "default": "<p>Cadastre-se e receba em primeira mão nossas promoções e lançamentos.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Texto do botão",
+      "default": "Quero receber ofertas"
+    },
+    {
+      "type": "header",
+      "content": "Triggers (Quando mostrar)"
+    },
+    {
+      "type": "range",
+      "id": "delay_seconds",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "s",
+      "label": "Delay para aparecer",
+      "default": 5,
+      "info": "Tempo em segundos após carregar a página. 0 = desativado"
+    },
+    {
+      "type": "range",
+      "id": "scroll_percentage",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Mostrar ao rolar",
+      "default": 0,
+      "info": "Percentual da página rolado. 0 = desativado"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_exit_intent",
+      "label": "Ativar Exit Intent",
+      "default": true,
+      "info": "Mostra quando usuário move mouse para sair da página"
+    },
+    {
+      "type": "header",
+      "content": "Cookies e Frequência"
+    },
+    {
+      "type": "range",
+      "id": "cookie_days",
+      "min": 10,
+      "max": 370,
+      "step": 10,
+      "unit": "dia",
+      "label": "Não mostrar novamente por",
+      "default": 30,
+      "info": "Após fechar ou se cadastrar, quantos dias não mostrar?"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dont_show_again",
+      "label": "Mostrar checkbox 'Não mostrar novamente'",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Mensagens de Feedback"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Mensagem de sucesso",
+      "default": "Obrigado! Você receberá nossas novidades em breve."
+    },
+    {
+      "type": "text",
+      "id": "error_message",
+      "label": "Mensagem de erro",
+      "default": "Ops! Algo deu errado. Tente novamente."
+    }
   ],
   "presets": [
     {
-      "name": "Modal Newsletter",
-      "blocks": []
+      "name": "Modal Newsletter"
     }
   ]
 }
