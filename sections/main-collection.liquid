@@ -1,0 +1,272 @@
+{% assign sort_by = collection.sort_by | default: collection.default_sort_by %}
+{%- assign products_per_page = section.settings.products_per_page | default: 12 -%}
+
+<div class="page-width py-8">
+  {%- if collection.image and section.settings.show_collection_image -%}
+    <div class="collection-hero mb-8 relative h-64 md:h-96 rounded-lg overflow-hidden">
+      <img
+        src="{{ collection.image | image_url: width: 1600 }}"
+        srcset="{{ collection.image | image_url: width: 600 }} 600w,
+                {{ collection.image | image_url: width: 1200 }} 1200w,
+                {{ collection.image | image_url: width: 1600 }} 1600w"
+        sizes="100vw"
+        alt="{{ collection.image.alt | escape }}"
+        class="w-full h-full object-cover"
+        loading="eager"
+      >
+      <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+        <h1 class="text-white text-4xl md:text-6xl font-bold text-center px-4">
+          {{ collection.title }}
+        </h1>
+      </div>
+    </div>
+  {%- else -%}
+    <div class="text-center mb-8">
+      <h1 class="text-3xl md:text-5xl font-bold mb-4">{{ collection.title }}</h1>
+      {%- if collection.description != blank and section.settings.show_collection_description -%}
+        <div class="text-gray-600 max-w-3xl mx-auto">
+          {{ collection.description }}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- paginate collection.products by products_per_page -%}
+    <div class="flex flex-col lg:flex-row gap-8">
+      {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
+        {%- comment -%} Sidebar com filtros (desktop) / Drawer (mobile) {%- endcomment -%}
+        <aside class="lg:w-64 flex-shrink-0">
+          <div class="lg:sticky lg:top-4">
+            {%- if section.settings.enable_filtering -%}
+              <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-4">Filtrar</h2>
+
+                {%- comment -%} Filtro de disponibilidade {%- endcomment -%}
+                <details class="mb-4 border-b pb-4" open>
+                  <summary class="cursor-pointer font-medium mb-2 flex justify-between items-center">
+                    Disponibilidade
+                    <svg class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div class="mt-2 space-y-2">
+                    <label class="flex items-center">
+                      <input type="checkbox" class="filter-checkbox mr-2" data-filter="in-stock">
+                      <span class="text-sm">Em estoque ({{ collection.products | where: "available" | size }})</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="checkbox" class="filter-checkbox mr-2" data-filter="out-of-stock">
+                      <span class="text-sm">Esgotado</span>
+                    </label>
+                  </div>
+                </details>
+
+                {%- comment -%} Filtro de preço {%- endcomment -%}
+                {%- if section.settings.enable_price_filter -%}
+                  <details class="mb-4 border-b pb-4">
+                    <summary class="cursor-pointer font-medium mb-2 flex justify-between items-center">
+                      Preço
+                      <svg class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </summary>
+                    <div class="mt-2 space-y-2">
+                      <label class="flex items-center">
+                        <input type="radio" name="price-filter" class="mr-2" value="0-50">
+                        <span class="text-sm">Até R$ 50</span>
+                      </label>
+                      <label class="flex items-center">
+                        <input type="radio" name="price-filter" class="mr-2" value="50-100">
+                        <span class="text-sm">R$ 50 - R$ 100</span>
+                      </label>
+                      <label class="flex items-center">
+                        <input type="radio" name="price-filter" class="mr-2" value="100-200">
+                        <span class="text-sm">R$ 100 - R$ 200</span>
+                      </label>
+                      <label class="flex items-center">
+                        <input type="radio" name="price-filter" class="mr-2" value="200+">
+                        <span class="text-sm">Acima de R$ 200</span>
+                      </label>
+                    </div>
+                  </details>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </aside>
+      {%- endif -%}
+
+      {%- comment -%} Produtos {%- endcomment -%}
+      <div class="flex-1">
+        {%- comment -%} Barra de ferramentas {%- endcomment -%}
+        <div class="flex flex-wrap items-center justify-between mb-6 gap-4">
+          <p class="text-gray-600">
+            {{ paginate.current_offset | plus: 1 }}-{{ paginate.current_offset | plus: paginate.page_size | at_most: collection.products_count }}
+            de {{ collection.products_count }}
+            {% if collection.products_count == 1 %}produto{% else %}produtos{% endif %}
+          </p>
+
+          {%- if section.settings.enable_sorting -%}
+            <div class="flex items-center gap-2">
+              <label for="SortBy" class="text-sm font-medium">Ordenar por:</label>
+              <select
+                id="SortBy"
+                name="sort_by"
+                class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                aria-describedby="a11y-refresh-page-message"
+              >
+                <option value="manual" {% if sort_by == 'manual' %}selected{% endif %}>Em destaque</option>
+                <option value="best-selling" {% if sort_by == 'best-selling' %}selected{% endif %}>Mais vendidos</option>
+                <option value="title-ascending" {% if sort_by == 'title-ascending' %}selected{% endif %}>A-Z</option>
+                <option value="title-descending" {% if sort_by == 'title-descending' %}selected{% endif %}>Z-A</option>
+                <option value="price-ascending" {% if sort_by == 'price-ascending' %}selected{% endif %}>Menor preço</option>
+                <option value="price-descending" {% if sort_by == 'price-descending' %}selected{% endif %}>Maior preço</option>
+                <option value="created-descending" {% if sort_by == 'created-descending' %}selected{% endif %}>Mais recente</option>
+                <option value="created-ascending" {% if sort_by == 'created-ascending' %}selected{% endif %}>Mais antigo</option>
+              </select>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- if collection.products.size > 0 -%}
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-{{ section.settings.products_per_row }} gap-4 md:gap-6">
+            {%- for product in collection.products -%}
+              {%- render 'card-product-slider',
+                card_product: product,
+                show_second_image: section.settings.show_second_image,
+                show_badges: true,
+                show_installments: section.settings.show_installments,
+                lazy_load: true,
+                remove_padding: true
+              -%}
+            {%- endfor -%}
+          </div>
+
+          {%- if paginate.pages > 1 -%}
+            <div class="mt-12">
+              {%- render 'pagination', paginate: paginate -%}
+            </div>
+          {%- endif -%}
+        {%- else -%}
+          <div class="text-center py-16">
+            <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+            </svg>
+            <h2 class="text-2xl font-semibold mb-2">Nenhum produto encontrado</h2>
+            <p class="text-gray-600 mb-6">Esta coleção está vazia no momento.</p>
+            <a href="/collections" class="inline-block bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors">
+              Ver todas as coleções
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endpaginate -%}
+</div>
+
+<script>
+  // Ordenação
+  const sortSelect = document.getElementById('SortBy');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', function() {
+      const url = new URL(window.location.href);
+      url.searchParams.set('sort_by', this.value);
+      window.location.href = url.toString();
+    });
+  }
+
+  // Nota de acessibilidade para leitores de tela
+  const a11yRefreshMessage = document.createElement('span');
+  a11yRefreshMessage.id = 'a11y-refresh-page-message';
+  a11yRefreshMessage.className = 'sr-only';
+  a11yRefreshMessage.setAttribute('role', 'status');
+  a11yRefreshMessage.setAttribute('aria-live', 'polite');
+  a11yRefreshMessage.textContent = 'A ordenação foi alterada. A página será recarregada.';
+  document.body.appendChild(a11yRefreshMessage);
+</script>
+
+{% schema %}
+{
+  "name": "Página de Coleção",
+  "class": "section-collection",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 12,
+      "label": "Produtos por página"
+    },
+    {
+      "type": "range",
+      "id": "products_per_row",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4,
+      "label": "Produtos por linha (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_second_image",
+      "label": "Mostrar segunda imagem ao passar o mouse",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Coleção"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_image",
+      "label": "Mostrar imagem da coleção",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_description",
+      "label": "Mostrar descrição da coleção",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Filtros e Ordenação"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "label": "Ativar filtros",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_price_filter",
+      "label": "Ativar filtro de preço",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "label": "Ativar ordenação",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Produto"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_installments",
+      "label": "Mostrar opção de parcelamento",
+      "default": true,
+      "info": "Mostra 3x sem juros para produtos acima de R$ 100"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-search",
+      "settings": {
+        "products_per_page": 12,
+        "products_per_row": 4,
+        "enable_type_filter": true,
+        "show_suggestions": true,
+        "show_popular_searches": true,
+        "popular_terms": "vestidos, blusas, calças, saias, acessórios, bolsas, sapatos, jaquetas"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

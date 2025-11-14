@@ -1,0 +1,313 @@
+{%- assign products_per_page = section.settings.products_per_page | default: 12 -%}
+{%- assign articles_per_page = 6 -%}
+
+<div class="page-width py-8">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl md:text-5xl font-bold mb-4">
+      {%- if search.performed -%}
+        Resultados para "{{ search.terms }}"
+      {%- else -%}
+        Buscar
+      {%- endif -%}
+    </h1>
+
+    {%- comment -%} Formulário de busca {%- endcomment -%}
+    <form action="{{ routes.search_url }}" method="get" role="search" class="max-w-2xl mx-auto mb-6">
+      <div class="relative">
+        <input
+          type="search"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="O que você está procurando?"
+          class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 text-lg"
+          required
+        >
+        <button
+          type="submit"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+          aria-label="Buscar"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </button>
+      </div>
+    </form>
+
+    {%- if search.performed -%}
+      <p class="text-gray-600">
+        {{ search.results_count }}
+        {% if search.results_count == 1 %}resultado encontrado{% else %}resultados encontrados{% endif %}
+      </p>
+    {%- endif -%}
+  </div>
+
+  {%- if search.performed -%}
+    {%- paginate search.results by products_per_page -%}
+      {%- if search.results.size > 0 -%}
+        {%- comment -%} Separar resultados por tipo {%- endcomment -%}
+        {%- assign products = search.results | where: 'object_type', 'product' -%}
+        {%- assign articles = search.results | where: 'object_type', 'article' -%}
+        {%- assign pages = search.results | where: 'object_type', 'page' -%}
+
+        {%- comment -%} Filtros de tipo {%- endcomment -%}
+        {%- if section.settings.enable_type_filter -%}
+          <div class="flex flex-wrap gap-2 justify-center mb-8">
+            <button class="filter-button active px-4 py-2 border rounded-full text-sm font-medium transition-all" data-filter="all">
+              Todos ({{ search.results_count }})
+            </button>
+            {%- if products.size > 0 -%}
+              <button class="filter-button px-4 py-2 border rounded-full text-sm font-medium transition-all" data-filter="products">
+                Produtos ({{ products.size }})
+              </button>
+            {%- endif -%}
+            {%- if articles.size > 0 -%}
+              <button class="filter-button px-4 py-2 border rounded-full text-sm font-medium transition-all" data-filter="articles">
+                Artigos ({{ articles.size }})
+              </button>
+            {%- endif -%}
+            {%- if pages.size > 0 -%}
+              <button class="filter-button px-4 py-2 border rounded-full text-sm font-medium transition-all" data-filter="pages">
+                Páginas ({{ pages.size }})
+              </button>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} PRODUTOS {%- endcomment -%}
+        {%- if products.size > 0 -%}
+          <div class="search-section" data-section="products">
+            <h2 class="text-2xl font-semibold mb-6">Produtos</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-{{ section.settings.products_per_row }} gap-4 md:gap-6 mb-12">
+              {%- for product in products -%}
+                {%- render 'card-product-slider',
+                  card_product: product,
+                  show_second_image: false,
+                  show_badges: true,
+                  show_installments: false,
+                  lazy_load: true,
+                  remove_padding: true
+                -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} ARTIGOS {%- endcomment -%}
+        {%- if articles.size > 0 -%}
+          <div class="search-section" data-section="articles">
+            <h2 class="text-2xl font-semibold mb-6">Artigos do Blog</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {%- for article in articles limit: articles_per_page -%}
+                <article class="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                  <a href="{{ article.url }}" class="block">
+                    {%- if article.image -%}
+                      <div class="aspect-[16/9] overflow-hidden bg-gray-100">
+                        <img
+                          src="{{ article.image | image_url: width: 600 }}"
+                          alt="{{ article.image.alt | escape }}"
+                          class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        >
+                      </div>
+                    {%- endif -%}
+                    <div class="p-4">
+                      <p class="text-xs text-gray-500 mb-2">
+                        {{ article.published_at | date: "%d/%m/%Y" }}
+                      </p>
+                      <h3 class="text-lg font-semibold mb-2 line-clamp-2">
+                        {{ article.title }}
+                      </h3>
+                      {%- if article.excerpt != blank -%}
+                        <p class="text-sm text-gray-600 line-clamp-3">
+                          {{ article.excerpt | strip_html }}
+                        </p>
+                      {%- endif -%}
+                    </div>
+                  </a>
+                </article>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} PÁGINAS {%- endcomment -%}
+        {%- if pages.size > 0 -%}
+          <div class="search-section" data-section="pages">
+            <h2 class="text-2xl font-semibold mb-6">Páginas</h2>
+            <div class="space-y-4 mb-12">
+              {%- for page in pages -%}
+                <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <a href="{{ page.url }}" class="block">
+                    <h3 class="text-lg font-semibold mb-2">{{ page.title }}</h3>
+                    {%- if page.content != blank -%}
+                      <p class="text-sm text-gray-600 line-clamp-2">
+                        {{ page.content | strip_html | truncatewords: 30 }}
+                      </p>
+                    {%- endif -%}
+                  </a>
+                </div>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- if paginate.pages > 1 -%}
+          <div class="mt-12">
+            {%- render 'pagination', paginate: paginate -%}
+          </div>
+        {%- endif -%}
+      {%- else -%}
+        {%- comment -%} Nenhum resultado {%- endcomment -%}
+        <div class="text-center py-16">
+          <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <h2 class="text-2xl font-semibold mb-2">Nenhum resultado encontrado</h2>
+          <p class="text-gray-600 mb-6">
+            Não encontramos nada para "{{ search.terms }}". <br>
+            Tente usar palavras diferentes ou verificar a ortografia.
+          </p>
+
+          {%- if section.settings.show_suggestions -%}
+            <div class="max-w-md mx-auto">
+              <h3 class="text-lg font-medium mb-4">Sugestões:</h3>
+              <ul class="text-left text-gray-600 space-y-2">
+                <li>• Verifique se todas as palavras estão escritas corretamente</li>
+                <li>• Tente palavras-chave diferentes</li>
+                <li>• Tente palavras-chave mais genéricas</li>
+                <li>• Tente usar menos palavras-chave</li>
+              </ul>
+            </div>
+          {%- endif -%}
+
+          <a href="/collections/all" class="inline-block mt-8 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors">
+            Ver todos os produtos
+          </a>
+        </div>
+      {%- endif -%}
+    {%- endpaginate -%}
+  {%- else -%}
+    {%- comment -%} Página inicial de busca - mostrar sugestões ou categorias populares {%- endcomment -%}
+    {%- if section.settings.show_popular_searches -%}
+      <div class="max-w-2xl mx-auto">
+        <h2 class="text-xl font-semibold mb-4">Buscas populares</h2>
+        <div class="flex flex-wrap gap-2">
+          {%- assign popular_terms = section.settings.popular_terms | split: ',' -%}
+          {%- for term in popular_terms -%}
+            <a
+              href="{{ routes.search_url }}?q={{ term | strip | url_encode }}"
+              class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
+            >
+              {{ term | strip }}
+            </a>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+<script>
+  // Filtro por tipo (se habilitado)
+  const filterButtons = document.querySelectorAll('.filter-button');
+  const searchSections = document.querySelectorAll('.search-section');
+
+  filterButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const filter = this.getAttribute('data-filter');
+
+      // Atualizar botões ativos
+      filterButtons.forEach(btn => btn.classList.remove('active', 'bg-black', 'text-white'));
+      this.classList.add('active', 'bg-black', 'text-white');
+
+      // Filtrar seções
+      searchSections.forEach(section => {
+        if (filter === 'all') {
+          section.style.display = 'block';
+        } else {
+          section.style.display = section.getAttribute('data-section') === filter ? 'block' : 'none';
+        }
+      });
+    });
+  });
+
+  // Adicionar classe active inicial
+  document.querySelector('.filter-button.active')?.classList.add('bg-black', 'text-white');
+</script>
+
+<style>
+  .filter-button.active {
+    @apply bg-black text-white border-black;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Página de Busca",
+  "class": "section-search",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 12,
+      "label": "Resultados por página"
+    },
+    {
+      "type": "range",
+      "id": "products_per_row",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4,
+      "label": "Produtos por linha (desktop)"
+    },
+    {
+      "type": "header",
+      "content": "Filtros"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_type_filter",
+      "label": "Ativar filtro por tipo",
+      "default": true,
+      "info": "Permite filtrar entre produtos, artigos e páginas"
+    },
+    {
+      "type": "header",
+      "content": "Sem resultados"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_suggestions",
+      "label": "Mostrar sugestões quando não houver resultados",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Buscas Populares"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_popular_searches",
+      "label": "Mostrar buscas populares",
+      "default": true,
+      "info": "Exibido quando nenhuma busca foi realizada ainda"
+    },
+    {
+      "type": "text",
+      "id": "popular_terms",
+      "label": "Termos populares",
+      "default": "vestidos, blusas, calças, saias, acessórios",
+      "info": "Separar por vírgulas"
+    }
+  ]
+}
+{% endschema %}

@@ -1,38 +1,94 @@
-<div class="group px-4">
+{%- comment -%}
+  Parâmetros:
+  - card_product: Objeto do produto (obrigatório)
+  - show_second_image: Mostrar segunda imagem no hover (default: true)
+  - show_badges: Mostrar badges de esgotado e desconto (default: true)
+  - show_installments: Mostrar parcelamento (default: false)
+  - lazy_load: Usar lazy loading (default: true)
+  - image_sizes: Sizes attribute para srcset (opcional)
+{%- endcomment -%}
+
+{%- liquid
+  assign show_second_image = show_second_image | default: true
+  assign show_badges = show_badges | default: true
+  assign show_installments = show_installments | default: false
+  assign lazy_load = lazy_load | default: true
+  assign loading_attr = 'lazy'
+  if lazy_load == false
+    assign loading_attr = 'eager'
+  endif
+-%}
+
+<div class="group {% unless remove_padding %}px-4{% endunless %}">
   <a class="block" href="{{ card_product.url }}">
-    <div class="relative w-full flex items-center justify-center">
-      <img
-        class="w-full h-auto aspect-[2/3] object-cover transition-opacity duration-500 ease-in-out {% if card_product.images.size > 1 %} group-hover:opacity-0 {% endif %}"
-        src="{{ card_product.featured_image | image_url }}"
-        width="{{ card_product.featured_image.width }}"
-        height="{{ card_product.featured_image.height }}"
-        loading="lazy"
-      >
-      {% if card_product.images.size > 1 %}
-        {% assign second_image = card_product.images[1] %}
+    <div class="relative w-full flex items-center justify-center overflow-hidden rounded-lg bg-gray-100">
+      {%- if card_product.featured_image -%}
         <img
-          class="absolute top-0 left-0 w-full h-auto aspect-[2/3] object-cover opacity-0 transition-opacity ease-in-out duration-500 group-hover:opacity-100"
-          src="{{ second_image | image_url }}"
-          width="{{ second_image.width }}"
-          height="{{ second_image.height }}"
-          loading="lazy"
+          class="w-full h-auto aspect-[2/3] object-cover transition-opacity duration-500 ease-in-out {% if show_second_image and card_product.images.size > 1 %}group-hover:opacity-0{% endif %}"
+          src="{{ card_product.featured_image | image_url: width: 400 }}"
+          srcset="{{ card_product.featured_image | image_url: width: 200 }} 200w,
+                  {{ card_product.featured_image | image_url: width: 400 }} 400w,
+                  {{ card_product.featured_image | image_url: width: 600 }} 600w"
+          sizes="{{ image_sizes | default: '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw' }}"
+          alt="{{ card_product.featured_image.alt | default: card_product.title | escape }}"
+          width="{{ card_product.featured_image.width }}"
+          height="{{ card_product.featured_image.height }}"
+          loading="{{ loading_attr }}"
         >
-      {% endif %}
+        {%- if show_second_image and card_product.images.size > 1 -%}
+          {%- assign second_image = card_product.images[1] -%}
+          <img
+            class="absolute top-0 left-0 w-full h-auto aspect-[2/3] object-cover opacity-0 transition-opacity ease-in-out duration-500 group-hover:opacity-100"
+            src="{{ second_image | image_url: width: 400 }}"
+            alt="{{ second_image.alt | default: card_product.title | escape }}"
+            width="{{ second_image.width }}"
+            height="{{ second_image.height }}"
+            loading="{{ loading_attr }}"
+          >
+        {%- endif -%}
+      {%- else -%}
+        {%- comment -%} Placeholder quando não tem imagem {%- endcomment -%}
+        <div class="w-full aspect-[2/3] flex items-center justify-center bg-gray-200">
+          <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+      {%- endif -%}
+
+      {%- if show_badges -%}
+        {%- comment -%} Badge de esgotado {%- endcomment -%}
+        {%- unless card_product.available -%}
+          <div class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+            Esgotado
+          </div>
+        {%- endunless -%}
+
+        {%- comment -%} Badge de desconto {%- endcomment -%}
+        {%- if card_product.compare_at_price > card_product.price -%}
+          {%- assign discount_percent = card_product.compare_at_price | minus: card_product.price | times: 100 | divided_by: card_product.compare_at_price -%}
+          <div class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded font-semibold">
+            -{{ discount_percent }}%
+          </div>
+        {%- endif -%}
+      {%- endif -%}
     </div>
+
     <h3 class="h-6 line-clamp-1 uppercase font-light text-[#616161] mt-2 text-sm">
       {{ card_product.title | escape }}
     </h3>
-    <div class="my-2 flex gap-2">
-      {% if card_product.compare_at_price_max > card_product.price_max %}
-        {% render 'discount-flag', product: card_product %}
-      {% endif %}
-      {% render 'price-v2', product: card_product, price_class: '', show_compare_at_price: true %}
-      {% comment %} <div class="h-5">
-        {% render 'installments', product: card_product %}
-      </div> {% endcomment %}
+
+    <div class="my-2 flex gap-2 items-center">
+      {%- if card_product.compare_at_price_max > card_product.price_max -%}
+        {%- render 'discount-flag', product: card_product -%}
+      {%- endif -%}
+      {%- render 'price-v2', product: card_product, price_class: '', show_compare_at_price: true -%}
     </div>
+
+    {%- if show_installments and card_product.price > 10000 -%}
+      {%- assign installment_value = card_product.price | divided_by: 3 -%}
+      <p class="text-xs text-gray-500 mt-1">
+        ou 3x de {{ installment_value | money }} sem juros
+      </p>
+    {%- endif -%}
   </a>
-  {% comment %} <div>
-    {% render 'add-to-cart', product: card_product %}
-  </div> {% endcomment %}
 </div>
