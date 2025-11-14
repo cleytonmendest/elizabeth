@@ -63,8 +63,6 @@ class Search extends HTMLElement {
             const response = await fetch(`/search/suggest.json?q=${encodeURIComponent(query)}`);
             const suggestions = await response.json();
 
-            console.log(suggestions, 'sugeeestions')
-
             this._renderResults(suggestions.resources.results);
 
         } catch (error) {
