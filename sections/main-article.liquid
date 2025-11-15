@@ -1,7 +1,7 @@
 <article class="article">
   {%- comment -%} Hero Image {%- endcomment -%}
   {% if article.image and section.settings.show_featured_image %}
-    <div class="w-full {% if section.settings.hero_fullwidth %}{% else %}page-width{% endif %} mb-8 lg:mb-12">
+    <div class="w-full {% if section.settings.hero_fullwidth %}{% else %}page-width{% endif %} !mb-8 !lg:mb-12">
       <div class="relative overflow-hidden {% unless section.settings.hero_fullwidth %}rounded-2xl{% endunless %} aspect-[21/9] bg-gray-100">
         <img
           src="{{ article.image | image_url: width: 1920 }}"
@@ -17,23 +17,10 @@
     </div>
   {% endif %}
 
-  <div class="page-width py-8">
-    <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
+  <div class="page-width !py-8">
+    <div class="flex flex-col lg:flex-row justify-center gap-8 lg:gap-12">
       {%- comment -%} Main Content {%- endcomment -%}
       <div class="flex-1 max-w-3xl mx-auto lg:mx-0">
-        {%- comment -%} Breadcrumb {%- endcomment -%}
-        {% if section.settings.show_breadcrumb %}
-          <nav class="mb-6" aria-label="Breadcrumb">
-            <ol class="flex items-center gap-2 text-sm text-gray-600">
-              <li><a href="{{ routes.root_url }}" class="hover:text-black">Início</a></li>
-              <li><span class="text-gray-400">/</span></li>
-              <li><a href="{{ blog.url }}" class="hover:text-black">{{ blog.title }}</a></li>
-              <li><span class="text-gray-400">/</span></li>
-              <li class="text-gray-900 line-clamp-1">{{ article.title }}</li>
-            </ol>
-          </nav>
-        {% endif %}
-
         {%- comment -%} Title {%- endcomment -%}
         <h1 class="text-3xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
           {{ article.title }}
@@ -434,12 +421,6 @@
     {
       "type": "header",
       "content": "Elementos do Artigo"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_breadcrumb",
-      "label": "Mostrar breadcrumb",
-      "default": true
     },
     {
       "type": "checkbox",

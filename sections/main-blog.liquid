@@ -1,6 +1,6 @@
 {% paginate blog.articles by section.settings.posts_per_page %}
 
-<div class="page-width py-8 lg:py-12">
+<div class="page-width !py-8 !lg:py-12 mb-4">
   {%- comment -%} Header do Blog {%- endcomment -%}
   <div class="mb-8 lg:mb-12">
     <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">{{ blog.title }}</h1>
@@ -9,7 +9,7 @@
     {% endif %}
   </div>
 
-  <div class="flex flex-col lg:flex-row gap-8">
+  <div class="flex flex-col lg:flex-row-reverse gap-8">
     {%- comment -%} Main Content {%- endcomment -%}
     <div class="flex-1">
       {%- comment -%} Filtro por Tags {%- endcomment -%}
@@ -123,29 +123,6 @@
             </div>
           </div>
         {% endif %}
-
-        {%- comment -%} Newsletter Signup {%- endcomment -%}
-        {% if section.settings.show_newsletter %}
-          <div class="bg-black text-white p-6 rounded-lg">
-            <h3 class="text-lg font-semibold mb-2">{{ section.settings.newsletter_title }}</h3>
-            <p class="text-sm text-gray-300 mb-4">{{ section.settings.newsletter_text }}</p>
-            <form action="/contact#newsletter" method="post" class="newsletter-form">
-              <input type="hidden" name="contact[tags]" value="newsletter">
-              <div class="mb-3">
-                <input
-                  type="email"
-                  name="contact[email]"
-                  placeholder="Seu e-mail"
-                  required
-                  class="w-full px-4 py-2.5 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-white"
-                >
-              </div>
-              <button type="submit" class="w-full px-4 py-2.5 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition-colors">
-                Assinar
-              </button>
-            </form>
-          </div>
-        {% endif %}
       </aside>
     {% endif %}
   </div>
@@ -176,7 +153,7 @@
       "type": "range",
       "id": "grid_columns",
       "min": 2,
-      "max": 3,
+      "max": 6,
       "step": 1,
       "label": "Colunas no grid (desktop)",
       "default": 3
@@ -221,28 +198,6 @@
       "label": "Mostrar artigos recentes",
       "default": true
     },
-    {
-      "type": "header",
-      "content": "Newsletter"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_newsletter",
-      "label": "Mostrar formulário de newsletter",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "newsletter_title",
-      "label": "Título da newsletter",
-      "default": "Receba novidades"
-    },
-    {
-      "type": "textarea",
-      "id": "newsletter_text",
-      "label": "Texto da newsletter",
-      "default": "Assine nossa newsletter e receba dicas de estilo em primeira mão."
-    }
   ],
   "presets": [
     {
