@@ -1,0 +1,253 @@
+{% paginate blog.articles by section.settings.posts_per_page %}
+
+<div class="page-width py-8 lg:py-12">
+  {%- comment -%} Header do Blog {%- endcomment -%}
+  <div class="mb-8 lg:mb-12">
+    <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">{{ blog.title }}</h1>
+    {% if blog.description != blank %}
+      <p class="text-lg text-gray-600">{{ blog.description }}</p>
+    {% endif %}
+  </div>
+
+  <div class="flex flex-col lg:flex-row gap-8">
+    {%- comment -%} Main Content {%- endcomment -%}
+    <div class="flex-1">
+      {%- comment -%} Filtro por Tags {%- endcomment -%}
+      {% if blog.all_tags.size > 0 and section.settings.show_tags %}
+        <div class="mb-6 flex flex-wrap gap-2">
+          <a
+            href="{{ blog.url }}"
+            class="px-4 py-2 rounded-full text-sm font-medium transition-colors {% if current_tags.size == 0 %}bg-black text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}"
+          >
+            Todos
+          </a>
+          {% for tag in blog.all_tags limit: 10 %}
+            {% if current_tags contains tag %}
+              <a
+                href="{{ blog.url }}/tagged/{{ tag | handle }}"
+                class="px-4 py-2 rounded-full text-sm font-medium bg-black text-white transition-colors"
+              >
+                {{ tag }}
+              </a>
+            {% else %}
+              <a
+                href="{{ blog.url }}/tagged/{{ tag | handle }}"
+                class="px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+              >
+                {{ tag }}
+              </a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {%- comment -%} Grid de Artigos {%- endcomment -%}
+      {% if blog.articles.size > 0 %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ section.settings.grid_columns }} gap-6 lg:gap-8 mb-8">
+          {% for article in blog.articles %}
+            {% render 'card-article', article: article, show_excerpt: true, show_author: true, show_tags: section.settings.show_article_tags %}
+          {% endfor %}
+        </div>
+
+        {%- comment -%} Paginação {%- endcomment -%}
+        {% if paginate.pages > 1 %}
+          {% render 'pagination', paginate: paginate %}
+        {% endif %}
+      {% else %}
+        {%- comment -%} Empty State {%- endcomment -%}
+        <div class="text-center py-16">
+          <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+          </svg>
+          <h2 class="text-2xl font-semibold text-gray-900 mb-2">Nenhum artigo encontrado</h2>
+          <p class="text-gray-600 mb-6">Não há artigos publicados nesta categoria ainda.</p>
+          <a href="{{ blog.url }}" class="inline-block px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
+            Ver todos os artigos
+          </a>
+        </div>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Sidebar {%- endcomment -%}
+    {% if section.settings.show_sidebar %}
+      <aside class="w-full lg:w-80 space-y-8">
+        {%- comment -%} Busca no Blog {%- endcomment -%}
+        {% if section.settings.show_search %}
+          <div class="bg-gray-50 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Buscar Artigos</h3>
+            <form action="{{ routes.search_url }}" method="get" role="search">
+              <input type="hidden" name="type" value="article">
+              <div class="relative">
+                <input
+                  type="search"
+                  name="q"
+                  placeholder="Buscar..."
+                  class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                >
+                <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition-colors">
+                  {% render 'icon-search', size: 20 %}
+                </button>
+              </div>
+            </form>
+          </div>
+        {% endif %}
+
+        {%- comment -%} Categorias/Tags {%- endcomment -%}
+        {% if blog.all_tags.size > 0 and section.settings.show_sidebar_tags %}
+          <div class="bg-gray-50 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Categorias</h3>
+            <div class="flex flex-wrap gap-2">
+              {% for tag in blog.all_tags limit: 15 %}
+                <a
+                  href="{{ blog.url }}/tagged/{{ tag | handle }}"
+                  class="px-3 py-1.5 text-sm bg-white border border-gray-200 rounded-full hover:bg-black hover:text-white hover:border-black transition-colors"
+                >
+                  {{ tag }}
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {%- comment -%} Artigos Recentes {%- endcomment -%}
+        {% if section.settings.show_recent_posts %}
+          <div class="bg-gray-50 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Artigos Recentes</h3>
+            <div class="space-y-4">
+              {% for article in blog.articles limit: 5 %}
+                <a href="{{ article.url }}" class="block group">
+                  <h4 class="text-sm font-medium text-gray-900 group-hover:text-black line-clamp-2 mb-1">{{ article.title }}</h4>
+                  <p class="text-xs text-gray-500">{{ article.published_at | date: '%d/%m/%Y' }}</p>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {%- comment -%} Newsletter Signup {%- endcomment -%}
+        {% if section.settings.show_newsletter %}
+          <div class="bg-black text-white p-6 rounded-lg">
+            <h3 class="text-lg font-semibold mb-2">{{ section.settings.newsletter_title }}</h3>
+            <p class="text-sm text-gray-300 mb-4">{{ section.settings.newsletter_text }}</p>
+            <form action="/contact#newsletter" method="post" class="newsletter-form">
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <div class="mb-3">
+                <input
+                  type="email"
+                  name="contact[email]"
+                  placeholder="Seu e-mail"
+                  required
+                  class="w-full px-4 py-2.5 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-white"
+                >
+              </div>
+              <button type="submit" class="w-full px-4 py-2.5 bg-white text-black rounded-lg font-medium hover:bg-gray-100 transition-colors">
+                Assinar
+              </button>
+            </form>
+          </div>
+        {% endif %}
+      </aside>
+    {% endif %}
+  </div>
+</div>
+
+{% endpaginate %}
+
+{% schema %}
+{
+  "name": "Blog Principal",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout do Blog"
+    },
+    {
+      "type": "range",
+      "id": "posts_per_page",
+      "min": 6,
+      "max": 24,
+      "step": 3,
+      "label": "Artigos por página",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "grid_columns",
+      "min": 2,
+      "max": 3,
+      "step": 1,
+      "label": "Colunas no grid (desktop)",
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Mostrar filtro de tags",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_article_tags",
+      "label": "Mostrar tags nos cards",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Sidebar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sidebar",
+      "label": "Mostrar sidebar",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Mostrar busca na sidebar",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sidebar_tags",
+      "label": "Mostrar categorias na sidebar",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_recent_posts",
+      "label": "Mostrar artigos recentes",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "Mostrar formulário de newsletter",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_title",
+      "label": "Título da newsletter",
+      "default": "Receba novidades"
+    },
+    {
+      "type": "textarea",
+      "id": "newsletter_text",
+      "label": "Texto da newsletter",
+      "default": "Assine nossa newsletter e receba dicas de estilo em primeira mão."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog Principal"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,95 @@
+{%- comment -%}
+  Componente reutilizável de card de artigo
+
+  Parâmetros:
+  - article: objeto do artigo (obrigatório)
+  - show_excerpt: boolean (default: false)
+  - show_author: boolean (default: false)
+  - show_tags: boolean (default: false)
+  - show_image: boolean (default: true)
+{%- endcomment -%}
+
+{% assign show_excerpt = show_excerpt | default: false %}
+{% assign show_author = show_author | default: false %}
+{% assign show_tags = show_tags | default: false %}
+{% assign show_image = show_image | default: true %}
+
+<article class="group">
+  <a href="{{ article.url }}" class="block">
+    {%- comment -%} Imagem do Artigo {%- endcomment -%}
+    {% if show_image %}
+      <div class="relative overflow-hidden rounded-lg mb-4 aspect-[16/9] bg-gray-100">
+        {% if article.image %}
+          <img
+            src="{{ article.image | image_url: width: 600 }}"
+            srcset="{{ article.image | image_url: width: 400 }} 400w,
+                    {{ article.image | image_url: width: 600 }} 600w,
+                    {{ article.image | image_url: width: 800 }} 800w"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            alt="{{ article.image.alt | escape | default: article.title }}"
+            loading="lazy"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          >
+        {% else %}
+          <div class="w-full h-full flex items-center justify-center">
+            <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+            </svg>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {%- comment -%} Tags do Artigo {%- endcomment -%}
+    {% if show_tags and article.tags.size > 0 %}
+      <div class="flex flex-wrap gap-2 mb-3">
+        {% for tag in article.tags limit: 2 %}
+          <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded">
+            {{ tag }}
+          </span>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {%- comment -%} Título {%- endcomment -%}
+    <h3 class="text-xl font-semibold text-gray-900 group-hover:text-black line-clamp-2 mb-2 transition-colors">
+      {{ article.title }}
+    </h3>
+
+    {%- comment -%} Metadata (Autor e Data) {%- endcomment -%}
+    <div class="flex items-center gap-3 text-sm text-gray-600 mb-3">
+      {% if show_author and article.author %}
+        <span class="font-medium">{{ article.author }}</span>
+        <span class="text-gray-400">•</span>
+      {% endif %}
+      <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+        {{ article.published_at | date: '%d/%m/%Y' }}
+      </time>
+      {%- comment -%} Tempo de Leitura (estimativa baseada em palavras) {%- endcomment -%}
+      {% assign word_count = article.content | strip_html | split: ' ' | size %}
+      {% assign reading_time = word_count | divided_by: 200 %}
+      {% if reading_time == 0 %}{% assign reading_time = 1 %}{% endif %}
+      <span class="text-gray-400">•</span>
+      <span>{{ reading_time }} min de leitura</span>
+    </div>
+
+    {%- comment -%} Excerpt {%- endcomment -%}
+    {% if show_excerpt %}
+      <div class="text-gray-600 line-clamp-3 mb-4">
+        {% if article.excerpt != blank %}
+          {{ article.excerpt | strip_html }}
+        {% else %}
+          {{ article.content | strip_html | truncatewords: 30 }}
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {%- comment -%} Link "Ler mais" {%- endcomment -%}
+    <div class="flex items-center gap-2 text-sm font-medium text-black group-hover:gap-3 transition-all">
+      <span>Ler mais</span>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+    </div>
+  </a>
+</article>

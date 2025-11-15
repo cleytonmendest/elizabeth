@@ -1,0 +1,23 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-blog",
+      "settings": {
+        "posts_per_page": 12,
+        "grid_columns": 3,
+        "show_tags": true,
+        "show_article_tags": true,
+        "show_sidebar": true,
+        "show_search": true,
+        "show_sidebar_tags": true,
+        "show_recent_posts": true,
+        "show_newsletter": true,
+        "newsletter_title": "Receba novidades",
+        "newsletter_text": "Assine nossa newsletter e receba dicas de estilo em primeira mão."
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

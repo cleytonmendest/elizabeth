@@ -1,0 +1,522 @@
+<article class="article">
+  {%- comment -%} Hero Image {%- endcomment -%}
+  {% if article.image and section.settings.show_featured_image %}
+    <div class="w-full {% if section.settings.hero_fullwidth %}{% else %}page-width{% endif %} mb-8 lg:mb-12">
+      <div class="relative overflow-hidden {% unless section.settings.hero_fullwidth %}rounded-2xl{% endunless %} aspect-[21/9] bg-gray-100">
+        <img
+          src="{{ article.image | image_url: width: 1920 }}"
+          srcset="{{ article.image | image_url: width: 800 }} 800w,
+                  {{ article.image | image_url: width: 1200 }} 1200w,
+                  {{ article.image | image_url: width: 1600 }} 1600w,
+                  {{ article.image | image_url: width: 1920 }} 1920w"
+          sizes="100vw"
+          alt="{{ article.image.alt | escape | default: article.title }}"
+          class="w-full h-full object-cover"
+        >
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="page-width py-8">
+    <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
+      {%- comment -%} Main Content {%- endcomment -%}
+      <div class="flex-1 max-w-3xl mx-auto lg:mx-0">
+        {%- comment -%} Breadcrumb {%- endcomment -%}
+        {% if section.settings.show_breadcrumb %}
+          <nav class="mb-6" aria-label="Breadcrumb">
+            <ol class="flex items-center gap-2 text-sm text-gray-600">
+              <li><a href="{{ routes.root_url }}" class="hover:text-black">Início</a></li>
+              <li><span class="text-gray-400">/</span></li>
+              <li><a href="{{ blog.url }}" class="hover:text-black">{{ blog.title }}</a></li>
+              <li><span class="text-gray-400">/</span></li>
+              <li class="text-gray-900 line-clamp-1">{{ article.title }}</li>
+            </ol>
+          </nav>
+        {% endif %}
+
+        {%- comment -%} Title {%- endcomment -%}
+        <h1 class="text-3xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+          {{ article.title }}
+        </h1>
+
+        {%- comment -%} Metadata {%- endcomment -%}
+        <div class="flex flex-wrap items-center gap-4 pb-6 mb-8 border-b border-gray-200">
+          {% if section.settings.show_author and article.author %}
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                <span class="text-lg font-semibold text-gray-600">{{ article.author | slice: 0 }}</span>
+              </div>
+              <div>
+                <p class="font-medium text-gray-900">{{ article.author }}</p>
+                <p class="text-sm text-gray-600">Autor</p>
+              </div>
+            </div>
+          {% endif %}
+          <div class="flex items-center gap-3 text-sm text-gray-600">
+            <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+              {{ article.published_at | date: '%d de %B de %Y' }}
+            </time>
+            <span class="text-gray-400">•</span>
+            {% assign word_count = article.content | strip_html | split: ' ' | size %}
+            {% assign reading_time = word_count | divided_by: 200 %}
+            {% if reading_time == 0 %}{% assign reading_time = 1 %}{% endif %}
+            <span>{{ reading_time }} min de leitura</span>
+          </div>
+        </div>
+
+        {%- comment -%} Article Content {%- endcomment -%}
+        <div class="article-content prose prose-lg max-w-none mb-8">
+          {{ article.content }}
+        </div>
+
+        {%- comment -%} Tags {%- endcomment -%}
+        {% if article.tags.size > 0 and section.settings.show_tags %}
+          <div class="py-6 mb-8 border-y border-gray-200">
+            <p class="text-sm font-medium text-gray-900 mb-3">Tags:</p>
+            <div class="flex flex-wrap gap-2">
+              {% for tag in article.tags %}
+                <a
+                  href="{{ blog.url }}/tagged/{{ tag | handle }}"
+                  class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-black hover:text-white transition-colors"
+                >
+                  {{ tag }}
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {%- comment -%} Social Share {%- endcomment -%}
+        {% if section.settings.show_share %}
+          <div class="mb-12">
+            <p class="text-sm font-medium text-gray-900 mb-4">Compartilhar:</p>
+            <div class="flex flex-wrap gap-3">
+              {% assign share_url = shop.url | append: article.url | url_encode %}
+              {% assign share_title = article.title | url_encode %}
+
+              <a
+                href="https://api.whatsapp.com/send?text={{ share_title }}%20{{ share_url }}"
+                target="_blank"
+                rel="noopener"
+                class="flex items-center gap-2 px-4 py-2 bg-[#25D366] text-white rounded-lg hover:bg-[#1fb855] transition-colors"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                WhatsApp
+              </a>
+
+              <a
+                href="https://www.facebook.com/sharer/sharer.php?u={{ share_url }}"
+                target="_blank"
+                rel="noopener"
+                class="flex items-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#0c63d4] transition-colors"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                Facebook
+              </a>
+
+              <a
+                href="https://twitter.com/intent/tweet?url={{ share_url }}&text={{ share_title }}"
+                target="_blank"
+                rel="noopener"
+                class="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                Twitter
+              </a>
+
+              <button
+                onclick="navigator.clipboard.writeText('{{ shop.url }}{{ article.url }}'); alert('Link copiado!');"
+                class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                Copiar Link
+              </button>
+            </div>
+          </div>
+        {% endif %}
+
+        {%- comment -%} Author Bio {%- endcomment -%}
+        {% if section.settings.show_author_bio and article.author %}
+          <div class="p-6 bg-gray-50 rounded-lg mb-12">
+            <div class="flex items-start gap-4">
+              <div class="w-16 h-16 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center">
+                <span class="text-2xl font-semibold text-gray-600">{{ article.author | slice: 0 }}</span>
+              </div>
+              <div class="flex-1">
+                <p class="font-semibold text-gray-900 mb-1">{{ article.author }}</p>
+                <p class="text-sm text-gray-600">{{ section.settings.author_bio_text }}</p>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        {%- comment -%} Related Articles {%- endcomment -%}
+        {% if section.settings.show_related and blog.articles.size > 1 %}
+          <div class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Artigos Relacionados</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {% assign related_count = 0 %}
+              {% for related_article in blog.articles limit: 6 %}
+                {% if related_article.id != article.id and related_count < 3 %}
+                  {% render 'card-article', article: related_article, show_excerpt: false, show_image: true %}
+                  {% assign related_count = related_count | plus: 1 %}
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {%- comment -%} Prev/Next Navigation {%- endcomment -%}
+        {% if section.settings.show_navigation %}
+          <nav class="flex justify-between gap-4 py-8 border-t border-gray-200 mb-12">
+            {% if blog.previous_article %}
+              <a href="{{ blog.previous_article.url }}" class="flex-1 p-4 border border-gray-200 rounded-lg hover:border-black transition-colors group">
+                <p class="text-xs text-gray-600 mb-2">← Anterior</p>
+                <p class="font-medium text-gray-900 group-hover:text-black line-clamp-2">{{ blog.previous_article.title }}</p>
+              </a>
+            {% else %}
+              <div class="flex-1"></div>
+            {% endif %}
+
+            {% if blog.next_article %}
+              <a href="{{ blog.next_article.url }}" class="flex-1 p-4 border border-gray-200 rounded-lg hover:border-black transition-colors text-right group">
+                <p class="text-xs text-gray-600 mb-2">Próximo →</p>
+                <p class="font-medium text-gray-900 group-hover:text-black line-clamp-2">{{ blog.next_article.title }}</p>
+              </a>
+            {% endif %}
+          </nav>
+        {% endif %}
+
+        {%- comment -%} Comments {%- endcomment -%}
+        {% if blog.comments_enabled? and section.settings.show_comments %}
+          <div class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">
+              {{ article.comments_count }}
+              {% if article.comments_count == 1 %}Comentário{% else %}Comentários{% endif %}
+            </h2>
+
+            {% paginate article.comments by 10 %}
+              {% if article.comments.size > 0 %}
+                <div class="space-y-6 mb-8">
+                  {% for comment in article.comments %}
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                      <div class="flex items-start gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                          <span class="text-sm font-semibold text-gray-600">{{ comment.author | slice: 0 }}</span>
+                        </div>
+                        <div class="flex-1">
+                          <p class="font-medium text-gray-900">{{ comment.author }}</p>
+                          <p class="text-xs text-gray-600">{{ comment.created_at | date: '%d/%m/%Y às %H:%M' }}</p>
+                        </div>
+                      </div>
+                      <div class="text-gray-700">{{ comment.content }}</div>
+                    </div>
+                  {% endfor %}
+                </div>
+
+                {% if paginate.pages > 1 %}
+                  {% render 'pagination', paginate: paginate %}
+                {% endif %}
+              {% endif %}
+            {% endpaginate %}
+
+            {%- comment -%} Comment Form {%- endcomment -%}
+            <div class="p-6 bg-gray-50 rounded-lg">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Deixe um comentário</h3>
+              {% form 'new_comment', article %}
+                {% if form.posted_successfully? %}
+                  <div class="mb-4 p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg">
+                    Comentário enviado com sucesso! Ele será publicado após moderação.
+                  </div>
+                {% endif %}
+
+                {% if form.errors %}
+                  <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg">
+                    <p class="font-medium mb-2">Ocorreram erros:</p>
+                    {{ form.errors | default_errors }}
+                  </div>
+                {% endif %}
+
+                <div class="mb-4">
+                  <label for="CommentAuthor" class="block text-sm font-medium text-gray-700 mb-2">Nome *</label>
+                  <input
+                    type="text"
+                    name="comment[author]"
+                    id="CommentAuthor"
+                    value="{{ form.author }}"
+                    required
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  >
+                </div>
+
+                <div class="mb-4">
+                  <label for="CommentEmail" class="block text-sm font-medium text-gray-700 mb-2">E-mail *</label>
+                  <input
+                    type="email"
+                    name="comment[email]"
+                    id="CommentEmail"
+                    value="{{ form.email }}"
+                    required
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  >
+                </div>
+
+                <div class="mb-4">
+                  <label for="CommentBody" class="block text-sm font-medium text-gray-700 mb-2">Comentário *</label>
+                  <textarea
+                    name="comment[body]"
+                    id="CommentBody"
+                    rows="5"
+                    required
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent resize-none"
+                  >{{ form.body }}</textarea>
+                </div>
+
+                <button
+                  type="submit"
+                  class="px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
+                >
+                  Enviar Comentário
+                </button>
+              {% endform %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      {%- comment -%} Sidebar {%- endcomment -%}
+      {% if section.settings.show_sidebar %}
+        <aside class="w-full lg:w-80 lg:sticky lg:top-8 h-fit space-y-6">
+          {%- comment -%} Voltar ao Blog {%- endcomment -%}
+          <a href="{{ blog.url }}" class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-black transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Voltar ao blog
+          </a>
+
+          {%- comment -%} Artigos Recentes {%- endcomment -%}
+          <div class="bg-gray-50 p-6 rounded-lg">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Artigos Recentes</h3>
+            <div class="space-y-4">
+              {% for recent_article in blog.articles limit: 5 %}
+                {% if recent_article.id != article.id %}
+                  <a href="{{ recent_article.url }}" class="block group">
+                    <h4 class="text-sm font-medium text-gray-900 group-hover:text-black line-clamp-2 mb-1">{{ recent_article.title }}</h4>
+                    <p class="text-xs text-gray-500">{{ recent_article.published_at | date: '%d/%m/%Y' }}</p>
+                  </a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </aside>
+      {% endif %}
+    </div>
+
+    {%- comment -%} Back to Blog Button (mobile) {%- endcomment -%}
+    <div class="mt-8 text-center lg:hidden">
+      <a href="{{ blog.url }}" class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Voltar ao Blog
+      </a>
+    </div>
+  </div>
+</article>
+
+<style>
+  .article-content {
+    @apply text-gray-700 leading-relaxed;
+  }
+
+  .article-content h2 {
+    @apply text-2xl font-bold text-gray-900 mt-8 mb-4;
+  }
+
+  .article-content h3 {
+    @apply text-xl font-semibold text-gray-900 mt-6 mb-3;
+  }
+
+  .article-content p {
+    @apply mb-4;
+  }
+
+  .article-content ul,
+  .article-content ol {
+    @apply mb-4 pl-6;
+  }
+
+  .article-content ul {
+    @apply list-disc;
+  }
+
+  .article-content ol {
+    @apply list-decimal;
+  }
+
+  .article-content li {
+    @apply mb-2;
+  }
+
+  .article-content a {
+    @apply text-black font-medium underline hover:no-underline;
+  }
+
+  .article-content img {
+    @apply rounded-lg my-6;
+  }
+
+  .article-content blockquote {
+    @apply border-l-4 border-black pl-4 italic my-6 text-gray-600;
+  }
+
+  .article-content strong {
+    @apply font-semibold text-gray-900;
+  }
+
+  .article-content code {
+    @apply bg-gray-100 px-2 py-1 rounded text-sm font-mono;
+  }
+
+  .article-content pre {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-6;
+  }
+
+  .article-content pre code {
+    @apply bg-transparent p-0;
+  }
+
+  .article-content table {
+    @apply w-full my-6 border-collapse;
+  }
+
+  .article-content th,
+  .article-content td {
+    @apply border border-gray-300 px-4 py-2 text-left;
+  }
+
+  .article-content th {
+    @apply bg-gray-50 font-semibold;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Artigo do Blog",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Imagem Destacada"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured_image",
+      "label": "Mostrar imagem destacada",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hero_fullwidth",
+      "label": "Imagem em largura total",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Elementos do Artigo"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Mostrar breadcrumb",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Mostrar autor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Mostrar tags",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share",
+      "label": "Mostrar botões de compartilhamento",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Bio do Autor"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author_bio",
+      "label": "Mostrar bio do autor",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "author_bio_text",
+      "label": "Texto da bio",
+      "default": "Escritor(a) apaixonado(a) por moda e estilo, compartilhando dicas e tendências para você arrasar no visual."
+    },
+    {
+      "type": "header",
+      "content": "Artigos Relacionados"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_related",
+      "label": "Mostrar artigos relacionados",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Mostrar navegação prev/next",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Comentários"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_comments",
+      "label": "Mostrar seção de comentários",
+      "default": true,
+      "info": "Os comentários devem estar habilitados nas configurações do blog"
+    },
+    {
+      "type": "header",
+      "content": "Sidebar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sidebar",
+      "label": "Mostrar sidebar",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Artigo do Blog"
+    }
+  ]
+}
+{% endschema %}
