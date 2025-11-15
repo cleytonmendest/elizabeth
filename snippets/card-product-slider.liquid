@@ -34,6 +34,7 @@
           width="{{ card_product.featured_image.width }}"
           height="{{ card_product.featured_image.height }}"
           loading="{{ loading_attr }}"
+          decoding="async"
         >
         {%- if show_second_image and card_product.images.size > 1 -%}
           {%- assign second_image = card_product.images[1] -%}
@@ -44,6 +45,7 @@
             width="{{ second_image.width }}"
             height="{{ second_image.height }}"
             loading="{{ loading_attr }}"
+            decoding="async"
           >
         {%- endif -%}
       {%- else -%}

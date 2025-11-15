@@ -25,6 +25,18 @@
     {% comment %} OBRIGATORIO TER A DIV "my-slider__container" PARA O CORRETO FUNCIONAMENTO {% endcomment %}
     <div class="my-slider__container overflow-hidden">
       {%- for block in section.blocks -%}
+        {%- liquid
+          comment
+            Otimização de performance:
+            - Primeiro slide: loading="eager" fetchpriority="high" (LCP - Largest Contentful Paint)
+            - Demais slides: loading="lazy" (economiza banda)
+            - decoding="async" em todos (não bloqueia renderização)
+          endcomment
+          assign is_first_slide = false
+          if forloop.first
+            assign is_first_slide = true
+          endif
+        -%}
         <div class="item">
           {% if block.settings.link != blank %}
             <a href="{{ block.settings.link }}">
@@ -47,9 +59,12 @@
                 {% endif %}
                 <img
                   src="{{ block.settings.imgMob | image_url }}"
+                  alt="{{ block.settings.alt_text | escape | default: 'Slider Image' }}"
                   width="{{ block.settings.imgMobWidth | default: 500 }}"
                   height="{{ block.settings.imgMobHeight | default: 540 }}"
-                  loading="lazy"
+                  loading="{% if is_first_slide %}eager{% else %}lazy{% endif %}"
+                  decoding="async"
+                  {% if is_first_slide %}fetchpriority="high"{% endif %}
                 >
               </picture>
             </a>
@@ -73,9 +88,12 @@
               {% endif %}
               <img
                 src="{{ block.settings.imgMob | image_url }}"
+                alt="{{ block.settings.alt_text | escape | default: 'Slider Image' }}"
                 width="{{ block.settings.imgMobWidth | default: 500 }}"
                 height="{{ block.settings.imgMobHeight | default: 540 }}"
-                loading="lazy"
+                loading="{% if is_first_slide %}eager{% else %}lazy{% endif %}"
+                decoding="async"
+                {% if is_first_slide %}fetchpriority="high"{% endif %}
               >
             </picture>
           {% endif %}

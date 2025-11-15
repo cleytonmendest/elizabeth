@@ -1,8 +1,8 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Última atualização:** 2025-11-15 12:30 (Trust Badges + Estoque Baixo + Blog Posts Section!)
-**Versão do Tema:** 1.6.0
-**Status:** Fase 1 Completa | Fase 2 - Quick Wins em Andamento
+**Última atualização:** 2025-11-15 14:00 (Quick Wins Completos: Lazy Loading + Payment Icons!)
+**Versão do Tema:** 1.7.0
+**Status:** Fase 1 Completa | Fase 2 - Quick Wins Completos!
 
 ---
 
@@ -58,6 +58,14 @@
 
 ### Features de Conversão
 - ✅ Indicador de Estoque Baixo (PDP: "Apenas X unidades!", atualização em tempo real via variant:change, configurável threshold 0-100, toggle quantidade exata)
+- ✅ Payment Icons (PDP: Visa, Mastercard, Elo, Amex, Hipercard, Diners, PIX, Boleto - configurável: color/grayscale, 3 tamanhos, texto parcelamento)
+
+### Otimizações de Performance
+- ✅ Lazy Loading Estratégico:
+  - Primeiro slide do hero: `loading="eager" fetchpriority="high"` (otimização LCP)
+  - Demais imagens: `loading="lazy"` (economia de banda)
+  - Atributo `decoding="async"` em todas as imagens (não bloqueia renderização)
+  - Aplicado em: slider-image, card-article, card-product, cart-drawer, search, newsletter, orders
 
 ### Correções de Bugs
 - ✅ BUG-001: HTTP→HTTPS em meta tags (SEO/Segurança)
@@ -213,12 +221,14 @@
 
 **Status:** 🔴 Não implementado - SOLICITADO PELO CLIENTE
 
+**IMPORTANTE:** Cliente optou por implementação **custom do zero** (sem app Shopify) para maior flexibilidade
+
 **Implementação:**
 
 - [ ] **Escolher Abordagem**
-  - Opção 1: App Shopify (POWR/Elfsight) - 2-4h ⭐ RECOMENDADO para MVP
-  - Opção 2: API Instagram Basic Display - 12-16h (migrar depois)
-  - Opção 3: Embed manual com hashtag - 6-8h
+  - ~~Opção 1: App Shopify (POWR/Elfsight) - 2-4h~~ ❌ DESCARTADO (cliente quer custom)
+  - Opção 2: API Instagram Basic Display - 12-16h ⭐ **ESCOLHIDA** (flexibilidade total)
+  - Opção 3: Embed manual com hashtag - 6-8h (menos flexível)
 
 - [ ] **Criar `sections/instagram-feed.liquid`**
   - Grid 6x2 responsivo (6 desktop, 3 tablet, 2 mobile)
@@ -246,7 +256,7 @@
   - Footer (mini: 4-6 fotos)
   - Blog sidebar (4 fotos)
 
-**Estimativa:** 2-4h (app) | 12-16h (API custom)
+**Estimativa:** ~~2-4h (app)~~ | **12-16h (API custom)** ⭐ ESCOLHIDA pelo cliente
 
 ---
 
@@ -444,12 +454,12 @@
 
 ## 🎯 Recomendações de Próximos Passos
 
-### Quick Wins (< 4h, alto impacto)
+### Quick Wins (< 4h, alto impacto) ✅ TODOS CONCLUÍDOS
 1. ✅ ~~Ativar Indicador de Estoque Baixo (1-2h)~~ - CONCLUÍDO
 2. ✅ ~~Trust Badges na Home (3-4h)~~ - CONCLUÍDO
 3. ✅ ~~Blog Posts Section (2-3h)~~ - CONCLUÍDO (seção reutilizável criada)
-4. Lazy loading de imagens (2-3h)
-5. Payment Icons na PDP (2-3h)
+4. ✅ ~~Lazy loading de imagens (2-3h)~~ - CONCLUÍDO (estratégico + decoding async)
+5. ✅ ~~Payment Icons na PDP (2-3h)~~ - CONCLUÍDO (8 bandeiras + configurável)
 
 ### Fase 2 - Prova Social & Conversão (2-3 semanas)
 1. Instagram Feed com app Shopify (2-4h)
@@ -467,27 +477,35 @@
 
 ## 🏆 Conquistas
 
+### Fase 1 - Funcionalidades Core
 - ✅ 7 páginas de cliente completas com UX profissional
 - ✅ Blog completo (listing + artigo) com sidebar e compartilhamento social
 - ✅ Seção de Blog Posts reutilizável (pode ser usada em qualquer página)
 - ✅ Busca preditiva com keyboard navigation
 - ✅ Minicart sem bugs e UI polido
 - ✅ Modal de newsletter com 3 triggers
-- ✅ Sistema de componentes reutilizáveis (cards, pagination, price, inventory, trust badges)
-- ✅ Indicador de estoque baixo com atualização em tempo real
-- ✅ Trust Badges flexível (grid/slider/lista, 8 ícones SVG, sticky opcional)
-- ✅ 0 bugs bloqueadores
+- ✅ Sistema de componentes reutilizáveis (cards, pagination, price, inventory, trust badges, payment icons)
 - ✅ Arquitetura Online Store 2.0 completa
 
+### Fase 2 - Quick Wins (Conversão & Performance) ✅ COMPLETA
+- ✅ Indicador de estoque baixo com atualização em tempo real (3 estados visuais)
+- ✅ Trust Badges flexível (grid/slider/lista, 8 ícones SVG, sticky opcional)
+- ✅ Payment Icons para PDP (8 bandeiras brasileiras: Visa, Master, Elo, Amex, Hipercard, Diners, PIX, Boleto)
+- ✅ Lazy Loading estratégico:
+  - Hero otimizado para LCP (`loading="eager" fetchpriority="high"`)
+  - Imagens below-the-fold com `loading="lazy"`
+  - `decoding="async"` em todas as imagens
+- ✅ 0 bugs bloqueadores
+
 **Tempo Fase 1:** ~6 horas (estimativa original: 48-64h) 🚀
-**Tempo Quick Wins (Fase 2):** ~6-8 horas (estimativa original: 6-9h) ✨
-**Economia total:** 42-58 horas!
+**Tempo Quick Wins (Fase 2):** ~10-12 horas (estimativa original: 10-13h) ✨
+**Economia total:** ~40-52 horas!
 
 ---
 
 ## 📝 Notas Importantes
 
-1. **Instagram Feed:** Recomendado começar com app Shopify (POWR grátis até 10k views) para validar, depois migrar para API oficial se necessário.
+1. **Instagram Feed:** Cliente optou por implementação **custom usando API Instagram Basic Display** (12-16h) ao invés de app Shopify, para maior flexibilidade e controle. Implementação será feita na próxima fase.
 
 2. **Reviews:** Apps Judge.me/Loox são melhores que custom (moderação, photos, SEO built-in).
 

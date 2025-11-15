@@ -334,6 +334,73 @@
           "label": "Conteúdo de página"
         }
       ]
+    },
+    {
+      "type": "payment_icons",
+      "name": "Formas de Pagamento",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_title",
+          "label": "Mostrar Título",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Formas de Pagamento"
+        },
+        {
+          "type": "select",
+          "id": "icon_style",
+          "label": "Estilo dos Ícones",
+          "options": [
+            {
+              "value": "color",
+              "label": "Colorido"
+            },
+            {
+              "value": "grayscale",
+              "label": "Preto e Branco (hover colorido)"
+            }
+          ],
+          "default": "color"
+        },
+        {
+          "type": "select",
+          "id": "icon_size",
+          "label": "Tamanho dos Ícones",
+          "options": [
+            {
+              "value": "small",
+              "label": "Pequeno"
+            },
+            {
+              "value": "medium",
+              "label": "Médio"
+            },
+            {
+              "value": "large",
+              "label": "Grande"
+            }
+          ],
+          "default": "medium"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_installment_text",
+          "label": "Mostrar Texto de Parcelamento",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "installment_text",
+          "label": "Texto de Parcelamento",
+          "default": "Parcele em até 6x sem juros no cartão de crédito"
+        }
+      ]
     }
   ]
 }

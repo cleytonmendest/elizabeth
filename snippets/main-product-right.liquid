@@ -76,6 +76,9 @@
             </details>
           {% endif %}
         </div>
+      {%- when 'payment_icons' -%}
+        {%- render 'payment-icons', block: block -%}
+
       {%- when 'buy_button' -%}
         {%- render 'add-to-cart', product: product, hasQtd: qtd_side_buy, block: block -%}
     {% endcase %}
