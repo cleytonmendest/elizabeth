@@ -153,54 +153,50 @@
       "name": "Preço do Produto",
       "limit": 1
     },
-    //{
-    //  "type": "sku",
-    //  "name": "SKU",
-    //  "limit": 1
-    //},
-    //{
-    //  "type": "inventory",
-    //  "name": "Status de Estoque",
-    // "limit": 1,
-    //  "settings": [
-    //    {
-    //      "type": "select",
-    //      "id": "text_style",
-    //      "options": [
-    //        {
-    //          "value": "body",
-    //          "label": "Corpo"
-    //        },
-    //        {
-    //          "value": "subtitle",
-    //          "label": "Legenda"
-    //        },
-    //        {
-    //          "value": "uppercase",
-    //          "label": "Letras Maipusculas"
-    //        }
-    //      ],
-    //      "default": "body",
-    //      "label": "Corpo"
-    //    },
-    //    {
-    //      "type": "range",
-    //      "id": "inventory_threshold",
-    //      "label": "Limite de Estoque",
-    //      "min": 0,
-    //      "max": 100,
-    //      "step": 1,
-    //      "info": "Escolha 0 para sempre mostrar no estoque, se disponível",
-    //      "default": 10
-    //    },
-    //    {
-    //      "type": "checkbox",
-    //      "id": "show_inventory_quantity",
-    //      "label": "Mostrar contagem de estoque",
-    //      "default": true
-    //    }
-    //  ]
-    //},
+    {
+      "type": "inventory",
+      "name": "Status de Estoque",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "text_style",
+          "options": [
+            {
+              "value": "body",
+              "label": "Corpo"
+            },
+            {
+              "value": "subtitle",
+              "label": "Legenda"
+            },
+            {
+              "value": "uppercase",
+              "label": "Letras Maiúsculas"
+            }
+          ],
+          "default": "body",
+          "label": "Estilo do Texto"
+        },
+        {
+          "type": "range",
+          "id": "inventory_threshold",
+          "label": "Limite de Estoque para Alerta",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "info": "Mostra alerta quando estoque <= este valor. Use 0 para sempre mostrar quantidade disponível",
+          "default": 10
+        },
+        {
+          "type": "checkbox",
+          "id": "show_inventory_quantity",
+          "label": "Mostrar Quantidade Exata",
+          "default": true,
+          "info": "Exibe número de unidades disponíveis no alerta"
+        }
+      ]
+    },
     {
       "type": "quantity_selector",
       "name": "Seletor de quantidade",

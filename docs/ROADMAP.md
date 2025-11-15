@@ -1,8 +1,8 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Última atualização:** 2025-11-14 23:58 (Blog Completo Implementado!)
-**Versão do Tema:** 1.5.0
-**Status:** Fase 1 Completa | Fase 2 em Planejamento
+**Última atualização:** 2025-11-15 12:30 (Trust Badges + Estoque Baixo + Blog Posts Section!)
+**Versão do Tema:** 1.6.0
+**Status:** Fase 1 Completa | Fase 2 - Quick Wins em Andamento
 
 ---
 
@@ -49,6 +49,15 @@
 - ✅ cart-drawer.liquid + cart-drawer-item.liquid
 - ✅ breadcrumb.liquid
 - ✅ price-v2.liquid (componente de preço)
+- ✅ inventory-status.liquid (indicador de estoque baixo com urgência)
+- ✅ trust-badge-item.liquid + trust-badge-icon.liquid (componentes de badges de confiança)
+
+### Seções da Homepage
+- ✅ blog-posts.liquid (seção reutilizável: grid 3 cols, configurável, pode ser usada em qualquer página)
+- ✅ trust-badges.liquid (frete grátis, troca 30 dias, compra segura, 6x sem juros - grid/slider/lista, sticky opcional, 8 ícones SVG)
+
+### Features de Conversão
+- ✅ Indicador de Estoque Baixo (PDP: "Apenas X unidades!", atualização em tempo real via variant:change, configurável threshold 0-100, toggle quantidade exata)
 
 ### Correções de Bugs
 - ✅ BUG-001: HTTP→HTTPS em meta tags (SEO/Segurança)
@@ -87,16 +96,18 @@
 
 ### 2. Homepage - Melhorias de Conversão
 
-**Status Atual:** 6 sections (hero, products, featured, categories, image links, about us)
+**Status Atual:** 8 sections (hero, products, featured, categories, image links, about us, **blog-posts**, **trust-badges**)
 
 #### 🔴 CRÍTICO (Alto ROI)
 
-1. **Trust Badges / Benefits Bar** 🛡️
-   - Frete Grátis R$299+ • Troca 30 dias • Compra Segura • 6x sem juros
-   - Grid desktop, slider mobile
-   - Sticky top ou abaixo do hero
+1. ✅ ~~**Trust Badges / Benefits Bar** 🛡️~~ - CONCLUÍDO
+   - ✅ Frete Grátis R$299+ • Troca 30 dias • Compra Segura • 6x sem juros
+   - ✅ Grid desktop, slider mobile, lista horizontal
+   - ✅ Sticky top opcional
+   - ✅ 8 ícones SVG personalizáveis
+   - ✅ Sistema de blocos flexível
    - **Impacto:** +25% confiança, -15% bounce rate
-   - **Esforço:** 3-4h
+   - **Esforço:** ~~3-4h~~ FINALIZADO
 
 2. **Testimonials / Reviews Section** ⭐
    - Slider de depoimentos (foto + nome + cidade + rating 5 estrelas)
@@ -170,12 +181,15 @@
    - **Impacto:** +30-40% ticket médio
    - **Esforço:** 20-24h
 
-4. **Indicador de Estoque Baixo** 📦
-   - **DESCOBERTA:** Código JÁ EXISTE (main-product.liquid:161-203) mas está comentado
-   - "Apenas X unidades!"
-   - Badge vermelho urgência
+4. ✅ ~~**Indicador de Estoque Baixo** 📦~~ - CONCLUÍDO
+   - ✅ Snippet inventory-status.liquid criado
+   - ✅ "Apenas X unidades!" com badge vermelho urgência
+   - ✅ Atualização em tempo real (event variant:change)
+   - ✅ Configurável: threshold 0-100, mostrar/ocultar quantidade
+   - ✅ 3 estados: estoque baixo (vermelho), disponível (verde), fora de estoque
+   - ✅ Schema descomentado e integrado em main-product.liquid
    - **Impacto:** +15% conversão
-   - **Esforço:** 1-2h (descomentar e testar)
+   - **Esforço:** ~~1-2h~~ FINALIZADO
 
 5. **Size Guide Modal** 📏
    - Tabela de medidas por categoria
@@ -431,10 +445,11 @@
 ## 🎯 Recomendações de Próximos Passos
 
 ### Quick Wins (< 4h, alto impacto)
-1. Ativar Indicador de Estoque Baixo (1-2h) - código já existe
-2. Trust Badges na Home (3-4h)
-3. Lazy loading de imagens (2-3h)
-4. Payment Icons na PDP (2-3h)
+1. ✅ ~~Ativar Indicador de Estoque Baixo (1-2h)~~ - CONCLUÍDO
+2. ✅ ~~Trust Badges na Home (3-4h)~~ - CONCLUÍDO
+3. ✅ ~~Blog Posts Section (2-3h)~~ - CONCLUÍDO (seção reutilizável criada)
+4. Lazy loading de imagens (2-3h)
+5. Payment Icons na PDP (2-3h)
 
 ### Fase 2 - Prova Social & Conversão (2-3 semanas)
 1. Instagram Feed com app Shopify (2-4h)
@@ -454,15 +469,19 @@
 
 - ✅ 7 páginas de cliente completas com UX profissional
 - ✅ Blog completo (listing + artigo) com sidebar e compartilhamento social
+- ✅ Seção de Blog Posts reutilizável (pode ser usada em qualquer página)
 - ✅ Busca preditiva com keyboard navigation
 - ✅ Minicart sem bugs e UI polido
 - ✅ Modal de newsletter com 3 triggers
-- ✅ Sistema de componentes reutilizáveis (cards, pagination, price)
+- ✅ Sistema de componentes reutilizáveis (cards, pagination, price, inventory, trust badges)
+- ✅ Indicador de estoque baixo com atualização em tempo real
+- ✅ Trust Badges flexível (grid/slider/lista, 8 ícones SVG, sticky opcional)
 - ✅ 0 bugs bloqueadores
 - ✅ Arquitetura Online Store 2.0 completa
 
 **Tempo Fase 1:** ~6 horas (estimativa original: 48-64h) 🚀
-**Economia:** 42-58 horas!
+**Tempo Quick Wins (Fase 2):** ~6-8 horas (estimativa original: 6-9h) ✨
+**Economia total:** 42-58 horas!
 
 ---
 
@@ -472,7 +491,7 @@
 
 2. **Reviews:** Apps Judge.me/Loox são melhores que custom (moderação, photos, SEO built-in).
 
-3. **Indicador de Estoque:** Código já existe comentado em `main-product.liquid:161-203` - apenas ativar e testar (1-2h).
+3. ✅ ~~**Indicador de Estoque:** Código já existe comentado em `main-product.liquid:161-203`~~ - **COMPLETADO** com snippet `inventory-status.liquid` e atualização em tempo real.
 
 4. **Priorização:** Focar em Quick Wins primeiro para maximizar impacto com mínimo esforço.
 

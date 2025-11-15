@@ -1,0 +1,177 @@
+{%- comment -%}
+  Indicador de Status de Estoque
+
+  Parâmetros:
+  - block: bloco com configurações (obrigatório)
+  - product: produto atual (obrigatório)
+  - current_variant: variante selecionada (opcional, usa primeira variante se não fornecida)
+{%- endcomment -%}
+
+{%- liquid
+  assign current_variant = current_variant | default: product.selected_or_first_available_variant
+  assign inventory_threshold = block.settings.inventory_threshold | default: 10
+  assign show_quantity = block.settings.show_inventory_quantity | default: true
+  assign text_style = block.settings.text_style | default: 'body'
+
+  assign inventory_quantity = current_variant.inventory_quantity
+  assign inventory_policy = current_variant.inventory_policy
+  assign inventory_management = current_variant.inventory_management
+-%}
+
+{%- comment -%} Só mostra se houver gerenciamento de estoque {%- endcomment -%}
+{% if inventory_management != blank and current_variant.available %}
+
+  {%- comment -%} Lógica de exibição:
+    - Se threshold = 0: sempre mostra quantidade se disponível
+    - Se threshold > 0: só mostra se quantidade <= threshold
+  {%- endcomment -%}
+
+  {% if inventory_threshold == 0 or inventory_quantity <= inventory_threshold %}
+    <div
+      class="product-inventory-status my-4"
+      {{ block.shopify_attributes }}
+      data-inventory-status
+    >
+      {%- comment -%} Badge de Urgência (estoque baixo) {%- endcomment -%}
+      {% if inventory_quantity > 0 and inventory_quantity <= 10 %}
+        <div class="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+
+          <div class="flex-1">
+            {% if show_quantity %}
+              <p class="text-red-800 font-medium text-sm{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
+                ⚠️ Apenas {{ inventory_quantity }} {{ inventory_quantity | pluralize: 'unidade', 'unidades' }} em estoque!
+              </p>
+              <p class="text-red-600 text-xs mt-0.5">Garanta o seu agora antes que acabe</p>
+            {% else %}
+              <p class="text-red-800 font-medium text-sm{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
+                ⚠️ Estoque limitado!
+              </p>
+              <p class="text-red-600 text-xs mt-0.5">Últimas unidades disponíveis</p>
+            {% endif %}
+          </div>
+        </div>
+
+      {%- comment -%} Badge Informativo (estoque disponível acima de 10) {%- endcomment -%}
+      {% elsif inventory_quantity > 10 %}
+        <div class="flex items-center gap-2 text-green-700">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+
+          {% if show_quantity and inventory_threshold == 0 %}
+            <p class="text-sm font-medium{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
+              {{ inventory_quantity }} unidades em estoque
+            </p>
+          {% else %}
+            <p class="text-sm font-medium{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
+              ✓ Em estoque
+            </p>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+{%- comment -%} Mensagem de fora de estoque {%- endcomment -%}
+{% elsif inventory_management != blank and current_variant.available == false %}
+  <div
+    class="product-inventory-status my-4"
+    {{ block.shopify_attributes }}
+    data-inventory-status
+  >
+    <div class="flex items-center gap-2 text-gray-600">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+      <p class="text-sm font-medium{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
+        Fora de estoque
+      </p>
+    </div>
+  </div>
+{% endif %}
+
+{%- comment -%} JavaScript para atualizar quando variante mudar {%- endcomment -%}
+<script>
+  if (!window.inventoryStatusInitialized) {
+    window.inventoryStatusInitialized = true;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const productContext = document.querySelector('[product-context]');
+      if (!productContext) return;
+
+      // Escuta mudanças de variante
+      document.addEventListener('variant:change', function(event) {
+        const variant = event.detail.variant;
+        const inventoryStatusEl = document.querySelector('[data-inventory-status]');
+
+        if (!inventoryStatusEl || !variant) return;
+
+        const threshold = {{ inventory_threshold }};
+        const showQuantity = {{ show_quantity }};
+        const quantity = variant.inventory_quantity;
+        const available = variant.available;
+        const inventoryManagement = variant.inventory_management;
+
+        // Se não há gerenciamento de estoque, esconde
+        if (!inventoryManagement) {
+          inventoryStatusEl.style.display = 'none';
+          return;
+        }
+
+        inventoryStatusEl.style.display = 'block';
+
+        // Atualiza o conteúdo baseado no estoque da variante
+        if (available && (threshold === 0 || quantity <= threshold)) {
+          if (quantity > 0 && quantity <= 10) {
+            // Estoque baixo - urgência
+            const quantityText = showQuantity
+              ? `⚠️ Apenas ${quantity} ${quantity === 1 ? 'unidade' : 'unidades'} em estoque!`
+              : '⚠️ Estoque limitado!';
+            const subtitleText = showQuantity
+              ? 'Garanta o seu agora antes que acabe'
+              : 'Últimas unidades disponíveis';
+
+            inventoryStatusEl.innerHTML = `
+              <div class="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <div class="flex-1">
+                  <p class="text-red-800 font-medium text-sm">${quantityText}</p>
+                  <p class="text-red-600 text-xs mt-0.5">${subtitleText}</p>
+                </div>
+              </div>
+            `;
+          } else if (quantity > 10) {
+            // Estoque disponível
+            const quantityText = (showQuantity && threshold === 0)
+              ? `${quantity} unidades em estoque`
+              : '✓ Em estoque';
+
+            inventoryStatusEl.innerHTML = `
+              <div class="flex items-center gap-2 text-green-700">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-sm font-medium">${quantityText}</p>
+              </div>
+            `;
+          }
+        } else if (!available) {
+          // Fora de estoque
+          inventoryStatusEl.innerHTML = `
+            <div class="flex items-center gap-2 text-gray-600">
+              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+              <p class="text-sm font-medium">Fora de estoque</p>
+            </div>
+          `;
+        }
+      });
+    });
+  }
+</script>

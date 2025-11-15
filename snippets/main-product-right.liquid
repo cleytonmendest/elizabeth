@@ -40,7 +40,7 @@
         </div>
 
       {%- when 'inventory' -%}
-        <p>inventory (Falta implementar)</p>
+        {%- render 'inventory-status', block: block, product: product -%}
 
       {%- when 'variant_picker' -%}
         {% render 'product-variant-picker', product: product, block: block %}
