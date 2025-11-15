@@ -1,7 +1,7 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Última atualização:** 2025-11-14 23:45 (Modal de Newsletter 100% Completo!)
-**Versão do Tema:** 1.3.0
+**Última atualização:** 2025-11-14 23:55 (Análise da Home Completa!)
+**Versão do Tema:** 1.4.0
 **Status:** Em desenvolvimento ativo - FASE 1 (PRÉ-LANÇAMENTO) COMPLETA! 🎉
 
 ---
@@ -42,6 +42,56 @@ Este documento apresenta uma análise completa do estado atual do tema Elizabeth
 **Progresso geral do projeto:** 90% → 95% (+5%)
 
 ### 🎉 Atualizações Recentes
+
+#### 2025-11-14 23:55 - 🏠 ANÁLISE DA HOME COMPLETA! ✅
+
+**ANÁLISE REALIZADA (2025-11-14):**
+
+**Situação Atual Mapeada:**
+- ✅ 6 sections identificadas (hero banner, product slider, featured collections, categories, image links, about us)
+- ✅ Pontos fortes documentados (design clean, responsivo, múltiplos CTAs)
+- ✅ Arquitetura `templates/index.json` analisada
+
+**15 Oportunidades de Melhoria Identificadas:**
+
+**🔴 CRÍTICO (5 items, 35-46h):**
+1. Trust Badges / Benefits Bar (3-4h) - +25% confiança
+2. Newsletter CTA Section (6-8h) - +40% conversão newsletter
+3. Testimonials / Reviews (8-10h) - +30% conversão
+4. **Instagram Feed** 📸 (12-16h) - **SOLICITADO PELO CLIENTE**
+5. **Blog Posts Recentes** 📰 (6-8h) - **SOLICITADO PELO CLIENTE**
+
+**🟠 IMPORTANTE (5 items, 28-38h):**
+6. Urgency/Scarcity Section (8-10h)
+7. Featured Products Section (4-6h)
+8. Video Hero/Brand Story (6-8h)
+9. Collections Grid (4-6h)
+10. FAQ Section (6-8h)
+
+**🟡 DESEJÁVEL (5 items, 27-34h):**
+11. Marquee Announcement (3-4h)
+12. Logo Cloud/Parceiros (3-4h)
+13. Press/As Seen On (3-4h)
+14. Before/After Gallery (8-10h)
+15. Gift Guide/Lookbook (10-12h)
+
+**Total:** 90-118 horas de desenvolvimento
+
+**Features Adicionadas ao Roadmap:**
+- ✅ Seção 12 - Análise e Melhorias da Home (completa)
+- ✅ Seção 14 - Blog Completo atualizado (templates existem mas são default)
+- ✅ Seção 16 - Instagram Feed (detalhamento completo com 3 abordagens técnicas)
+
+**Quick Wins Identificados (< 4h):**
+- Trust Badges Bar (3-4h)
+- Marquee Announcement (3-4h)
+- Logo Cloud (3-4h)
+
+**Recomendação:** Começar por Trust Badges e Newsletter CTA (impacto imediato), depois Instagram e Testimonials (prova social).
+
+**Status da Análise:** 🎉 100% COMPLETA! 🎉
+
+---
 
 #### 2025-11-14 23:45 - 📧 MODAL DE NEWSLETTER 100% COMPLETO! ✅
 
@@ -884,7 +934,81 @@ Recursos importantes para competitividade no mercado.
 
 ### 9. Funcionalidades de Produto Avançadas
 
-#### 9.1 Image Zoom/Lightbox
+#### 9.1 Compre Junto (Bundle/Cross-Sell) ⭐ **PRIORIDADE ALTA**
+
+**Status:** 🔴 Não implementado - SOLICITADO PELO CLIENTE
+**Impacto Esperado:** +30-40% no ticket médio, +25% lucratividade
+
+**Justificativa:**
+- Aumenta ticket médio significativamente
+- Cross-sell direcionado e contextual
+- Lojista controla produtos complementares
+- UX superior ao "produtos relacionados"
+
+**Implementações necessárias:**
+
+- [ ] **Sistema de Seleção de Produtos**
+  - Metafield `bundle_products` (lista de product IDs)
+  - Admin UI para selecionar produtos complementares
+  - Suporte para até 4 produtos por bundle
+  - Validação de disponibilidade dos produtos
+
+- [ ] **Componente Visual (`bundle-products`)**
+  - Seção "Compre Junto e Economize"
+  - Cards compactos com imagem + nome + preço
+  - Checkbox para cada produto (incluindo principal)
+  - Produto principal sempre selecionado
+  - Cálculo de total em tempo real
+  - Destaque do valor economizado
+
+- [ ] **Sistema de Desconto**
+  - Desconto percentual configurável (5%, 10%, 15%)
+  - Aplicado apenas quando compra conjunto completo
+  - Exibição clara: "Economize R$ 35,97!"
+  - Configurável via section settings ou metafield
+
+- [ ] **Botão de Adicionar Bundle**
+  - "Adicionar Selecionados ao Carrinho"
+  - Adiciona múltiplos produtos de uma vez
+  - Loading state durante adição
+  - Feedback visual de sucesso
+  - Abre minicart automaticamente
+
+- [ ] **Lógica de Preço**
+  - Calcular desconto progressivo
+  - Aplicar apenas em produtos selecionados
+  - Validar estoque de todos
+  - Mostrar preço individual vs. bundle
+
+- [ ] **Localização na PDP**
+  - Abaixo do botão "Adicionar ao Carrinho"
+  - OU em collapsible tab
+  - OU seção separada após descrição
+  - Configurável via settings
+
+**Exemplo Visual:**
+```
+┌─────────────────────────────────────┐
+│ 🎁 Compre Junto e Economize         │
+├─────────────────────────────────────┤
+│ [✓] Vestido Floral         R$ 179,90│
+│ [ ] Cinto Dourado          R$  49,90│
+│ [ ] Bolsa Tiracolo         R$ 129,90│
+│ [ ] Sandália Nude          R$  89,90│
+├─────────────────────────────────────┤
+│ Total: R$ 359,70                    │
+│ Economize R$ 35,97 (10%)! 🎉        │
+│                                     │
+│ [Adicionar Selecionados ao Carrinho]│
+└─────────────────────────────────────┘
+```
+
+**Estimativa:** 20-24 horas de desenvolvimento
+**ROI:** Altíssimo - Aumenta ticket médio diretamente
+
+---
+
+#### 9.2 Image Zoom/Lightbox
 **Status:** Schema existe mas não implementado
 
 - [ ] Modal de lightbox para galeria
@@ -893,12 +1017,12 @@ Recursos importantes para competitividade no mercado.
 - [ ] Thumbnails na galeria
 - [ ] Suporte para vídeos de produto
 
-#### 9.2 Variant Image Switching
+#### 9.3 Variant Image Switching
 - [ ] Trocar imagem principal ao selecionar variante
 - [ ] Smooth transition entre imagens
 - [ ] Atualizar galeria completa se variante tiver imagens próprias
 
-#### 9.3 Color Swatches
+#### 9.4 Color Swatches
 **Status:** Schema existe (`swatch_picker` em main-product.liquid)
 
 - [ ] Implementar visualização de cores
@@ -906,13 +1030,15 @@ Recursos importantes para competitividade no mercado.
 - [ ] Indicação visual de selecionado
 - [ ] Tooltip com nome da cor
 
-#### 9.4 Size Guide Modal
+#### 9.5 Size Guide Modal ⭐ **ALTA PRIORIDADE (Moda)**
 - [ ] Botão "Guia de Tamanhos"
 - [ ] Modal com tabela de medidas
 - [ ] Conteúdo configurável por produto/coleção
 - [ ] Suporte para imagens de guia
+- [ ] Dicas de modelagem
+**Impacto:** Reduz devoluções em ~20%
 
-#### 9.5 Sticky Add to Cart (Desktop)
+#### 9.6 Sticky Add to Cart (Desktop)
 **Status:** Mobile implementado, desktop não
 
 - [ ] Barra sticky ao rolar após botão
@@ -920,7 +1046,7 @@ Recursos importantes para competitividade no mercado.
 - [ ] Incluir preço
 - [ ] Animação suave
 
-**Estimativa:** 16-20 horas de desenvolvimento
+**Estimativa Total Seção 9:** 36-44 horas de desenvolvimento
 
 ---
 
@@ -947,7 +1073,377 @@ Recursos importantes para competitividade no mercado.
 
 ---
 
-### 11. Melhorias no Carrinho
+### 11. Análise e Melhorias da PDP (Product Detail Page) 📊
+
+**Status:** ✅ Análise Completa Realizada (2025-11-14)
+**Objetivo:** Aumentar conversão e ticket médio na página de produto
+
+#### 11.1 Situação Atual - Pontos Fortes ✅
+
+- ✅ Arquitetura flexível com sistema de blocos
+- ✅ 4 layouts de galeria (stacked, 2 columns, carousel 1/2 img)
+- ✅ Zoom configurável (lightbox, hover, none)
+- ✅ Sticky sidebar (desktop)
+- ✅ Botão flutuante mobile
+- ✅ Seletor de variantes (dropdown/buttons)
+- ✅ Collapsible tabs (acordeão)
+- ✅ Integração com price-v2 (snippet reutilizável)
+
+#### 11.2 Oportunidades Identificadas - Priorização por ROI
+
+**🔴 CRÍTICO - Implementar Primeiro (Alto ROI)**
+
+1. **Reviews/Ratings** ⭐⭐⭐⭐⭐
+   - Impacto: +35% conversão
+   - Esforço: Baixo (app Judge.me/Loox)
+   - Features: Star rating, review count, scroll to reviews
+   - Localização: Abaixo do título
+
+2. **Wishlist** ❤️ ⭐⭐⭐⭐⭐ - SOLICITADO
+   - Impacto: +20% retorno
+   - Esforço: Médio (16-20h)
+   - Ver seção 15 do roadmap
+
+3. **Compre Junto** 🛒 ⭐⭐⭐⭐⭐ - SOLICITADO
+   - Impacto: +30-40% ticket médio
+   - Esforço: Médio (20-24h)
+   - Ver seção 9.1 do roadmap
+
+4. **Indicador de Estoque Baixo** 📦 ⭐⭐⭐⭐
+   - Status: CÓDIGO JÁ EXISTE (comentado linhas 161-203)
+   - Impacto: +15% conversão
+   - Esforço: Baixo (apenas ativar e configurar)
+   - Ação: Descomentar e testar
+   - Features:
+     - "Apenas X unidades!" (threshold configurável)
+     - Badge vermelho urgência
+     - Estados: alto/baixo/esgotado
+
+5. **Size Guide Modal** 📏 ⭐⭐⭐⭐
+   - Impacto: -20% devoluções (crítico para moda)
+   - Esforço: Médio (8-12h)
+   - Features: Tabela de medidas, imagens, dicas
+   - Ver seção 9.5 do roadmap
+
+**🟠 IMPORTANTE - Segunda Onda**
+
+6. **Trust Badges** 🔒
+   - Localização: Próximo ao botão comprar
+   - Exemplos: "Compra Segura", "Frete Grátis R$299+", "Troca 30 dias"
+   - Esforço: 2-3h
+
+7. **Shipping Calculator** 📮
+   - Input CEP + API Correios
+   - Mostra opções e prazos
+   - Destaque frete grátis
+   - Esforço: 8-10h
+
+8. **Product Recommendations** 🎁
+   - "Você Também Pode Gostar"
+   - Shopify Recommendations API
+   - Slider 4-8 produtos
+   - Esforço: 6-8h
+
+9. **Share Buttons** 📱
+   - WhatsApp (ESSENCIAL Brasil)
+   - Facebook, Pinterest
+   - Native share API mobile
+   - Esforço: 4-6h
+
+10. **Sticky Add to Cart (Desktop)** 📌
+    - Status: Mobile OK, desktop não
+    - Trigger: quando botão sai da tela
+    - Mostra: imagem + nome + variante + preço
+    - Esforço: 6-8h
+
+**🟡 DESEJÁVEL - Terceira Onda**
+
+11. **Recently Viewed** 👀
+    - localStorage
+    - Slider abaixo descrição
+    - Limite 12 produtos
+    - Esforço: 6-8h
+
+12. **Zoom Avançado** 🔍
+    - Zoom progressivo (2x, 4x, 8x)
+    - Lupa circular
+    - Pinch-to-zoom mobile
+    - Esforço: 10-12h
+
+13. **Countdown Timer** ⏱️
+    - Ofertas relâmpago
+    - Metafield por produto
+    - Animação de dígitos
+    - Esforço: 8-10h
+
+14. **Back in Stock Notifications** 🔔
+    - Formulário quando esgotado
+    - Email automático no restock
+    - Customer metafield
+    - Esforço: 12-14h
+
+15. **Payment Icons** 💳
+    - Abaixo do preço
+    - Ícones: Visa, Master, Elo, Pix
+    - "Até 6x sem juros"
+    - Esforço: 2-3h
+
+16. **Vídeo de Produto** 🎥
+    - Integrar na galeria
+    - Auto-play mudo
+    - Lightbox support
+    - Esforço: 6-8h
+
+17. **Social Proof "X pessoas vendo"**
+    - Contador simulado/real
+    - Aumenta senso de demanda
+    - Esforço: 4-6h
+
+18. **Collapsible Tabs Adicionais**
+    - Detalhes do Produto (material, composição)
+    - Envio e Devolução (prazos, política)
+    - Perguntas Frequentes
+    - Esforço: 6-8h
+
+#### 11.3 Resumo de Estimativas
+
+| Prioridade | Items | Horas | ROI |
+|------------|-------|-------|-----|
+| 🔴 Crítico | 5 | 52-68h | Altíssimo |
+| 🟠 Importante | 5 | 26-34h | Alto |
+| 🟡 Desejável | 8 | 54-71h | Médio |
+| **TOTAL** | **18** | **132-173h** | **Variado** |
+
+**Recomendação:** Implementar features críticas primeiro (ROI altíssimo), depois importante, e desejável conforme demanda.
+
+---
+
+### 12. Análise e Melhorias da Home (Homepage) 🏠
+
+**Status:** ✅ Análise Completa Realizada (2025-11-14)
+**Objetivo:** Aumentar conversão, engajamento e reduzir bounce rate na página inicial
+
+#### 12.1 Situação Atual - O Que Já Existe ✅
+
+**Home atual possui 6 sections (arquitetura `templates/index.json`):**
+
+1. ✅ **Hero Banner Slider** (`slider-image`)
+   - 2 banners configurados
+   - Autoplay 10s, navegação por setas
+   - Responsivo (desktop/tablet/mobile)
+   - Fullwidth habilitado
+
+2. ✅ **Product Slider** (`slider-product`)
+   - Coleção "new-in" (Camisas)
+   - 4 produtos desktop, 3 tablet, 1 mobile
+   - Subtítulo em inglês
+   - Navegação por setas
+
+3. ✅ **Featured Collection Highlight** (`highlighted-section`)
+   - Coleção Fiesta com imagem + texto
+   - Layout 50/50 com curved background
+   - Link para coleção
+   - Responsivo
+
+4. ✅ **Category Cards Slider** (`slider-cards`)
+   - 7 categorias (Acessórios, Blusas, Casacos, Kits, Calças, Vestidos, Shorts)
+   - 6 cards desktop, 3 tablet, 2 mobile
+   - Hover com transição de cor
+   - Sem título de seção
+
+5. ✅ **Image Links NEW IN/SALE** (`section-images-link`)
+   - 2 imagens lado a lado
+   - Hover: zoom + inversão de cores
+   - Labels com backdrop blur
+
+6. ✅ **About Us Section** (`highlighted-section`)
+   - "Elegância que inspira"
+   - Imagem + texto sobre a marca
+   - Layout invertido (imagem esquerda)
+   - Link para página de contato
+
+**Pontos fortes:**
+- ✅ Design clean e moderno
+- ✅ Responsivo em todas as seções
+- ✅ Boa hierarquia visual
+- ✅ Múltiplos CTAs (banners, categorias, coleções)
+- ✅ Performance adequada (lazy loading implementado)
+
+#### 12.2 Oportunidades Identificadas - Priorização por ROI
+
+**🔴 CRÍTICO - Implementar Primeiro (Impacto Direto em Conversão)**
+
+1. **Trust Badges / Benefits Bar** 🛡️ ⭐⭐⭐⭐⭐
+   - **Impacto:** +25% confiança, -15% bounce rate
+   - **Esforço:** 3-4 horas
+   - **Localização:** Abaixo do hero banner ou sticky top
+   - **Features:**
+     - Frete Grátis acima de R$299
+     - Troca em 30 dias
+     - Compra 100% segura
+     - Parcelamento em até 6x sem juros
+     - Ícones + texto curto
+     - Slider mobile, grid desktop
+
+2. **Newsletter CTA Section** 📧 ⭐⭐⭐⭐⭐
+   - **Status:** Modal existe mas sem seção direta na home
+   - **Impacto:** +40% conversão de newsletter
+   - **Esforço:** 6-8 horas
+   - **Features:**
+     - Seção destacada (background diferente)
+     - Título atrativo: "Primeira a saber das novidades!"
+     - Formulário inline (email + botão)
+     - Incentivo: "10% OFF na primeira compra"
+     - Validação em tempo real
+     - Integração com mesma API do modal
+
+3. **Testimonials / Reviews Section** ⭐⭐⭐⭐⭐
+   - **Impacto:** +30% conversão (prova social)
+   - **Esforço:** 8-10 horas
+   - **Features:**
+     - Slider de depoimentos de clientes
+     - Foto + nome + cidade
+     - Rating 5 estrelas
+     - Texto do depoimento
+     - 3 cards desktop, 1 mobile
+     - Auto-play suave
+
+4. **Instagram Feed** 📸 ⭐⭐⭐⭐⭐ - SOLICITADO PELO CLIENTE
+   - **Impacto:** +35% engajamento, conexão com rede social
+   - **Esforço:** 12-16 horas
+   - **Ver seção 16 do roadmap para detalhes completos**
+
+5. **Blog Posts Recentes** 📰 ⭐⭐⭐⭐ - SOLICITADO PELO CLIENTE
+   - **Impacto:** +20% SEO, +15% tempo na página
+   - **Esforço:** 6-8 horas (após blog estar completo)
+   - **Features:**
+     - "Dicas de Estilo" ou "Últimas do Blog"
+     - Grid 3 colunas desktop, 1 mobile
+     - Imagem destacada + título + excerpt
+     - Data de publicação
+     - Link "Ler mais"
+     - Botão "Ver todos os artigos"
+   - **Dependência:** Blog completo (ver seção 13)
+
+**🟠 IMPORTANTE - Segunda Onda (Engajamento e UX)**
+
+6. **Urgency / Scarcity Section** ⏱️
+   - **Impacto:** +20% conversão em produtos promocionais
+   - **Esforço:** 8-10 horas
+   - **Features:**
+     - Countdown timer para promoção
+     - "Oferta válida até [data]"
+     - Grid de produtos em promoção
+     - Badge "-X%" em destaque
+     - Configurável via metafields
+
+7. **Featured Products Section** 🎯
+   - **Status:** Existe apenas slider de coleção
+   - **Impacto:** +15% CTR para produtos escolhidos
+   - **Esforço:** 4-6 horas
+   - **Features:**
+     - Produtos escolhidos manualmente (não por coleção)
+     - "Favoritos da Semana" ou "Escolha da Editora"
+     - Grid 4 colunas desktop
+     - Até 8 produtos configuráveis
+
+8. **Video Hero / Brand Story** 🎥
+   - **Impacto:** +25% tempo na página, storytelling
+   - **Esforço:** 6-8 horas
+   - **Features:**
+     - Vídeo de fundo no hero (com fallback imagem)
+     - Auto-play muted
+     - Controles de play/pause
+     - Overlay com texto/CTA
+     - Link para "Nossa História"
+
+9. **Collections Grid** 🗂️
+   - **Status:** Existe slider de cards, mas não grid estático
+   - **Impacto:** +15% navegação para coleções
+   - **Esforço:** 4-6 horas
+   - **Features:**
+     - Grid 2x3 ou 3x3 de coleções
+     - Imagem grande + título sobreposto
+     - Hover: overlay escuro + "Ver Coleção"
+     - Configurável via section settings
+
+10. **FAQ Section** ❓
+    - **Impacto:** -20% atrito pré-compra
+    - **Esforço:** 6-8 horas
+    - **Features:**
+      - Accordion com 6-8 perguntas frequentes
+      - "Como comprar", "Formas de pagamento", "Prazo de entrega"
+      - Link para página completa de FAQ
+      - Ícones para cada pergunta
+
+**🟡 DESEJÁVEL - Terceira Onda (Diferenciação)**
+
+11. **Marquee / Announcement Scroll** 📣
+    - **Impacto:** Destaque de promoções
+    - **Esforço:** 3-4 horas
+    - **Features:**
+      - Scroll infinito horizontal
+      - "FRETE GRÁTIS ACIMA DE R$299 • 6X SEM JUROS • TROCA EM 30 DIAS"
+      - Velocidade configurável
+      - Background destacado
+
+12. **Logo Cloud / Parceiros** 🏢
+    - **Impacto:** Credibilidade
+    - **Esforço:** 3-4 horas
+    - **Features:**
+      - "Como visto em" ou "Marcas parceiras"
+      - Logos em grayscale (colorido no hover)
+      - Slider ou grid estático
+
+13. **Press / As Seen On** 📰
+    - **Impacto:** +10% confiança
+    - **Esforço:** 3-4 horas
+    - **Features:**
+      - Logos de revistas/sites
+      - Citações de mídia
+      - Links para matérias
+
+14. **Before/After Gallery** ✨
+    - **Impacto:** Visualização de transformação
+    - **Esforço:** 8-10 horas
+    - **Features:**
+      - Slider comparativo
+      - Drag ou toggle
+      - "Antes" e "Depois" de looks
+
+15. **Gift Guide / Lookbook** 🎁
+    - **Impacto:** +20% ticket médio (bundles)
+    - **Esforço:** 10-12 horas
+    - **Features:**
+      - "Monte seu Look" ou "Presentes Perfeitos"
+      - Cards com conjunto de produtos
+      - "Adicionar Look Completo"
+      - Filtros por ocasião
+
+#### 12.3 Resumo de Estimativas - Home
+
+| Prioridade | Items | Horas | ROI |
+|------------|-------|-------|-----|
+| 🔴 Crítico | 5 | 35-46h | Altíssimo |
+| 🟠 Importante | 5 | 28-38h | Alto |
+| 🟡 Desejável | 5 | 27-34h | Médio |
+| **TOTAL** | **15** | **90-118h** | **Variado** |
+
+**Recomendação:** Começar por Trust Badges e Newsletter CTA (impacto imediato), depois Instagram Feed e Testimonials (prova social), e por último Blog Posts (depende de blog completo).
+
+**Quick Wins (< 4h cada):**
+- Trust Badges Bar (3-4h)
+- Marquee Announcement (3-4h)
+- Logo Cloud (3-4h)
+- Featured Products (4-6h)
+
+**Dependencies:**
+- Blog Posts Recentes → Depende da seção 13 (Blog Completo) estar implementada
+- Instagram Feed → Requer API do Instagram ou solução alternativa
+
+---
+
+### 13. Melhorias no Carrinho
 
 #### 11.1 Recursos Adicionais
 - [ ] **Notas do Pedido**
@@ -1025,36 +1521,123 @@ Recursos importantes para competitividade no mercado.
 
 ---
 
-### 13. Blog Completo
+### 14. Blog Completo ⭐ **PRIORIDADE ALTA**
 
-#### 13.1 Main Blog Section (`sections/main-blog.liquid`)
-**Status:** Não existe
+**Status:** 🟡 BÁSICO - Templates existem mas são default/não estilizados - SOLICITADO PELO CLIENTE
+**Impacto Esperado:** +25% SEO, +30% tempo no site, autoridade de marca
 
-- [ ] Grid de artigos responsivo
-- [ ] Card com imagem, título, excerpt, data, autor
-- [ ] Paginação
-- [ ] Filtro por tags
-- [ ] Busca no blog
-- [ ] Featured post em destaque
+**Situação Atual:**
+- ⚠️ **`templates/blog.liquid`** - Existe mas é template default do Shopify
+  - HTML básico sem estilização
+  - Paginação padrão (5 artigos)
+  - Sem layout moderno
+  - Sem filtros ou busca
+- ⚠️ **`templates/article.liquid`** - Existe mas é template default
+  - Layout muito básico
+  - Comentários nativos sem estilo
+  - Sem sidebar ou relacionados
+  - Sem compartilhamento social
+- 🔴 **NÃO EXISTEM:** `sections/main-blog.liquid` e `sections/main-article.liquid`
 
-#### 13.2 Main Article Section (`sections/main-article.liquid`)
-**Status:** Não existe
+**Necessário criar do zero:**
 
-- [ ] Layout do artigo com tipografia otimizada
-- [ ] Imagem de destaque
-- [ ] Autor e data
-- [ ] Tags do artigo
-- [ ] Compartilhamento social
-- [ ] Artigos relacionados
-- [ ] Comentários (Disqus ou nativo)
-- [ ] Navegação prev/next
+#### 14.1 Main Blog Section (`sections/main-blog.liquid`)
+**Status:** 🔴 Não existe - Criar seção customizada
 
-#### 13.3 Schema Markup
-- [ ] BlogPosting schema
-- [ ] Author schema
-- [ ] Breadcrumb
+- [ ] **Layout Principal**
+  - [ ] Grid de artigos responsivo (3 cols desktop, 1 mobile)
+  - [ ] Card com imagem destacada (16:9)
+  - [ ] Título do artigo (line-clamp-2)
+  - [ ] Excerpt (line-clamp-3, 150 caracteres)
+  - [ ] Metadata: Autor, Data (DD/MM/YYYY), Tempo de leitura
+  - [ ] Tags/categorias com links
+  - [ ] "Ler mais" com seta
 
-**Estimativa:** 12-16 horas de desenvolvimento
+- [ ] **Features Avançadas**
+  - [ ] Featured post em destaque (card grande, primeiro)
+  - [ ] Paginação estilizada (numérica + prev/next)
+  - [ ] Filtro por tags (pills horizontais)
+  - [ ] Busca no blog (input com ícone)
+  - [ ] Ordenação (recente/popular/alfabética)
+  - [ ] Empty state ("Nenhum artigo encontrado")
+
+- [ ] **Sidebar (Desktop)**
+  - [ ] Busca rápida
+  - [ ] Categorias/Tags populares
+  - [ ] Artigos recentes (5 itens)
+  - [ ] Newsletter signup
+  - [ ] Instagram feed
+
+#### 14.2 Main Article Section (`sections/main-article.liquid`)
+**Status:** 🔴 Não existe - Criar seção customizada
+
+- [ ] **Layout do Artigo**
+  - [ ] Hero: Imagem destacada fullwidth
+  - [ ] Título (H1, typography otimizada)
+  - [ ] Metadata: Autor (foto + nome), Data, Categoria, Tempo leitura
+  - [ ] Conteúdo com tipografia de leitura (max-width 70ch)
+  - [ ] Table of contents (TOC) para artigos longos
+  - [ ] Progress bar de leitura (sticky top)
+
+- [ ] **Elementos de Conteúdo**
+  - [ ] Blockquotes estilizados
+  - [ ] Listas (ordered/unordered) customizadas
+  - [ ] Imagens responsivas com caption
+  - [ ] Vídeos embed (YouTube/Vimeo)
+  - [ ] Tabelas responsivas
+  - [ ] Code blocks (se aplicável)
+
+- [ ] **Interação e Social**
+  - [ ] Tags do artigo (clickable pills)
+  - [ ] Compartilhamento social (WhatsApp, Facebook, Pinterest, Twitter)
+  - [ ] "Copiar link" button
+  - [ ] Print button
+  - [ ] Botão "Voltar ao blog"
+
+- [ ] **Seções Adicionais**
+  - [ ] Autor do artigo (bio box com foto + descrição)
+  - [ ] Artigos relacionados (3-4 cards)
+  - [ ] Navegação prev/next (artigos anterior/próximo)
+  - [ ] Comentários (Disqus, Facebook Comments, ou nativo estilizado)
+  - [ ] Newsletter CTA inline
+
+- [ ] **Sidebar (Desktop)**
+  - [ ] Sticky sidebar
+  - [ ] Índice (TOC)
+  - [ ] Artigos populares
+  - [ ] Produtos relacionados (se mencionar produtos)
+  - [ ] Instagram feed
+
+#### 14.3 Schema Markup & SEO
+- [ ] **Structured Data**
+  - [ ] BlogPosting schema (JSON-LD)
+  - [ ] Author schema (Person)
+  - [ ] Breadcrumb schema
+  - [ ] Organization schema
+
+- [ ] **Meta Tags**
+  - [ ] og:type = article
+  - [ ] article:published_time
+  - [ ] article:author
+  - [ ] Twitter Card
+
+#### 14.4 Snippet Reutilizável
+- [ ] **`snippets/card-article.liquid`**
+  - Componente reutilizável para cards de artigo
+  - Usado em: blog listing, artigos relacionados, home
+  - Parâmetros: show_excerpt, show_author, show_image
+
+**Estimativa:** 16-20 horas de desenvolvimento (maior que estimado inicialmente por criar do zero)
+
+**Dependências:** Seção 12.2 item 5 (Blog Posts Recentes na Home) depende desta implementação
+
+---
+
+### 15. Performance - Otimização JavaScript
+
+**Status:** 🟡 Oportunidade de Otimização
+
+#### 15.1 Migração de jQuery para Vanilla JS
 
 ---
 
@@ -1106,36 +1689,191 @@ Recursos que agregam valor mas não são críticos.
 
 ---
 
-### 15. Wishlist (Lista de Desejos)
+### 16. Instagram Feed 📸 ⭐ **PRIORIDADE ALTA**
 
-**Status:** Ícones existem mas funcionalidade não
+**Status:** 🔴 Não implementado - SOLICITADO PELO CLIENTE
+**Impacto Esperado:** +35% engajamento social, +20% tráfego do Instagram, UGC (User Generated Content)
+
+**Justificativa:**
+- Conexão direta com rede social mais usada em moda
+- Prova social através de fotos reais de clientes
+- Incentiva follow e interação nas redes
+- Atualização automática de conteúdo visual
+- Ideal para moda feminina (nicho visual)
+
+#### Implementações necessárias:
+
+- [ ] **Integração com API**
+  - Opção 1: Instagram Basic Display API (oficial, requer app Facebook)
+  - Opção 2: Elfsight/POWR (apps Shopify prontos)
+  - Opção 3: Embed manual com hashtag feed
+  - Opção 4: Juicer.io / Taggbox (agregadores de social media)
+  - Configuração de access token
+  - Refresh token automático (60 dias)
+  - Error handling (token expirado, API down)
+
+- [ ] **Seção `instagram-feed.liquid`**
+  - Grid responsivo (6 cols desktop, 3 tablet, 2 mobile)
+  - Imagens quadradas (1:1 aspect ratio)
+  - Limite configurável (6, 8, 12, ou 16 posts)
+  - Loading skeleton state
+  - Lazy loading de imagens
+  - Empty state (quando sem posts)
+
+- [ ] **Features Visuais**
+  - Hover overlay com:
+    - Ícone do Instagram
+    - Número de likes/comentários
+    - Link "Ver no Instagram"
+    - Blur/dark overlay suave
+  - Lightbox ao clicar (modal fullscreen)
+    - Imagem grande
+    - Caption do post
+    - Data de publicação
+    - Link "Abrir no Instagram"
+    - Navegação prev/next entre posts
+    - Fechar com X ou ESC
+
+- [ ] **Configurações (Schema)**
+  - Ativar/desativar seção
+  - Username/Account ID do Instagram
+  - Número de posts a exibir
+  - Hashtag para filtrar (#ElizabethModa)
+  - Título da seção customizável
+  - Subtítulo/CTA ("Siga @elizabeth no Instagram")
+  - Link para perfil do Instagram
+  - Espaçamento entre imagens (gap)
+  - Border radius das imagens
+  - Hover effect (escolher tipo)
+
+- [ ] **Header da Seção**
+  - Título: "Siga @elizabeth"
+  - Subtítulo: "Use #ElizabethModa e apareça aqui!"
+  - Botão "Seguir" que abre Instagram
+  - Contador de followers (se API permitir)
+  - Ícone do Instagram estilizado
+
+- [ ] **JavaScript Component**
+  - Fetch de posts do Instagram
+  - Parsing de dados
+  - Renderização dinâmica
+  - Cache de 1 hora (localStorage)
+  - Error handling visual
+  - Retry logic
+
+- [ ] **Performance**
+  - Imagens otimizadas (thumbnail do Instagram)
+  - Lazy load (Intersection Observer)
+  - Skeleton loading state
+  - Debounce em scroll
+  - Prefetch no hover (lightbox)
+
+- [ ] **Localizações de Uso**
+  - Homepage (após produtos/coleções)
+  - Rodapé (versão mini: 4-6 fotos)
+  - Sidebar do blog (4 fotos)
+  - Página "Sobre Nós"
+  - Página standalone `/pages/instagram`
+
+**Exemplo Visual:**
+```
+┌────────────────────────────────────────┐
+│     Siga @elizabeth no Instagram       │
+│   Use #ElizabethModa e apareça aqui!   │
+│          [Seguir no Instagram]         │
+├────────────────────────────────────────┤
+│ [img] [img] [img] [img] [img] [img]   │
+│ [img] [img] [img] [img] [img] [img]   │
+└────────────────────────────────────────┘
+```
+
+**Alternativas Técnicas:**
+
+1. **API Oficial (mais complexo)**
+   - Requer Facebook Developer App
+   - Access token de 60 dias
+   - Limite de 200 requests/hora
+   - Dados completos (likes, comments, captions)
+   - Esforço: 12-16h
+
+2. **App Shopify (mais fácil)**
+   - Elfsight Instagram Feed (~$5-10/mês)
+   - POWR Instagram Feed (grátis até 10k views/mês)
+   - Instalação: 1-2h
+   - Limitado em customização
+   - Esforço: 2-4h
+
+3. **Embed Manual (intermediário)**
+   - Hashtag feed público
+   - Scraping cuidadoso (seguir ToS)
+   - Sem API necessária
+   - Menos confiável
+   - Esforço: 6-8h
+
+**Estimativa:**
+- Com API oficial: 12-16 horas
+- Com app Shopify: 2-4 horas (recomendado para MVP)
+- Com solução custom: 6-10 horas
+
+**Recomendação:** Iniciar com app Shopify (POWR/Elfsight) para validar feature, depois migrar para API oficial se necessário.
+
+**Dependências:**
+- Seção 12.2 item 4 (Instagram Feed na Home) depende desta implementação
+- Seção 14.1 (Instagram Feed no Blog Sidebar) depende desta implementação
+
+---
+
+### 17. Wishlist (Lista de Desejos) ⭐ **PRIORIDADE ALTA**
+
+**Status:** 🔴 Não implementado - SOLICITADO PELO CLIENTE
+**Impacto Esperado:** +20% retorno de usuários, +15% conversão
+
+**Justificativa:**
+- Feature essencial para e-commerce moderno
+- Usuários salvam produtos de interesse
+- Base para email marketing (lembrar produtos salvos)
+- Analytics sobre produtos mais desejados
 
 #### Implementações necessárias:
 
 - [ ] **Sistema de Armazenamento**
-  - localStorage para guests
-  - Customer metafields para logados
-  - Sincronizar ao fazer login
+  - localStorage para guests (imediato)
+  - Customer metafields para logados (persistente)
+  - Sincronizar ao fazer login (merge de listas)
+  - Limite de 50 produtos por usuário
 
-- [ ] **Componente Wishlist**
-  - Web Component `<wishlist-button>`
-  - Ícone de coração (outline/filled)
-  - Adicionar/remover com animação
-  - Contador no header
+- [ ] **Componente Wishlist (`<wishlist-button>`)**
+  - Web Component customizado
+  - Ícone de coração (outline/filled com animação)
+  - Toggle add/remove com feedback visual
+  - Contador no header (próximo ao cart icon)
+  - Estados: vazio, loading, adicionado, removido
+  - Integração com pub/sub events
 
 - [ ] **Página de Wishlist**
   - Template `page.wishlist.liquid`
-  - Grid de produtos
-  - Botão "Mover para carrinho"
-  - Remover item
-  - Compartilhar wishlist (futuro)
+  - Grid de produtos (mesmo layout collection)
+  - Botão "Adicionar ao Carrinho" individual
+  - Botão "Adicionar Todos ao Carrinho"
+  - Botão "Remover" com confirmação
+  - Empty state estilizado ("Sua lista está vazia")
+  - Link para "Continuar Comprando"
+  - Compartilhar wishlist (futuro - link único)
 
-- [ ] **Integração**
-  - Botão em card de produto
-  - Botão na página de produto
-  - Badge "Na wishlist"
+- [ ] **Integração em Múltiplos Locais**
+  - Botão na PDP (próximo ao "Adicionar ao Carrinho")
+  - Botão em cards de produto (collection, search)
+  - Botão em produtos relacionados
+  - Botão em quick view modal (futuro)
+  - Badge "❤️ Na Wishlist" nos cards
+
+- [ ] **Email Marketing (Futuro)**
+  - Lembrete de produtos salvos (7 dias)
+  - Alerta de desconto em produtos da wishlist
+  - Alerta de volta ao estoque
 
 **Estimativa:** 16-20 horas de desenvolvimento
+**ROI:** Alto - Feature padrão em top e-commerces
 
 ---
 
