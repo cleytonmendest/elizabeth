@@ -51,7 +51,7 @@
         "fullwidth": true,
         "loop": true,
         "nav": true,
-        "dot": true,
+        "dot": false,
         "qty-desk": 1,
         "qty-tablet": 1,
         "qty-mob": 1,
