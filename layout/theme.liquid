@@ -118,6 +118,9 @@
         predictive_search_url: '{{ routes.predictive_search_url }}',
       };
     </script>
+
+    {%- comment -%} SEO: Organization Schema {%- endcomment -%}
+    {% render 'schema-organization' %}
   </head>
   <body>
     {% sections 'header-group' %}

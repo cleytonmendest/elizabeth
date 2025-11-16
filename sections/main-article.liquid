@@ -396,6 +396,10 @@
   }
 </style>
 
+{%- comment -%} SEO: BlogPosting Schema & Breadcrumb {%- endcomment -%}
+{% render 'schema-article', article: article %}
+{% render 'schema-breadcrumb', article: article %}
+
 {% schema %}
 {
   "name": "Artigo do Blog",

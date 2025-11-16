@@ -1,0 +1,66 @@
+{%- comment -%}
+  Breadcrumb Schema (JSON-LD) para SEO
+  Mostra navegação estruturada nos resultados do Google
+
+  Parâmetros:
+  - product: objeto do produto (para PDP)
+  - collection: objeto da coleção (para collection page)
+  - article: objeto do artigo (para blog post)
+{%- endcomment -%}
+
+{%- liquid
+  assign breadcrumb_items = ''
+  assign position = 1
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": {{ position }},
+      "name": "Home",
+      "item": {{ request.origin | json }}
+    }{%- assign position = position | plus: 1 -%}
+    {%- if product -%}
+      {%- if product.collections.size > 0 -%}
+        {%- assign first_collection = product.collections | first -%}
+        ,{
+          "@type": "ListItem",
+          "position": {{ position }},
+          "name": {{ first_collection.title | json }},
+          "item": {{ request.origin | append: first_collection.url | json }}
+        }{%- assign position = position | plus: 1 -%}
+      {%- endif -%}
+      ,{
+        "@type": "ListItem",
+        "position": {{ position }},
+        "name": {{ product.title | json }},
+        "item": {{ request.origin | append: product.url | json }}
+      }
+    {%- elsif collection -%}
+      ,{
+        "@type": "ListItem",
+        "position": {{ position }},
+        "name": {{ collection.title | json }},
+        "item": {{ request.origin | append: collection.url | json }}
+      }
+    {%- elsif article -%}
+      ,{
+        "@type": "ListItem",
+        "position": {{ position }},
+        "name": {{ article.blog.title | json }},
+        "item": {{ request.origin | append: article.blog.url | json }}
+      }{%- assign position = position | plus: 1 -%}
+      ,{
+        "@type": "ListItem",
+        "position": {{ position }},
+        "name": {{ article.title | json }},
+        "item": {{ request.origin | append: article.url | json }}
+      }
+    {%- endif -%}
+  ]
+}
+</script>

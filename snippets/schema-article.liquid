@@ -1,0 +1,72 @@
+{%- comment -%}
+  BlogPosting Schema (JSON-LD) para SEO
+  Melhora exibição de artigos do blog nos resultados do Google
+
+  Parâmetros:
+  - article: objeto do artigo (obrigatório)
+{%- endcomment -%}
+
+{%- liquid
+  assign article_image = article.image | default: article.blog.image
+  if article_image
+    assign article_image_url = article_image | image_url: width: 1200
+  else
+    assign article_image_url = ''
+  endif
+
+  assign word_count = article.content | strip_html | split: ' ' | size
+  assign reading_time_minutes = word_count | divided_by: 200
+  if reading_time_minutes == 0
+    assign reading_time_minutes = 1
+  endif
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": {{ request.origin | append: article.url | json }}
+  },
+  "headline": {{ article.title | json }},
+  {%- if article.excerpt != blank -%}
+  "description": {{ article.excerpt | strip_html | truncatewords: 50 | json }},
+  {%- else -%}
+  "description": {{ article.content | strip_html | truncatewords: 50 | json }},
+  {%- endif -%}
+  {%- if article_image_url != blank -%}
+  "image": {{ article_image_url | json }},
+  {%- endif -%}
+  "author": {
+    "@type": "Person",
+    "name": {{ article.author | default: shop.name | json }}
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    {%- assign logo_url = '' -%}
+    {%- if settings.logo -%}
+      {%- assign logo_url = settings.logo | image_url: width: 600 -%}
+    {%- elsif shop.brand.logo -%}
+      {%- assign logo_url = shop.brand.logo | image_url: width: 600 -%}
+    {%- endif -%}
+    {%- if logo_url != blank -%}
+    "logo": {
+      "@type": "ImageObject",
+      "url": {{ logo_url | json }}
+    }
+    {%- endif -%}
+  },
+  "datePublished": {{ article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+  "dateModified": {{ article.updated_at | default: article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+  "wordCount": {{ word_count }},
+  "timeRequired": "PT{{ reading_time_minutes }}M",
+  "articleBody": {{ article.content | strip_html | truncatewords: 300 | json }},
+  "articleSection": {{ article.blog.title | json }},
+  {%- if article.tags.size > 0 -%}
+  "keywords": {{ article.tags | join: ', ' | json }},
+  {%- endif -%}
+  "inLanguage": "pt-BR"
+}
+</script>

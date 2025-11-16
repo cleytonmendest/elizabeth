@@ -17,6 +17,10 @@
   </div>
 </div>
 
+{%- comment -%} SEO: Product Schema & Breadcrumb {%- endcomment -%}
+{% render 'schema-product', product: product %}
+{% render 'schema-breadcrumb', product: product %}
+
 {% schema %}
 {
   "name": "Produto",

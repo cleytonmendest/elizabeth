@@ -185,6 +185,9 @@
   document.body.appendChild(a11yRefreshMessage);
 </script>
 
+{%- comment -%} SEO: Breadcrumb Schema {%- endcomment -%}
+{% render 'schema-breadcrumb', collection: collection %}
+
 {% schema %}
 {
   "name": "Página de Coleção",

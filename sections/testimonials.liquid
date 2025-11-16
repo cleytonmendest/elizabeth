@@ -1,0 +1,281 @@
+{%- comment -%}
+  Seção de Depoimentos de Clientes / Testimonials
+  Usa o componente my-slider para carrossel
+{%- endcomment -%}
+
+{%- liquid
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign bg_color = section.settings.background_color
+  assign text_color = section.settings.text_color
+  assign star_color = section.settings.star_color
+  assign autoplay = section.settings.autoplay
+  assign autoplay_speed = section.settings.autoplay_speed
+  assign show_navigation = section.settings.show_navigation
+-%}
+
+{{ 'testimonials.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="testimonials-section py-16 md:py-20"
+  style="background-color: {{ bg_color }}; color: {{ text_color }};"
+>
+  <div class="container mx-auto px-4 md:px-6 lg:px-8">
+
+    {%- comment -%} Header {%- endcomment -%}
+    {% if heading != blank or subheading != blank %}
+      <div class="text-center mb-12">
+        {% if heading != blank %}
+          <h2 class="text-3xl md:text-4xl font-bold mb-4">
+            {{ heading }}
+          </h2>
+        {% endif %}
+
+        {% if subheading != blank %}
+          <p class="text-lg opacity-80 max-w-2xl mx-auto">
+            {{ subheading }}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {%- comment -%} Slider de Depoimentos {%- endcomment -%}
+    {% if section.blocks.size > 0 %}
+      <div class="relative">
+        <my-slider
+          class="testimonials-slider"
+          data-section-id="{{ section.id }}"
+          data-items="{{ section.blocks.size }}"
+          data-loop="true"
+          data-dot="true"
+          data-autoplay="{{ autoplay }}"
+          data-pause-hover="true"
+          data-ap-time="{{ autoplay_speed }}"
+          data-qty-desk="3"
+          data-qty-tab="2"
+          data-qty-mob="1"
+        >
+          <div class="my-slider__container">
+            {% for block in section.blocks %}
+              {% if block.type == 'testimonial' %}
+                <div class="item px-4" {{ block.shopify_attributes }}>
+                  {% render 'testimonial-card',
+                    block: block,
+                    text_color: text_color,
+                    star_color: star_color
+                  %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </my-slider>
+
+        {%- comment -%} Setas de Navegação {%- endcomment -%}
+        {% if show_navigation %}
+          <div class="hidden md:block">
+            <button
+              type="button"
+              class="testimonials-nav testimonials-nav--prev"
+              onclick="sliderPrev('{{ section.id }}')"
+              aria-label="Anterior"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              class="testimonials-nav testimonials-nav--next"
+              onclick="sliderNext('{{ section.id }}')"
+              aria-label="Próximo"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+        {% endif %}
+      </div>
+
+    {% else %}
+      {%- comment -%} Estado vazio {%- endcomment -%}
+      <div class="text-center py-12 opacity-60">
+        <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+        </svg>
+        <p class="text-lg">Adicione depoimentos de clientes para exibir aqui</p>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Depoimentos de Clientes",
+  "tag": "section",
+  "class": "section-testimonials",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Conteúdo"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título da Seção",
+      "default": "O que nossos clientes dizem"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subtítulo",
+      "default": "Confira a experiência de quem já comprou com a gente"
+    },
+    {
+      "type": "header",
+      "content": "Cores"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Cor de Fundo",
+      "default": "#f9fafb"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Cor do Texto",
+      "default": "#111827"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Cor das Estrelas",
+      "default": "#fbbf24"
+    },
+    {
+      "type": "header",
+      "content": "Configurações do Slider"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Reprodução Automática",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Velocidade (segundos)",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Mostrar Setas de Navegação",
+      "default": true,
+      "info": "Setas aparecem apenas em desktop"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Depoimento",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Cliente"
+        },
+        {
+          "type": "image_picker",
+          "id": "customer_image",
+          "label": "Foto do Cliente",
+          "info": "Opcional - usar imagem quadrada para melhor resultado"
+        },
+        {
+          "type": "text",
+          "id": "customer_name",
+          "label": "Nome do Cliente",
+          "default": "Maria Silva"
+        },
+        {
+          "type": "text",
+          "id": "customer_location",
+          "label": "Cidade/Estado",
+          "default": "São Paulo, SP",
+          "info": "Opcional"
+        },
+        {
+          "type": "header",
+          "content": "Avaliação"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Número de Estrelas",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "testimonial_text",
+          "label": "Texto do Depoimento",
+          "default": "Adorei a qualidade dos vestidos! O tecido é excelente e o caimento perfeito. Com certeza voltarei a comprar.",
+          "info": "Recomendado: 100-200 caracteres"
+        },
+        {
+          "type": "text",
+          "id": "product_purchased",
+          "label": "Produto Comprado",
+          "info": "Opcional - ex: 'Vestido Floral Midi'",
+          "placeholder": "Nome do produto"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Depoimentos de Clientes",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Ana Carolina",
+            "customer_location": "Rio de Janeiro, RJ",
+            "rating": 5,
+            "testimonial_text": "Adorei a qualidade dos vestidos! O tecido é excelente e o caimento perfeito. Com certeza voltarei a comprar.",
+            "product_purchased": "Vestido Floral Midi"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Juliana Mendes",
+            "customer_location": "Belo Horizonte, MG",
+            "rating": 5,
+            "testimonial_text": "Atendimento impecável e entrega rápida. O vestido chegou exatamente como na foto. Super recomendo!",
+            "product_purchased": "Vestido Longo Festa"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Fernanda Costa",
+            "customer_location": "São Paulo, SP",
+            "rating": 5,
+            "testimonial_text": "Já é a terceira vez que compro e sempre me surpreendo com a qualidade. As peças são lindas e elegantes!",
+            "product_purchased": "Conjunto Blazer"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

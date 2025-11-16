@@ -1,0 +1,53 @@
+{%- comment -%}
+  Organization Schema (JSON-LD) para SEO
+  Define a identidade da marca/loja nos resultados de busca
+
+  Usar no layout/theme.liquid (apenas uma vez por página)
+{%- endcomment -%}
+
+{%- liquid
+  assign logo_url = ''
+  if settings.logo
+    assign logo_url = settings.logo | image_url: width: 600
+  elsif shop.brand.logo
+    assign logo_url = shop.brand.logo | image_url: width: 600
+  endif
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": {{ shop.name | json }},
+  "url": {{ request.origin | json }},
+  {%- if logo_url != blank -%}
+  "logo": {{ logo_url | json }},
+  {%- endif -%}
+  {%- if shop.description -%}
+  "description": {{ shop.description | json }},
+  {%- endif -%}
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "{{ shop.phone | default: '+55-11-99999-9999' }}",
+    "contactType": "Customer Service",
+    "areaServed": "BR",
+    "availableLanguage": ["Portuguese"]
+  },
+  "sameAs": [
+    {%- comment -%} Adicionar redes sociais aqui {%- endcomment -%}
+    {%- if settings.social_instagram_link -%}
+      {{ settings.social_instagram_link | json }}{%- if settings.social_facebook_link or settings.social_pinterest_link -%},{%- endif -%}
+    {%- endif -%}
+    {%- if settings.social_facebook_link -%}
+      {{ settings.social_facebook_link | json }}{%- if settings.social_pinterest_link -%},{%- endif -%}
+    {%- endif -%}
+    {%- if settings.social_pinterest_link -%}
+      {{ settings.social_pinterest_link | json }}
+    {%- endif -%}
+  ],
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "BR"
+  }
+}
+</script>

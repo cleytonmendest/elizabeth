@@ -1,0 +1,85 @@
+/* ============================================
+   Testimonials Section - Custom Styles
+   ============================================
+
+   Estilos customizados para a seção de depoimentos.
+   TailwindCSS é usado para a maioria dos estilos.
+   Este arquivo contém apenas estilos que não podem
+   ser facilmente implementados com Tailwind.
+   ============================================ */
+
+/* Setas de Navegação */
+.testimonials-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.testimonials-nav--prev {
+  left: -24px;
+}
+
+.testimonials-nav--next {
+  right: -24px;
+}
+
+.testimonials-nav:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.testimonials-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 1280px) {
+  .testimonials-nav--prev {
+    left: 0;
+  }
+
+  .testimonials-nav--next {
+    right: 0;
+  }
+}
+
+/* Dots do Owl Carousel (customização mínima) */
+.testimonials-slider .owl-dots {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.testimonials-slider .owl-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: currentColor;
+  opacity: 0.3;
+  border-radius: 50%;
+  margin: 0 5px;
+  transition: opacity 0.3s;
+  border: none;
+  padding: 0;
+}
+
+.testimonials-slider .owl-dot.active {
+  opacity: 1;
+}
+
+.testimonials-slider .owl-dot:hover {
+  opacity: 0.6;
+}
