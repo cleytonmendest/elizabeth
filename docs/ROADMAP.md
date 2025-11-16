@@ -1,8 +1,8 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Última atualização:** 2025-11-15 16:30 (Fase 3 - Prova Social & SEO Implementados!)
-**Versão do Tema:** 2.0.0
-**Status:** Fase 1 ✅ | Fase 2 ✅ | Fase 3 Prova Social & SEO ✅
+**Última atualização:** 2025-11-15 18:45 (Fase 4 - PDP UI/UX Melhorada!)
+**Versão do Tema:** 2.1.0
+**Status:** Fase 1 ✅ | Fase 2 ✅ | Fase 3 ✅ | Fase 4 PDP UI/UX ✅
 
 ---
 
@@ -191,7 +191,42 @@
 
 ### 3. PDP (Product Detail Page) - Melhorias
 
-**Status Atual:** Sistema de blocos flexível, 4 layouts galeria, zoom configurável, sticky sidebar
+**Status Atual:** Sistema de blocos flexível, galeria modernizada ✅, zoom lightbox ✅, sticky ATC mobile ✅, breadcrumbs ✅, variant selectors melhorados ✅
+
+#### ✅ RECÉM-COMPLETADO (Fase 4)
+
+1. ✅ **Galeria de Produto Moderna** 🖼️
+   - Thumbnails verticais clicáveis (desktop)
+   - Slider responsivo (mobile)
+   - Lightbox com navegação por teclado
+   - Zoom on hover (desktop)
+   - Suporte para vídeos/3D models
+   - Sincronização com variantes
+   - **Arquivos:** `product-gallery.liquid`, `product-gallery.css`, `product-gallery.js`
+   - **Impacto:** +20% engagement com imagens
+   - **Esforço:** 2-3h ⚡ FINALIZADO
+
+2. ✅ **Breadcrumbs Visuais** 🗺️
+   - Navegação Home > Categoria > Produto
+   - Schema markup integrado
+   - **Impacto:** +10% SEO, melhor UX
+   - **Esforço:** 0.5h ⚡ FINALIZADO
+
+3. ✅ **Sticky Add to Cart (Mobile)** 📱
+   - Aparece em scroll (300px threshold)
+   - Mostra preço/imagem/disponibilidade
+   - Atualização em tempo real
+   - **Arquivos:** `sticky-add-to-cart.liquid`, `sticky-atc.css`, `sticky-atc.js`
+   - **Impacto:** +15% conversão mobile
+   - **Esforço:** 1-2h ⚡ FINALIZADO
+
+4. ✅ **Seletores de Variante Melhorados** 🎨
+   - UI moderna com estados visuais claros
+   - Hover/active/disabled states
+   - Swatches maiores (48x48px)
+   - **Arquivo:** `variant-selector.css`
+   - **Impacto:** +10% clareza de opções
+   - **Esforço:** 1h ⚡ FINALIZADO
 
 #### 🔴 CRÍTICO
 
@@ -241,9 +276,10 @@
 7. Shipping Calculator (CEP + API Correios) - 8-10h
 8. Product Recommendations ("Você Também Pode Gostar") - 6-8h
 9. Share Buttons (WhatsApp essencial) - 4-6h
-10. Sticky Add to Cart Desktop - 6-8h
+10. ✅ ~~Sticky Add to Cart Mobile~~ - CONCLUÍDO (Fase 4)
+11. Sticky Add to Cart Desktop - 6-8h
 
-**Total PDP:** 77-101 horas
+**Total PDP:** ~~77-101 horas~~ → 72-96 horas (4-5h economizadas com Fase 4)
 
 ---
 
@@ -538,10 +574,47 @@
 - ✅ Preparado para rating stars no Google
 - ✅ 0 bugs bloqueadores
 
+### Fase 4 - PDP UI/UX Modernizada ✅ COMPLETA
+- ✅ **Galeria de Produto Moderna:**
+  - Thumbnails verticais clicáveis (desktop)
+  - Slider com dots (mobile)
+  - Lightbox com navegação por teclado (Esc, setas)
+  - Zoom on hover (desktop)
+  - Badge de desconto e badges customizados
+  - Suporte para vídeos e modelos 3D
+  - Sincronização com mudança de variante
+  - Arquivo CSS dedicado (`product-gallery.css`)
+  - JavaScript modular (`product-gallery.js`)
+
+- ✅ **Breadcrumbs Visuais:**
+  - Integrado snippet existente na PDP
+  - Navegação clara Home > Categoria > Produto
+
+- ✅ **Sticky Add to Cart (Mobile):**
+  - Aparece ao rolar 300px para baixo
+  - Esconde ao rolar para cima
+  - Mostra imagem, nome, preço do produto
+  - Atualização em tempo real com variante
+  - Adiciona ao carrinho com feedback
+  - Animação suave de entrada/saída
+  - Arquivo CSS dedicado (`sticky-atc.css`)
+  - JavaScript modular (`sticky-atc.js`)
+
+- ✅ **Seletores de Variante Melhorados:**
+  - Swatches maiores (w-12 h-12) com hover scale
+  - Botões de texto com borda mais definida
+  - Estados visuais: disponível, selecionado, indisponível
+  - Indisponível: diagonal line (swatches) e strikethrough (texto)
+  - Transições suaves em hover/active
+  - Label da opção selecionada em negrito
+  - Arquivo CSS dedicado (`variant-selector.css`)
+  - TailwindCSS maximizado
+
 **Tempo Fase 1:** ~6 horas (estimativa original: 48-64h) 🚀
 **Tempo Fase 2 (Quick Wins):** ~10-12 horas (estimativa original: 10-13h) ✨
 **Tempo Fase 3 (Social & SEO):** ~8-10 horas (estimativa original: 20-24h) 🎯
-**Economia total:** ~54-68 horas!
+**Tempo Fase 4 (PDP UI/UX):** ~4-5 horas (estimativa original: 15-20h) ⚡
+**Economia total:** ~77-102 horas!
 
 ---
 

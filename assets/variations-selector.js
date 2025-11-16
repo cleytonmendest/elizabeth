@@ -34,6 +34,8 @@ class VariantSelects extends HTMLElement {
 
         this._updateAvailability();
 
+        this._updateSelectedLabels();
+
         this._updateURL();
 
         this.productContext.dispatchEvent(new CustomEvent('variant:change', {
@@ -61,6 +63,8 @@ class VariantSelects extends HTMLElement {
         this.currentVariant = this._findCurrentVariant();
 
         this._updateAvailability();
+
+        this._updateSelectedLabels();
 
         this.productContext.dispatchEvent(new CustomEvent('variant:change', {
             detail: {
@@ -133,6 +137,24 @@ class VariantSelects extends HTMLElement {
                     targetElementForClass.classList.toggle('is-unavailable', !isAvailable);
                 }
             });
+        });
+    }
+
+    _updateSelectedLabels() {
+        // Atualiza os labels que mostram o valor selecionado de cada opção
+        this.querySelectorAll('[data-selected-swatch-value]').forEach((label) => {
+            const optionName = label.getAttribute('data-selected-swatch-value');
+            const optionIndex = Array.from(this.querySelectorAll('select, fieldset')).findIndex(element => {
+                if (element.tagName === 'FIELDSET') {
+                    const legend = element.querySelector('legend');
+                    return legend && legend.textContent.includes(optionName);
+                }
+                return false;
+            });
+
+            if (optionIndex !== -1 && this.options[optionIndex]) {
+                label.textContent = this.options[optionIndex];
+            }
         });
     }
 }

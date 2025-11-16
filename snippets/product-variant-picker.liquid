@@ -4,13 +4,15 @@
   assign current_variant = product.selected_or_first_available_variant
 -%}
 
+{{ 'variant-selector.css' | asset_url | stylesheet_tag }}
+
 {%- unless product.has_only_default_variant -%}
   <variant-selects
     id="variant-selects-{{ section.id }}"
     data-section="{{ section.id }}"
     data-url="{{ product.url }}"
     data-url="{{ product.url }}?variant={{ current_variant.id }}"
-    class="flex flex-col gap-4 my-4"
+    class="flex flex-col gap-5 my-6"
   >
     {%- for option in product.options_with_values -%}
       {%- liquid
@@ -28,9 +30,9 @@
 
       <div>
         <fieldset>
-          <legend class="mb-2">
-            <span> {{ option.name }}: </span>
-            <span data-selected-swatch-value="{{ option.name }}">
+          <legend class="mb-3 text-sm">
+            <span class="text-gray-700">{{ option.name }}:</span>
+            <span class="variant-selected-value ml-1" data-selected-swatch-value="{{ option.name }}">
               {{- option.selected_value -}}
             </span>
           </legend>

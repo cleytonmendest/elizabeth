@@ -1,0 +1,222 @@
+{%- comment -%}
+  Product Gallery com múltiplos layouts
+
+  Parâmetros:
+  - product: objeto do produto (obrigatório)
+  - section: seção do produto (para acessar settings)
+{%- endcomment -%}
+
+{% assign gallery_layout = section.settings.gallery_layout %}
+
+{%- comment -%} Badge de desconto {%- endcomment -%}
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign has_discount = false
+  if current_variant.compare_at_price > current_variant.price
+    assign has_discount = true
+    assign discount_amount = current_variant.compare_at_price | minus: current_variant.price
+    assign discount_percentage = discount_amount | times: 100.0 | divided_by: current_variant.compare_at_price | round
+  endif
+-%}
+
+<div class="relative">
+  {% case gallery_layout %}
+    {%- comment -%} LAYOUT: Stacked (empilhado desktop, slider mobile) {%- endcomment -%}
+    {% when 'stacked' %}
+      <div class="w-full lg:flex flex-col hidden gap-2">
+        {%- for image in product.images -%}
+          <img
+            class="w-full"
+            src="{{ image | image_url }}"
+            alt="{{ product.title }}"
+            width="{{ image.width }}"
+            height="{{ image.height }}"
+            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+            decoding="async"
+          >
+        {%- endfor -%}
+      </div>
+      <div class="w-full lg:hidden relative flex items-center">
+        {% render 'product-page-slider', qtd: 1 %}
+      </div>
+
+    {%- comment -%} LAYOUT: Two Columns (grid 2 colunas desktop, slider mobile) {%- endcomment -%}
+    {% when 'two_columns' %}
+      {% assign image_count = product.images.size %}
+      <div class="w-full hidden lg:grid lg:gap-4 {% if image_count > 1 %}lg:grid-cols-2{% else %}lg:grid-cols-1{% endif %}">
+        {%- for image in product.images -%}
+          <img
+            class="w-full h-full object-cover"
+            src="{{ image | image_url }}"
+            alt="{{ product.title }}"
+            width="{{ image.width }}"
+            height="{{ image.height }}"
+            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+            decoding="async"
+          >
+        {%- endfor -%}
+      </div>
+      <div class="w-full lg:hidden relative flex items-center">
+        {% render 'product-page-slider', qtd: 1 %}
+      </div>
+
+    {%- comment -%} LAYOUT: Slider 1 imagem {%- endcomment -%}
+    {% when 'one_images_slider' %}
+      {% render 'product-page-slider', qtd: 1 %}
+
+    {%- comment -%} LAYOUT: Slider 2 imagens {%- endcomment -%}
+    {% when 'two_images_slider' %}
+      {% render 'product-page-slider', qtd: 2 %}
+
+    {%- comment -%} LAYOUT: Thumbnails Gallery (nova opção) {%- endcomment -%}
+    {% when 'thumbnails_gallery' %}
+      {{ 'product-gallery.css' | asset_url | stylesheet_tag }}
+
+      <div class="product-gallery" data-product-gallery>
+        {%- comment -%} Desktop: Thumbnails + Main Image {%- endcomment -%}
+        <div class="hidden lg:flex gap-3">
+          {%- comment -%} Thumbnails {%- endcomment -%}
+          <div class="product-gallery__thumbnails flex flex-col gap-2 w-20">
+            {% for media in product.media limit: 6 %}
+              <button
+                type="button"
+                class="product-gallery__thumbnail border border-gray-200 rounded overflow-hidden hover:border-gray-400 transition-colors {% if forloop.first %}is-active{% endif %}"
+                data-media-id="{{ media.id }}"
+                data-index="{{ forloop.index0 }}"
+              >
+                {% if media.media_type == 'image' %}
+                  <img
+                    src="{{ media.preview_image | image_url: width: 120 }}"
+                    alt="{{ media.alt | escape }}"
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                {% elsif media.media_type == 'video' or media.media_type == 'external_video' %}
+                  <div class="relative w-full h-full">
+                    <img
+                      src="{{ media.preview_image | image_url: width: 120 }}"
+                      alt="{{ media.alt | escape }}"
+                      class="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    >
+                    <svg class="absolute inset-0 m-auto w-8 h-8 text-white opacity-80" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                    </svg>
+                  </div>
+                {% endif %}
+              </button>
+            {% endfor %}
+          </div>
+
+          {%- comment -%} Main Image Display {%- endcomment -%}
+          <div class="product-gallery__main flex-1 relative">
+            {% for media in product.media %}
+              <div
+                class="product-gallery__image {% unless forloop.first %}hidden{% endunless %}"
+                data-media-id="{{ media.id }}"
+                data-index="{{ forloop.index0 }}"
+              >
+                {% if media.media_type == 'image' %}
+                  <img
+                    src="{{ media | image_url: width: 1000 }}"
+                    alt="{{ media.alt | escape }}"
+                    class="w-full rounded cursor-zoom-in"
+                    data-zoom-image="{{ media | image_url: width: 2000 }}"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                    {% if forloop.first %}fetchpriority="high"{% endif %}
+                    decoding="async"
+                  >
+                {% elsif media.media_type == 'video' %}
+                  {{ media | video_tag: controls: true, class: 'w-full rounded' }}
+                {% elsif media.media_type == 'external_video' %}
+                  {{ media | external_video_tag: class: 'w-full rounded' }}
+                {% elsif media.media_type == 'model' %}
+                  {{ media | model_viewer_tag: reveal: 'interaction', toggleable: true, class: 'w-full rounded' }}
+                {% endif %}
+              </div>
+            {% endfor %}
+
+            {%- comment -%} Badges {%- endcomment -%}
+            {% if has_discount or product.metafields.custom.badge %}
+              <div class="absolute top-3 left-3 flex flex-col gap-2 z-10">
+                {% if has_discount %}
+                  <span class="bg-red-600 text-white px-2 py-1 text-xs font-semibold rounded">
+                    -{{ discount_percentage }}%
+                  </span>
+                {% endif %}
+                {% if product.metafields.custom.badge %}
+                  <span class="bg-black text-white px-2 py-1 text-xs font-semibold rounded">
+                    {{ product.metafields.custom.badge }}
+                  </span>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        {%- comment -%} Mobile: Slider {%- endcomment -%}
+        <div class="lg:hidden relative">
+          <my-slider
+            data-section-id="{{ section.id }}"
+            data-loop="true"
+            data-items="{{ product.media.size }}"
+            data-qty-desk="1"
+            data-qty-tab="1"
+            data-qty-mob="1"
+            data-dot="true"
+          >
+            <div class="my-slider__container">
+              {% for media in product.media %}
+                <div class="carousel-item">
+                  {% if media.media_type == 'image' %}
+                    <img
+                      src="{{ media | image_url: width: 800 }}"
+                      alt="{{ media.alt | escape }}"
+                      class="w-full"
+                      loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                      {% if forloop.first %}fetchpriority="high"{% endif %}
+                      decoding="async"
+                    >
+                  {% elsif media.media_type == 'video' %}
+                    {{ media | video_tag: controls: true, class: 'w-full' }}
+                  {% elsif media.media_type == 'external_video' %}
+                    {{ media | external_video_tag: class: 'w-full' }}
+                  {% elsif media.media_type == 'model' %}
+                    {{ media | model_viewer_tag: class: 'w-full' }}
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          </my-slider>
+
+          {%- comment -%} Badges Mobile {%- endcomment -%}
+          {% if has_discount or product.metafields.custom.badge %}
+            <div class="absolute top-3 left-3 flex flex-col gap-2 z-10">
+              {% if has_discount %}
+                <span class="bg-red-600 text-white px-2 py-1 text-xs font-semibold rounded">
+                  -{{ discount_percentage }}%
+                </span>
+              {% endif %}
+              {% if product.metafields.custom.badge %}
+                <span class="bg-black text-white px-2 py-1 text-xs font-semibold rounded">
+                  {{ product.metafields.custom.badge }}
+                </span>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+
+        {%- comment -%} Lightbox Modal {%- endcomment -%}
+        <div id="product-lightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+          <button class="absolute top-4 right-4 text-white text-4xl" data-lightbox-close>&times;</button>
+          <button class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl" data-lightbox-prev>‹</button>
+          <button class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl" data-lightbox-next>›</button>
+          <img id="lightbox-image" src="" alt="" class="max-w-full max-h-full object-contain">
+        </div>
+      </div>
+
+      <script src="{{ 'product-gallery.js' | asset_url }}" defer></script>
+  {% endcase %}
+</div>

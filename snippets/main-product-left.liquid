@@ -1,42 +1,6 @@
-{% assign gallery_layout = section.settings.gallery_layout %}
+{%- comment -%}
+  Galeria de Produto - Lado Esquerdo da PDP
+  Usa o novo componente product-gallery para melhor UX
+{%- endcomment -%}
 
-<div class="relative flex items-center">
-  {% case gallery_layout %}
-    {% when 'stacked' %}
-      <div class="w-full lg:flex flex-col hidden gap-2">
-        {%- for image in product.images -%}
-          <img
-            class="w-full"
-            src="{{ image | image_url }}"
-            alt="{{ product.title }}"
-            width="{{ image.width }}"
-            height="{{ image.height }}"
-          >
-        {%- endfor -%}
-      </div>
-      <div class="w-full lg:hidden relative flex items-center">
-        {% render 'product-page-slider', qtd: 1 %}
-      </div>
-
-    {% when 'two_columns' %}
-      {% assign image_count = product.images.size %}
-      <div class="w-full hidden lg:grid lg:gap-4 {% if image_count > 1 %}lg:grid-cols-2{% else %}lg:grid-cols-1{% endif %}">
-        {%- for image in product.images -%}
-          <img
-            class="w-full h-full object-cover"
-            src="{{ image | image_url }}"
-            alt="{{ product.title }}"
-            width="{{ image.width }}"
-            height="{{ image.height }}"
-          >
-        {%- endfor -%}
-      </div>
-      <div class="w-full lg:hidden relative flex items-center">
-        {% render 'product-page-slider', qtd: 1 %}
-      </div>
-    {% when 'one_images_slider' %}
-      {% render 'product-page-slider', qtd: 1 %}
-    {% when 'two_images_slider' %}
-      {% render 'product-page-slider', qtd: 2 %}
-  {% endcase %}
-</div>
+{% render 'product-gallery', product: product, section: section %}

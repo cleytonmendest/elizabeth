@@ -2,6 +2,9 @@
 {% assign media_position = section.settings.media_position %}
 
 <div class="page-width">
+  {% comment %} {%- comment -%} Breadcrumb {%- endcomment -%}
+  {% render 'breadcrumb' %} {% endcomment %}
+
   <div
     product-context
     class="flex flex-col gap-5 {% if media_position == 'left' %} lg:flex-row {% else %} lg:flex-row-reverse {% endif %}"
@@ -16,6 +19,9 @@
     </div>
   </div>
 </div>
+{% comment %} 
+{%- comment -%} Sticky Add to Cart (Mobile) {%- endcomment -%}
+{% render 'sticky-add-to-cart', product: product %} {% endcomment %}
 
 {%- comment -%} SEO: Product Schema & Breadcrumb {%- endcomment -%}
 {% render 'schema-product', product: product %}
@@ -72,6 +78,10 @@
           "value": "two_images_slider",
           "label": "Carrosel 2 imagens"
         },
+        {
+          "value": "thumbnails_gallery",
+          "label": "Galeria com Thumbnails"
+        }
       ],
       "default": "stacked",
       "label": "Layout para desktop"

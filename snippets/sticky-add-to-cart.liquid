@@ -1,0 +1,102 @@
+{%- comment -%}
+  Sticky Add to Cart Mobile
+  Aparece quando usuário rola para baixo (mobile only)
+
+  Parâmetros:
+  - product: objeto do produto (obrigatório)
+{%- endcomment -%}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign product_form_id = 'product-form-' | append: section.id
+-%}
+
+{{ 'sticky-atc.css' | asset_url | stylesheet_tag }}
+
+<div
+  class="sticky-add-to-cart lg:hidden"
+  data-sticky-atc
+  data-product-id="{{ product.id }}"
+>
+  <div class="sticky-atc__inner container mx-auto px-3 py-2 flex items-center gap-2">
+
+    {%- comment -%} Imagem + Info {%- endcomment -%}
+    <div class="flex items-center gap-2 flex-1 min-w-0">
+      {%- if current_variant.featured_media -%}
+        <img
+          src="{{ current_variant.featured_media | image_url: width: 80 }}"
+          alt="{{ product.title | escape }}"
+          class="w-10 h-10 object-cover rounded flex-shrink-0"
+          data-sticky-image
+        >
+      {%- endif -%}
+
+      <div class="flex-1 min-w-0">
+        <p class="text-xs truncate">
+          {{ product.title }}
+        </p>
+        <div class="flex items-center gap-1.5">
+          <span class="font-semibold text-sm" data-sticky-price>
+            {{ current_variant.price | money }}
+          </span>
+          {%- if current_variant.compare_at_price > current_variant.price -%}
+            <span class="text-xs text-gray-500 line-through" data-sticky-compare-price>
+              {{ current_variant.compare_at_price | money }}
+            </span>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%} Quantity Selector {%- endcomment -%}
+    <div class="flex items-center border border-gray-300 rounded h-8">
+      <button
+        type="button"
+        class="px-2 h-full hover:bg-gray-50 transition-colors"
+        data-sticky-qty-decrease
+        aria-label="Diminuir quantidade"
+      >
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+        </svg>
+      </button>
+      <input
+        type="number"
+        class="w-8 text-center text-xs border-0 focus:ring-0 h-full p-0"
+        value="1"
+        min="1"
+        data-sticky-qty-input
+        readonly
+      >
+      <button
+        type="button"
+        class="px-2 h-full hover:bg-gray-50 transition-colors"
+        data-sticky-qty-increase
+        aria-label="Aumentar quantidade"
+      >
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+      </button>
+    </div>
+
+    {%- comment -%} Botão Add to Cart {%- endcomment -%}
+    <button
+      type="button"
+      class="sticky-atc__button"
+      data-sticky-add-to-cart
+      {% unless current_variant.available %}disabled{% endunless %}
+    >
+      <span data-sticky-button-text class="text-xs font-medium whitespace-nowrap">
+        {% if current_variant.available %}
+          Adicionar
+        {% else %}
+          Esgotado
+        {% endif %}
+      </span>
+    </button>
+
+  </div>
+</div>
+
+<script src="{{ 'sticky-atc.js' | asset_url }}" defer></script>

@@ -1,0 +1,57 @@
+/* ============================================
+   Variant Selector Styles - Design Minimalista
+   ============================================ */
+
+/* Swatch hover effects - sutil */
+.swatch-label {
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.swatch-label:hover:not(.is-unavailable) {
+  border-color: #000;
+}
+
+/* Unavailable swatch - diagonal line through */
+.swatch-label.is-unavailable::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 110%;
+  height: 1px;
+  background-color: #999;
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.swatch-label.is-unavailable {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-style: dashed;
+  border-color: #ddd;
+}
+
+/* Text option buttons - minimalista */
+.not-swatch {
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.not-swatch:hover:not(.is-unavailable) {
+  border-color: #666;
+}
+
+/* Unavailable text option - strikethrough */
+.not-swatch.is-unavailable {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  border-style: dashed;
+  border-color: #ddd;
+}
+
+/* Selected value label */
+.variant-selected-value {
+  font-weight: 500;
+  color: #000;
+}
