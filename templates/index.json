@@ -60,6 +60,57 @@
         "pause-hover": true
       }
     },
+    "trust_badges_KPYh8n": {
+      "type": "trust-badges",
+      "blocks": {
+        "badge_XXFgE3": {
+          "type": "badge",
+          "settings": {
+            "icon": "truck",
+            "title": "Frete Grátis",
+            "description": "Acima de R$ 299"
+          }
+        },
+        "badge_BCXnDU": {
+          "type": "badge",
+          "settings": {
+            "icon": "refresh",
+            "title": "Troca Fácil",
+            "description": "30 dias para trocar"
+          }
+        },
+        "badge_wNF4FD": {
+          "type": "badge",
+          "settings": {
+            "icon": "shield",
+            "title": "Compra Segura",
+            "description": "100% protegida"
+          }
+        },
+        "badge_XcBQcT": {
+          "type": "badge",
+          "settings": {
+            "icon": "credit-card",
+            "title": "Parcele sem Juros",
+            "description": "Em até 6x no cartão"
+          }
+        }
+      },
+      "block_order": [
+        "badge_XXFgE3",
+        "badge_BCXnDU",
+        "badge_wNF4FD",
+        "badge_XcBQcT"
+      ],
+      "name": "Trust Badges",
+      "settings": {
+        "layout": "list",
+        "sticky": false,
+        "background_color": "#f9fafb",
+        "text_color": "#111827",
+        "icon_color": "#000000"
+      }
+    },
     "slider_product_iqrCEN": {
       "type": "slider-product",
       "settings": {
@@ -236,14 +287,86 @@
       "settings": {
         "url": "shopify://pages/contact"
       }
+    },
+    "testimonials_PRGmmP": {
+      "type": "testimonials",
+      "blocks": {
+        "testimonial_4DtbAM": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Ana Carolina",
+            "customer_location": "Rio de Janeiro, RJ",
+            "rating": 5,
+            "testimonial_text": "Adorei a qualidade dos vestidos! O tecido é excelente e o caimento perfeito. Com certeza voltarei a comprar.",
+            "product_purchased": "Vestido Floral Midi"
+          }
+        },
+        "testimonial_3exxmW": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Juliana Mendes",
+            "customer_location": "Belo Horizonte, MG",
+            "rating": 5,
+            "testimonial_text": "Atendimento impecável e entrega rápida. O vestido chegou exatamente como na foto. Super recomendo!",
+            "product_purchased": "Vestido Longo Festa"
+          }
+        },
+        "testimonial_nqixzX": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Fernanda Costa",
+            "customer_location": "São Paulo, SP",
+            "rating": 5,
+            "testimonial_text": "Já é a terceira vez que compro e sempre me surpreendo com a qualidade. As peças são lindas e elegantes!",
+            "product_purchased": "Conjunto Blazer"
+          }
+        }
+      },
+      "block_order": [
+        "testimonial_4DtbAM",
+        "testimonial_3exxmW",
+        "testimonial_nqixzX"
+      ],
+      "name": "Depoimentos de Clientes",
+      "settings": {
+        "heading": "O que nossos clientes dizem",
+        "subheading": "Confira a experiência de quem já comprou com a gente",
+        "background_color": "#f9fafb",
+        "text_color": "#111827",
+        "star_color": "#fbbf24",
+        "autoplay": true,
+        "autoplay_speed": 5,
+        "show_navigation": true
+      }
+    },
+    "newsletter_modal_xRB9nq": {
+      "type": "newsletter-modal",
+      "name": "Modal Newsletter",
+      "settings": {
+        "enable_modal": true,
+        "modalWidth": 500,
+        "modal_title": "Receba ofertas exclusivas!",
+        "modal_text": "<p>Cadastre-se e receba em primeira mão nossas promoções e lançamentos.</p>",
+        "button_text": "Quero receber ofertas",
+        "delay_seconds": 5,
+        "scroll_percentage": 0,
+        "enable_exit_intent": true,
+        "cookie_days": 30,
+        "show_dont_show_again": true,
+        "success_message": "Obrigado! Você receberá nossas novidades em breve.",
+        "error_message": "Ops! Algo deu errado. Tente novamente."
+      }
     }
   },
   "order": [
     "slider_image_9WNq4K",
+    "trust_badges_KPYh8n",
     "slider_product_iqrCEN",
     "highlighted_section_8DTzni",
     "slider_cards_6ciA3G",
     "section_images_link_hGgn7V",
-    "highlighted_section_6tn9tz"
+    "highlighted_section_6tn9tz",
+    "testimonials_PRGmmP",
+    "newsletter_modal_xRB9nq"
   ]
 }
