@@ -1,90 +1,37 @@
 /* ============================================
-   Sticky Add to Cart - Mobile
+   Sticky Add to Cart - Estilos mínimos
    ============================================
 
-   Barra sticky que aparece quando usuário rola
-   para baixo (apenas mobile).
+   A maioria dos estilos usa TailwindCSS.
+   Este arquivo contém apenas animações e
+   estados dinâmicos que não podem ser feitos
+   com Tailwind.
    ============================================ */
 
-.sticky-add-to-cart {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  border-top: 1px solid #e5e7eb;
-  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
-  transform: translateY(100%);
-  transition: transform 0.3s ease-in-out;
-  z-index: 40;
-  padding: 0.75rem 0;
-}
-
-.sticky-add-to-cart.visible {
+/* Toggle de visibilidade (controlado por JS) */
+[data-sticky-atc].visible {
   transform: translateY(0);
 }
 
-.sticky-add-to-cart__inner {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.sticky-atc__button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #000;
-  color: white;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.25rem;
-  font-weight: 500;
-  transition: all 0.15s ease;
-  border: none;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  min-width: 70px;
-}
-
-.sticky-atc__button:hover:not(:disabled) {
-  background: #333;
-}
-
-.sticky-atc__button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-
-.sticky-atc__button:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
 /* Loading state */
-.sticky-atc__button.loading {
+[data-sticky-add-to-cart].loading {
   pointer-events: none;
   opacity: 0.7;
 }
 
-.sticky-atc__button.loading::after {
+[data-sticky-add-to-cart].loading::after {
   content: '';
   width: 14px;
   height: 14px;
-  border: 2px solid white;
+  border: 2px solid currentColor;
   border-top-color: transparent;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
+  margin-left: 0.5rem;
 }
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-/* Desktop: esconde */
-@media (min-width: 1024px) {
-  .sticky-add-to-cart {
-    display: none;
   }
 }

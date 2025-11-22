@@ -2,8 +2,10 @@
 {% assign media_position = section.settings.media_position %}
 
 <div class="page-width">
-  {% comment %} {%- comment -%} Breadcrumb {%- endcomment -%}
-  {% render 'breadcrumb' %} {% endcomment %}
+  {% comment %}
+    {%- comment -%} Breadcrumb {%- endcomment -%}
+    {% render 'breadcrumb' %}
+  {% endcomment %}
 
   <div
     product-context
@@ -16,12 +18,12 @@
     </div>
     <div class="{% if media_size == 'medium' or media_size == 'large' %} lg:flex-1 {% elsif media_size == 'small' %} lg:flex-[2] {% endif %}">
       {% render 'main-product-right', blocks: section.blocks %}
+
+      {%- comment -%} Sticky Add to Cart (Mobile) {%- endcomment -%}
+      {% render 'sticky-add-to-cart', product: product, section: section %}
     </div>
   </div>
 </div>
-{% comment %} 
-{%- comment -%} Sticky Add to Cart (Mobile) {%- endcomment -%}
-{% render 'sticky-add-to-cart', product: product %} {% endcomment %}
 
 {%- comment -%} SEO: Product Schema & Breadcrumb {%- endcomment -%}
 {% render 'schema-product', product: product %}
@@ -35,7 +37,7 @@
   "settings": [
     {
       "type": "header",
-      "content": "Mídia (Imagens do produto)",
+      "content": "Mídia (Imagens do produto)"
     },
     {
       "type": "select",
@@ -317,13 +319,13 @@
           "type": "checkbox",
           "id": "show_title",
           "label": "Mostrar título?",
-          "default":true
+          "default": true
         },
         {
           "type": "text",
           "id": "title_text",
           "label": "Título",
-          "default": "Descrição",
+          "default": "Descrição"
         }
       ]
     },

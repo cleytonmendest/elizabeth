@@ -213,6 +213,10 @@ class AddToCart extends HTMLElement {
 
         this.variantChangeHandler = this._onVariantChange.bind(this)
         this.quantityChangeHandler = this._onQuantityChange.bind(this);
+        this.resizeHandler = this._onResize.bind(this);
+
+        // MediaQuery para detectar mudanças de tamanho de tela
+        this.mediaQuery = window.matchMedia('(max-width: 600px)');
     }
 
     connectedCallback() {
@@ -227,13 +231,42 @@ class AddToCart extends HTMLElement {
         } else {
             console.warn('AddToCart: product-context não encontrado.');
         }
+
+        // Listener para mudanças de tamanho de tela
+        if (this.mediaQuery.addEventListener) {
+            this.mediaQuery.addEventListener('change', this.resizeHandler);
+        } else {
+            // Fallback para navegadores antigos
+            this.mediaQuery.addListener(this.resizeHandler);
+        }
     }
 
     disconnectedCallback() {
         if (this.form) {
             this.form.removeEventListener('submit', this.submitHandler);
         }
-        this.productContext.removeEventListener('variant:change', this._onVariantChange.bind(this));
+        if (this.productContext) {
+            this.productContext.removeEventListener('variant:change', this._onVariantChange.bind(this));
+        }
+
+        // Remove listener de resize
+        if (this.mediaQuery.removeEventListener) {
+            this.mediaQuery.removeEventListener('change', this.resizeHandler);
+        } else {
+            this.mediaQuery.removeListener(this.resizeHandler);
+        }
+    }
+
+    _onResize() {
+        // Quando o tamanho da tela muda, atualiza o texto do botão
+        // Busca a variante atual do input hidden
+        const variantId = this.hiddenInput?.value;
+        if (variantId && this.button && !this.button.disabled) {
+            const isMobile = this.mediaQuery.matches;
+            const textDesktop = this.button.dataset.textDesktop || 'ADICIONAR AO CARRINHO';
+            const textMobile = this.button.dataset.textMobile || 'Adicionar';
+            this.button.textContent = isMobile ? textMobile : textDesktop;
+        }
     }
 
     _onVariantChange(event) {
@@ -257,10 +290,14 @@ class AddToCart extends HTMLElement {
 
         // Atualiza o Botão
         if (this.button) {
+            const isMobile = window.matchMedia('(max-width: 600px)').matches;
+            const textDesktop = this.button.dataset.textDesktop || 'ADICIONAR AO CARRINHO';
+            const textMobile = this.button.dataset.textMobile || 'Adicionar';
+
             if (variant && variant.available) {
                 // Variante existe e está disponível
                 this.button.disabled = false;
-                this.button.textContent = 'ADICIONAR AO CARRINHO';
+                this.button.textContent = isMobile ? textMobile : textDesktop;
             } else {
                 this.button.disabled = true;
                 this.button.textContent = variant ? 'ESGOTADO' : 'INDISPONÍVEL';
