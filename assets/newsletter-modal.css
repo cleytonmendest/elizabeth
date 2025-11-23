@@ -1,0 +1,21 @@
+/* ============================================
+   Newsletter Modal - Estilos complementares
+   ============================================
+
+   Classes para feedback que serão customizáveis
+   com color-scheme no futuro
+   ============================================ */
+
+/* Mensagens de feedback */
+.feedback-success {
+  color: #059669; /* green-600 temporário */
+}
+
+.feedback-error {
+  color: #dc2626; /* red-600 temporário */
+}
+
+/* Animações do modal - fallback caso Tailwind não carregue */
+.newsletter-modal-content {
+  transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+}

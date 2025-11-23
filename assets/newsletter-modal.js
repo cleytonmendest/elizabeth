@@ -102,10 +102,10 @@ class NewsletterModal extends HTMLElement {
         this.classList.add('flex');
         document.body.style.overflow = 'hidden';
 
-        // Animação de entrada
+        // Animação de entrada usando classes
         setTimeout(() => {
-            this.modalContent.style.transform = 'scale(1)';
-            this.modalContent.style.opacity = '1';
+            this.modalContent.classList.remove('opacity-0', 'scale-95');
+            this.modalContent.classList.add('opacity-100', 'scale-100');
         }, 10);
 
         // Remove listeners de trigger após mostrar
@@ -121,9 +121,9 @@ class NewsletterModal extends HTMLElement {
             this._setModalCookie();
         }
 
-        // Animação de saída
-        this.modalContent.style.transform = 'scale(0.95)';
-        this.modalContent.style.opacity = '0';
+        // Animação de saída usando classes
+        this.modalContent.classList.remove('opacity-100', 'scale-100');
+        this.modalContent.classList.add('opacity-0', 'scale-95');
 
         setTimeout(() => {
             this.classList.add('hidden');
@@ -208,11 +208,13 @@ class NewsletterModal extends HTMLElement {
     }
 
     _showFeedback(message, type) {
-        const messageElement = this.feedbackMessage.querySelector('p');
+        const messageElement = this.feedbackMessage.querySelector('.feedback-text');
 
         if (messageElement) {
             messageElement.textContent = message;
-            messageElement.className = `text-sm text-center ${type === 'success' ? 'text-green-600' : 'text-red-600'}`;
+            // Remove classes anteriores e adiciona nova
+            messageElement.classList.remove('feedback-success', 'feedback-error');
+            messageElement.classList.add(`feedback-${type}`);
         }
 
         this.feedbackMessage.classList.remove('hidden');

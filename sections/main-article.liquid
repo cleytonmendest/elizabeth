@@ -2,7 +2,7 @@
   {%- comment -%} Hero Image {%- endcomment -%}
   {% if article.image and section.settings.show_featured_image %}
     <div class="w-full {% if section.settings.hero_fullwidth %}{% else %}page-width{% endif %} !mb-8 !lg:mb-12">
-      <div class="relative overflow-hidden {% unless section.settings.hero_fullwidth %}rounded-2xl{% endunless %} aspect-[21/9] bg-gray-100">
+      <div class="relative overflow-hidden {% unless section.settings.hero_fullwidth %}rounded-lg{% endunless %} aspect-[21/9] bg-gray-100">
         <img
           src="{{ article.image | image_url: width: 1920 }}"
           srcset="{{ article.image | image_url: width: 800 }} 800w,

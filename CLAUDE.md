@@ -123,9 +123,78 @@ Sections like `slider-image` include separate images for desktop/tablet/mobile w
 5. **Shopify Routes**: Access cart/search URLs via `window.routes` object, never hardcode
 6. **Asset Loading**: All JS loaded with `defer` attribute in `theme.liquid` footer
 
+## Design Standards
+
+### Border Radius (Arredondamentos)
+
+**Padrão definido:** `rounded-lg` (8px) ou sem arredondamento
+
+**Regras:**
+- ✅ Botões: `rounded-lg`
+- ✅ Cards: `rounded-lg`
+- ✅ Modais: `rounded-lg`
+- ✅ Inputs: `rounded-lg`
+- ✅ Imagens (quando aplicável): `rounded-lg`
+- ✅ Exceções permitidas:
+  - `rounded-full`: Avatares, botões circulares de ícone
+  - `rounded-none`: Elementos que não devem ter arredondamento
+
+**IMPORTANTE:** Todos os layouts devem seguir o mesmo nível de arredondamento padrão (`rounded-lg` ou nenhum). Não use `rounded`, `rounded-md`, `rounded-xl`, ou `rounded-2xl` sem justificativa.
+
+**Roadmap:** Centralização futura via Tailwind config com classes `rounded-theme`, `rounded-theme-sm`, `rounded-theme-lg`.
+
+### Color Scheme
+
+**Status atual:** Cores hardcoded em alguns arquivos (a ser migrado)
+
+**Roadmap:** Sistema de design tokens centralizado com CSS variables + Tailwind config. Todas as cores serão configuráveis globalmente via `assets/color-scheme.css` para facilitar mudanças de tema e suporte a dark mode.
+
+**Prioridade:** Alta - próxima implementação
+
 ## Shopify CLI Integration
 
 Theme uses standard Shopify CLI commands. Configuration stored in `.shopify/` directory (gitignored except metafields).
+
+## ROADMAP Maintenance
+
+**Location:** `docs/ROADMAP.md`
+
+### Format Rules
+
+1. **Keep it concise** - Maximum 150 lines total
+2. **Priority ordering** - Most important tasks at the top
+3. **One-line completions** - Completed items get ONE line in the "Concluído" section at the bottom
+4. **10-line maximum** - Tools/features can have up to 10 lines of detail
+5. **Always update** - When a feature is completed, move it to the bottom and update the top with next priorities
+
+### Update Workflow
+
+**When completing a task:**
+1. Move completed item to `## ✅ CONCLUÍDO (Resumo)` section at bottom
+2. Summarize in ONE line with date (e.g., "Sticky ATC melhorado (2025-01-22)")
+3. Remove from top priority section
+4. Update version number in header
+5. Update "Atualizado" date
+
+**When planning new features:**
+1. Add to appropriate priority section (🔴 Alta, 🟡 Média)
+2. Include: Status, Esforço (hours), Prioridade
+3. Keep description under 10 lines
+4. Order by importance (most important first)
+
+### Example Format
+
+```markdown
+### 1. Feature Name
+**Status:** Planejado | **Esforço:** 12-16h | **Prioridade:** 🔴 Alta
+
+Brief description (1 line).
+- Key point 1
+- Key point 2
+- Key point 3
+```
+
+**IMPORTANT:** The ROADMAP must always reflect the current state of the project. Never let it become outdated.
 
 ## Theme Context
 
