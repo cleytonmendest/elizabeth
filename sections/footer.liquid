@@ -1,4 +1,4 @@
-<div>
+<div class="color-{{ section.settings.color_scheme }}">
   <div>
     {% if section.settings.active_newsletter %}
       {% render 'newsletter', text: section.settings.newsletter_text %}
@@ -9,12 +9,12 @@
       {% if block.type == 'links' %}
         <!-- Cada bloco de links_column gera uma coluna -->
         <div class="flex-1 flex flex-col gap-8">
-          <h3 class="text-sm text-black font-normal">{{ block.settings.sublink_title }}</h3>
+          <h3 class="text-sm color-text font-normal">{{ block.settings.sublink_title }}</h3>
           {% if block.settings.linklist %}
             <ul>
               {% for link in block.settings.linklist.links %}
                 <li>
-                  <a class="text-sm text-[#505050]" href="{{ link.url }}">{{ link.title }}</a>
+                  <a class="text-sm color-text-muted hover:opacity-80" href="{{ link.url }}">{{ link.title }}</a>
                 </li>
               {% endfor %}
             </ul>
@@ -24,7 +24,7 @@
       {% elsif block.type == 'extra' %}
         <div class="flex-1 footer-extra flex flex-col gap-8">
           <!-- Formas de Pagamento -->
-          <h3 class="text-sm text-black font-normal">{{ block.settings.title_payments }}</h3>
+          <h3 class="text-sm color-text font-normal">{{ block.settings.title_payments }}</h3>
           <div class="payment-methods flex flex-wrap gap-4">
             {% if block.settings.pay_visa %}
               {% render 'icon-pay-visa' %}
@@ -69,7 +69,7 @@
 
           <!-- Redes Sociais -->
           {% if block.settings.active_social_media %}
-            <h3 class="text-sm text-black font-normal">{{ block.settings.title_social_media }}</h3>
+            <h3 class="text-sm color-text font-normal">{{ block.settings.title_social_media }}</h3>
             <div class="social-links flex gap-2">
               {% if settings.social_instagram_link != blank %}
                 <a href="{{ settings.social_instagram_link }}" target="_blank">
@@ -99,6 +99,13 @@
   "name": "Footer",
   "class": "footer",
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Esquema de cores",
+      "default": "scheme-1",
+      "info": "Esquema de cores para o footer"
+    },
     {
       "type": "header",
       "content": "Newsletter",

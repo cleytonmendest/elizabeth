@@ -6,9 +6,6 @@
 {%- liquid
   assign heading = section.settings.heading
   assign subheading = section.settings.subheading
-  assign bg_color = section.settings.background_color
-  assign text_color = section.settings.text_color
-  assign star_color = section.settings.star_color
   assign autoplay = section.settings.autoplay
   assign autoplay_speed = section.settings.autoplay_speed
   assign show_navigation = section.settings.show_navigation
@@ -17,8 +14,7 @@
 {{ 'testimonials.css' | asset_url | stylesheet_tag }}
 
 <section
-  class="testimonials-section py-16 md:py-20 overflow-hidden"
-  style="background-color: {{ bg_color }}; color: {{ text_color }};"
+  class="testimonials-section color-{{ section.settings.color_scheme }} color-background color-text py-16 md:py-20 overflow-hidden"
 >
   <div class="container mx-auto px-4 md:px-6 lg:px-8">
 
@@ -60,9 +56,7 @@
               {% if block.type == 'testimonial' %}
                 <div class="item px-4" {{ block.shopify_attributes }}>
                   {% render 'testimonial-card',
-                    block: block,
-                    text_color: text_color,
-                    star_color: star_color
+                    block: block
                   %}
                 </div>
               {% endif %}
@@ -118,6 +112,13 @@
   "class": "section-testimonials",
   "settings": [
     {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Esquema de cores",
+      "default": "scheme-1",
+      "info": "Esquema de cores base para depoimentos"
+    },
+    {
       "type": "header",
       "content": "Conteúdo"
     },
@@ -132,28 +133,6 @@
       "id": "subheading",
       "label": "Subtítulo",
       "default": "Confira a experiência de quem já comprou com a gente"
-    },
-    {
-      "type": "header",
-      "content": "Cores"
-    },
-    {
-      "type": "color",
-      "id": "background_color",
-      "label": "Cor de Fundo",
-      "default": "#f9fafb"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Cor do Texto",
-      "default": "#111827"
-    },
-    {
-      "type": "color",
-      "id": "star_color",
-      "label": "Cor das Estrelas",
-      "default": "#fbbf24"
     },
     {
       "type": "header",

@@ -69,49 +69,98 @@
     "name": "Cores",
     "settings": [
       {
+        "type": "paragraph",
+        "content": "Configure esquemas de cores reutilizáveis. Cada seção pode escolher qual esquema usar."
+      },
+      {
         "type": "color_scheme_group",
         "id": "color_schemes",
         "definition": [
           {
             "type": "color",
             "id": "background",
-            "label": "Cor de background",
+            "label": "Fundo",
             "default": "#FFFFFF"
           },
           {
             "type": "color_background",
             "id": "background_gradient",
-            "label": "Cor de Background gradiente"
+            "label": "Gradiente de fundo",
+            "info": "Sobrepõe a cor de fundo se definido"
           },
           {
             "type": "color",
             "id": "text",
-            "label": "Cor de texto",
+            "label": "Texto",
             "default": "#121212"
           },
           {
             "type": "color",
             "id": "button",
-            "label": "Cor de botão",
+            "label": "Botão primário",
             "default": "#121212"
           },
           {
             "type": "color",
             "id": "button_label",
-            "label": "Cor de texto de botão",
+            "label": "Texto do botão primário",
             "default": "#FFFFFF"
           },
           {
             "type": "color",
             "id": "secondary_button_label",
-            "label": "Cor de texto de botão secundário",
+            "label": "Texto do botão secundário",
             "default": "#121212"
           },
           {
             "type": "color",
+            "id": "border",
+            "label": "Bordas",
+            "default": "#E5E7EB"
+          },
+          {
+            "type": "color",
             "id": "shadow",
-            "label": "Cor de Sombra",
+            "label": "Sombras",
             "default": "#121212"
+          },
+          {
+            "type": "header",
+            "content": "Badges e Destaques"
+          },
+          {
+            "type": "color",
+            "id": "badge_background",
+            "label": "Fundo de badge",
+            "default": "#DC2626"
+          },
+          {
+            "type": "color",
+            "id": "badge_text",
+            "label": "Texto de badge",
+            "default": "#FFFFFF"
+          },
+          {
+            "type": "header",
+            "content": "Feedback"
+          },
+          {
+            "type": "color",
+            "id": "success",
+            "label": "Sucesso",
+            "default": "#059669"
+          },
+          {
+            "type": "color",
+            "id": "error",
+            "label": "Erro",
+            "default": "#DC2626"
+          },
+          {
+            "type": "color",
+            "id": "warning",
+            "label": "Alerta",
+            "default": "#F59E0B"
           }
         ],
         "role": {
@@ -127,7 +176,7 @@
           "primary_button_border": "button",
           "secondary_button": "background",
           "on_secondary_button": "secondary_button_label",
-          "secondary_button_border": "secondary_button_label"
+          "secondary_button_border": "border"
         }
       }
     ]

@@ -1,7 +1,7 @@
 {% assign sort_by = collection.sort_by | default: collection.default_sort_by %}
 {%- assign products_per_page = section.settings.products_per_page | default: 12 -%}
 
-<div class="page-width py-8">
+<div class="page-width py-8 color-{{ section.settings.color_scheme }}">
   {%- if collection.image and section.settings.show_collection_image -%}
     <div class="collection-hero mb-8 relative h-64 md:h-96 rounded-lg overflow-hidden">
       <img
@@ -193,6 +193,13 @@
   "name": "Página de Coleção",
   "class": "section-collection",
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Esquema de cores",
+      "default": "scheme-1",
+      "info": "Esquema de cores para a página de coleção"
+    },
     {
       "type": "header",
       "content": "Layout"

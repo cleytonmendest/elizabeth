@@ -10,23 +10,23 @@
 {{ 'newsletter-modal.css' | asset_url | stylesheet_tag }}
 
 <newsletter-modal
-  class="newsletter-modal fixed inset-0 z-[9999] hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+  class="newsletter-modal fixed inset-0 z-[9999] hidden items-center justify-center color-overlay-dark backdrop-blur-sm"
   data-delay="{{ section.settings.delay_seconds }}"
   data-scroll-trigger="{{ section.settings.scroll_percentage }}"
   data-enable-exit-intent="{{ section.settings.enable_exit_intent }}"
   data-cookie-days="{{ section.settings.cookie_days }}"
 >
   <div
-    class="newsletter-modal-content bg-white rounded-lg shadow-2xl w-full mx-4 relative overflow-hidden transition-all duration-300 opacity-0 scale-95"
+    class="newsletter-modal-content color-{{ section.settings.color_scheme }} color-background rounded-lg color-shadow-xl w-full mx-4 relative overflow-hidden transition-all duration-300 opacity-0 scale-95"
     style="max-width: {{ section.settings.modalWidth }}px;"
   >
     {%- comment -%} Botão Fechar {%- endcomment -%}
     <button
       type="button"
-      class="close-modal absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors z-10"
+      class="close-modal absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 hover:bg-opacity-10 transition-colors z-10"
       aria-label="Fechar modal"
     >
-      <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-5 h-5 color-icon-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
       </svg>
     </button>
@@ -45,20 +45,20 @@
         </div>
       {%- else -%}
         <div class="mb-6 flex justify-center">
-          <svg class="w-16 h-16 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-16 h-16 color-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
           </svg>
         </div>
       {%- endif -%}
 
       {%- comment -%} Título {%- endcomment -%}
-      <h2 class="text-2xl md:text-3xl font-bold text-center mb-3">
+      <h2 class="text-2xl md:text-3xl font-bold text-center mb-3 color-text">
         {{ section.settings.modal_title }}
       </h2>
 
       {%- comment -%} Texto {%- endcomment -%}
       {%- if section.settings.modal_text != blank -%}
-        <div class="text-center text-gray-600 mb-6">
+        <div class="text-center color-text-muted mb-6">
           {{ section.settings.modal_text }}
         </div>
       {%- endif -%}
@@ -77,14 +77,14 @@
             id="newsletter-email"
             placeholder="Seu melhor e-mail"
             required
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+            class="color-input w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all"
           >
         </div>
 
         {%- comment -%} Botão Submit {%- endcomment -%}
         <button
           type="submit"
-          class="submit-btn w-full bg-black text-white font-semibold py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="submit-btn color-button w-full font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span class="submit-text">{{ section.settings.button_text }}</span>
           <span class="loading-spinner hidden">
@@ -104,8 +104,8 @@
       {%- comment -%} Checkbox "Não mostrar novamente" {%- endcomment -%}
       {%- if section.settings.show_dont_show_again -%}
         <div class="mt-6 text-center">
-          <label class="inline-flex items-center cursor-pointer text-sm text-gray-600 hover:text-gray-900">
-            <input type="checkbox" class="dont-show-again mr-2 rounded border-gray-300 text-black focus:ring-black">
+          <label class="inline-flex items-center cursor-pointer text-sm color-text-muted hover:opacity-80">
+            <input type="checkbox" class="dont-show-again mr-2 rounded color-border">
             Não mostrar novamente
           </label>
         </div>
@@ -137,6 +137,13 @@
       "label": "Ativar modal",
       "default": true,
       "info": "Ative ou desative o modal de newsletter globalmente"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Esquema de cores",
+      "default": "scheme-1",
+      "info": "Escolha o esquema de cores para o modal"
     },
     {
       "type": "number",

@@ -4,8 +4,7 @@
   data-duration="{{ section.settings.duration }}"
   data-gap="{{ section.settings.gap }}"
   data-pauseHover="{{ section.settings.pause_hover }}"
-  style="background-color: {{ section.settings.bg_color }}; color: {{ section.settings.text_color }};"
-  class="w-full overflow-hidden py-1 lg:py-2 flex"
+  class="color-{{ section.settings.color_scheme }} color-background color-text w-full overflow-hidden py-1 lg:py-2 flex"
 >
   <div class="announcement-content flex flex-nowrap whitespace-nowrap announcement-inner items-center">
     {%- for block in section.blocks -%}
@@ -22,6 +21,13 @@
   "name": "Barra de Anuncios",
   "max_blocks": 15,
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Esquema de cores",
+      "default": "scheme-1",
+      "info": "Esquema de cores base para a barra de anúncios"
+    },
     {
       "type": "range",
       "id": "duration",
@@ -56,18 +62,6 @@
       "id": "pause_hover",
       "label": "Pausar ao passar o mouse?",
       "default": false
-    },
-    {
-      "type": "color",
-      "id": "bg_color",
-      "label": "Cor de fundo",
-      "default": "#000000"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Cor do texto",
-      "default": "#ffffff"
     }
   ],
   "blocks": [

@@ -37,8 +37,8 @@
             </div>
             {% if cart.total_discount > 0 %}
               <div class="flex justify-between text-sm">
-                <div class="text-gray-600">Descontos:</div>
-                <div class="discounts font-medium text-green-600">
+                <div class="color-text-muted">Descontos:</div>
+                <div class="discounts font-medium color-success">
                   -{{ cart.total_discount | money }}
                 </div>
               </div>
@@ -51,7 +51,7 @@
             </div>
           </div>
           <button
-            class="w-full h-10 flex items-center justify-center border border-orange-500 mt-4 text-orange-500 font-bold hover:bg-orange-50 transition-colors rounded"
+            class="color-button-secondary w-full h-10 flex items-center justify-center mt-4 font-bold transition-colors rounded"
             type="button"
             onclick="this.closest('cart-drawer').close()"
           >
@@ -59,7 +59,7 @@
           </button>
           <a
             href="/checkout"
-            class="flex cursor-pointer h-10 w-full items-center justify-center mt-4 bg-orange-500 text-white font-bold hover:bg-orange-600 transition-colors rounded"
+            class="color-button flex cursor-pointer h-10 w-full items-center justify-center mt-4 font-bold transition-colors rounded hover:opacity-90"
             >FINALIZAR PEDIDO</a
           >
         </div>

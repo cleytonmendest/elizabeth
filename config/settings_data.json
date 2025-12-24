@@ -9,6 +9,42 @@
  */
 {
   "current": {
+    "color_schemes": {
+      "scheme-1": {
+        "settings": {
+          "background": "#FFFFFF",
+          "background_gradient": "",
+          "text": "#121212",
+          "button": "#121212",
+          "button_label": "#FFFFFF",
+          "secondary_button_label": "#121212",
+          "border": "#E5E7EB",
+          "shadow": "#121212",
+          "badge_background": "#DC2626",
+          "badge_text": "#FFFFFF",
+          "success": "#059669",
+          "error": "#DC2626",
+          "warning": "#F59E0B"
+        }
+      },
+      "scheme-2": {
+        "settings": {
+          "background": "#121212",
+          "background_gradient": "",
+          "text": "#FFFFFF",
+          "button": "#FFFFFF",
+          "button_label": "#121212",
+          "secondary_button_label": "#FFFFFF",
+          "border": "#2D2D2D",
+          "shadow": "#000000",
+          "badge_background": "#DC2626",
+          "badge_text": "#FFFFFF",
+          "success": "#10B981",
+          "error": "#EF4444",
+          "warning": "#FBBF24"
+        }
+      },
+    },
     "logo": "shopify://shop_images/logo.png",
     "logo_width": 200,
     "favicon": "shopify://shop_images/favicon.png",

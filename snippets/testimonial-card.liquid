@@ -4,8 +4,6 @@
 
   Parâmetros:
   - block: bloco com configurações (obrigatório)
-  - text_color: cor do texto (opcional)
-  - star_color: cor das estrelas (opcional)
 {%- endcomment -%}
 
 {%- liquid
@@ -15,15 +13,13 @@
   assign rating = block.settings.rating | default: 5
   assign testimonial_text = block.settings.testimonial_text
   assign product_purchased = block.settings.product_purchased
-  assign text_color = text_color | default: '#111827'
-  assign star_color = star_color | default: '#fbbf24'
 -%}
 
-<div class="bg-white rounded-lg shadow-lg p-6 md:p-8 h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+<div class="color-background color-shadow-lg rounded-lg p-6 md:p-8 h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
 
   {%- comment -%} Aspas decorativas {%- endcomment -%}
   <div class="mb-4">
-    <svg class="w-10 h-10 opacity-20" fill="currentColor" viewBox="0 0 24 24" style="color: {{ text_color }};">
+    <svg class="w-10 h-10 opacity-20 color-icon" fill="currentColor" viewBox="0 0 24 24">
       <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
     </svg>
   </div>
@@ -31,7 +27,7 @@
   {%- comment -%} Rating (Estrelas) {%- endcomment -%}
   <div class="flex gap-1 mb-4">
     {%- for i in (1..5) -%}
-      <svg class="w-5 h-5" fill="{% if i <= rating %}{{ star_color }}{% else %}#e5e7eb{% endif %}" viewBox="0 0 24 24">
+      <svg class="w-5 h-5 {% if i <= rating %}color-warning{% else %}color-text-light{% endif %}" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
       </svg>
     {%- endfor -%}
@@ -39,15 +35,15 @@
 
   {%- comment -%} Texto do Depoimento {%- endcomment -%}
   <div class="flex-1 mb-6">
-    <p class="text-base md:text-lg leading-relaxed" style="color: {{ text_color }};">
+    <p class="text-base md:text-lg leading-relaxed color-text">
       "{{ testimonial_text }}"
     </p>
   </div>
 
   {%- comment -%} Produto comprado (opcional) {%- endcomment -%}
   {% if product_purchased != blank %}
-    <div class="mb-4 pb-4 border-b border-gray-100">
-      <p class="text-sm text-gray-500 flex items-center gap-2">
+    <div class="mb-4 pb-4 color-border border-b">
+      <p class="text-sm color-text-muted flex items-center gap-2">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
         </svg>
@@ -64,13 +60,13 @@
         <img
           src="{{ customer_image | image_url: width: 120 }}"
           alt="{{ customer_name | escape }}"
-          class="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-gray-100"
+          class="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover color-border border-2"
           loading="lazy"
           decoding="async"
         >
       {% else %}
         {%- comment -%} Avatar placeholder com gradiente {%- endcomment -%}
-        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center color-border border-2">
           <span class="text-white font-bold text-lg md:text-xl">
             {{ customer_name | slice: 0 | upcase }}
           </span>
@@ -80,11 +76,11 @@
 
     {%- comment -%} Nome e Localização {%- endcomment -%}
     <div class="flex-1 min-w-0">
-      <p class="font-semibold text-base md:text-lg truncate" style="color: {{ text_color }};">
+      <p class="font-semibold text-base md:text-lg truncate color-text">
         {{ customer_name }}
       </p>
       {% if customer_location != blank %}
-        <p class="text-sm text-gray-500 flex items-center gap-1 truncate">
+        <p class="text-sm color-text-muted flex items-center gap-1 truncate">
           <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -96,7 +92,7 @@
 
     {%- comment -%} Badge "Compra Verificada" {%- endcomment -%}
     <div class="flex-shrink-0" title="Compra Verificada">
-      <svg class="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+      <svg class="w-6 h-6 color-success" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
       </svg>
     </div>

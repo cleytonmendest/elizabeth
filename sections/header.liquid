@@ -70,11 +70,11 @@
   }
 </style>
 
-<div class="w-full">
+<div class="w-full color-{{ section.settings.color_scheme }}">
   <main-header class="w-full block relative z-10" data-type="{{ header_type }}">
     <div
       id="main-header-container"
-      class="shadow-[0_0_12px_rgba(0,0,0,0.15)] w-full transition-all duration-300 bg-[--bg-header] {% if transparent == true and template.name == 'index' %}lg:bg-transparent {% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %} {% if header_type == "fixed-transparent" %} lg:hover:bg-[--bg-header] {% endif %} group group-[.is-scrolling]"
+      class="color-shadow color-background w-full transition-all duration-300 {% if transparent == true and template.name == 'index' %}lg:bg-transparent {% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %} {% if header_type == "fixed-transparent" %} lg:hover:color-background {% endif %} group group-[.is-scrolling]"
     >
       <div class="!py-3 page-width w-full">
         <div class="flex justify-between">
@@ -113,6 +113,13 @@
   "tag": "header",
   "class": "header",
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Esquema de cores",
+      "default": "scheme-1",
+      "info": "Esquema de cores base para o header"
+    },
     {
       "type": "link_list",
       "id": "menu",

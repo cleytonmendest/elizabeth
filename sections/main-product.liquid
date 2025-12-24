@@ -1,7 +1,7 @@
 {% assign media_size = section.settings.media_size %}
 {% assign media_position = section.settings.media_position %}
 
-<div class="page-width">
+<div class="page-width color-{{ section.settings.color_scheme }}">
   {% comment %}
     {%- comment -%} Breadcrumb {%- endcomment -%}
     {% render 'breadcrumb' %}
@@ -35,6 +35,13 @@
   "class": "section",
   "tag": "section",
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Esquema de cores",
+      "default": "scheme-1",
+      "info": "Esquema de cores para a página de produto"
+    },
     {
       "type": "header",
       "content": "Mídia (Imagens do produto)"

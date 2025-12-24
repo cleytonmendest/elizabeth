@@ -23,8 +23,8 @@
     {
       "key": "queries",
       "namespace": "shopify--discovery--product_search_boost",
-      "name": "Pesquisar impulsos de produtos",
-      "description": "Lista de consultas de pesquisa em que um produto tem melhor classificação nos resultados de pesquisa",
+      "name": "Impulsionamentos de produtos na pesquisa",
+      "description": "Lista de consultas de pesquisa para as quais um produto obtém uma classificação mais alta nos resultados da pesquisa",
       "type": {
         "name": "list.single_line_text_field",
         "category": "TEXT"
@@ -44,7 +44,7 @@
       "key": "related_products_display",
       "namespace": "shopify--discovery--product_recommendation",
       "name": "Configurações de produtos relacionados",
-      "description": "Determina como produtos relacionados são exibidos com recomendações algorítmicas do produto",
+      "description": "Determina como os produtos relacionados são exibidos junto com as recomendações de produtos algorítmicas",
       "type": {
         "name": "single_line_text_field",
         "category": "TEXT"

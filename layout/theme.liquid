@@ -42,6 +42,7 @@
 
     <!-- CSS Imports -->
     {{ 'application.css' | asset_url | stylesheet_tag }}
+    {{ 'color-scheme.css' | asset_url | stylesheet_tag }}
     {{ 'owl.carousel.min.css' | asset_url | stylesheet_tag }}
     {{ 'owl.theme.default.min.css' | asset_url | stylesheet_tag }}
     {{ 'carousel-style.css' | asset_url | stylesheet_tag }}
@@ -57,55 +58,100 @@
     {% endif %}
 
     {% style %}
-      {{ settings.type_body_font | font_face: font_display: 'swap' }}
-      {{ body_font_bold | font_face: font_display: 'swap' }}
-      {{ body_font_italic | font_face: font_display: 'swap' }}
-      {{ body_font_bold_italic | font_face: font_display: 'swap' }}
-      {{ settings.type_header_font | font_face: font_display: 'swap' }}
+        {{ settings.type_body_font | font_face: font_display: 'swap' }}
+        {{ body_font_bold | font_face: font_display: 'swap' }}
+        {{ body_font_italic | font_face: font_display: 'swap' }}
+        {{ body_font_bold_italic | font_face: font_display: 'swap' }}
+        {{ settings.type_header_font | font_face: font_display: 'swap' }}
 
-      :root {
-        {%- if settings.custom_font_body == blank and settings.custom_font_body_name == blank -%}
-          --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
-        {% else %}
-          --font-body-family: {{ settings.custom_font_body_name }}, {{ settings.type_body_font.fallback_families }};
-        {%- endif -%}
+        :root {
+          {%- if settings.custom_font_body == blank and settings.custom_font_body_name == blank -%}
+            --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+          {% else %}
+            --font-body-family: {{ settings.custom_font_body_name }}, {{ settings.type_body_font.fallback_families }};
+          {%- endif -%}
 
-        {%- if settings.custom_font_head == blank and settings.custom_font_head_name == blank -%}
-          --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
-        {% else %}
-          --font-body-family: {{ settings.custom_font_head_name }}, {{ settings.type_header_font.fallback_families }};
-        {%- endif -%}
+          {%- if settings.custom_font_head == blank and settings.custom_font_head_name == blank -%}
+            --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+          {% else %}
+            --font-body-family: {{ settings.custom_font_head_name }}, {{ settings.type_header_font.fallback_families }};
+          {%- endif -%}
 
-        --page-width: {{ settings.page_width  }}px;
-      }
+          --page-width: {{ settings.page_width  }}px;
+        }
 
-      html {
-        box-sizing: border-box;
-        height: 100%;
-      }
+        html {
+          box-sizing: border-box;
+          height: 100%;
+        }
 
-      *{
-        text-decoration: none;
-      }
+        *{
+          text-decoration: none;
+        }
 
-      h1,h2,h3,h4,h5{
-        font-family: var(--font-heading-family);
-      }
+        h1,h2,h3,h4,h5{
+          font-family: var(--font-heading-family);
+        }
 
-      body {
-        margin: 0;
-        font-family: var(--font-body-family);
-      }
+        body {
+          margin: 0;
+          font-family: var(--font-body-family);
+        }
 
-      .page-width {
-        max-width: var(--page-width);
-        margin: 0 auto;
-        padding: 0 16px;
-      }
+        .page-width {
+          max-width: var(--page-width);
+          margin: 0 auto;
+          padding: 0 16px;
+        }
 
-      .overflow-hidden {
-        overflow: hidden;
-      }
+        .overflow-hidden {
+          overflow: hidden;
+        }
+      {% for scheme in settings.color_schemes -%}
+          {% assign scheme_classes = scheme_classes | append: ', .color-' | append: scheme.id %}
+          {% if forloop.index == 1 -%}
+            :root,
+          {%- endif %}
+          .color-{{ scheme.id }} {
+            --color-background: {{ scheme.settings.background.red }},{{ scheme.settings.background.green }},{{ scheme.settings.background.blue }};
+          {% if scheme.settings.background_gradient != empty %}
+            --gradient-background: {{ scheme.settings.background_gradient }};
+          {% else %}
+            --gradient-background: {{ scheme.settings.background }};
+          {% endif %}
+
+          {% liquid
+            assign background_color = scheme.settings.background
+            assign background_color_brightness = background_color | color_brightness
+            if background_color_brightness <= 26
+              assign background_color_contrast = background_color | color_lighten: 50
+            elsif background_color_brightness <= 65
+              assign background_color_contrast = background_color | color_lighten: 5
+            else
+              assign background_color_contrast = background_color | color_darken: 25
+            endif
+          %}
+
+          --color-foreground: {{ scheme.settings.text.red }},{{ scheme.settings.text.green }},{{ scheme.settings.text.blue }};
+          --color-text: {{ scheme.settings.text.red }},{{ scheme.settings.text.green }},{{ scheme.settings.text.blue }};
+          --color-background-contrast: {{ background_color_contrast.red }},{{ background_color_contrast.green }},{{ background_color_contrast.blue }};
+          --color-shadow: {{ scheme.settings.shadow.red }},{{ scheme.settings.shadow.green }},{{ scheme.settings.shadow.blue }};
+          --color-button: {{ scheme.settings.button.red }},{{ scheme.settings.button.green }},{{ scheme.settings.button.blue }};
+          --color-button-text: {{ scheme.settings.button_label.red }},{{ scheme.settings.button_label.green }},{{ scheme.settings.button_label.blue }};
+          --color-secondary-button: {{ scheme.settings.background.red }},{{ scheme.settings.background.green }},{{ scheme.settings.background.blue }};
+          --color-secondary-button-text: {{ scheme.settings.secondary_button_label.red }},{{ scheme.settings.secondary_button_label.green }},{{ scheme.settings.secondary_button_label.blue }};
+          --color-link: {{ scheme.settings.secondary_button_label.red }},{{ scheme.settings.secondary_button_label.green }},{{ scheme.settings.secondary_button_label.blue }};
+          --color-border: {{ scheme.settings.border.red }},{{ scheme.settings.border.green }},{{ scheme.settings.border.blue }};
+          --color-badge-foreground: {{ scheme.settings.badge_text.red }},{{ scheme.settings.badge_text.green }},{{ scheme.settings.badge_text.blue }};
+          --color-badge-background: {{ scheme.settings.badge_background.red }},{{ scheme.settings.badge_background.green }},{{ scheme.settings.badge_background.blue }};
+          --color-badge-text: {{ scheme.settings.badge_text.red }},{{ scheme.settings.badge_text.green }},{{ scheme.settings.badge_text.blue }};
+          --color-badge-border: {{ scheme.settings.badge_background.red }},{{ scheme.settings.badge_background.green }},{{ scheme.settings.badge_background.blue }};
+          --color-success: {{ scheme.settings.success.red }},{{ scheme.settings.success.green }},{{ scheme.settings.success.blue }};
+          --color-error: {{ scheme.settings.error.red }},{{ scheme.settings.error.green }},{{ scheme.settings.error.blue }};
+          --color-warning: {{ scheme.settings.warning.red }},{{ scheme.settings.warning.green }},{{ scheme.settings.warning.blue }};
+          --payment-terms-background-color: rgb({{ scheme.settings.background.rgb }});
+        }
+        {% endfor %}
     {% endstyle %}
 
     <script>
