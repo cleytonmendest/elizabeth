@@ -15,6 +15,18 @@
   ],
   "company": [],
   "company_location": [],
+  "customer": [
+    {
+      "key": "related_products",
+      "namespace": "shopify--discovery--product_recommendation",
+      "name": "Produtos relacionados",
+      "description": "Lista de produtos relacionados",
+      "type": {
+        "name": "list.product_reference",
+        "category": "REFERENCE"
+      }
+    }
+  ],
   "location": [],
   "market": [],
   "order": [],
