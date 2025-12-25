@@ -5,20 +5,20 @@
   <div class="cart-drawer">
     <div class="cart-inner pb-10 h-full w-full sm:w-[385px] bg-white z-10 relative">
       <div class="cart-header flex h-16 shadow-lg px-4 items-center">
-        <span class="flex-1 flex items-center justify-center font-bold text-lg">Carrinho</span>
+        <span class="flex-1 flex items-center justify-center font-bold text-lg">{{ 'cart.general.title' | t }}</span>
         <button
           class="w-5 hover:opacity-70 transition-opacity"
           type="button"
           onclick="this.closest('cart-drawer').close()"
-          aria-label="Fechar carrinho"
+          aria-label="{{ 'general.accessibility.close' | t }}"
         >
           {% render 'icon-close' %}
         </button>
       </div>
 
       <div id="cart-empty" class="h-full {% if cart == empty %}flex{% else %}hidden{% endif %} items-center justify-center flex-col">
-        <h3 class="text-2xl font-bold">Carrinho Vazio</h3>
-        <p class="text-base text-gray-700">Seu carrinho está vazio :(</p>
+        <h3 class="text-2xl font-bold">{{ 'cart.general.empty' | t }}</h3>
+        <p class="text-base text-gray-700">{{ 'cart.general.empty_text' | t }}</p>
       </div>
 
       <div id="cart-container" class="{% if cart == empty %}hidden{% else %}flex{% endif %} flex-col h-full">
@@ -30,21 +30,21 @@
         <div class="p-4 shadow-[0_0_12px_rgba(0,0,0,0.15)]">
           <div id="cart-summary-total" class="summary flex flex-col gap-2 mb-4">
             <div class="flex justify-between text-sm">
-              <div class="text-gray-600">Subtotal:</div>
+              <div class="text-gray-600">{{ 'cart.general.subtotal' | t }}</div>
               <div class="subtotal font-medium">
                 {{ cart.items_subtotal_price | money }}
               </div>
             </div>
             {% if cart.total_discount > 0 %}
               <div class="flex justify-between text-sm">
-                <div class="color-text-muted">Descontos:</div>
+                <div class="color-text-muted">{{ 'cart.general.discounts' | t }}</div>
                 <div class="discounts font-medium color-success">
                   -{{ cart.total_discount | money }}
                 </div>
               </div>
             {% endif %}
             <div class="flex justify-between pt-2 border-t border-gray-200">
-              <div class="font-semibold">Total:</div>
+              <div class="font-semibold">{{ 'cart.general.total' | t }}</div>
               <div class="total-price font-bold text-lg">
                 {{ cart.total_price | money }}
               </div>
@@ -55,12 +55,12 @@
             type="button"
             onclick="this.closest('cart-drawer').close()"
           >
-            CONTINUAR COMPRANDO
+            {{ 'cart.general.continue_shopping' | t }}
           </button>
           <a
             href="/checkout"
             class="color-button flex cursor-pointer h-10 w-full items-center justify-center mt-4 font-bold transition-colors rounded hover:opacity-90"
-            >FINALIZAR PEDIDO</a
+            >{{ 'cart.general.checkout' | t }}</a
           >
         </div>
       </div>
