@@ -1,1 +1,192 @@
-<div></div>
+{%- layout 'gift_card' -%}
+
+<style>
+  .gift-card-qr {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .gift-card-code {
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    letter-spacing: 0.2em;
+    user-select: all;
+  }
+
+  @media (max-width: 640px) {
+    .gift-card-code {
+      font-size: 1.125rem;
+    }
+  }
+
+  @media print {
+    @page {
+      margin: 1cm;
+    }
+
+    body {
+      background: white !important;
+    }
+
+    .gift-card-container {
+      box-shadow: none !important;
+      border: 1px solid #e5e7eb !important;
+    }
+  }
+</style>
+
+<div class="color-scheme-1 color-background min-h-screen">
+  {%- comment -%} Header Logo {%- endcomment -%}
+  <header class="no-print py-8 color-border border-b">
+    <div class="page-width flex justify-center">
+      {%- if settings.logo != blank -%}
+        <img
+          src="{{ settings.logo | image_url: width: 200 }}"
+          alt="{{ shop.name }}"
+          width="{{ settings.logo_width }}"
+          height="auto"
+          loading="eager"
+        >
+      {%- elsif settings.logo_svg != blank -%}
+        <div style="width: {{ settings.logo_width }}px;">
+          {{ settings.logo_svg }}
+        </div>
+      {%- else -%}
+        <h1 class="text-2xl font-bold color-text">{{ shop.name }}</h1>
+      {%- endif -%}
+    </div>
+  </header>
+
+  <main class="page-width py-8 md:py-12">
+    <div class="max-w-2xl mx-auto">
+      {%- comment -%} Gift Card Title {%- endcomment -%}
+      <div class="text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold color-text mb-2">
+          {{ 'gift_card.issued.subtext' | t }}
+        </h1>
+        <p class="text-lg color-text-muted">
+          {{ gift_card.initial_value | money_without_trailing_zeros }}
+        </p>
+      </div>
+
+      {%- comment -%} Gift Card Container {%- endcomment -%}
+      <div class="gift-card-container color-card color-shadow-lg rounded-lg p-6 md:p-8 mb-6">
+
+        {%- comment -%} QR Code {%- endcomment -%}
+        <div class="gift-card-qr mb-6">
+          <img
+            src="{{ 'gift-card/card.svg' | shopify_asset_url }}"
+            alt="{{ 'gift_card.issued.subtext' | t }}"
+            loading="eager"
+          />
+          {%- if gift_card.pass_url -%}
+            <img
+              id="gift-card-qr"
+              src="{{ gift_card.qr_identifier | qr_code_url }}"
+              alt="{{ 'gift_card.issued.subtext' | t }}"
+              class="w-full mt-4"
+              loading="eager"
+            />
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Gift Card Code {%- endcomment -%}
+        <div class="text-center mb-6">
+          <p class="text-sm color-text-muted mb-2 uppercase tracking-wide">
+            {{ 'gift_card.issued.redeem' | t }}
+          </p>
+          <div class="gift-card-code color-text font-bold p-4 color-background-contrast rounded-lg">
+            {{ gift_card.code | format_code }}
+          </div>
+        </div>
+
+        {%- comment -%} Balance/Status {%- endcomment -%}
+        <div class="flex flex-col gap-4 mb-6 p-4 color-background-contrast rounded-lg">
+          <div class="flex justify-between items-center">
+            <span class="color-text-muted">{{ 'cart.general.total' | t }}</span>
+            <span class="font-bold color-text text-lg">
+              {{ gift_card.balance | money }}
+            </span>
+          </div>
+
+          {%- if gift_card.enabled == false -%}
+            <div class="color-error-bg color-error px-3 py-2 rounded text-sm text-center font-medium">
+              {{ 'gift_card.issued.disabled' | t }}
+            </div>
+          {%- elsif gift_card.expired -%}
+            <div class="color-error-bg color-error px-3 py-2 rounded text-sm text-center font-medium">
+              {{ 'gift_card.issued.expired' | t: expiry: gift_card.expires_on | date: '%d/%m/%Y' }}
+            </div>
+          {%- elsif gift_card.expires_on -%}
+            <div class="color-warning-bg color-warning px-3 py-2 rounded text-sm text-center font-medium">
+              {{ 'gift_card.issued.active' | t: expiry: gift_card.expires_on | date: '%d/%m/%Y' }}
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Action Buttons {%- endcomment -%}
+        <div class="flex flex-col sm:flex-row gap-3">
+          {%- if gift_card.pass_url -%}
+            <a
+              href="{{ gift_card.pass_url }}"
+              class="color-button flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-lg font-bold transition-all hover:opacity-90 no-print"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              {{ 'gift_card.issued.add_to_apple_wallet' | t }}
+            </a>
+          {%- endif -%}
+
+          <button
+            onclick="window.print()"
+            class="color-button-secondary flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-lg font-bold transition-all hover:opacity-90 no-print"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+            </svg>
+            {{ 'gift_card.issued.print' | t }}
+          </button>
+        </div>
+      </div>
+
+      {%- comment -%} Shop Link {%- endcomment -%}
+      <div class="text-center no-print">
+        <a
+          href="{{ shop.url }}"
+          class="inline-block color-link font-medium hover:opacity-80 transition-opacity"
+        >
+          {{ 'gift_card.issued.shop_link' | t }} →
+        </a>
+      </div>
+
+      {%- comment -%} Footer Info {%- endcomment -%}
+      <div class="mt-12 pt-8 border-t color-border text-center color-text-muted text-sm">
+        <p>{{ shop.name }}</p>
+        {%- if shop.email -%}
+          <p class="mt-2">
+            <a href="mailto:{{ shop.email }}" class="color-link hover:opacity-80">
+              {{ shop.email }}
+            </a>
+          </p>
+        {%- endif -%}
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Auto-select code on click for easy copy
+  document.addEventListener('DOMContentLoaded', function() {
+    const codeElement = document.querySelector('.gift-card-code');
+    if (codeElement) {
+      codeElement.addEventListener('click', function() {
+        const range = document.createRange();
+        range.selectNodeContents(this);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+      });
+    }
+  });
+</script>

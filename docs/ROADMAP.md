@@ -1,133 +1,159 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.2.0 | **Atualizado:** 2025-01-22
+**Versão:** 2.3.0 | **Atualizado:** 2024-12-24
+
+> **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
 ---
 
-## 🔴 PRÓXIMAS IMPLEMENTAÇÕES (Prioridade Alta)
+## 🚨 REQUISITOS CRÍTICOS - SHOPIFY THEME STORE (Bloqueadores)
 
-### 1. Color Scheme System
-**Status:** Planejado | **Esforço:** 12-16h | **Prioridade:** 🔴 Alta
+### 1. Internacionalização (i18n)
+**Status:** Em Progresso (1%) | **Esforço:** 20-30h | **Prioridade:** 🔴 CRÍTICA
 
-Centralizar cores do tema em design tokens (CSS variables + Tailwind config).
-- Substituir cores hardcoded (orange-500, green-600, red-600)
-- Configuração global em `assets/color-scheme.css`
-- Integração com Tailwind config
-- Preparado para dark mode futuro
+Sistema completo de tradução PT-BR ↔ EN para aprovação na Theme Store.
+- ✅ Locales criados: `pt-BR.json` (~200 strings), `en.default.json` (completo)
+- ✅ Migrado: `cart-drawer.liquid` (1/101 arquivos)
+- ⏳ Pendente: 100 arquivos (snippets, sections, templates)
+- ⏳ Teste completo em inglês
 
-**Arquivos com cores hardcoded identificados:**
-- `assets/newsletter-modal.css`, `snippets/testimonial-card.liquid`
-
----
-
-### 2. Instagram Feed Custom (API)
-**Status:** Solicitado | **Esforço:** 12-16h | **Prioridade:** 🔴 Alta
-
-Implementação custom usando Instagram Basic Display API (sem app Shopify).
-- Grid 6x2 responsivo (6 desktop, 2 mobile)
-- Hover overlay (likes/comments + link)
-- Lightbox fullscreen com navegação
-- Configurável: username, número de posts, hashtag filter
-- Cache 1h (localStorage)
+**Documentação:** `docs/I18N_MIGRATION_GUIDE.md`
 
 ---
 
-### 3. Wishlist (Lista de Desejos)
-**Status:** Solicitado | **Esforço:** 16-20h | **Prioridade:** 🔴 Alta
+### 2. Color Scheme System
+**Status:** Parcial (60%) | **Esforço:** 6-10h restantes | **Prioridade:** 🔴 CRÍTICA
 
-Sistema de favoritos com localStorage (guests) + metafields (logados).
+Cores customizáveis via Theme Customizer (requisito obrigatório).
+- ✅ CSS variables completas (14 cores)
+- ✅ `color-scheme.css` carregado no tema
+- ✅ 7 sections com suporte a color_scheme
+- ✅ Snippets críticos migrados (cart, add-to-cart, inventory, testimonials)
+- ⏳ Refinar aplicação em algumas pages/sections
+- ⏳ Testar troca de esquemas (Light/Dark/Gray)
+
+---
+
+### 3. Acessibilidade WCAG 2.1 AA
+**Status:** Parcial | **Esforço:** 13-17h | **Prioridade:** 🔴 CRÍTICA
+
+Lighthouse Accessibility Score > 90 (requisito Theme Store).
+- ⏳ Contraste 4.5:1 validado
+- ⏳ ARIA labels completos
+- ⏳ Navegação por teclado testada
+- ⏳ Alt texts em todas imagens
+- ⏳ Screen reader compatible
+
+---
+
+### 4. Performance Benchmarks
+**Status:** Não validado | **Esforço:** 8-12h | **Prioridade:** 🔴 CRÍTICA
+
+Lighthouse Performance > 50 mobile (requisito mínimo).
+- ⏳ Lazy loading completo
+- ⏳ CSS/JS minificados para produção
+- ⏳ WebP + srcset otimizado
+- ⏳ TailwindCSS tree-shaking configurado
+- ⏳ Lighthouse audit completo
+
+---
+
+### 5. Documentação Merchant
+**Status:** Faltando | **Esforço:** 8-12h | **Prioridade:** 🟡 ALTA
+
+README para lojistas (não desenvolvedores).
+- ⏳ Setup guide (instalação/configuração)
+- ⏳ Feature overview (sections/settings)
+- ⏳ Troubleshooting
+- ⏳ Screenshots (5-7 high-res 1920x1080)
+- ⏳ Demo video opcional (2-3 min)
+
+---
+
+### 6. Code Quality
+**Status:** Parcial | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
+
+Theme Check compliance (zero erros críticos).
+- ⏳ Executar `shopify theme check`
+- ⏳ Corrigir warnings/erros
+- ⏳ Validar Liquid syntax
+
+---
+
+## 🔴 FEATURES COMERCIAIS (Alta Prioridade - Pós Theme Store)
+
+### Wishlist (Lista de Desejos)
+**Esforço:** 16-20h
+
+Sistema de favoritos com localStorage + metafields.
 - Web Component `<wishlist-button>`
-- Contador no header
-- Página dedicada `page.wishlist.liquid`
-- Integração: PDP, cards de produto, quick view
-- Eventos: `wishlist:add`, `wishlist:remove`, `wishlist:update`
+- Página dedicada + contador header
+- Eventos customizados
 
----
+### Instagram Feed Custom
+**Esforço:** 12-16h
 
-### 4. Compre Junto (Bundle)
-**Status:** Solicitado | **Esforço:** 20-24h | **Prioridade:** 🔴 Alta
+API Instagram Basic Display (sem app).
+- Grid 6x2 responsivo com lightbox
+- Cache 1h localStorage
 
-Cross-sell na PDP com checkboxes e desconto progressivo.
-- Metafield: `product.metafields.custom.bundle_products`
-- Cards compactos com checkbox + imagem + preço
-- Cálculo total em tempo real
-- "Economize R$ X (10%)!" em destaque
-- Botão "Adicionar Bundle" (múltiplos produtos de uma vez)
+### Bundle / Compre Junto
+**Esforço:** 20-24h
 
----
+Cross-sell PDP com desconto progressivo.
+- Checkboxes + cálculo real-time
+- Metafield `bundle_products`
 
-### 5. Reviews Integration
-**Status:** Preparado | **Esforço:** 6-8h | **Prioridade:** 🟡 Média
+### Reviews Integration
+**Esforço:** 6-8h
 
-Integração com Judge.me ou Loox (apps recomendados).
-- Documentação completa: `docs/REVIEWS_INTEGRATION.md`
-- Schema preparado para aggregateRating
-- Suporte para blocos @app
+Judge.me ou Loox (apps).
+- Documentação: `docs/REVIEWS_INTEGRATION.md`
+- Schema agregateRating preparado
 
----
+### Size Guide Modal
+**Esforço:** 8-12h
 
-### 6. Size Guide Modal
-**Status:** Planejado | **Esforço:** 8-12h | **Prioridade:** 🟡 Média
-
-Tabela de medidas customizável por categoria.
+Tabela de medidas customizável.
 - Imagens + dicas de modelagem
-- Modal responsivo
 - Configurável via metafields
 
 ---
 
-## 🟡 MELHORIAS PLANEJADAS (Médio Prazo)
+## 🟡 MELHORIAS PLANEJADAS (Médio/Longo Prazo)
 
 ### Border Radius Tokens
 **Esforço:** 4-6h
 
-Centralizar arredondamentos em Tailwind config (`rounded-theme`, `rounded-theme-sm`).
-- **Padrão atual:** `rounded-lg` (8px) ou sem arredondamento
+Centralizar em Tailwind config (`rounded-theme`).
 
-### Performance Otimizat
-
-ions
+### jQuery → Vanilla JS
 **Esforço:** 37-46h
 
-- Migração jQuery → Vanilla JS
-- Substituir Owl Carousel (Swiper/Splide)
-- WebP com fallback
-- Srcset em todas imagens
-
-### Acessibilidade (A11y)
-**Esforço:** 13-17h
-
-- Alt texts completos
-- ARIA labels em ícones/botões
-- Navegação por teclado
-- Contraste WCAG AA (4.5:1)
+Migração completa + Owl Carousel → Swiper.
 
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
 
-**Fase 4 - PDP UI/UX** (2025-01-22)
-- Sticky Add to Cart melhorado com componente `<add-to-cart>` padronizado e IntersectionObserver
-- Padronização de arredondamentos: `rounded-lg` (8px) em modais, cards, botões, imagens
-- Sticky button texto adaptativo mobile/desktop via data attributes
+**v2.3.0 - i18n, Color Schemes & Gift Card** (2024-12-24)
+- Sistema i18n: locales PT-BR/EN completos (~200 strings), guia migração, cart-drawer migrado (1/101 arquivos)
+- Color Schemes: CSS variables (14 cores), 7 sections + 5 snippets migrados, 3 esquemas (Light/Dark/Gray)
+- Gift Card: template completo com layout standalone, QR code, código copiável, status/saldo, print otimizado (@page margins, background white), Apple Wallet, 100% i18n + color schemes
 
-**Fase 3 - Prova Social & SEO** (2025-11)
-- Testimonials Section (slider 3 cards, ratings, fotos, badges)
-- SEO Estruturado: Product Schema, Organization Schema, Breadcrumb Schema, BlogPosting Schema
+**v2.2.0 - Sticky ATC & Padronização** (2025-01-22)
+- Sticky Add to Cart com IntersectionObserver e texto adaptativo
+- Arredondamentos padronizados: `rounded-lg` (8px) global
 
-**Fase 2 - Quick Wins** (2025-11)
-- Trust Badges (grid/slider/lista, 8 ícones SVG, sticky opcional)
-- Payment Icons (8 bandeiras brasileiras)
-- Lazy Loading estratégico (hero LCP otimizado)
-- Indicador de estoque baixo com tempo real
+**v2.1.0 - Prova Social & SEO** (2025-11)
+- Testimonials Section (slider 3 cards, ratings, verified badges)
+- SEO Estruturado: Product/Organization/Breadcrumb/BlogPosting Schemas
 
-**Fase 1 - Core** (2025-11)
-- 7 páginas de cliente (login, register, account, addresses, orders, reset password, activate)
-- Blog completo (listing + artigo com sidebar)
-- Busca preditiva (keyboard navigation, highlight query)
-- Minicart polido (sem duplicação)
-- Modal newsletter (3 triggers: delay/scroll/exit intent)
-- Sistema de componentes reutilizáveis (cards, pagination, price, inventory)
+**v2.0.0 - Core Features** (2025-11)
+- 7 customer templates (login, register, account, addresses, orders, reset, activate)
+- Blog completo + busca preditiva + minicart polido
+- Newsletter modal (3 triggers) + trust badges + payment icons
+- Sistema componentes reutilizáveis
 
 ---
 

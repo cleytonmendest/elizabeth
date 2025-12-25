@@ -6,6 +6,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Shopify theme built with TailwindCSS, based on Shopify's Online Store 2.0 architecture. The theme follows a modular section-based approach with custom JavaScript components using Web Components and custom elements.
 
+## 🚨 DEVELOPMENT PRIORITY RULES
+
+**⚠️ MANDATORY: Always consult `docs/ROADMAP.md` before any implementation.**
+
+1. **Priority hierarchy**: Shopify Theme Store requirements FIRST. Secondary features wait until all critical blockers are resolved.
+2. **Always update ROADMAP**: After completing or modifying any feature, update `docs/ROADMAP.md` with:
+   - Status changes (Planejado → Em Progresso → Concluído)
+   - Completion summaries in "✅ CONCLUÍDO" section
+   - New features or important discoveries
+3. **Current focus** (v2.3.0): Theme Store launch blockers
+   - i18n (internationalization) - 1% complete
+   - Color Schemes refinement - 60% complete
+   - Accessibility WCAG 2.1 AA
+   - Performance benchmarks
+   - Gift card template
+   - Documentation for merchants
+
+**This rule cannot be broken unless explicitly requested to ignore.**
+
 ## Development Commands
 
 ### TailwindCSS Development
