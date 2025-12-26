@@ -13,9 +13,12 @@
   assign rating = block.settings.rating | default: 5
   assign testimonial_text = block.settings.testimonial_text
   assign product_purchased = block.settings.product_purchased
+
+  # Define o color scheme do card (fallback para scheme-2 se não definido)
+  assign scheme = card_color_scheme | default: 'scheme-2'
 -%}
 
-<div class="color-background color-shadow-lg rounded-lg p-6 md:p-8 h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+<div class="color-{{ scheme }} color-background color-text color-shadow-lg rounded-lg p-6 md:p-8 h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
 
   {%- comment -%} Aspas decorativas {%- endcomment -%}
   <div class="mb-4">
@@ -47,7 +50,7 @@
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
         </svg>
-        <span class="font-medium">Produto:</span> <span class="truncate">{{ product_purchased }}</span>
+        <span class="font-medium">{{ 'testimonials.product' | t }}</span> <span class="truncate">{{ product_purchased }}</span>
       </p>
     </div>
   {% endif %}
@@ -91,7 +94,7 @@
     </div>
 
     {%- comment -%} Badge "Compra Verificada" {%- endcomment -%}
-    <div class="flex-shrink-0" title="Compra Verificada">
+    <div class="flex-shrink-0" title="{{ 'testimonials.verified_purchase' | t }}">
       <svg class="w-6 h-6 color-success" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
       </svg>

@@ -8,41 +8,29 @@
 
 ## 🚨 REQUISITOS CRÍTICOS - SHOPIFY THEME STORE (Bloqueadores)
 
-### 1. Internacionalização (i18n)
-**Status:** Em Progresso (8% storefront + schemas iniciados) | **Esforço:** 28-42h | **Prioridade:** 🔴 CRÍTICA
+### 1. Internacionalização (i18n) + Color Schemes
+**Status:** Em Progresso (abordagem: section por section 100% completa) | **Esforço:** 28-42h | **Prioridade:** 🔴 CRÍTICA
 
-Sistema completo de tradução PT-BR ↔ EN para aprovação na Theme Store.
+Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na Theme Store.
 
-**Storefront i18n (front-end):**
-- ✅ Locales criados: `pt-BR.json` (~220 strings), `en.default.json` (completo)
-- ✅ Migrado: 8 arquivos críticos (cart, product, search, breadcrumb, newsletter)
-- ⏳ Pendente: ~93 arquivos (snippets, sections, templates)
+**Abordagem:** Section 100% completa = i18n storefront + i18n schema + color schemes
 
-**Schema i18n (Theme Editor):**
-- ✅ Arquivos base criados: `pt-BR.schema.json`, `en.default.schema.json`
-- ✅ Schemas traduzidos: header, footer
-- ⏳ Pendente: ~30 sections restantes
+**Sections 100% completas (17%):**
+- ✅ `header.liquid` (i18n schema + color schemes)
+- ✅ `footer.liquid` (i18n schema + color schemes)
+- ✅ `announcement-bar.liquid` (i18n schema + color schemes)
+- ✅ `testimonials.liquid` (i18n front + schema + dual color schemes: section + card)
+- ✅ `trust-badges.liquid` (i18n schema + color schemes)
 
-**Arquivos migrados:** cart-drawer, add-to-cart, inventory-status, newsletter, breadcrumb, search-component, price-v2, quantity-selector
+**Pendente:** ~13 sections restantes → depois migrar ~92 snippets
+
+**Locales:** `pt-BR.json` (~225 strings), `en.default.json`, `pt-BR.schema.json`, `en.default.schema.json`
 
 **Documentação:** `docs/I18N_MIGRATION_GUIDE.md`
 
 ---
 
-### 2. Color Scheme System
-**Status:** Parcial (60%) | **Esforço:** 6-10h restantes | **Prioridade:** 🔴 CRÍTICA
-
-Cores customizáveis via Theme Customizer (requisito obrigatório).
-- ✅ CSS variables completas (14 cores)
-- ✅ `color-scheme.css` carregado no tema
-- ✅ 7 sections com suporte a color_scheme
-- ✅ Snippets críticos migrados (cart, add-to-cart, inventory, testimonials)
-- ⏳ Refinar aplicação em algumas pages/sections
-- ⏳ Testar troca de esquemas (Light/Dark/Gray)
-
----
-
-### 3. Acessibilidade WCAG 2.1 AA
+### 2. Acessibilidade WCAG 2.1 AA
 **Status:** Parcial | **Esforço:** 13-17h | **Prioridade:** 🔴 CRÍTICA
 
 Lighthouse Accessibility Score > 90 (requisito Theme Store).
@@ -54,7 +42,7 @@ Lighthouse Accessibility Score > 90 (requisito Theme Store).
 
 ---
 
-### 4. Performance Benchmarks
+### 3. Performance Benchmarks
 **Status:** Não validado | **Esforço:** 8-12h | **Prioridade:** 🔴 CRÍTICA
 
 Lighthouse Performance > 50 mobile (requisito mínimo).
@@ -66,7 +54,7 @@ Lighthouse Performance > 50 mobile (requisito mínimo).
 
 ---
 
-### 5. Documentação Merchant
+### 4. Documentação Merchant
 **Status:** Faltando | **Esforço:** 8-12h | **Prioridade:** 🟡 ALTA
 
 README para lojistas (não desenvolvedores).
@@ -78,7 +66,7 @@ README para lojistas (não desenvolvedores).
 
 ---
 
-### 6. Code Quality
+### 5. Code Quality
 **Status:** Parcial | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
 
 Theme Check compliance (zero erros críticos).
@@ -144,10 +132,11 @@ Migração completa + Owl Carousel → Swiper.
 
 ## ✅ CONCLUÍDO (Resumo)
 
-**v2.3.0 - i18n, Color Schemes & Gift Card** (2024-12-24)
-- Sistema i18n: locales PT-BR/EN completos (~200 strings), guia migração, cart-drawer migrado (1/101 arquivos)
-- Color Schemes: CSS variables (14 cores), 7 sections + 5 snippets migrados, 3 esquemas (Light/Dark/Gray)
+**v2.3.0 - i18n, Color Schemes & Gift Card** (2024-12-26)
+- Sistema i18n: locales PT-BR/EN completos (~225 strings), guia migração, 9 arquivos migrados (cart-drawer, testimonials, etc.)
+- Color Schemes: Sistema dual (section + card) implementado em testimonials, CSS variables geradas dinamicamente via theme.liquid, color-scheme.css otimizado (9 classes obsoletas removidas, -26% linhas), documentação atualizada
 - Gift Card: template completo com layout standalone, QR code, código copiável, status/saldo, print otimizado (@page margins, background white), Apple Wallet, 100% i18n + color schemes
+- Testimonials: 100% i18n (storefront + schema), dual color schemes funcional, defaults/presets em inglês, zero hardcoded
 
 **v2.2.0 - Sticky ATC & Padronização** (2025-01-22)
 - Sticky Add to Cart com IntersectionObserver e texto adaptativo

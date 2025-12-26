@@ -20,7 +20,7 @@
 
     {%- comment -%} Header {%- endcomment -%}
     {% if heading != blank or subheading != blank %}
-      <div class="text-center mb-12">
+      <div class="text-center mb-8">
         {% if heading != blank %}
           <h2 class="text-3xl md:text-4xl font-bold mb-4">
             {{ heading }}
@@ -51,12 +51,13 @@
           data-qty-tab="2"
           data-qty-mob="1"
         >
-          <div class="my-slider__container">
+          <div class="my-slider__container overflow-hidden py-6">
             {% for block in section.blocks %}
               {% if block.type == 'testimonial' %}
                 <div class="item px-4" {{ block.shopify_attributes }}>
                   {% render 'testimonial-card',
-                    block: block
+                    block: block,
+                    card_color_scheme: section.settings.card_color_scheme
                   %}
                 </div>
               {% endif %}
@@ -69,9 +70,9 @@
           <div class="hidden md:block">
             <button
               type="button"
-              class="testimonials-nav testimonials-nav--prev"
+              class="testimonials-nav testimonials-nav--prev color-button color-border border"
               onclick="sliderPrev('{{ section.id }}')"
-              aria-label="Anterior"
+              aria-label="{{ 'general.accessibility.previous' | t }}"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -80,9 +81,9 @@
 
             <button
               type="button"
-              class="testimonials-nav testimonials-nav--next"
+              class="testimonials-nav testimonials-nav--next color-border color-button border"
               onclick="sliderNext('{{ section.id }}')"
-              aria-label="Próximo"
+              aria-label="{{ 'general.accessibility.next' | t }}"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -98,7 +99,7 @@
         <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
         </svg>
-        <p class="text-lg">Adicione depoimentos de clientes para exibir aqui</p>
+        <p class="text-lg">{{ 'testimonials.empty_state' | t }}</p>
       </div>
     {% endif %}
 
@@ -107,47 +108,53 @@
 
 {% schema %}
 {
-  "name": "Depoimentos de Clientes",
+  "name": "t:sections.testimonials.name",
   "tag": "section",
   "class": "section-testimonials",
   "settings": [
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Esquema de cores",
-      "default": "scheme-1",
-      "info": "Esquema de cores base para depoimentos"
+      "label": "t:sections.testimonials.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "card_color_scheme",
+      "label": "t:sections.testimonials.settings.card_color_scheme.label",
+      "default": "scheme-2",
+      "info": "t:sections.testimonials.settings.card_color_scheme.info"
     },
     {
       "type": "header",
-      "content": "Conteúdo"
+      "content": "t:sections.testimonials.settings.heading.label"
     },
     {
       "type": "text",
       "id": "heading",
-      "label": "Título da Seção",
-      "default": "O que nossos clientes dizem"
+      "label": "t:sections.testimonials.settings.heading.label",
+      "default": "What our customers say"
     },
     {
       "type": "textarea",
       "id": "subheading",
-      "label": "Subtítulo",
-      "default": "Confira a experiência de quem já comprou com a gente"
+      "label": "t:sections.testimonials.settings.subheading.label",
+      "default": "Check out the experience of those who have already purchased from us"
     },
     {
       "type": "header",
-      "content": "Configurações do Slider"
+      "content": "t:sections.testimonials.settings.slider_settings.content"
     },
     {
       "type": "checkbox",
       "id": "autoplay",
-      "label": "Reprodução Automática",
+      "label": "t:sections.testimonials.settings.autoplay.label",
       "default": true
     },
     {
       "type": "range",
       "id": "autoplay_speed",
-      "label": "Velocidade (segundos)",
+      "label": "t:sections.testimonials.settings.autoplay_speed.label",
       "min": 3,
       "max": 10,
       "step": 1,
@@ -156,47 +163,47 @@
     {
       "type": "checkbox",
       "id": "show_navigation",
-      "label": "Mostrar Setas de Navegação",
+      "label": "t:sections.testimonials.settings.show_navigation.label",
       "default": true,
-      "info": "Setas aparecem apenas em desktop"
+      "info": "t:sections.testimonials.settings.show_navigation.info"
     }
   ],
   "blocks": [
     {
       "type": "testimonial",
-      "name": "Depoimento",
+      "name": "t:sections.testimonials.blocks.testimonial.name",
       "settings": [
         {
           "type": "header",
-          "content": "Cliente"
+          "content": "t:sections.testimonials.blocks.testimonial.settings.customer_header.content"
         },
         {
           "type": "image_picker",
           "id": "customer_image",
-          "label": "Foto do Cliente",
-          "info": "Opcional - usar imagem quadrada para melhor resultado"
+          "label": "t:sections.testimonials.blocks.testimonial.settings.customer_image.label",
+          "info": "t:sections.testimonials.blocks.testimonial.settings.customer_image.info"
         },
         {
           "type": "text",
           "id": "customer_name",
-          "label": "Nome do Cliente",
-          "default": "Maria Silva"
+          "label": "t:sections.testimonials.blocks.testimonial.settings.customer_name.label",
+          "default": "Sarah Johnson"
         },
         {
           "type": "text",
           "id": "customer_location",
-          "label": "Cidade/Estado",
-          "default": "São Paulo, SP",
-          "info": "Opcional"
+          "label": "t:sections.testimonials.blocks.testimonial.settings.customer_location.label",
+          "default": "New York, NY",
+          "info": "t:sections.testimonials.blocks.testimonial.settings.customer_location.info"
         },
         {
           "type": "header",
-          "content": "Avaliação"
+          "content": "t:sections.testimonials.blocks.testimonial.settings.review_header.content"
         },
         {
           "type": "range",
           "id": "rating",
-          "label": "Número de Estrelas",
+          "label": "t:sections.testimonials.blocks.testimonial.settings.rating.label",
           "min": 1,
           "max": 5,
           "step": 1,
@@ -205,52 +212,52 @@
         {
           "type": "textarea",
           "id": "testimonial_text",
-          "label": "Texto do Depoimento",
-          "default": "Adorei a qualidade dos vestidos! O tecido é excelente e o caimento perfeito. Com certeza voltarei a comprar.",
-          "info": "Recomendado: 100-200 caracteres"
+          "label": "t:sections.testimonials.blocks.testimonial.settings.testimonial_text.label",
+          "default": "I loved the quality of the dresses! The fabric is excellent and the fit is perfect. I will definitely buy again.",
+          "info": "t:sections.testimonials.blocks.testimonial.settings.testimonial_text.info"
         },
         {
           "type": "text",
           "id": "product_purchased",
-          "label": "Produto Comprado",
-          "info": "Opcional - ex: 'Vestido Floral Midi'",
-          "placeholder": "Nome do produto"
+          "label": "t:sections.testimonials.blocks.testimonial.settings.product_purchased.label",
+          "info": "t:sections.testimonials.blocks.testimonial.settings.product_purchased.info",
+          "placeholder": "t:sections.testimonials.blocks.testimonial.settings.product_purchased.placeholder"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Depoimentos de Clientes",
+      "name": "t:sections.testimonials.presets.name",
       "blocks": [
         {
           "type": "testimonial",
           "settings": {
-            "customer_name": "Ana Carolina",
-            "customer_location": "Rio de Janeiro, RJ",
+            "customer_name": "Sarah Johnson",
+            "customer_location": "New York, NY",
             "rating": 5,
-            "testimonial_text": "Adorei a qualidade dos vestidos! O tecido é excelente e o caimento perfeito. Com certeza voltarei a comprar.",
-            "product_purchased": "Vestido Floral Midi"
+            "testimonial_text": "I loved the quality of the dresses! The fabric is excellent and the fit is perfect. I will definitely buy again.",
+            "product_purchased": "Floral Midi Dress"
           }
         },
         {
           "type": "testimonial",
           "settings": {
-            "customer_name": "Juliana Mendes",
-            "customer_location": "Belo Horizonte, MG",
+            "customer_name": "Emily Martinez",
+            "customer_location": "Los Angeles, CA",
             "rating": 5,
-            "testimonial_text": "Atendimento impecável e entrega rápida. O vestido chegou exatamente como na foto. Super recomendo!",
-            "product_purchased": "Vestido Longo Festa"
+            "testimonial_text": "Impeccable service and fast delivery. The dress arrived exactly as in the photo. Highly recommend!",
+            "product_purchased": "Evening Maxi Dress"
           }
         },
         {
           "type": "testimonial",
           "settings": {
-            "customer_name": "Fernanda Costa",
-            "customer_location": "São Paulo, SP",
+            "customer_name": "Jessica Williams",
+            "customer_location": "Miami, FL",
             "rating": 5,
-            "testimonial_text": "Já é a terceira vez que compro e sempre me surpreendo com a qualidade. As peças são lindas e elegantes!",
-            "product_purchased": "Conjunto Blazer"
+            "testimonial_text": "This is my third purchase and I'm always impressed by the quality. The pieces are beautiful and elegant!",
+            "product_purchased": "Blazer Set"
           }
         }
       ]

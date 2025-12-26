@@ -93,6 +93,173 @@
           }
         }
       }
+    },
+    "announcement_bar": {
+      "name": "Announcement Bar",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Base color scheme for announcement bar"
+        },
+        "duration": {
+          "label": "Cycle duration"
+        },
+        "gap": {
+          "label": "Gap between contents (px)"
+        },
+        "direction": {
+          "label": "Direction",
+          "options": {
+            "left": "Left",
+            "right": "Right"
+          }
+        },
+        "pause_hover": {
+          "label": "Pause on hover?"
+        }
+      },
+      "blocks": {
+        "text": {
+          "name": "Text",
+          "settings": {
+            "text_item": {
+              "label": "Announcement text"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Announcement Bar"
+      }
+    },
+    "testimonials": {
+      "name": "Customer Testimonials",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Base color scheme for testimonials"
+        },
+        "card_color_scheme": {
+          "label": "Card color scheme",
+          "info": "Color scheme for testimonial cards. Choose colors that contrast with the section background for better readability"
+        },
+        "content": {
+          "content": "Content"
+        },
+        "heading": {
+          "label": "Section Heading"
+        },
+        "subheading": {
+          "label": "Subheading"
+        },
+        "slider_settings": {
+          "content": "Slider Settings"
+        },
+        "autoplay": {
+          "label": "Autoplay"
+        },
+        "autoplay_speed": {
+          "label": "Speed (seconds)"
+        },
+        "show_navigation": {
+          "label": "Show Navigation Arrows",
+          "info": "Arrows appear on desktop only"
+        }
+      },
+      "blocks": {
+        "testimonial": {
+          "name": "Testimonial",
+          "settings": {
+            "customer": {
+              "content": "Customer"
+            },
+            "customer_image": {
+              "label": "Customer Photo",
+              "info": "Optional - use square image for best results"
+            },
+            "customer_name": {
+              "label": "Customer Name"
+            },
+            "customer_location": {
+              "label": "City/State",
+              "info": "Optional"
+            },
+            "review": {
+              "content": "Review"
+            },
+            "rating": {
+              "label": "Star Rating"
+            },
+            "testimonial_text": {
+              "label": "Testimonial Text",
+              "info": "Recommended: 100-200 characters"
+            },
+            "product_purchased": {
+              "label": "Product Purchased",
+              "info": "Optional - eg: 'Floral Midi Dress'",
+              "placeholder": "Product name"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Customer Testimonials"
+      }
+    },
+    "trust_badges": {
+      "name": "Trust Badges",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Base color scheme for trust badges"
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "layout": {
+          "label": "Layout Type",
+          "options": {
+            "grid": "Grid (Desktop) / Slider (Mobile)",
+            "slider": "Slider (All screens)",
+            "list": "Horizontal List"
+          },
+          "info": "Grid is recommended for best performance"
+        },
+        "sticky": {
+          "label": "Sticky to Top",
+          "info": "Keeps the bar visible when scrolling"
+        }
+      },
+      "blocks": {
+        "badge": {
+          "name": "Badge",
+          "settings": {
+            "icon": {
+              "label": "Icon",
+              "options": {
+                "truck": "🚚 Truck (Shipping)",
+                "shield": "🛡️ Shield (Security)",
+                "refresh": "🔄 Refresh (Returns/Exchange)",
+                "credit_card": "💳 Card (Payment)",
+                "star": "⭐ Star (Quality)",
+                "check_circle": "✓ Check (Guarantee)",
+                "lock": "🔒 Lock (Privacy)",
+                "clock": "⏰ Clock (Delivery Time)"
+              }
+            },
+            "title": {
+              "label": "Title"
+            },
+            "description": {
+              "label": "Description",
+              "info": "Optional - leave blank to hide"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Trust Badges"
+      }
     }
   }
 }

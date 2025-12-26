@@ -326,7 +326,8 @@
     "title": "O que nossos clientes dizem",
     "verified_purchase": "Compra Verificada",
     "product": "Produto:",
-    "rating": "Avaliação"
+    "rating": "Avaliação",
+    "empty_state": "Adicione depoimentos de clientes para exibir aqui"
   },
   "announcement_bar": {
     "close": "Fechar anúncio"

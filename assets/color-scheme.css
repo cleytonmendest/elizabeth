@@ -2,15 +2,27 @@
    Color Scheme Utilities
    ============================================
 
-   Usa as CSS variables geradas pela Shopify
-   para aplicar cores de forma consistente.
+   Sistema de cores dinâmico baseado em CSS Variables.
 
-   As variáveis são geradas automaticamente pela
-   Shopify baseado nos color schemes configurados
-   em Theme Settings > Cores.
+   Como funciona:
+   1. theme.liquid gera CSS variables para cada color scheme
+      .color-scheme-1 { --color-background: 255,255,255; }
+      .color-scheme-2 { --color-background: 18,18,18; }
+
+   2. Este arquivo fornece classes utilitárias que USAM essas variables
+      .color-background { background-color: rgb(var(--color-background)); }
+
+   3. No HTML, aplique o wrapper + a classe utilitária:
+      <div class="color-scheme-1 color-background">
+        <!-- Usa background do scheme-1 -->
+      </div>
+
+   Vantagens:
+   - Um arquivo CSS serve todos os color schemes
+   - Merchant muda cores no admin, CSS atualiza automaticamente
+   - Classes reutilizáveis e consistentes
 
    Formato: rgb(var(--color-nome))
-   Exemplo: color: rgb(var(--color-text));
    ============================================ */
 
 /* ========== BACKGROUND ========== */
@@ -19,8 +31,8 @@
   background-color: rgb(var(--color-background));
 }
 
-.color-background-gradient {
-  background: var(--gradient-background);
+.color-background-secondary {
+  background-color: rgb(var(--color-card-background));
 }
 
 /* ========== TEXT ========== */
@@ -43,20 +55,12 @@
   border-color: rgb(var(--color-border));
 }
 
-.color-border-top {
-  border-top-color: rgb(var(--color-border));
-}
-
-.color-border-bottom {
-  border-bottom-color: rgb(var(--color-border));
-}
-
 /* ========== BUTTONS PRIMARY ========== */
 
 .color-button {
   background-color: rgb(var(--color-button));
   color: rgb(var(--color-button-text));
-  border-color: rgb(var(--color-button));
+  border-color: rgb(var(--color-border));
 }
 
 .color-button:hover:not(:disabled) {
@@ -108,12 +112,6 @@
 .color-badge {
   background-color: rgb(var(--color-badge-background));
   color: rgb(var(--color-badge-text));
-}
-
-.color-badge-outline {
-  background-color: transparent;
-  color: rgb(var(--color-badge-background));
-  border: 1px solid rgb(var(--color-badge-background));
 }
 
 /* ========== FEEDBACK ========== */
@@ -186,40 +184,10 @@
   opacity: 0.6;
 }
 
-/* ========== CARDS ========== */
-
-.color-card {
-  background-color: rgb(var(--color-background));
-  color: rgb(var(--color-text));
-  border: 1px solid rgb(var(--color-border));
-}
-
-.color-card-hover {
-  background-color: rgb(var(--color-background));
-  color: rgb(var(--color-text));
-  border: 1px solid rgb(var(--color-border));
-  transition: all 0.2s ease;
-}
-
-.color-card-hover:hover {
-  border-color: rgba(var(--color-text), 0.3);
-  box-shadow: 0 4px 12px rgba(var(--color-shadow), 0.12);
-}
-
 /* ========== OVERLAYS ========== */
-
-.color-overlay {
-  background-color: rgba(var(--color-background), 0.95);
-}
 
 .color-overlay-dark {
   background-color: rgba(var(--color-text), 0.7);
-}
-
-/* ========== DIVIDERS ========== */
-
-.color-divider {
-  border-top: 1px solid rgb(var(--color-border));
 }
 
 /* ========== ICONS ========== */

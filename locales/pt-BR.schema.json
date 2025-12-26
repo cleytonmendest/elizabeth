@@ -93,6 +93,173 @@
           }
         }
       }
+    },
+    "announcement_bar": {
+      "name": "Barra de Anuncios",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores",
+          "info": "Esquema de cores base para a barra de anúncios"
+        },
+        "duration": {
+          "label": "Duração do ciclo"
+        },
+        "gap": {
+          "label": "Gap entre conteúdos (px)"
+        },
+        "direction": {
+          "label": "Direção",
+          "options": {
+            "left": "Esquerda",
+            "right": "Direita"
+          }
+        },
+        "pause_hover": {
+          "label": "Pausar ao passar o mouse?"
+        }
+      },
+      "blocks": {
+        "text": {
+          "name": "Texto",
+          "settings": {
+            "text_item": {
+              "label": "Texto do anúncio"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Barra de Anuncios"
+      }
+    },
+    "testimonials": {
+      "name": "Depoimentos de Clientes",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores",
+          "info": "Esquema de cores base para depoimentos"
+        },
+        "card_color_scheme": {
+          "label": "Esquema de cores dos cards",
+          "info": "Esquema de cores para os cards de depoimentos. Escolha cores que contrastem com o fundo da seção para melhor legibilidade"
+        },
+        "content": {
+          "content": "Conteúdo"
+        },
+        "heading": {
+          "label": "Título da Seção"
+        },
+        "subheading": {
+          "label": "Subtítulo"
+        },
+        "slider_settings": {
+          "content": "Configurações do Slider"
+        },
+        "autoplay": {
+          "label": "Reprodução Automática"
+        },
+        "autoplay_speed": {
+          "label": "Velocidade (segundos)"
+        },
+        "show_navigation": {
+          "label": "Mostrar Setas de Navegação",
+          "info": "Setas aparecem apenas em desktop"
+        }
+      },
+      "blocks": {
+        "testimonial": {
+          "name": "Depoimento",
+          "settings": {
+            "customer": {
+              "content": "Cliente"
+            },
+            "customer_image": {
+              "label": "Foto do Cliente",
+              "info": "Opcional - usar imagem quadrada para melhor resultado"
+            },
+            "customer_name": {
+              "label": "Nome do Cliente"
+            },
+            "customer_location": {
+              "label": "Cidade/Estado",
+              "info": "Opcional"
+            },
+            "review": {
+              "content": "Avaliação"
+            },
+            "rating": {
+              "label": "Número de Estrelas"
+            },
+            "testimonial_text": {
+              "label": "Texto do Depoimento",
+              "info": "Recomendado: 100-200 caracteres"
+            },
+            "product_purchased": {
+              "label": "Produto Comprado",
+              "info": "Opcional - ex: 'Vestido Floral Midi'",
+              "placeholder": "Nome do produto"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Depoimentos de Clientes"
+      }
+    },
+    "trust_badges": {
+      "name": "Trust Badges",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores",
+          "info": "Esquema de cores base para trust badges"
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "layout": {
+          "label": "Tipo de Layout",
+          "options": {
+            "grid": "Grid (Desktop) / Slider (Mobile)",
+            "slider": "Slider (Todas as telas)",
+            "list": "Lista Horizontal"
+          },
+          "info": "Grid é recomendado para melhor performance"
+        },
+        "sticky": {
+          "label": "Fixar no Topo (Sticky)",
+          "info": "Mantém a barra visível ao rolar a página"
+        }
+      },
+      "blocks": {
+        "badge": {
+          "name": "Badge",
+          "settings": {
+            "icon": {
+              "label": "Ícone",
+              "options": {
+                "truck": "🚚 Caminhão (Frete)",
+                "shield": "🛡️ Escudo (Segurança)",
+                "refresh": "🔄 Refresh (Troca/Devolução)",
+                "credit_card": "💳 Cartão (Pagamento)",
+                "star": "⭐ Estrela (Qualidade)",
+                "check_circle": "✓ Check (Garantia)",
+                "lock": "🔒 Cadeado (Privacidade)",
+                "clock": "⏰ Relógio (Prazo)"
+              }
+            },
+            "title": {
+              "label": "Título"
+            },
+            "description": {
+              "label": "Descrição",
+              "info": "Opcional - deixe em branco para ocultar"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Trust Badges"
+      }
     }
   }
 }

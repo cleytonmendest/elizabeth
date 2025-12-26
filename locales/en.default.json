@@ -326,7 +326,8 @@
     "title": "What our customers say",
     "verified_purchase": "Verified Purchase",
     "product": "Product:",
-    "rating": "Rating"
+    "rating": "Rating",
+    "empty_state": "Add customer testimonials to display here"
   },
   "announcement_bar": {
     "close": "Close announcement"

@@ -3,9 +3,11 @@
 ## 📊 STATUS ATUAL
 
 ### ✅ CONCLUÍDO
-- `locales/pt-BR.json` criado com estrutura completa (~220 strings)
-- `locales/en.default.json` criado com traduções (~220 strings)
-- **8 arquivos migrados (8% concluído):**
+
+**Storefront i18n:**
+- `locales/pt-BR.json` criado com estrutura completa (~225 strings)
+- `locales/en.default.json` criado com traduções (~225 strings)
+- **9 arquivos migrados (9% storefront):**
   1. `snippets/cart-drawer.liquid` ✅
   2. `snippets/add-to-cart.liquid` ✅
   3. `snippets/inventory-status.liquid` ✅ (incluindo JavaScript)
@@ -14,6 +16,16 @@
   6. `snippets/search-component.liquid` ✅
   7. `snippets/price-v2.liquid` ✅
   8. `snippets/quantity-selector.liquid` ✅
+  9. `sections/testimonials.liquid` ✅
+
+**Schema i18n:**
+- `locales/pt-BR.schema.json` e `en.default.schema.json` criados
+- **5 sections schemas completas (~28%):**
+  1. `sections/header.liquid` ✅
+  2. `sections/footer.liquid` ✅
+  3. `sections/announcement-bar.liquid` ✅
+  4. `sections/testimonials.liquid` ✅
+  5. `sections/trust-badges.liquid` ✅
 
 ### ⏳ EM PROGRESSO
 - Migração de snippets e sections restantes (~93 arquivos)
@@ -135,11 +147,11 @@ sections/         → Seções (sliders, etc.)
 6. ✅ `snippets/search-component.liquid` - CONCLUÍDO
 7. ✅ `snippets/price-v2.liquid` - CONCLUÍDO
 8. ✅ `snippets/quantity-selector.liquid` - CONCLUÍDO
-9. ⏳ `sections/header.liquid` - OK (sem textos hardcoded)
-10. ⏳ `sections/footer.liquid` - OK (sem textos hardcoded)
-11. ⏳ `sections/main-product.liquid` - Página de produto
-12. ⏳ `sections/main-collection.liquid` - Página de coleção
-13. ⏳ `sections/testimonials.liquid` - Depoimentos
+9. ✅ `sections/testimonials.liquid` - CONCLUÍDO (storefront + schema + dual color schemes)
+10. ⏳ `sections/header.liquid` - OK (sem textos hardcoded)
+11. ⏳ `sections/footer.liquid` - OK (sem textos hardcoded)
+12. ⏳ `sections/main-product.liquid` - Página de produto
+13. ⏳ `sections/main-collection.liquid` - Página de coleção
 
 ### MÉDIA PRIORIDADE:
 11. `sections/newsletter-modal.liquid`
@@ -280,7 +292,7 @@ grep -r "Em estoque" sections/ snippets/
 
 ## 📊 PROGRESSO
 
-### Arquivos Migrados: 8/101 (8%)
+### Arquivos Migrados: 9/101 (9%)
 
 | Arquivo | Status | Strings Migradas |
 |---------|--------|------------------|
@@ -292,9 +304,10 @@ grep -r "Em estoque" sections/ snippets/
 | snippets/search-component.liquid | ✅ | 4/4 |
 | snippets/price-v2.liquid | ✅ | 2/2 |
 | snippets/quantity-selector.liquid | ✅ | 3/3 |
+| sections/testimonials.liquid | ✅ | 3/3 + schema completo |
 | ... | ⏳ | ... |
 
-**Total migrado**: ~42 strings | **Total estimado**: ~400-500 strings
+**Total migrado**: ~45 strings storefront + 5 schemas completos | **Total estimado**: ~400-500 strings
 
 ---
 
@@ -399,14 +412,20 @@ Depois use:
 
 ## ✅ CRITÉRIO DE CONCLUSÃO
 
-Um arquivo está 100% migrado quando:
+**⚠️ NOVA ABORDAGEM:** Section por section, 100% completa antes de prosseguir.
 
-1. ✅ Não há textos visíveis hardcoded no `.liquid`
-2. ✅ Todos aria-labels usam locales
-3. ✅ Placeholders usam locales
-4. ✅ Data attributes de JavaScript usam locales
-5. ✅ Schema traduzido em `.schema.json` (se aplicável)
-6. ✅ Testado em PT e EN
+Uma **section** está 100% completa quando:
+
+1. ✅ **i18n Storefront:** Não há textos visíveis hardcoded no `.liquid`
+2. ✅ **i18n Storefront:** Todos aria-labels usam locales
+3. ✅ **i18n Storefront:** Placeholders usam locales
+4. ✅ **i18n Storefront:** Data attributes de JavaScript usam locales
+5. ✅ **i18n Schema:** Schema traduzido em `.schema.json` (PT + EN)
+6. ✅ **Color Schemes:** Section usa `color-{{ section.settings.color_scheme }}` + classes `color-background color-text`
+7. ✅ **Color Schemes:** Sem cores hardcoded (inline styles removidos)
+8. ✅ **Testado:** Funciona em PT e EN, com diferentes color schemes
+
+**Objetivo:** Todas sections 100% completas → depois migrar snippets.
 
 ---
 
