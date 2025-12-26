@@ -20,7 +20,7 @@
           autocomplete="off"
           name="q"
           value="{{ search.terms | escape }}"
-          placeholder="O que você procura?"
+          placeholder="{{ 'general.search.placeholder' | t }}"
         >
         <button
           name="q"
@@ -43,7 +43,7 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          <span class="ml-3 text-gray-600">Buscando...</span>
+          <span class="ml-3 text-gray-600">{{ 'general.search.searching' | t }}</span>
         </div>
       </div>
 
@@ -73,7 +73,7 @@
           </div>
           <div class="flex-1">
             <p class="collection-result-title font-medium text-sm text-gray-900"></p>
-            <p class="text-xs text-gray-500">Coleção</p>
+            <p class="text-xs text-gray-500">{{ 'collection.general.label' | t }}</p>
           </div>
         </a>
       </template>
@@ -84,7 +84,7 @@
       {%- comment -%} Footer com "Ver todos" {%- endcomment -%}
       <div class="search-footer hidden border-t border-gray-200">
         <a href="#" class="block p-3 text-center text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-          Ver todos os resultados →
+          {{ 'general.search.view_all_results' | t }}
         </a>
       </div>
     </div>

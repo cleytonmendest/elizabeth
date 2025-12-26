@@ -21,12 +21,17 @@
       "page": "Página {{ page }}"
     },
     "breadcrumbs": {
-      "home": "Início"
+      "home": "Início",
+      "all_collections": "Todas as Coleções",
+      "products": "Produtos",
+      "search": "Busca"
     },
     "search": {
       "title": "Buscar",
-      "placeholder": "Buscar produtos...",
+      "placeholder": "O que você procura?",
       "submit": "Buscar",
+      "searching": "Buscando...",
+      "view_all_results": "Ver todos os resultados →",
       "no_results": "Nenhum resultado encontrado para \"{{ terms }}\"",
       "results_with_count": {
         "one": "{{ count }} resultado para \"{{ terms }}\"",
@@ -99,6 +104,8 @@
       "sold_out": "Esgotado",
       "unavailable": "Indisponível",
       "quantity": "Quantidade",
+      "decrease_quantity": "Diminuir quantidade",
+      "increase_quantity": "Aumentar quantidade",
       "price": "Preço",
       "sale": "Promoção",
       "sale_price": "Preço promocional",
@@ -132,12 +139,15 @@
       "interest_free": "sem juros",
       "per_month": "/mês",
       "in": "em",
+      "up_to": "Em até",
+      "of": "de",
       "times": "{{ count }}x"
     }
   },
   "collection": {
     "general": {
       "title": "Coleção",
+      "label": "Coleção",
       "no_products": "Nenhum produto encontrado",
       "items": "itens",
       "view_all": "Ver todos"
@@ -299,6 +309,9 @@
   "newsletter": {
     "label": "E-mail",
     "placeholder": "Seu e-mail",
+    "placeholder_first_name": "Digite seu Nome",
+    "placeholder_last_name": "Digite seu Sobrenome",
+    "placeholder_email": "Digite seu E-mail",
     "button": "Inscrever-se",
     "success": "Obrigado por se inscrever!",
     "error": "Por favor, insira um e-mail válido",

@@ -27,13 +27,13 @@
       aria-haspopup="dialog"
       aria-live="polite"
       data-sold-out-message="true"
-      data-text-desktop="{{ block.settings.button_text | default: 'ADICIONAR AO CARRINHO' }}"
-      data-text-mobile="Adicionar"
+      data-text-desktop="{% if block.settings.button_text != blank %}{{ block.settings.button_text }}{% else %}{{ 'product.general.add_to_cart' | t }}{% endif %}"
+      data-text-mobile="{{ 'product.general.add_to_cart' | t }}"
       {% if product.selected_or_first_available_variant.available == false %}
         disabled
       {% endif %}
     >
-      {{ block.settings.button_text | default: 'ADICIONAR AO CARRINHO' }}
+      {% if block.settings.button_text != blank %}{{ block.settings.button_text }}{% else %}{{ 'product.general.add_to_cart' | t }}{% endif %}
     </button>
   {%- endform -%}
 </add-to-cart>

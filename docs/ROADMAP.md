@@ -9,13 +9,21 @@
 ## 🚨 REQUISITOS CRÍTICOS - SHOPIFY THEME STORE (Bloqueadores)
 
 ### 1. Internacionalização (i18n)
-**Status:** Em Progresso (1%) | **Esforço:** 20-30h | **Prioridade:** 🔴 CRÍTICA
+**Status:** Em Progresso (8% storefront + schemas iniciados) | **Esforço:** 28-42h | **Prioridade:** 🔴 CRÍTICA
 
 Sistema completo de tradução PT-BR ↔ EN para aprovação na Theme Store.
-- ✅ Locales criados: `pt-BR.json` (~200 strings), `en.default.json` (completo)
-- ✅ Migrado: `cart-drawer.liquid` (1/101 arquivos)
-- ⏳ Pendente: 100 arquivos (snippets, sections, templates)
-- ⏳ Teste completo em inglês
+
+**Storefront i18n (front-end):**
+- ✅ Locales criados: `pt-BR.json` (~220 strings), `en.default.json` (completo)
+- ✅ Migrado: 8 arquivos críticos (cart, product, search, breadcrumb, newsletter)
+- ⏳ Pendente: ~93 arquivos (snippets, sections, templates)
+
+**Schema i18n (Theme Editor):**
+- ✅ Arquivos base criados: `pt-BR.schema.json`, `en.default.schema.json`
+- ✅ Schemas traduzidos: header, footer
+- ⏳ Pendente: ~30 sections restantes
+
+**Arquivos migrados:** cart-drawer, add-to-cart, inventory-status, newsletter, breadcrumb, search-component, price-v2, quantity-selector
 
 **Documentação:** `docs/I18N_MIGRATION_GUIDE.md`
 

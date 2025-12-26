@@ -28,7 +28,7 @@
           name="contact[first_name]"
           id="NewsletterFirstName"
           class="h-10 bg-white rounded px-3 w-full text-sm placeholder:text-sm placeholder:text-[#696969]"
-          placeholder="Digite seu Nome"
+          placeholder="{{ 'newsletter.placeholder_first_name' | t }}"
           required
         >
       </div>
@@ -40,7 +40,7 @@
           type="text"
           name="contact[last_name]"
           id="NewsletterLastName"
-          placeholder="Digite seu Sobrenome"
+          placeholder="{{ 'newsletter.placeholder_last_name' | t }}"
           class="h-10 bg-white rounded px-3 w-full text-sm placeholder:text-sm placeholder:text-[#696969]"
         >
       </div>
@@ -52,7 +52,7 @@
           type="email"
           name="contact[email]"
           id="NewsletterEmail"
-          placeholder="Digite seu E-mail"
+          placeholder="{{ 'newsletter.placeholder_email' | t }}"
           class="h-10 bg-white rounded px-3 w-full text-sm placeholder:text-sm placeholder:text-[#696969]"
           required
         >

@@ -55,9 +55,9 @@
   {%- if show_installments and show_installments_settings %}
     <div>
       <p class="instalment-container">
-        Em até
+        {{ 'product.installments.up_to' | t }}
         <span class="installment-value">{{ actual_installments }}x</span>
-        de
+        {{ 'product.installments.of' | t }}
         <span class="installment-price-value">{{ final_installment_value | money }}</span>
       </p>
     </div>

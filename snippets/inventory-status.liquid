@@ -42,14 +42,14 @@
           <div class="flex-1">
             {% if show_quantity %}
               <p class="color-error font-medium text-sm{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
-                ⚠️ Apenas {{ inventory_quantity }} {{ inventory_quantity | pluralize: 'unidade', 'unidades' }} em estoque!
+                {{ 'product.inventory.low_stock_with_quantity' | t: quantity: inventory_quantity }}
               </p>
-              <p class="color-error text-xs mt-0.5">Garanta o seu agora antes que acabe</p>
+              <p class="color-error text-xs mt-0.5">{{ 'product.inventory.low_stock_message' | t }}</p>
             {% else %}
               <p class="color-error font-medium text-sm{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
-                ⚠️ Estoque limitado!
+                {{ 'product.inventory.low_stock' | t }}
               </p>
-              <p class="color-error text-xs mt-0.5">Últimas unidades disponíveis</p>
+              <p class="color-error text-xs mt-0.5">{{ 'product.inventory.last_units' | t }}</p>
             {% endif %}
           </div>
         </div>
@@ -63,11 +63,11 @@
 
           {% if show_quantity and inventory_threshold == 0 %}
             <p class="text-sm font-medium{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
-              {{ inventory_quantity }} unidades em estoque
+              {{ 'product.inventory.units_available' | t: quantity: inventory_quantity }}
             </p>
           {% else %}
             <p class="text-sm font-medium{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
-              ✓ Em estoque
+              {{ 'product.inventory.in_stock' | t }}
             </p>
           {% endif %}
         </div>
@@ -87,7 +87,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
       </svg>
       <p class="text-sm font-medium{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
-        Fora de estoque
+        {{ 'product.inventory.out_of_stock' | t }}
       </p>
     </div>
   </div>
@@ -97,6 +97,18 @@
 <script>
   if (!window.inventoryStatusInitialized) {
     window.inventoryStatusInitialized = true;
+
+    // Traduções i18n
+    const i18n = {
+      lowStock: "{{ 'product.inventory.low_stock' | t }}",
+      lowStockMessage: "{{ 'product.inventory.low_stock_message' | t }}",
+      lastUnits: "{{ 'product.inventory.last_units' | t }}",
+      inStock: "{{ 'product.inventory.in_stock' | t }}",
+      outOfStock: "{{ 'product.inventory.out_of_stock' | t }}",
+      unitsAvailable: "{{ 'product.inventory.units_available' | t }}",
+      unit: "{{ 'product.inventory.low_stock_with_quantity' | t: quantity: 1 }}",
+      units: "{{ 'product.inventory.low_stock_with_quantity' | t: quantity: 2 }}"
+    };
 
     document.addEventListener('DOMContentLoaded', function() {
       const productContext = document.querySelector('[product-context]');
@@ -128,11 +140,11 @@
           if (quantity > 0 && quantity <= 10) {
             // Estoque baixo - urgência
             const quantityText = showQuantity
-              ? `⚠️ Apenas ${quantity} ${quantity === 1 ? 'unidade' : 'unidades'} em estoque!`
-              : '⚠️ Estoque limitado!';
+              ? i18n.units.replace('{{ quantity }}', quantity).replace('2', quantity)
+              : i18n.lowStock;
             const subtitleText = showQuantity
-              ? 'Garanta o seu agora antes que acabe'
-              : 'Últimas unidades disponíveis';
+              ? i18n.lowStockMessage
+              : i18n.lastUnits;
 
             inventoryStatusEl.innerHTML = `
               <div class="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -148,8 +160,8 @@
           } else if (quantity > 10) {
             // Estoque disponível
             const quantityText = (showQuantity && threshold === 0)
-              ? `${quantity} unidades em estoque`
-              : '✓ Em estoque';
+              ? i18n.unitsAvailable.replace('{{ quantity }}', quantity)
+              : i18n.inStock;
 
             inventoryStatusEl.innerHTML = `
               <div class="flex items-center gap-2 text-green-700">
@@ -167,7 +179,7 @@
               <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
-              <p class="text-sm font-medium">Fora de estoque</p>
+              <p class="text-sm font-medium">${i18n.outOfStock}</p>
             </div>
           `;
         }

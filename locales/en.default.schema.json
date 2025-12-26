@@ -1,0 +1,98 @@
+{
+  "sections": {
+    "header": {
+      "name": "Header",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Base color scheme for header"
+        },
+        "menu": {
+          "label": "Main menu"
+        },
+        "menu_type": {
+          "label": "Desktop header type",
+          "options": {
+            "centered_logo_menu_under": "Centered logo, menu below, search on left",
+            "logo_left_centered_menu": "Logo on left, centered menu, minimized search",
+            "logo_left_centered_menu_search_hidden": "Logo on left, centered menu, hidden search",
+            "logo_left_menu_under_centered_search": "Logo on left, menu below, centered search"
+          }
+        },
+        "fixed_header": {
+          "label": "Fixed header on scroll?",
+          "info": "If enabled, the header will follow the scroll"
+        },
+        "transparent_header": {
+          "label": "Transparent header?",
+          "info": "If enabled, the header will be transparent and overlay the first section"
+        },
+        "header_bg": {
+          "label": "Header background color",
+          "info": "If transparent and fixed header, this color will show when user scrolls"
+        },
+        "icons_color": {
+          "label": "Header icons color (Primary)"
+        },
+        "icons_color_secondary": {
+          "label": "Header icons color (Secondary)"
+        }
+      }
+    },
+    "footer": {
+      "name": "Footer",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Color scheme for footer"
+        },
+        "newsletter": {
+          "content": "Newsletter",
+          "info": "Newsletter information"
+        },
+        "active_newsletter": {
+          "label": "Show newsletter?",
+          "info": "Show or hide newsletter"
+        },
+        "newsletter_text": {
+          "label": "Newsletter text"
+        }
+      },
+      "blocks": {
+        "links": {
+          "name": "Sub-links",
+          "settings": {
+            "sublink_title": {
+              "label": "Links title",
+              "placeholder": "eg: About us"
+            },
+            "linklist": {
+              "label": "Link list"
+            }
+          }
+        },
+        "extra": {
+          "name": "Payments and Social",
+          "settings": {
+            "social_media": {
+              "content": "Social Media"
+            },
+            "active_social_media": {
+              "label": "Show social media?"
+            },
+            "title_social_media": {
+              "label": "Social media block title"
+            },
+            "payment_methods": {
+              "content": "Payment methods",
+              "info": "Select accepted payment brands"
+            },
+            "title_payments": {
+              "label": "Payment methods block title"
+            }
+          }
+        }
+      }
+    }
+  }
+}

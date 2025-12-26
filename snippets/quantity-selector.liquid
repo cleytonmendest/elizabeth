@@ -2,7 +2,7 @@
   <button
     type="button"
     name="minus"
-    aria-label="Diminuir quantidade"
+    aria-label="{{ 'product.general.decrease_quantity' | t }}"
     class="h-full flex items-center justify-center w-[25px]"
   >
     {% render 'icon-minus', size: 16 %}
@@ -12,7 +12,7 @@
     name="quantity"
     value="1"
     min="1"
-    aria-label="Quantidade"
+    aria-label="{{ 'product.general.quantity' | t }}"
     inputmode="numeric"
     pattern="[0-9]*"
     class="h-full text-center w-[50px]"
@@ -20,7 +20,7 @@
   <button
     type="button"
     name="plus"
-    aria-label="Aumentar quantidade"
+    aria-label="{{ 'product.general.increase_quantity' | t }}"
     class="h-full flex items-center justify-center w-[25px]"
   >
     {% render 'icon-plus', size: 16 %}

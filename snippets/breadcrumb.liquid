@@ -5,7 +5,7 @@
   <nav aria-label="Breadcrumb" class="breadcrumb-nav sm:text-sm text-xs w-full my-2">
     <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
       <li>
-        <a href="{{ routes.root_url }}" class="text-gray-500 hover:underline hover:text-black">Home</a>
+        <a href="{{ routes.root_url }}" class="text-gray-500 hover:underline hover:text-black">{{ 'general.breadcrumbs.home' | t }}</a>
       </li>
 
       {%- case template.name -%}
@@ -13,7 +13,7 @@
         {%- when 'list-collections' -%}
           <li class="text-gray-500 hover:text-black">
             <span class="breadcrumb-separator" aria-hidden="true">/</span>
-            <span class="breadcrumb-current" aria-current="page">Todas as Coleções</span>
+            <span class="breadcrumb-current" aria-current="page">{{ 'general.breadcrumbs.all_collections' | t }}</span>
           </li>
 
         {%- when 'product' -%}
@@ -28,7 +28,7 @@
           {%- else -%}
             <li class="text-gray-500 hover:text-black">
               <span class="breadcrumb-separator" aria-hidden="true">/</span>
-              <a href="{{ routes.all_products_collection_url }}" class="breadcrumb-link hover:underline">Produtos</a>
+              <a href="{{ routes.all_products_collection_url }}" class="breadcrumb-link hover:underline">{{ 'general.breadcrumbs.products' | t }}</a>
             </li>
           {%- endif -%}
           <li class="text-gray-500 hover:text-black">
@@ -70,7 +70,7 @@
         {%- when 'search' -%}
           <li class="text-gray-500 hover:text-black">
             <span class="breadcrumb-separator" aria-hidden="true">/</span>
-            <a href="{{ routes.search_url }}" class="breadcrumb-link hover:underline">Busca</a>
+            <a href="{{ routes.search_url }}" class="breadcrumb-link hover:underline">{{ 'general.breadcrumbs.search' | t }}</a>
           </li>
           {%- if search.performed -%}
             <li class="text-gray-500 hover:text-black">

@@ -1,0 +1,98 @@
+{
+  "sections": {
+    "header": {
+      "name": "Header",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores",
+          "info": "Esquema de cores base para o header"
+        },
+        "menu": {
+          "label": "Menu Principal"
+        },
+        "menu_type": {
+          "label": "Tipo de header desktop",
+          "options": {
+            "centered_logo_menu_under": "Logo centralizada, menu abaixo, busca a esquerda",
+            "logo_left_centered_menu": "Logo a esquerda, menu central, busca minimizada",
+            "logo_left_centered_menu_search_hidden": "Logo a esquerda, menu central, busca escondida",
+            "logo_left_menu_under_centered_search": "Logo a esquerda, menu abaixo, busca centralizada"
+          }
+        },
+        "fixed_header": {
+          "label": "Header acompanha scroll?",
+          "info": "Se ativado, o header sempre acompanhará o scroll"
+        },
+        "transparent_header": {
+          "label": "Header transparente?",
+          "info": "Se ativado, o header será transparente e ficará por cima da primeira seção."
+        },
+        "header_bg": {
+          "label": "Cor background do Header",
+          "info": "Caso seja header transparente e acompanhar scroll, essa cor exibirá quando o usuário 'scrollar' a página"
+        },
+        "icons_color": {
+          "label": "Cor dos ícones header (Primário)"
+        },
+        "icons_color_secondary": {
+          "label": "Cor dos Ícones header (Secundário)"
+        }
+      }
+    },
+    "footer": {
+      "name": "Footer",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores",
+          "info": "Esquema de cores para o footer"
+        },
+        "newsletter": {
+          "content": "Newsletter",
+          "info": "Informações sobre Newsletter"
+        },
+        "active_newsletter": {
+          "label": "Exibe Newsletter?",
+          "info": "Exibe ou não a Newsletter"
+        },
+        "newsletter_text": {
+          "label": "Texto da Newsletter"
+        }
+      },
+      "blocks": {
+        "links": {
+          "name": "Sub-links",
+          "settings": {
+            "sublink_title": {
+              "label": "Título dos Links",
+              "placeholder": "ex: Institucionais"
+            },
+            "linklist": {
+              "label": "Lista de Links"
+            }
+          }
+        },
+        "extra": {
+          "name": "Pagamentos e Social",
+          "settings": {
+            "social_media": {
+              "content": "Redes Sociais"
+            },
+            "active_social_media": {
+              "label": "Exibe Redes Sociais?"
+            },
+            "title_social_media": {
+              "label": "Título do bloco das Rede Sociais"
+            },
+            "payment_methods": {
+              "content": "Formas de Pagamento",
+              "info": "Selecione as bandeiras aceitas"
+            },
+            "title_payments": {
+              "label": "Título do bloco de Formas de Pagamento"
+            }
+          }
+        }
+      }
+    }
+  }
+}

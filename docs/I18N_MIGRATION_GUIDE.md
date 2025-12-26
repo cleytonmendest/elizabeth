@@ -3,18 +3,42 @@
 ## 📊 STATUS ATUAL
 
 ### ✅ CONCLUÍDO
-- `locales/pt-BR.json` criado com estrutura completa
-- `locales/en.default.json` criado com traduções
-- `snippets/cart-drawer.liquid` migrado (100%)
+- `locales/pt-BR.json` criado com estrutura completa (~220 strings)
+- `locales/en.default.json` criado com traduções (~220 strings)
+- **8 arquivos migrados (8% concluído):**
+  1. `snippets/cart-drawer.liquid` ✅
+  2. `snippets/add-to-cart.liquid` ✅
+  3. `snippets/inventory-status.liquid` ✅ (incluindo JavaScript)
+  4. `snippets/newsletter.liquid` ✅
+  5. `snippets/breadcrumb.liquid` ✅
+  6. `snippets/search-component.liquid` ✅
+  7. `snippets/price-v2.liquid` ✅
+  8. `snippets/quantity-selector.liquid` ✅
 
 ### ⏳ EM PROGRESSO
-- Migração de snippets e sections restantes
+- Migração de snippets e sections restantes (~93 arquivos)
 
 ---
 
 ## 📁 ESTRUTURA DE LOCALES
 
-### Categorias Organizadas:
+### Dois Tipos de Arquivos i18n
+
+**⚠️ IMPORTANTE:** O Shopify usa dois sistemas de tradução separados:
+
+1. **Storefront i18n** (front-end da loja)
+   - `pt-BR.json` e `en.default.json`
+   - Usado com `{{ 'key' | t }}` nos arquivos `.liquid`
+   - Traduz textos visíveis na loja
+
+2. **Schema i18n** (Theme Editor/Customizer)
+   - `pt-BR.schema.json` e `en.default.schema.json`
+   - Traduz o painel administrativo do Theme Customizer
+   - Traduz: section names, labels, info, placeholders, options
+
+**Ambos são obrigatórios para Theme Store!**
+
+### Categorias Organizadas (Storefront):
 ```
 general/          → Textos gerais (404, acessibilidade, busca, paginação)
 header/           → Cabeçalho (menu, carrinho, conta, busca)
@@ -104,15 +128,18 @@ sections/         → Seções (sliders, etc.)
 
 ### ALTA PRIORIDADE (Muito visíveis):
 1. ✅ `snippets/cart-drawer.liquid` - CONCLUÍDO
-2. ⏳ `snippets/add-to-cart.liquid` - Botão principal
-3. ⏳ `snippets/inventory-status.liquid` - Status de estoque
-4. ⏳ `snippets/newsletter.liquid` - Formulário newsletter
-5. ⏳ `snippets/breadcrumb.liquid` - Navegação
-6. ⏳ `sections/header.liquid` - Cabeçalho
-7. ⏳ `sections/footer.liquid` - Rodapé
-8. ⏳ `sections/main-product.liquid` - Página de produto
-9. ⏳ `sections/main-collection.liquid` - Página de coleção
-10. ⏳ `sections/testimonials.liquid` - Depoimentos
+2. ✅ `snippets/add-to-cart.liquid` - CONCLUÍDO
+3. ✅ `snippets/inventory-status.liquid` - CONCLUÍDO (incluindo JavaScript)
+4. ✅ `snippets/newsletter.liquid` - CONCLUÍDO
+5. ✅ `snippets/breadcrumb.liquid` - CONCLUÍDO
+6. ✅ `snippets/search-component.liquid` - CONCLUÍDO
+7. ✅ `snippets/price-v2.liquid` - CONCLUÍDO
+8. ✅ `snippets/quantity-selector.liquid` - CONCLUÍDO
+9. ⏳ `sections/header.liquid` - OK (sem textos hardcoded)
+10. ⏳ `sections/footer.liquid` - OK (sem textos hardcoded)
+11. ⏳ `sections/main-product.liquid` - Página de produto
+12. ⏳ `sections/main-collection.liquid` - Página de coleção
+13. ⏳ `sections/testimonials.liquid` - Depoimentos
 
 ### MÉDIA PRIORIDADE:
 11. `sections/newsletter-modal.liquid`
@@ -253,18 +280,21 @@ grep -r "Em estoque" sections/ snippets/
 
 ## 📊 PROGRESSO
 
-### Arquivos Migrados: 1/101 (1%)
+### Arquivos Migrados: 8/101 (8%)
 
 | Arquivo | Status | Strings Migradas |
 |---------|--------|------------------|
 | snippets/cart-drawer.liquid | ✅ | 9/9 |
-| snippets/add-to-cart.liquid | ⏳ | 0/3 |
-| snippets/inventory-status.liquid | ⏳ | 0/8 |
-| snippets/newsletter.liquid | ⏳ | 0/5 |
-| snippets/breadcrumb.liquid | ⏳ | 0/2 |
+| snippets/add-to-cart.liquid | ✅ | 3/3 |
+| snippets/inventory-status.liquid | ✅ | 14/14 (incluindo JS) |
+| snippets/newsletter.liquid | ✅ | 3/3 |
+| snippets/breadcrumb.liquid | ✅ | 4/4 |
+| snippets/search-component.liquid | ✅ | 4/4 |
+| snippets/price-v2.liquid | ✅ | 2/2 |
+| snippets/quantity-selector.liquid | ✅ | 3/3 |
 | ... | ⏳ | ... |
 
-**Total estimado**: ~400-500 strings para migrar
+**Total migrado**: ~42 strings | **Total estimado**: ~400-500 strings
 
 ---
 
@@ -323,27 +353,77 @@ Depois use:
 
 ---
 
+## 📝 SCHEMA i18n (Theme Editor)
+
+### Estrutura de arquivo `.schema.json`
+
+```json
+{
+  "sections": {
+    "section_name": {
+      "name": "Section Display Name",
+      "settings": {
+        "setting_id": {
+          "label": "Setting Label",
+          "info": "Helper text",
+          "placeholder": "Placeholder text"
+        }
+      },
+      "blocks": {
+        "block_type": {
+          "name": "Block Name",
+          "settings": {
+            "block_setting_id": {
+              "label": "Block Setting Label"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Como migrar schemas
+
+**IMPORTANTE:** NÃO remova textos hardcoded dos schemas! Apenas adicione as traduções aos arquivos `.schema.json`.
+
+1. Identifique a section (ex: `header.liquid`)
+2. Extraia todos os textos do `{% schema %}`
+3. Adicione em `locales/pt-BR.schema.json` e `locales/en.default.schema.json`
+4. Use IDs snake_case (ex: `menu_type` ao invés de `menu-type`)
+
+**Status:** Header e Footer schemas criados ✅ | Restante pendente ⏳
+
+---
+
 ## ✅ CRITÉRIO DE CONCLUSÃO
 
 Um arquivo está 100% migrado quando:
 
-1. ✅ Não há textos visíveis hardcoded
+1. ✅ Não há textos visíveis hardcoded no `.liquid`
 2. ✅ Todos aria-labels usam locales
 3. ✅ Placeholders usam locales
 4. ✅ Data attributes de JavaScript usam locales
-5. ✅ Testado em PT e EN
+5. ✅ Schema traduzido em `.schema.json` (se aplicável)
+6. ✅ Testado em PT e EN
 
 ---
 
 ## 🎯 OBJETIVO FINAL
 
 **Para Theme Store Shopify:**
-- ✅ 100% dos textos em locales
+- ✅ 100% dos textos storefront em locales (`.json`)
+- ✅ 100% dos schemas em locales (`.schema.json`)
 - ✅ Tema funciona perfeitamente em inglês
 - ✅ Tema funciona perfeitamente em português
+- ✅ Theme Editor completamente traduzido
 - ✅ Fácil adicionar novos idiomas
 
-**Estimativa**: 20-30h de trabalho para migração completa
+**Estimativa**:
+- Storefront i18n: 20-30h
+- Schema i18n: 8-12h
+- **Total: 28-42h**
 
 ---
 
