@@ -329,11 +329,10 @@
       ],
       "name": "Depoimentos de Clientes",
       "settings": {
+        "color_scheme": "",
+        "card_color_scheme": "scheme-1",
         "heading": "O que nossos clientes dizem",
         "subheading": "Confira a experiência de quem já comprou com a gente",
-        "background_color": "#f9fafb",
-        "text_color": "#111827",
-        "star_color": "#fbbf24",
         "autoplay": true,
         "autoplay_speed": 5,
         "show_navigation": true
@@ -344,6 +343,7 @@
       "name": "Modal Newsletter",
       "settings": {
         "enable_modal": true,
+        "color_scheme": "",
         "modalWidth": 500,
         "modal_title": "Receba ofertas exclusivas!",
         "modal_text": "<p>Cadastre-se e receba em primeira mão nossas promoções e lançamentos.</p>",
