@@ -18,20 +18,20 @@
 
 {% schema %}
 {
-  "name": "Barra de Anuncios",
+  "name": "t:sections.announcement_bar.name",
   "max_blocks": 15,
   "settings": [
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Esquema de cores",
+      "label": "t:sections.announcement_bar.settings.color_scheme.label",
       "default": "scheme-1",
-      "info": "Esquema de cores base para a barra de anúncios"
+      "info": "t:sections.announcement_bar.settings.color_scheme.info"
     },
     {
       "type": "range",
       "id": "duration",
-      "label": "Duração do ciclo",
+      "label": "t:sections.announcement_bar.settings.duration.label",
       "unit": "s",
       "default": 40,
       "min": 10,
@@ -41,7 +41,7 @@
     {
       "type": "range",
       "id": "gap",
-      "label": "Gap entre conteúdos (px)",
+      "label": "t:sections.announcement_bar.settings.gap.label",
       "default": 0,
       "min": 0,
       "max": 100,
@@ -50,37 +50,37 @@
     {
       "type": "select",
       "id": "direction",
-      "label": "Direção",
+      "label": "t:sections.announcement_bar.settings.direction.label",
       "default": "left",
       "options": [
-        { "value": "left", "label": "Esquerda" },
-        { "value": "right", "label": "Direita" },
+        { "value": "left", "label": "t:sections.announcement_bar.settings.direction.options.left" },
+        { "value": "right", "label": "t:sections.announcement_bar.settings.direction.options.right" }
       ]
     },
     {
       "type": "checkbox",
       "id": "pause_hover",
-      "label": "Pausar ao passar o mouse?",
+      "label": "t:sections.announcement_bar.settings.pause_hover.label",
       "default": false
     }
   ],
   "blocks": [
     {
       "type": "text",
-      "name": "Texto",
+      "name": "t:sections.announcement_bar.blocks.text.name",
       "settings": [
         {
           "type": "richtext",
           "id": "text_item",
-          "label": "Texto do anúncio",
-          "default": "<p>Em até <strong>12x sem juros!</strong></p>"
+          "label": "t:sections.announcement_bar.blocks.text.settings.text_item.label",
+          "default": "<p>Up to <strong>12x interest-free!</strong></p>"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Barra de Anuncios",
+      "name": "t:sections.announcement_bar.presets.name",
       "blocks": []
     }
   ]
