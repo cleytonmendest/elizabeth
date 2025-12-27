@@ -292,7 +292,7 @@ grep -r "Em estoque" sections/ snippets/
 
 ## 📊 PROGRESSO
 
-### Arquivos Migrados: 9/101 (9%)
+### Arquivos Migrados: 11/101 (11%)
 
 | Arquivo | Status | Strings Migradas |
 |---------|--------|------------------|
@@ -304,10 +304,12 @@ grep -r "Em estoque" sections/ snippets/
 | snippets/search-component.liquid | ✅ | 4/4 |
 | snippets/price-v2.liquid | ✅ | 2/2 |
 | snippets/quantity-selector.liquid | ✅ | 3/3 |
-| sections/testimonials.liquid | ✅ | 3/3 + schema completo |
+| sections/testimonials.liquid | ✅ | 3/3 + schema completo + dual color schemes |
+| sections/announcement-bar.liquid | ✅ | schema completo + color schemes |
+| sections/trust-badges.liquid | ✅ | schema completo + refatoração color schemes |
 | ... | ⏳ | ... |
 
-**Total migrado**: ~45 strings storefront + 5 schemas completos | **Total estimado**: ~400-500 strings
+**Total migrado**: ~48 strings storefront + 5 schemas completos | **Total estimado**: ~400-500 strings
 
 ---
 

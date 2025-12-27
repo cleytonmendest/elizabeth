@@ -6,14 +6,10 @@
 {%- liquid
   assign layout = section.settings.layout | default: 'grid'
   assign sticky = section.settings.sticky
-  assign icon_color = section.settings.icon_color
-  assign text_color = section.settings.text_color
-  assign bg_color = section.settings.background_color
 -%}
 
 <section
-  class="trust-badges-section {% if sticky %}sticky top-0 z-30{% endif %} transition-all"
-  style="background-color: {{ bg_color }}; color: {{ text_color }};"
+  class="trust-badges-section color-{{ section.settings.color_scheme }} color-background color-text {% if sticky %}sticky top-0 z-30{% endif %} transition-all"
   data-trust-badges
 >
   <div class="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-5">
@@ -24,9 +20,7 @@
         {% for block in section.blocks %}
           <div class="trust-badge-item text-center" {{ block.shopify_attributes }}>
             {% render 'trust-badge-item',
-              block: block,
-              icon_color: icon_color,
-              text_color: text_color
+              block: block
             %}
           </div>
         {% endfor %}
@@ -34,32 +28,52 @@
 
       {%- comment -%} Slider Mobile {%- endcomment -%}
       <div class="md:hidden">
-        <div class="owl-carousel owl-theme trust-badges-carousel">
-          {% for block in section.blocks %}
-            <div class="trust-badge-item text-center" {{ block.shopify_attributes }}>
-              {% render 'trust-badge-item',
-                block: block,
-                icon_color: icon_color,
-                text_color: text_color
-              %}
-            </div>
-          {% endfor %}
-        </div>
+        <my-slider
+          data-items="{{ section.blocks.size }}"
+          data-loop="true"
+          data-autoplay="true"
+          data-ap-time="4"
+          data-pause-hover="true"
+          data-dot="true"
+          data-qty-desk="4"
+          data-qty-tab="2"
+          data-qty-mob="1"
+        >
+          <div class="my-slider__container">
+            {% for block in section.blocks %}
+              <div class="trust-badge-item text-center" {{ block.shopify_attributes }}>
+                {% render 'trust-badge-item',
+                  block: block
+                %}
+              </div>
+            {% endfor %}
+          </div>
+        </my-slider>
       </div>
 
     {%- comment -%} Slider em todas as telas {%- endcomment -%}
     {% elsif layout == 'slider' %}
-      <div class="owl-carousel owl-theme trust-badges-carousel">
-        {% for block in section.blocks %}
-          <div class="trust-badge-item text-center" {{ block.shopify_attributes }}>
-            {% render 'trust-badge-item',
-              block: block,
-              icon_color: icon_color,
-              text_color: text_color
-            %}
-          </div>
-        {% endfor %}
-      </div>
+      <my-slider
+        data-items="{{ section.blocks.size }}"
+        data-loop="true"
+        data-autoplay="true"
+        data-ap-time="4"
+        data-pause-hover="true"
+        data-dot="true"
+        data-qty-desk="{{ section.blocks.size | at_most: 4 }}"
+        data-qty-tab="2"
+        data-qty-mob="1"
+      >
+        <div class="my-slider__container">
+          {% for block in section.blocks %}
+            <div class="trust-badge-item text-center" {{ block.shopify_attributes }}>
+              {% render 'trust-badge-item',
+                block: block
+              %}
+            </div>
+          {% endfor %}
+        </div>
+      </my-slider>
 
     {%- comment -%} Lista simples (sem slider) {%- endcomment -%}
     {% elsif layout == 'list' %}
@@ -68,8 +82,6 @@
           <div class="trust-badge-item flex items-center gap-3" {{ block.shopify_attributes }}>
             {% render 'trust-badge-item',
               block: block,
-              icon_color: icon_color,
-              text_color: text_color,
               compact: true
             %}
           </div>
@@ -80,160 +92,93 @@
   </div>
 </section>
 
-{%- comment -%} JavaScript para Owl Carousel {%- endcomment -%}
-{% if layout == 'slider' or layout == 'grid' %}
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const carousels = document.querySelectorAll('.trust-badges-carousel');
-
-      carousels.forEach(function(carousel) {
-        $(carousel).owlCarousel({
-          items: 1,
-          loop: true,
-          autoplay: true,
-          autoplayTimeout: 4000,
-          autoplayHoverPause: true,
-          dots: true,
-          nav: false,
-          margin: 20,
-          center: true,
-          responsive: {
-            640: {
-              items: 2
-            },
-            1024: {
-              items: {{ section.blocks.size | at_most: 4 }}
-            }
-          }
-        });
-      });
-    });
-  </script>
-{% endif %}
-
-<style>
-  .trust-badges-carousel .owl-dots {
-    margin-top: 1rem;
-  }
-
-  .trust-badges-carousel .owl-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background: {{ text_color | default: '#000' }};
-    opacity: 0.3;
-    border-radius: 50%;
-    margin: 0 4px;
-    transition: opacity 0.3s;
-  }
-
-  .trust-badges-carousel .owl-dot.active {
-    opacity: 1;
-  }
-</style>
-
 {% schema %}
 {
-  "name": "Trust Badges",
+  "name": "t:sections.trust_badges.name",
   "tag": "section",
   "class": "section-trust-badges",
   "settings": [
     {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.trust_badges.settings.color_scheme.label",
+      "default": "scheme-1",
+      "info": "t:sections.trust_badges.settings.color_scheme.info"
+    },
+    {
       "type": "header",
-      "content": "Layout"
+      "content": "t:sections.trust_badges.settings.layout_header.content"
     },
     {
       "type": "select",
       "id": "layout",
-      "label": "Tipo de Layout",
+      "label": "t:sections.trust_badges.settings.layout.label",
       "options": [
         {
           "value": "grid",
-          "label": "Grid (Desktop) / Slider (Mobile)"
+          "label": "t:sections.trust_badges.settings.layout.options.grid"
         },
         {
           "value": "slider",
-          "label": "Slider (Todas as telas)"
+          "label": "t:sections.trust_badges.settings.layout.options.slider"
         },
         {
           "value": "list",
-          "label": "Lista Horizontal"
+          "label": "t:sections.trust_badges.settings.layout.options.list"
         }
       ],
       "default": "grid",
-      "info": "Grid é recomendado para melhor performance"
+      "info": "t:sections.trust_badges.settings.layout.info"
     },
     {
       "type": "checkbox",
       "id": "sticky",
-      "label": "Fixar no Topo (Sticky)",
+      "label": "t:sections.trust_badges.settings.sticky.label",
       "default": false,
-      "info": "Mantém a barra visível ao rolar a página"
-    },
-    {
-      "type": "header",
-      "content": "Cores"
-    },
-    {
-      "type": "color",
-      "id": "background_color",
-      "label": "Cor de Fundo",
-      "default": "#f9fafb"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Cor do Texto",
-      "default": "#111827"
-    },
-    {
-      "type": "color",
-      "id": "icon_color",
-      "label": "Cor dos Ícones",
-      "default": "#000000"
+      "info": "t:sections.trust_badges.settings.sticky.info"
     }
   ],
   "blocks": [
     {
       "type": "badge",
-      "name": "Badge",
+      "name": "t:sections.trust_badges.blocks.badge.name",
       "settings": [
         {
           "type": "select",
           "id": "icon",
-          "label": "Ícone",
+          "label": "t:sections.trust_badges.blocks.badge.settings.icon.label",
           "options": [
             {
               "value": "truck",
-              "label": "🚚 Caminhão (Frete)"
+              "label": "t:sections.trust_badges.blocks.badge.settings.icon.options.truck"
             },
             {
               "value": "shield",
-              "label": "🛡️ Escudo (Segurança)"
+              "label": "t:sections.trust_badges.blocks.badge.settings.icon.options.shield"
             },
             {
               "value": "refresh",
-              "label": "🔄 Refresh (Troca/Devolução)"
+              "label": "t:sections.trust_badges.blocks.badge.settings.icon.options.refresh"
             },
             {
               "value": "credit-card",
-              "label": "💳 Cartão (Pagamento)"
+              "label": "t:sections.trust_badges.blocks.badge.settings.icon.options.credit_card"
             },
             {
               "value": "star",
-              "label": "⭐ Estrela (Qualidade)"
+              "label": "t:sections.trust_badges.blocks.badge.settings.icon.options.star"
             },
             {
               "value": "check-circle",
-              "label": "✓ Check (Garantia)"
+              "label": "t:sections.trust_badges.blocks.badge.settings.icon.options.check_circle"
             },
             {
               "value": "lock",
-              "label": "🔒 Cadeado (Privacidade)"
+              "label": "t:sections.trust_badges.blocks.badge.settings.icon.options.lock"
             },
             {
               "value": "clock",
-              "label": "⏰ Relógio (Prazo)"
+              "label": "t:sections.trust_badges.blocks.badge.settings.icon.options.clock"
             }
           ],
           "default": "truck"
@@ -241,53 +186,53 @@
         {
           "type": "text",
           "id": "title",
-          "label": "Título",
-          "default": "Frete Grátis"
+          "label": "t:sections.trust_badges.blocks.badge.settings.title.label",
+          "default": "Free Shipping"
         },
         {
           "type": "text",
           "id": "description",
-          "label": "Descrição",
-          "default": "Acima de R$ 299",
-          "info": "Opcional - deixe em branco para ocultar"
+          "label": "t:sections.trust_badges.blocks.badge.settings.description.label",
+          "default": "On orders over $50",
+          "info": "t:sections.trust_badges.blocks.badge.settings.description.info"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Trust Badges",
+      "name": "t:sections.trust_badges.presets.name",
       "blocks": [
         {
           "type": "badge",
           "settings": {
             "icon": "truck",
-            "title": "Frete Grátis",
-            "description": "Acima de R$ 299"
+            "title": "Free Shipping",
+            "description": "On orders over $50"
           }
         },
         {
           "type": "badge",
           "settings": {
             "icon": "refresh",
-            "title": "Troca Fácil",
-            "description": "30 dias para trocar"
+            "title": "Easy Returns",
+            "description": "30 day return policy"
           }
         },
         {
           "type": "badge",
           "settings": {
             "icon": "shield",
-            "title": "Compra Segura",
-            "description": "100% protegida"
+            "title": "Secure Checkout",
+            "description": "100% protected"
           }
         },
         {
           "type": "badge",
           "settings": {
             "icon": "credit-card",
-            "title": "Parcele sem Juros",
-            "description": "Em até 6x no cartão"
+            "title": "Flexible Payment",
+            "description": "Multiple payment options"
           }
         }
       ]

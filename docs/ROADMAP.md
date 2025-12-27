@@ -137,6 +137,8 @@ Migração completa + Owl Carousel → Swiper.
 - Color Schemes: Sistema dual (section + card) implementado em testimonials, CSS variables geradas dinamicamente via theme.liquid, color-scheme.css otimizado (9 classes obsoletas removidas, -26% linhas), documentação atualizada
 - Gift Card: template completo com layout standalone, QR code, código copiável, status/saldo, print otimizado (@page margins, background white), Apple Wallet, 100% i18n + color schemes
 - Testimonials: 100% i18n (storefront + schema), dual color schemes funcional, defaults/presets em inglês, zero hardcoded
+- Announcement-bar: 100% i18n schema, color schemes moderno, defaults em inglês
+- Trust-badges: refatoração completa (sistema obsoleto de 3 cores → color_scheme moderno), removidos inline styles, 100% i18n schema, defaults/presets em inglês
 
 **v2.2.0 - Sticky ATC & Padronização** (2025-01-22)
 - Sticky Add to Cart com IntersectionObserver e texto adaptativo

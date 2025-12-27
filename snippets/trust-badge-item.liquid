@@ -3,8 +3,6 @@
 
   Parâmetros:
   - block: bloco com configurações (obrigatório)
-  - icon_color: cor do ícone (opcional)
-  - text_color: cor do texto (opcional)
   - compact: layout compacto horizontal (opcional, default: false)
 {%- endcomment -%}
 
@@ -13,24 +11,22 @@
   assign title = block.settings.title
   assign description = block.settings.description
   assign compact = compact | default: false
-  assign icon_color = icon_color | default: '#000000'
-  assign text_color = text_color | default: '#111827'
 -%}
 
 {% if compact %}
   {%- comment -%} Layout Compacto (horizontal) {%- endcomment -%}
   <div class="flex items-center gap-2">
-    <div class="flex-shrink-0" style="color: {{ icon_color }};">
+    <div class="flex-shrink-0 color-icon">
       {% render 'trust-badge-icon', icon: icon, size: 20 %}
     </div>
     <div class="text-left">
       {% if title != blank %}
-        <p class="font-semibold text-sm leading-tight" style="color: {{ text_color }};">
+        <p class="font-semibold text-sm leading-tight color-text">
           {{ title }}
         </p>
       {% endif %}
       {% if description != blank %}
-        <p class="text-xs opacity-75" style="color: {{ text_color }};">
+        <p class="text-xs color-text-muted">
           {{ description }}
         </p>
       {% endif %}
@@ -40,17 +36,17 @@
 {% else %}
   {%- comment -%} Layout Padrão (vertical/centralizado) {%- endcomment -%}
   <div class="flex flex-col items-center gap-2">
-    <div class="flex-shrink-0" style="color: {{ icon_color }};">
+    <div class="flex-shrink-0 color-icon">
       {% render 'trust-badge-icon', icon: icon, size: 32 %}
     </div>
     <div class="text-center">
       {% if title != blank %}
-        <p class="font-semibold text-sm md:text-base leading-tight" style="color: {{ text_color }};">
+        <p class="font-semibold text-sm md:text-base leading-tight color-text">
           {{ title }}
         </p>
       {% endif %}
       {% if description != blank %}
-        <p class="text-xs md:text-sm opacity-75 mt-1" style="color: {{ text_color }};">
+        <p class="text-xs md:text-sm color-text-muted mt-1">
           {{ description }}
         </p>
       {% endif %}
