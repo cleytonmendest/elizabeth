@@ -2997,6 +2997,10 @@ label.not-swatch.is-unavailable {
     display: block;
   }
 
+  .md\:flex {
+    display: flex;
+  }
+
   .md\:grid {
     display: grid;
   }
@@ -3031,6 +3035,14 @@ label.not-swatch.is-unavailable {
 
   .md\:flex-row {
     flex-direction: row;
+  }
+
+  .md\:items-center {
+    align-items: center;
+  }
+
+  .md\:justify-center {
+    justify-content: center;
   }
 
   .md\:gap-6 {
@@ -3198,6 +3210,10 @@ label.not-swatch.is-unavailable {
 
   .lg\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .lg\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .lg\:flex-row {

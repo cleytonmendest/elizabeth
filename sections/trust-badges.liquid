@@ -1,22 +1,35 @@
 {%- comment -%}
   Seção de Trust Badges / Benefits Bar
   Exibe benefícios e garantias da loja para aumentar confiança
+
+  Desktop: Sempre flex horizontal (lado a lado)
+  Mobile: Grid 2 colunas / Grid 1 coluna / Slider (configurável)
 {%- endcomment -%}
 
 {%- liquid
-  assign layout = section.settings.layout | default: 'grid'
-  assign sticky = section.settings.sticky
+  assign mobile_layout = section.settings.mobile_layout | default: 'grid-2'
 -%}
 
 <section
-  class="trust-badges-section color-{{ section.settings.color_scheme }} color-background color-text {% if sticky %}sticky top-0 z-30{% endif %} transition-all"
+  class="trust-badges-section color-{{ section.settings.color_scheme }} color-background color-text"
   data-trust-badges
 >
   <div class="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-5">
 
-    {%- comment -%} Grid Layout Desktop {%- endcomment -%}
-    {% if layout == 'grid' %}
-      <div class="hidden md:grid grid-cols-{{ section.blocks.size }} gap-6 lg:gap-8">
+    {%- comment -%} Desktop: Sempre flex horizontal {%- endcomment -%}
+    <div class="hidden md:flex md:justify-center md:items-center md:gap-6 lg:gap-10">
+      {% for block in section.blocks %}
+        <div class="trust-badge-item text-center" {{ block.shopify_attributes }}>
+          {% render 'trust-badge-item',
+            block: block
+          %}
+        </div>
+      {% endfor %}
+    </div>
+
+    {%- comment -%} Mobile: Grid 2 colunas {%- endcomment -%}
+    {% if mobile_layout == 'grid-2' %}
+      <div class="md:hidden grid grid-cols-2 gap-4">
         {% for block in section.blocks %}
           <div class="trust-badge-item text-center" {{ block.shopify_attributes }}>
             {% render 'trust-badge-item',
@@ -26,7 +39,20 @@
         {% endfor %}
       </div>
 
-      {%- comment -%} Slider Mobile {%- endcomment -%}
+    {%- comment -%} Mobile: Grid 1 coluna {%- endcomment -%}
+    {% elsif mobile_layout == 'grid-1' %}
+      <div class="md:hidden grid grid-cols-1 gap-4">
+        {% for block in section.blocks %}
+          <div class="trust-badge-item text-center" {{ block.shopify_attributes }}>
+            {% render 'trust-badge-item',
+              block: block
+            %}
+          </div>
+        {% endfor %}
+      </div>
+
+    {%- comment -%} Mobile: Slider {%- endcomment -%}
+    {% elsif mobile_layout == 'slider' %}
       <div class="md:hidden">
         <my-slider
           data-items="{{ section.blocks.size }}"
@@ -39,7 +65,7 @@
           data-qty-tab="2"
           data-qty-mob="1"
         >
-          <div class="my-slider__container">
+          <div class="my-slider__container overflow-hidden">
             {% for block in section.blocks %}
               <div class="trust-badge-item text-center" {{ block.shopify_attributes }}>
                 {% render 'trust-badge-item',
@@ -49,43 +75,6 @@
             {% endfor %}
           </div>
         </my-slider>
-      </div>
-
-    {%- comment -%} Slider em todas as telas {%- endcomment -%}
-    {% elsif layout == 'slider' %}
-      <my-slider
-        data-items="{{ section.blocks.size }}"
-        data-loop="true"
-        data-autoplay="true"
-        data-ap-time="4"
-        data-pause-hover="true"
-        data-dot="true"
-        data-qty-desk="{{ section.blocks.size | at_most: 4 }}"
-        data-qty-tab="2"
-        data-qty-mob="1"
-      >
-        <div class="my-slider__container">
-          {% for block in section.blocks %}
-            <div class="trust-badge-item text-center" {{ block.shopify_attributes }}>
-              {% render 'trust-badge-item',
-                block: block
-              %}
-            </div>
-          {% endfor %}
-        </div>
-      </my-slider>
-
-    {%- comment -%} Lista simples (sem slider) {%- endcomment -%}
-    {% elsif layout == 'list' %}
-      <div class="flex flex-wrap justify-center items-center gap-6 lg:gap-10">
-        {% for block in section.blocks %}
-          <div class="trust-badge-item flex items-center gap-3" {{ block.shopify_attributes }}>
-            {% render 'trust-badge-item',
-              block: block,
-              compact: true
-            %}
-          </div>
-        {% endfor %}
       </div>
     {% endif %}
 
@@ -97,6 +86,7 @@
   "name": "t:sections.trust_badges.name",
   "tag": "section",
   "class": "section-trust-badges",
+  "max_blocks": 4,
   "settings": [
     {
       "type": "color_scheme",
@@ -111,31 +101,24 @@
     },
     {
       "type": "select",
-      "id": "layout",
-      "label": "t:sections.trust_badges.settings.layout.label",
+      "id": "mobile_layout",
+      "label": "t:sections.trust_badges.settings.mobile_layout.label",
       "options": [
         {
-          "value": "grid",
-          "label": "t:sections.trust_badges.settings.layout.options.grid"
+          "value": "grid-2",
+          "label": "t:sections.trust_badges.settings.mobile_layout.options.grid_2"
+        },
+        {
+          "value": "grid-1",
+          "label": "t:sections.trust_badges.settings.mobile_layout.options.grid_1"
         },
         {
           "value": "slider",
-          "label": "t:sections.trust_badges.settings.layout.options.slider"
-        },
-        {
-          "value": "list",
-          "label": "t:sections.trust_badges.settings.layout.options.list"
+          "label": "t:sections.trust_badges.settings.mobile_layout.options.slider"
         }
       ],
-      "default": "grid",
-      "info": "t:sections.trust_badges.settings.layout.info"
-    },
-    {
-      "type": "checkbox",
-      "id": "sticky",
-      "label": "t:sections.trust_badges.settings.sticky.label",
-      "default": false,
-      "info": "t:sections.trust_badges.settings.sticky.info"
+      "default": "grid-2",
+      "info": "t:sections.trust_badges.settings.mobile_layout.info"
     }
   ],
   "blocks": [
@@ -186,14 +169,12 @@
         {
           "type": "text",
           "id": "title",
-          "label": "t:sections.trust_badges.blocks.badge.settings.title.label",
-          "default": "Free Shipping"
+          "label": "t:sections.trust_badges.blocks.badge.settings.title.label"
         },
         {
           "type": "text",
           "id": "description",
           "label": "t:sections.trust_badges.blocks.badge.settings.description.label",
-          "default": "On orders over $50",
           "info": "t:sections.trust_badges.blocks.badge.settings.description.info"
         }
       ]
@@ -207,32 +188,32 @@
           "type": "badge",
           "settings": {
             "icon": "truck",
-            "title": "Free Shipping",
-            "description": "On orders over $50"
+            "title": "Frete Grátis",
+            "description": "Em compras acima de R$ 299"
           }
         },
         {
           "type": "badge",
           "settings": {
             "icon": "refresh",
-            "title": "Easy Returns",
-            "description": "30 day return policy"
+            "title": "Troca Facilitada",
+            "description": "Até 30 dias"
           }
         },
         {
           "type": "badge",
           "settings": {
             "icon": "shield",
-            "title": "Secure Checkout",
-            "description": "100% protected"
+            "title": "Compra Segura",
+            "description": "100% protegida"
           }
         },
         {
           "type": "badge",
           "settings": {
             "icon": "credit-card",
-            "title": "Flexible Payment",
-            "description": "Multiple payment options"
+            "title": "Parcele sem Juros",
+            "description": "Em até 3x no cartão"
           }
         }
       ]

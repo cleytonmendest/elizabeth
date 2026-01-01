@@ -216,18 +216,14 @@
         "layout_header": {
           "content": "Layout"
         },
-        "layout": {
-          "label": "Tipo de Layout",
+        "mobile_layout": {
+          "label": "Layout Mobile",
           "options": {
-            "grid": "Grid (Desktop) / Slider (Mobile)",
-            "slider": "Slider (Todas as telas)",
-            "list": "Lista Horizontal"
+            "grid_2": "Grid 2 colunas",
+            "grid_1": "Grid 1 coluna",
+            "slider": "Slider"
           },
-          "info": "Grid é recomendado para melhor performance"
-        },
-        "sticky": {
-          "label": "Fixar no Topo (Sticky)",
-          "info": "Mantém a barra visível ao rolar a página"
+          "info": "No desktop será sempre exibido lado a lado (flex horizontal)"
         }
       },
       "blocks": {

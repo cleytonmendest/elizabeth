@@ -216,18 +216,14 @@
         "layout_header": {
           "content": "Layout"
         },
-        "layout": {
-          "label": "Layout Type",
+        "mobile_layout": {
+          "label": "Mobile Layout",
           "options": {
-            "grid": "Grid (Desktop) / Slider (Mobile)",
-            "slider": "Slider (All screens)",
-            "list": "Horizontal List"
+            "grid_2": "Grid 2 columns",
+            "grid_1": "Grid 1 column",
+            "slider": "Slider"
           },
-          "info": "Grid is recommended for best performance"
-        },
-        "sticky": {
-          "label": "Sticky to Top",
-          "info": "Keeps the bar visible when scrolling"
+          "info": "Desktop will always display side by side (horizontal flex)"
         }
       },
       "blocks": {
