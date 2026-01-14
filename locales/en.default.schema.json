@@ -206,6 +206,80 @@
         "name": "Customer Testimonials"
       }
     },
+    "highlighted_section": {
+      "name": "Highlighted Section",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Main color scheme for the section"
+        },
+        "background_accent_scheme": {
+          "label": "Decorative background color scheme",
+          "info": "Color of the curved decorative background behind text"
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "text_alignment": {
+          "label": "Text alignment",
+          "options": {
+            "left": "Left",
+            "center": "Center",
+            "right": "Right"
+          }
+        },
+        "enable_curved_background": {
+          "label": "Enable curved decorative background",
+          "info": "Displays a background with rounded edges behind the text"
+        }
+      },
+      "blocks": {
+        "image": {
+          "name": "Image",
+          "settings": {
+            "image": {
+              "label": "Image"
+            },
+            "url": {
+              "label": "Image link",
+              "info": "Optional - makes the image clickable"
+            }
+          }
+        },
+        "text": {
+          "name": "Text",
+          "settings": {
+            "pre_title": {
+              "label": "Pre-title",
+              "info": "Small text above the main title"
+            },
+            "title": {
+              "label": "Title"
+            },
+            "text": {
+              "label": "Text"
+            },
+            "button_header": {
+              "content": "Button (optional)"
+            },
+            "button_label": {
+              "label": "Button text",
+              "info": "If filled, displays a button instead of arrow"
+            },
+            "button_url": {
+              "label": "Button link"
+            },
+            "url": {
+              "label": "Alternative link (arrow)",
+              "info": "Only used if button is not configured"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Highlighted Section"
+      }
+    },
     "trust_badges": {
       "name": "Trust Badges",
       "settings": {

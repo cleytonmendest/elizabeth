@@ -1518,6 +1518,14 @@ label.not-swatch.is-unavailable {
   border-bottom-right-radius: 800px;
 }
 
+.rounded-bl-\[600px\] {
+  border-bottom-left-radius: 600px;
+}
+
+.rounded-br-\[600px\] {
+  border-bottom-right-radius: 600px;
+}
+
 .border {
   border-width: 1px;
 }
@@ -3272,6 +3280,14 @@ label.not-swatch.is-unavailable {
     border-top-right-radius: 800px;
   }
 
+  .lg\:rounded-tl-\[600px\] {
+    border-top-left-radius: 600px;
+  }
+
+  .lg\:rounded-tr-\[600px\] {
+    border-top-right-radius: 600px;
+  }
+
   .lg\:bg-\[\#f1f1f180\] {
     background-color: #f1f1f180;
   }
@@ -3284,6 +3300,10 @@ label.not-swatch.is-unavailable {
     background-color: transparent;
   }
 
+  .lg\:p-8 {
+    padding: 2rem;
+  }
+
   .lg\:px-8 {
     padding-left: 2rem;
     padding-right: 2rem;
@@ -3292,6 +3312,11 @@ label.not-swatch.is-unavailable {
   .lg\:py-2 {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
+  }
+
+  .lg\:py-12 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
   }
 
   .lg\:pl-16 {
@@ -3316,6 +3341,11 @@ label.not-swatch.is-unavailable {
   .lg\:text-base {
     font-size: 1rem;
     line-height: 1.5rem;
+  }
+
+  .lg\:text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
   }
 
   .lg\:text-\[--icons_color2\] {

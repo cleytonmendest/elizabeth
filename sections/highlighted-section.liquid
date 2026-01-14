@@ -1,89 +1,205 @@
-<section class="page-width flex flex-col lg:flex-row !py-4 !lg:py-6">
-  {% for block in section.blocks %}
-    {% if block.type == 'image' %}
-      <div class="flex-1">
-        {% if section.settings.url != blank %}
-          <a href="{{ section.settings.url }}">
-            {{ block.settings.image | image_url: width: 1500 | image_tag }}
-          </a>
-          {% else %}
-            {{ block.settings.image | image_url: width: 1500 | image_tag }}
-        {% endif %}
-      </div>
-    {% elsif block.type == 'text' %}
-      <div class="flex-1 flex relative items-center justify-center order-2 lg:order-none">
-        <div class="absolute bg-[#F1F1F180] lg:top-auto top-0 w-full lg:h-2/3 h-5/6 z-0 {% if forloop.index == 1 %} lg:rounded-tl-[800px] lg:rounded-br-none {% else %} lg:rounded-tr-[800px] lg:rounded-bl-none {% endif %} rounded-br-[800px] rounded-bl-[800px]"></div>
-        <div class="max-w-xl relative z-[2] p-5 {% if forloop.index == 1 %} lg:pl-16 {% endif %}">
-          <h2 class="text-sm text-black lg:text-2xl">{{ block.settings.pre_title }}</h2>
-          <h3 class="text-black text-2xl lg:text-4xl mb-4 lg:mb-6">{{ block.settings.title }}</h3>
-          <p class="text-sm text-black flex-1">{{ block.settings.text }}</p>
-          {% if section.settings.url != blank %}
-            <a href="{{ section.settings.url }}" class="group inline-block mt-4">
-              <span class="inline-block transition-all duration-300 transform group-hover:translate-x-2">
-                {% render 'icon-arrow-right', size: 54 %}
-              </span>
+{%- comment -%}
+  Seção Destaque com imagem e texto lado a lado
+  Suporta inversão de ordem e arredondamento customizável
+{%- endcomment -%}
+
+{%- liquid
+  assign text_alignment = section.settings.text_alignment | default: 'center'
+  assign enable_curved_background = section.settings.enable_curved_background | default: true
+-%}
+
+<section class="color-{{ section.settings.color_scheme }} color-background">
+  <div class="page-width flex flex-col lg:flex-row !py-8 !lg:py-12">
+    {% for block in section.blocks %}
+      {% if block.type == 'image' %}
+        <div class="flex-1 {{ block.shopify_attributes }}">
+          {% if block.settings.url != blank %}
+            <a href="{{ block.settings.url }}" class="block">
+              {% if block.settings.image != blank %}
+                {{ block.settings.image | image_url: width: 1500 | image_tag: class: 'w-full h-auto rounded-lg', loading: 'lazy' }}
+              {% else %}
+                {{ 'image' | placeholder_svg_tag: 'w-full h-auto rounded-lg bg-gray-100' }}
+              {% endif %}
             </a>
+          {% else %}
+            {% if block.settings.image != blank %}
+              {{ block.settings.image | image_url: width: 1500 | image_tag: class: 'w-full h-auto rounded-lg', loading: 'lazy' }}
+            {% else %}
+              {{ 'image' | placeholder_svg_tag: 'w-full h-auto rounded-lg bg-gray-100' }}
+            {% endif %}
           {% endif %}
         </div>
-      </div>
-    {% endif %}
-  {% endfor %}
+
+      {% elsif block.type == 'text' %}
+        <div class="flex-1 flex relative items-center justify-center lg:order-none {{ block.shopify_attributes }}" {{ block.shopify_attributes }}>
+
+          {%- comment -%} Background decorativo curvo (opcional) {%- endcomment -%}
+          {% if enable_curved_background %}
+            <div class="absolute color-{{ section.settings.background_accent_scheme }} color-background lg:top-auto top-0 w-full lg:h-2/3 h-5/6 z-0 opacity-60
+              {% if forloop.index == 1 %}
+                lg:rounded-tl-[600px] lg:rounded-br-none
+              {% else %}
+                lg:rounded-tr-[600px] lg:rounded-bl-none
+              {% endif %}
+              rounded-br-[600px] rounded-bl-[600px]">
+            </div>
+          {% endif %}
+
+          <div class="max-w-xl relative z-[2] p-6 lg:p-8 text-{{ text_alignment }} color-text
+            {% if forloop.index == 1 %} lg:pl-16 {% endif %}">
+
+            {% if block.settings.pre_title != blank %}
+              <p class="text-sm lg:text-lg mb-2 opacity-80">{{ block.settings.pre_title }}</p>
+            {% endif %}
+
+            {% if block.settings.title != blank %}
+              <h2 class="text-2xl lg:text-4xl font-bold mb-4 lg:mb-6">{{ block.settings.title }}</h2>
+            {% endif %}
+
+            {% if block.settings.text != blank %}
+              <div class="text-sm lg:text-base leading-relaxed">{{ block.settings.text }}</div>
+            {% endif %}
+
+            {% if block.settings.button_label != blank and block.settings.button_url != blank %}
+              <a href="{{ block.settings.button_url }}" class="inline-block mt-6 px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition-opacity">
+                {{ block.settings.button_label }}
+              </a>
+            {% elsif block.settings.url != blank %}
+              <a href="{{ block.settings.url }}" class="group inline-block mt-6">
+                <span class="inline-block transition-all duration-300 transform group-hover:translate-x-2 color-text">
+                  {% render 'icon-arrow-right', size: 54 %}
+                </span>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
 </section>
 
 {% schema %}
 {
-  "name": "Seção Destaque",
+  "name": "t:sections.highlighted_section.name",
   "tag": "section",
   "disabled_on": {
     "groups": ["header", "footer"]
   },
   "settings": [
     {
-      "type": "url",
-      "id": "url",
-      "label": "URL de Redirecionamento"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.highlighted_section.settings.color_scheme.label",
+      "default": "scheme-1",
+      "info": "t:sections.highlighted_section.settings.color_scheme.info"
+    },
+    {
+      "type": "color_scheme",
+      "id": "background_accent_scheme",
+      "label": "t:sections.highlighted_section.settings.background_accent_scheme.label",
+      "default": "scheme-2",
+      "info": "t:sections.highlighted_section.settings.background_accent_scheme.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.highlighted_section.settings.layout_header.content"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:sections.highlighted_section.settings.text_alignment.label",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.highlighted_section.settings.text_alignment.options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.highlighted_section.settings.text_alignment.options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.highlighted_section.settings.text_alignment.options.right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_curved_background",
+      "label": "t:sections.highlighted_section.settings.enable_curved_background.label",
+      "default": true,
+      "info": "t:sections.highlighted_section.settings.enable_curved_background.info"
     }
   ],
   "max_blocks": 2,
   "blocks": [
     {
-      "name": "Imagem",
+      "name": "t:sections.highlighted_section.blocks.image.name",
       "type": "image",
       "limit": 1,
       "settings": [
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Imagem"
+          "label": "t:sections.highlighted_section.blocks.image.settings.image.label"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "t:sections.highlighted_section.blocks.image.settings.url.label",
+          "info": "t:sections.highlighted_section.blocks.image.settings.url.info"
         }
       ]
     },
     {
-      "name": "Texto",
+      "name": "t:sections.highlighted_section.blocks.text.name",
       "type": "text",
       "limit": 1,
       "settings": [
         {
           "type": "text",
           "id": "pre_title",
-          "label": "Pré título"
+          "label": "t:sections.highlighted_section.blocks.text.settings.pre_title.label",
+          "info": "t:sections.highlighted_section.blocks.text.settings.pre_title.info"
         },
         {
           "type": "text",
           "id": "title",
-          "label": "Título"
+          "label": "t:sections.highlighted_section.blocks.text.settings.title.label"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.highlighted_section.blocks.text.settings.text.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.highlighted_section.blocks.text.settings.button_header.content"
         },
         {
           "type": "text",
-          "id": "text",
-          "label": "Texto"
+          "id": "button_label",
+          "label": "t:sections.highlighted_section.blocks.text.settings.button_label.label",
+          "info": "t:sections.highlighted_section.blocks.text.settings.button_label.info"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "t:sections.highlighted_section.blocks.text.settings.button_url.label"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "t:sections.highlighted_section.blocks.text.settings.url.label",
+          "info": "t:sections.highlighted_section.blocks.text.settings.url.info"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Seção Destaque",
+      "name": "t:sections.highlighted_section.presets.name",
       "blocks": [
         {
           "type": "image"

@@ -206,6 +206,80 @@
         "name": "Depoimentos de Clientes"
       }
     },
+    "highlighted_section": {
+      "name": "Seção Destaque",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores",
+          "info": "Esquema de cores principal da seção"
+        },
+        "background_accent_scheme": {
+          "label": "Esquema de cores do fundo decorativo",
+          "info": "Cor do background curvo decorativo atrás do texto"
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "text_alignment": {
+          "label": "Alinhamento do texto",
+          "options": {
+            "left": "Esquerda",
+            "center": "Centro",
+            "right": "Direita"
+          }
+        },
+        "enable_curved_background": {
+          "label": "Ativar fundo curvo decorativo",
+          "info": "Exibe um background com bordas arredondadas atrás do texto"
+        }
+      },
+      "blocks": {
+        "image": {
+          "name": "Imagem",
+          "settings": {
+            "image": {
+              "label": "Imagem"
+            },
+            "url": {
+              "label": "Link da imagem",
+              "info": "Opcional - torna a imagem clicável"
+            }
+          }
+        },
+        "text": {
+          "name": "Texto",
+          "settings": {
+            "pre_title": {
+              "label": "Pré-título",
+              "info": "Texto pequeno acima do título principal"
+            },
+            "title": {
+              "label": "Título"
+            },
+            "text": {
+              "label": "Texto"
+            },
+            "button_header": {
+              "content": "Botão (opcional)"
+            },
+            "button_label": {
+              "label": "Texto do botão",
+              "info": "Se preenchido, exibe um botão ao invés da seta"
+            },
+            "button_url": {
+              "label": "Link do botão"
+            },
+            "url": {
+              "label": "Link alternativo (seta)",
+              "info": "Usado apenas se o botão não estiver configurado"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Seção Destaque"
+      }
+    },
     "trust_badges": {
       "name": "Trust Badges",
       "settings": {
