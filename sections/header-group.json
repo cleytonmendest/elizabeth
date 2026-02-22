@@ -58,27 +58,10 @@
         "icons_color": "#000000",
         "icons_color_secondary": "#ffffff"
       }
-    },
-    "1771778331482c1ae0": {
-      "type": "apps",
-      "blocks": {
-        "best_wishlist_wishlist_page_MmCByq": {
-          "type": "shopify://apps/best-wishlist/blocks/wishlist-page/019c8626-504b-7258-bd74-d2c672e1daad",
-          "settings": {
-            "icon_color": "#ff0000",
-            "columns_desktop": 4
-          }
-        }
-      },
-      "block_order": [
-        "best_wishlist_wishlist_page_MmCByq"
-      ],
-      "settings": {}
     }
   },
   "order": [
     "announcement_bar_ndFKWT",
-    "header",
-    "1771778331482c1ae0"
+    "header"
   ]
 }
