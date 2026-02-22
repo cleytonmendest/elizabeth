@@ -59,6 +59,7 @@
         "description_m7ryRj"
       ],
       "settings": {
+        "color_scheme": "",
         "media_size": "large",
         "gallery_layout": "two_images_slider",
         "media_position": "left",
@@ -83,9 +84,27 @@
         "play-time": 5,
         "pause-hover": true
       }
+    },
+    "177177795783edd889": {
+      "type": "apps",
+      "blocks": {
+        "best_wishlist_wishlist_button_rrhi7K": {
+          "type": "shopify://apps/best-wishlist/blocks/wishlist-button/019c8626-504b-7258-bd74-d2c672e1daad",
+          "settings": {
+            "icon_color": "#ff0000",
+            "icon_size": 40,
+            "icon_style": "heart"
+          }
+        }
+      },
+      "block_order": [
+        "best_wishlist_wishlist_button_rrhi7K"
+      ],
+      "settings": {}
     }
   },
   "order": [
+    "177177795783edd889",
     "main",
     "slider_product_FViMFk"
   ]
