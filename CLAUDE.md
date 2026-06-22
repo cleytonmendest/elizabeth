@@ -164,11 +164,37 @@ Sections like `slider-image` include separate images for desktop/tablet/mobile w
 
 ### Color Scheme
 
-**Status atual:** Cores hardcoded em alguns arquivos (a ser migrado)
+**Status:** Design tokens implementados. Cores mapeadas dos color schemes em `tailwind.config.js`.
 
-**Roadmap:** Sistema de design tokens centralizado com CSS variables + Tailwind config. Todas as cores serão configuráveis globalmente via `assets/color-scheme.css` para facilitar mudanças de tema e suporte a dark mode.
+**Como usar:** prefira os tokens Tailwind em vez de hex hardcoded — eles seguem o color scheme (e dark mode futuro) automaticamente:
+- `bg-background`, `text-foreground`, `border-border`
+- `bg-button` / `text-button-text`, `bg-badge` / `text-badge-text`
+- `text-success` / `text-error` / `text-warning`, `text-link`, `shadow`
+- Opacidade suportada: `text-foreground/70`, `bg-background/50` (vars em formato espaço habilitam `<alpha-value>`)
 
-**Prioridade:** Alta - próxima implementação
+As CSS variables são geradas em `layout/theme.liquid` a partir das configs do admin e consumidas via `assets/color-scheme.css` (classes `.color-*`, legado em transição) + tokens Tailwind (preferencial).
+
+**Hex legítimo (não migrar):** cores de marca (ícones de pagamento, botões WhatsApp/Facebook) e defaults de settings no schema.
+
+### Tipografia
+
+**Corpo padrão:** `14px` (`text-sm`). O `body` herda 14px em `layout/theme.liquid`. Não há setting de tamanho no editor (só família via `font_picker`).
+
+**Escala** (fonte única da verdade em `tailwind.config.js > fontSize`):
+
+| Classe | Tamanho | Uso |
+|--------|---------|-----|
+| `text-xs` | 12px | legendas, labels, legal |
+| `text-sm` | 14px | **corpo (padrão)** |
+| `text-base` | 16px | corpo destacado / títulos pequenos |
+| `text-lg` | 18px | subtítulo / h6 |
+| `text-xl` | 20px | h5 |
+| `text-2xl` | 24px | h4 / título de seção |
+| `text-3xl` | 30px | h3 |
+| `text-4xl` | 36px | h2 |
+| `text-5xl` | 48px | h1 / hero |
+
+**Regra:** corpo de texto usa `text-sm`. Não usar tamanhos arbitrários (`text-[15px]`) sem justificativa — escolher o degrau mais próximo da escala.
 
 ## Shopify CLI Integration
 

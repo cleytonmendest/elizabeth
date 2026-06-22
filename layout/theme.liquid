@@ -96,6 +96,8 @@
         body {
           margin: 0;
           font-family: var(--font-body-family);
+          font-size: 0.875rem; /* 14px — corpo padrão do tema (escala em tailwind.config.js) */
+          line-height: 1.5;
         }
 
         .page-width {
@@ -113,7 +115,7 @@
             :root,
           {%- endif %}
           .color-{{ scheme.id }} {
-            --color-background: {{ scheme.settings.background.red }},{{ scheme.settings.background.green }},{{ scheme.settings.background.blue }};
+            --color-background: {{ scheme.settings.background.red }} {{ scheme.settings.background.green }} {{ scheme.settings.background.blue }};
           {% if scheme.settings.background_gradient != empty %}
             --gradient-background: {{ scheme.settings.background_gradient }};
           {% else %}
@@ -132,23 +134,23 @@
             endif
           %}
 
-          --color-foreground: {{ scheme.settings.text.red }},{{ scheme.settings.text.green }},{{ scheme.settings.text.blue }};
-          --color-text: {{ scheme.settings.text.red }},{{ scheme.settings.text.green }},{{ scheme.settings.text.blue }};
-          --color-background-contrast: {{ background_color_contrast.red }},{{ background_color_contrast.green }},{{ background_color_contrast.blue }};
-          --color-shadow: {{ scheme.settings.shadow.red }},{{ scheme.settings.shadow.green }},{{ scheme.settings.shadow.blue }};
-          --color-button: {{ scheme.settings.button.red }},{{ scheme.settings.button.green }},{{ scheme.settings.button.blue }};
-          --color-button-text: {{ scheme.settings.button_label.red }},{{ scheme.settings.button_label.green }},{{ scheme.settings.button_label.blue }};
-          --color-secondary-button: {{ scheme.settings.background.red }},{{ scheme.settings.background.green }},{{ scheme.settings.background.blue }};
-          --color-secondary-button-text: {{ scheme.settings.secondary_button_label.red }},{{ scheme.settings.secondary_button_label.green }},{{ scheme.settings.secondary_button_label.blue }};
-          --color-link: {{ scheme.settings.secondary_button_label.red }},{{ scheme.settings.secondary_button_label.green }},{{ scheme.settings.secondary_button_label.blue }};
-          --color-border: {{ scheme.settings.border.red }},{{ scheme.settings.border.green }},{{ scheme.settings.border.blue }};
-          --color-badge-foreground: {{ scheme.settings.badge_text.red }},{{ scheme.settings.badge_text.green }},{{ scheme.settings.badge_text.blue }};
-          --color-badge-background: {{ scheme.settings.badge_background.red }},{{ scheme.settings.badge_background.green }},{{ scheme.settings.badge_background.blue }};
-          --color-badge-text: {{ scheme.settings.badge_text.red }},{{ scheme.settings.badge_text.green }},{{ scheme.settings.badge_text.blue }};
-          --color-badge-border: {{ scheme.settings.badge_background.red }},{{ scheme.settings.badge_background.green }},{{ scheme.settings.badge_background.blue }};
-          --color-success: {{ scheme.settings.success.red }},{{ scheme.settings.success.green }},{{ scheme.settings.success.blue }};
-          --color-error: {{ scheme.settings.error.red }},{{ scheme.settings.error.green }},{{ scheme.settings.error.blue }};
-          --color-warning: {{ scheme.settings.warning.red }},{{ scheme.settings.warning.green }},{{ scheme.settings.warning.blue }};
+          --color-foreground: {{ scheme.settings.text.red }} {{ scheme.settings.text.green }} {{ scheme.settings.text.blue }};
+          --color-text: {{ scheme.settings.text.red }} {{ scheme.settings.text.green }} {{ scheme.settings.text.blue }};
+          --color-background-contrast: {{ background_color_contrast.red }} {{ background_color_contrast.green }} {{ background_color_contrast.blue }};
+          --color-shadow: {{ scheme.settings.shadow.red }} {{ scheme.settings.shadow.green }} {{ scheme.settings.shadow.blue }};
+          --color-button: {{ scheme.settings.button.red }} {{ scheme.settings.button.green }} {{ scheme.settings.button.blue }};
+          --color-button-text: {{ scheme.settings.button_label.red }} {{ scheme.settings.button_label.green }} {{ scheme.settings.button_label.blue }};
+          --color-secondary-button: {{ scheme.settings.background.red }} {{ scheme.settings.background.green }} {{ scheme.settings.background.blue }};
+          --color-secondary-button-text: {{ scheme.settings.secondary_button_label.red }} {{ scheme.settings.secondary_button_label.green }} {{ scheme.settings.secondary_button_label.blue }};
+          --color-link: {{ scheme.settings.secondary_button_label.red }} {{ scheme.settings.secondary_button_label.green }} {{ scheme.settings.secondary_button_label.blue }};
+          --color-border: {{ scheme.settings.border.red }} {{ scheme.settings.border.green }} {{ scheme.settings.border.blue }};
+          --color-badge-foreground: {{ scheme.settings.badge_text.red }} {{ scheme.settings.badge_text.green }} {{ scheme.settings.badge_text.blue }};
+          --color-badge-background: {{ scheme.settings.badge_background.red }} {{ scheme.settings.badge_background.green }} {{ scheme.settings.badge_background.blue }};
+          --color-badge-text: {{ scheme.settings.badge_text.red }} {{ scheme.settings.badge_text.green }} {{ scheme.settings.badge_text.blue }};
+          --color-badge-border: {{ scheme.settings.badge_background.red }} {{ scheme.settings.badge_background.green }} {{ scheme.settings.badge_background.blue }};
+          --color-success: {{ scheme.settings.success.red }} {{ scheme.settings.success.green }} {{ scheme.settings.success.blue }};
+          --color-error: {{ scheme.settings.error.red }} {{ scheme.settings.error.green }} {{ scheme.settings.error.blue }};
+          --color-warning: {{ scheme.settings.warning.red }} {{ scheme.settings.warning.green }} {{ scheme.settings.warning.blue }};
           --payment-terms-background-color: rgb({{ scheme.settings.background.rgb }});
         }
         {% endfor %}

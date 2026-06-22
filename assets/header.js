@@ -2,54 +2,24 @@ class MainHeader extends HTMLElement {
     constructor() {
         super();
         this.container = this.querySelector('#main-header-container');
-        this.headerType = this.dataset.type;
-        this.initialized = false;
+        this.onScroll = this.onScroll.bind(this);
     }
 
     connectedCallback() {
-        this.initHeader();
-        window.addEventListener('scroll', this.onScroll.bind(this));
-        window.addEventListener('resize', this.updateHeight.bind(this));
+        this.onScroll();
+        window.addEventListener('scroll', this.onScroll, { passive: true });
     }
 
     disconnectedCallback() {
-        window.removeEventListener('scroll', this.onScroll.bind(this));
-        window.removeEventListener('resize', this.updateHeight.bind(this));
+        window.removeEventListener('scroll', this.onScroll);
     }
 
-    initHeader() {
-        if (this.initialized) return;
-
-        this.updateHeight();
-        this.initialized = true;
-    }
-
-    updateHeight() {
-        const desktopBreakpoint = 1024;
-        const isDesktop = window.innerWidth >= desktopBreakpoint;
-
-        const needsHeight =
-            (this.headerType === 'fixed') ||
-            (this.headerType === 'fixed-transparent' && !isDesktop);
-
-        if (needsHeight) {
-            const headerHeight = this.container.offsetHeight;
-            this.style.height = `${headerHeight}px`;
-        } else {
-            this.style.height = '';
-        }
-    }
-
+    // Marca o header quando a página é rolada (usado para reforçar a sombra)
     onScroll() {
-        if (this.headerType === 'fixed-transparent' || this.headerType === 'fixed') {
-            const scrollY = window.scrollY;
-            if (scrollY > 0) {
-                this.classList.add('is-scrolling');
-                this.container.classList.add('is-scrolling');
-            } else {
-                this.classList.remove('is-scrolling');
-                this.container.classList.remove('is-scrolling');
-            }
+        if (window.scrollY > 0) {
+            this.container.classList.add('is-scrolling');
+        } else {
+            this.container.classList.remove('is-scrolling');
         }
     }
 }

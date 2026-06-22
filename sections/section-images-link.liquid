@@ -3,7 +3,7 @@
         <a href="{{ block.settings.link }}" class="flex-1 flex relative items-center justify-center group overflow-hidden">
             {{ block.settings.image | image_url: width: 1500 | image_tag: class:"group-hover:scale-125 transition-all duration-500 "}}
 
-            <span class="absolute z-[1] py-2 px-12 bg-[#FFFFFF80] text-xl lg:text-4xl text-black font-light rounded-[50px] group-hover:bg-black group-hover:text-white transition-all duration-500 ">
+            <span class="absolute z-[1] py-2 px-12 bg-background/50 text-xl lg:text-4xl text-foreground font-light rounded-full group-hover:bg-foreground group-hover:text-background transition-all duration-500 ">
                 {{ block.settings.label }}
             </span>
         </a>

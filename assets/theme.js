@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function openMobileMenu() {
         mobileMenu.classList.remove('-translate-x-full');
         mobileMenu.setAttribute('aria-hidden', 'false');
+        openBtn.setAttribute('aria-expanded', 'true');
         document.body.classList.add('overflow-hidden');
         overlay.classList.remove('hidden');
     }
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function closeMobileMenu() {
         mobileMenu.classList.add('-translate-x-full');
         mobileMenu.setAttribute('aria-hidden', 'true');
+        openBtn.setAttribute('aria-expanded', 'false');
         document.body.classList.remove('overflow-hidden');
         overlay.classList.add('hidden');
     }
@@ -25,6 +27,13 @@ document.addEventListener('DOMContentLoaded', function () {
     openBtn.addEventListener('click', openMobileMenu);
     closeBtn.addEventListener('click', closeMobileMenu);
     overlay.addEventListener('click', closeMobileMenu);
+
+    // Fechar com tecla Escape quando o menu estiver aberto
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && mobileMenu.getAttribute('aria-hidden') === 'false') {
+            closeMobileMenu();
+        }
+    });
 });
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -44,12 +53,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Fechar: definir altura para 0
                 submenu.style.height = '0';
                 submenu.setAttribute('aria-hidden', 'true');
+                this.setAttribute('aria-expanded', 'false');
                 // Opcional: rotacionar ícone de volta
                 this.querySelector('span').style.transform = 'rotate(0deg)';
             } else {
                 // Abrir: calcula a altura necessária com scrollHeight
                 submenu.style.height = submenu.scrollHeight + 'px';
                 submenu.setAttribute('aria-hidden', 'false');
+                this.setAttribute('aria-expanded', 'true');
                 // Opcional: rotacionar ícone
                 this.querySelector('span').style.transform = 'rotate(180deg)';
             }

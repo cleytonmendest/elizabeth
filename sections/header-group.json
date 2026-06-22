@@ -49,14 +49,10 @@
     "header": {
       "type": "header",
       "settings": {
-        "color_scheme": "",
+        "color_scheme": "scheme-1",
         "menu": "menu-principal",
         "menu-type": "logo-left-centered-menu",
-        "fixed_header": true,
-        "transparent-header": true,
-        "header_bg": "#ffffff",
-        "icons_color": "#000000",
-        "icons_color_secondary": "#ffffff"
+        "fixed_header": true
       }
     }
   },

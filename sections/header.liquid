@@ -2,29 +2,11 @@
 
 {%- liquid
   assign fixed = section.settings.fixed_header
-  assign transparent = section.settings['transparent-header']
-  assign bg_header = section.settings.header_bg | default: '#FFFFFF'
-  assign icons_color = section.settings.icons_color | default: '#000000'
-  assign icons_color_2 = section.settings.icons_color_secondary | default: '#000000'
-  assign fixed_transparent = false
 
-  if template.name == 'index'
-    if fixed and transparent
-      assign header_type = 'fixed-transparent'
-      assign fixed_transparent = true
-    elsif fixed and transparent == false
-      assign header_type = 'fixed'
-    elsif fixed == false and transparent
-      assign header_type = 'transparent'
-    else
-      assign header_type = 'basic'
-    endif
+  if fixed
+    assign header_type = 'fixed'
   else
-    if fixed
-      assign header_type = 'fixed'
-    else
-      assign header_type = 'basic'
-    endif
+    assign header_type = 'basic'
   endif
 
   case section.settings['menu-type']
@@ -57,16 +39,16 @@
 -%}
 
 <style>
-  :root{
-    --bg-header: {{ bg_header }};
-    --icons_color: {{ icons_color }};
-    --icons_color2: {{ icons_color_2 }};
-    --bg-search: #f1f1f180;
-    --bg-search-hover: #f1f1f1;
-  }
+  {%- if fixed -%}
+    #shopify-section-{{ section.id }} {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+  {%- endif -%}
 
-  .is-scrolling {
-    @apply !bg-[--bg-header];
+  #main-header-container.is-scrolling {
+    box-shadow: 0 2px 8px rgb(var(--color-shadow) / 0.1);
   }
 </style>
 
@@ -74,12 +56,12 @@
   <main-header class="w-full block relative z-10" data-type="{{ header_type }}">
     <div
       id="main-header-container"
-      class="color-shadow color-background w-full transition-all duration-300 {% if transparent == true and template.name == 'index' %}lg:bg-transparent {% endif %} {% if fixed %}fixed{% endif %} {% if transparent and fixed == false %} absolute top-0 {% endif %} {% if header_type == "fixed-transparent" %} lg:hover:color-background {% endif %} group group-[.is-scrolling]"
+      class="color-background w-full transition-shadow duration-300 group"
     >
       <div class="!py-3 page-width w-full">
         <div class="flex justify-between">
           {% if logo_center == false %}
-            {% render 'logo', header_type: header_type %}
+            {% render 'logo' %}
           {% endif %}
           {% if search_position == 'left' and search_hidden == false %}
             {% render 'search-component', flex: 1, large:false %}
@@ -91,16 +73,16 @@
             {% render 'search-component', flex: 3, large:true %}
           {% endif %}
           {% if menu_under == false %}
-            {% render 'main-menu', linklist: section.settings.menu, flex: 5, fixed_transparent: fixed_transparent %}
+            {% render 'main-menu', linklist: section.settings.menu, flex: 5 %}
           {% endif %}
           {% if search_position == 'right' and search_hidden == false %}
             {% render 'search-component', flex: 1.5, showMobile: false, large:false %}
           {% endif %}
 
-          {% render 'header-icons', header_type: header_type, flex: 1 %}
+          {% render 'header-icons', flex: 1 %}
         </div>
         {% if menu_under %}
-          {% render 'main-menu', linklist: section.settings.menu, flex: 1, fixed_transparent: fixed_transparent  %}
+          {% render 'main-menu', linklist: section.settings.menu, flex: 1 %}
         {% endif %}
       </div>
     </div>
@@ -118,12 +100,12 @@
       "id": "color_scheme",
       "label": "Esquema de cores",
       "default": "scheme-1",
-      "info": "Esquema de cores base para o header"
+      "info": "Define fundo, texto e ícones do header"
     },
     {
       "type": "link_list",
       "id": "menu",
-      "label": "Menu Principal",
+      "label": "Menu Principal"
     },
     {
       "type": "select",
@@ -153,34 +135,8 @@
       "type": "checkbox",
       "default": true,
       "id": "fixed_header",
-      "label": "Header acompanha scroll?",
-      "info": "Se ativado, o header sempre acompanhará o scroll"
-    },
-    {
-      "type": "checkbox",
-      "default": true,
-      "id": "transparent-header",
-      "label": "Header transparente?",
-      "info": "Se ativado, o header será transparente e ficará por cima da primeira seção."
-    },
-    {
-      "type": "color",
-      "id": "header_bg",
-      "label": "Cor background do Header",
-      "info": "Caso seja header transparente e acompanhar scroll, essa cor exibirá quando o usuário 'scrollar' a página",
-      "default": "#FFFFFF"
-    },
-    {
-      "type": "color",
-      "id": "icons_color",
-      "label": "Cor dos ícones header (Primário)",
-      "default": "#000000"
-    },
-    {
-      "type": "color",
-      "id": "icons_color_secondary",
-      "label": "Cor dos Ícones header (Secundário)",
-      "default": "#FFFFFF"
+      "label": "Header fixo (sticky)",
+      "info": "Se ativado, o header acompanha o scroll fixo no topo"
     }
   ]
 }

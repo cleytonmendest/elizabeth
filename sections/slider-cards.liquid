@@ -16,19 +16,19 @@
   {% if section.settings.title == blank or nav %}
     <div class="flex items-center mt-4 lg:mt-8 {% if section.settings.title == blank and nav %}justify-end{% else %}justify-between{% endif %}">
       {% if section.settings.title != blank %}
-        <h2 class="font-semibold text-base lg:text-2xl text-[#1E1E1E]">{{ section.settings.title }}</h2>
+        <h2 class="font-semibold text-base lg:text-2xl text-foreground">{{ section.settings.title }}</h2>
       {% endif %}
       {% if nav %}
         <div class="flex">
           <button
             onclick="sliderPrev('{{ section.id }}')"
-            class="text-[#1E1E1E]"
+            class="text-foreground"
           >
             {% render 'icon-short-arrow-left', size: 40 %}
           </button>
           <button
             onclick="sliderNext('{{ section.id }}')"
-            class="text-[#1E1E1E]"
+            class="text-foreground"
           >
             {% render 'icon-short-arrow-right', size: 40 %}
           </button>
@@ -62,7 +62,7 @@
                 | image_tag: alt: block.settings.title, class: 'mx-auto mb-2'
               }}
             {%- endif -%}
-            <h3 class="font-medium absolute text-center bg-[#FFFFFF80] transition-all duration-300 ease-in-out py-2 text-[#23170E] bottom-6 w-5/6 rounded-[50px] text-sm backdrop-blur-xs group-hover:text-white group-hover:bg-black">
+            <h3 class="font-medium absolute text-center bg-background/50 transition-all duration-300 ease-in-out py-2 text-foreground bottom-6 w-5/6 rounded-full text-sm backdrop-blur-xs group-hover:text-background group-hover:bg-foreground">
               {{ block.settings.title }}
             </h3>
           </a>
