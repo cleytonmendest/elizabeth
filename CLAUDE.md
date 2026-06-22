@@ -174,7 +174,15 @@ Sections like `slider-image` include separate images for desktop/tablet/mobile w
 
 As CSS variables são geradas em `layout/theme.liquid` a partir das configs do admin e consumidas via `assets/color-scheme.css` (classes `.color-*`, legado em transição) + tokens Tailwind (preferencial).
 
-**Hex legítimo (não migrar):** cores de marca (ícones de pagamento, botões WhatsApp/Facebook) e defaults de settings no schema.
+**Mapeamento de migração (cinza/preto/branco → token):**
+- `text-gray-700/600/500/400/300` → `text-foreground/70` `/60` `/50` `/40` `/30`
+- `bg-gray-50/100` → `bg-foreground/5`; `bg-gray-200` → `bg-foreground/10`; `bg-gray-300` → `bg-foreground/20`
+- `border-gray-*` → `border-border`; `ring-gray-*` → `ring-foreground/40`
+- `text-black` → `text-foreground`; `bg-white` → `bg-background`; `border-black` → `border-foreground`
+- Par `bg-black text-white` (botões/badges/tags) → `bg-foreground text-background`; hover `bg-gray-800` → `opacity-90`
+- Badge de desconto/erro → `bg-badge text-badge-text`; botão primário → `color-button` ou `bg-button text-button-text`
+
+**Hex/cores fixas legítimas (NÃO migrar):** cores de marca (ícones de pagamento, botões WhatsApp/Facebook), defaults de settings no schema, **scrims de imagem** (overlay escuro sobre foto + texto branco, ex: hero de coleção), **lightbox** (visualizador de imagem, sempre escuro). Seções dark autocontidas (ex: `newsletter.liquid`) ficam pendentes de refator scheme-aware dedicado.
 
 ### Tipografia
 

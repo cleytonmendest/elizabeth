@@ -46,18 +46,18 @@
       {% if swatch_value != null and picker_type == 'swatch' %}
         <label
           for="{{ input_id }}"
-          class="swatch-label relative flex items-center justify-center w-10 h-10 cursor-pointer border border-gray-300 peer-checked:border-black peer-checked:ring-1 peer-checked:ring-offset-1 peer-checked:ring-black overflow-hidden {% if shape == 'circle' %}rounded-full{% else %}rounded{% endif %}"
+          class="swatch-label relative flex items-center justify-center w-10 h-10 cursor-pointer border border-border peer-checked:border-foreground peer-checked:ring-1 peer-checked:ring-offset-1 peer-checked:ring-foreground overflow-hidden {% if shape == 'circle' %}rounded-full{% else %}rounded-theme{% endif %}"
           title="{{ value | escape }}"
         >
           <span
             style="background: {{ swatch_value }}; {% if value.swatch.image %}background-size: cover;{% endif %}"
-            class="w-full h-full block {% if shape == 'circle' %}rounded-full{% else %}rounded-sm{% endif %}"
+            class="w-full h-full block {% if shape == 'circle' %}rounded-full{% else %}rounded-theme-sm{% endif %}"
           ></span>
         </label>
       {% else %}
         <label
           for="{{ input_id }}"
-          class="not-swatch inline-block px-3 py-1.5 min-w-[50px] text-center border border-gray-300 rounded cursor-pointer text-sm peer-checked:bg-black peer-checked:border-black peer-checked:text-white hover:border-gray-400 transition-colors"
+          class="not-swatch inline-block px-3 py-1.5 min-w-[50px] text-center border border-border rounded-theme cursor-pointer text-sm peer-checked:bg-foreground peer-checked:border-foreground peer-checked:text-background hover:border-foreground/40 transition-colors"
         >
           {{ value }}
         </label>

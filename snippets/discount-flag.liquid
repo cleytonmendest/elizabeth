@@ -13,4 +13,4 @@
 {%- assign discount_raw = difference | times: 100 | divided_by: compare_price -%}
 {%- assign discount = discount_raw | floor -%}
 
-<span class=" bg-[#E7ECF0] rounded-[50px] text-xs text-black py-1 px-2"> {{ discount }}% OFF </span>
+<span class=" bg-foreground/5 rounded-full text-xs text-foreground py-1 px-2"> {{ discount }}% OFF </span>

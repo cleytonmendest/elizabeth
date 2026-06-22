@@ -24,7 +24,7 @@
     <div class="text-center mb-8">
       <h1 class="text-3xl md:text-5xl font-bold mb-4">{{ collection.title }}</h1>
       {%- if collection.description != blank and section.settings.show_collection_description -%}
-        <div class="text-gray-600 max-w-3xl mx-auto">
+        <div class="text-foreground/60 max-w-3xl mx-auto">
           {{ collection.description }}
         </div>
       {%- endif -%}
@@ -100,7 +100,7 @@
       <div class="flex-1">
         {%- comment -%} Barra de ferramentas {%- endcomment -%}
         <div class="flex flex-wrap items-center justify-between mb-6 gap-4">
-          <p class="text-gray-600">
+          <p class="text-foreground/60">
             {{ paginate.current_offset | plus: 1 }}-{{ paginate.current_offset | plus: paginate.page_size | at_most: collection.products_count }}
             de {{ collection.products_count }}
             {% if collection.products_count == 1 %}produto{% else %}produtos{% endif %}
@@ -112,7 +112,7 @@
               <select
                 id="SortBy"
                 name="sort_by"
-                class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                class="border border-border rounded-theme px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/40"
                 aria-describedby="a11y-refresh-page-message"
               >
                 <option value="manual" {% if sort_by == 'manual' %}selected{% endif %}>Em destaque</option>
@@ -149,12 +149,12 @@
           {%- endif -%}
         {%- else -%}
           <div class="text-center py-16">
-            <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-24 h-24 mx-auto text-foreground/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
             </svg>
             <h2 class="text-2xl font-semibold mb-2">Nenhum produto encontrado</h2>
-            <p class="text-gray-600 mb-6">Esta coleção está vazia no momento.</p>
-            <a href="/collections" class="inline-block bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors">
+            <p class="text-foreground/60 mb-6">Esta coleção está vazia no momento.</p>
+            <a href="/collections" class="inline-block color-button px-6 py-3 rounded-lg hover:opacity-90 transition-colors">
               Ver todas as coleções
             </a>
           </div>

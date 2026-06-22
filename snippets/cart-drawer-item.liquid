@@ -1,9 +1,9 @@
-<div class="flex gap-3 cart-item p-4 border-b border-gray-200 last:border-b-0" data-index="{{ item.index | plus: 1 }}" data-product="{{ item.id }}" data-product-id="{{ item. }}" data-key="{{ item.key }}">
+<div class="flex gap-3 cart-item p-4 border-b border-border last:border-b-0" data-index="{{ item.index | plus: 1 }}" data-product="{{ item.id }}" data-product-id="{{ item. }}" data-key="{{ item.key }}">
   <div class="flex-shrink-0">
     {% if item.image %}
       <a href="{{ item.url }}" class="block hover:opacity-80 transition-opacity">
         <img
-          class="cart-item__image rounded"
+          class="cart-item__image rounded-theme"
           src="{{ item.image | image_url: width: 200 }}"
           alt="{{ item.image.alt | escape }}"
           loading="lazy"
@@ -15,25 +15,25 @@
     {% endif %}
   </div>
   <div class="flex-[1] min-w-0">
-    <small class="uppercase text-xs text-gray-500">{{ item.vendor }}</small>
+    <small class="uppercase text-xs text-foreground/50">{{ item.vendor }}</small>
     <div class="flex gap-3">
       <a href="{{ item.url }}" class="flex-1 min-w-0">
         <h3 class="font-medium text-sm hover:underline line-clamp-2">{{ item.product.title }}</h3>
       </a>
       <remove-from-cart
-        class="cursor-pointer w-5 h-5 flex items-center justify-center hover:text-red-500 transition-colors flex-shrink-0"
+        class="cursor-pointer w-5 h-5 flex items-center justify-center hover:text-error transition-colors flex-shrink-0"
       >
         {% render 'icon-trash' %}
       </remove-from-cart>
     </div>
     {% unless item.product.has_only_default_variant %}
-      <div class="text-xs text-gray-500 mt-1">
+      <div class="text-xs text-foreground/50 mt-1">
         {{ item.variant.title }}
       </div>
     {% endunless %}
     <div class="flex justify-between items-center mt-3">
-      <quantity-input class="border border-slate-900 flex rounded overflow-hidden" data-max-qtd="{{ item.variant.inventory_quantity }}">
-        <button class="w-9 h-9 flex items-center justify-center hover:bg-gray-100 transition-colors" id="quantity-minus">
+      <quantity-input class="border border-border flex rounded-theme overflow-hidden" data-max-qtd="{{ item.variant.inventory_quantity }}">
+        <button class="w-9 h-9 flex items-center justify-center hover:bg-foreground/5 transition-colors" id="quantity-minus">
           {% render 'minus-icon' %}
         </button>
         <input
@@ -43,7 +43,7 @@
           readonly
           value="{{ item.quantity }}"
         >
-        <button class="w-9 h-9 flex items-center justify-center hover:bg-gray-100 transition-colors" id="quantity-plus">
+        <button class="w-9 h-9 flex items-center justify-center hover:bg-foreground/5 transition-colors" id="quantity-plus">
           {% render 'plus-icon' %}
         </button>
       </quantity-input>
