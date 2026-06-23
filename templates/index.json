@@ -104,11 +104,8 @@
       ],
       "name": "Trust Badges",
       "settings": {
-        "layout": "list",
-        "sticky": false,
-        "background_color": "#f9fafb",
-        "text_color": "#111827",
-        "icon_color": "#000000"
+        "color_scheme": "scheme-1",
+        "mobile_layout": "grid-2"
       }
     },
     "slider_product_iqrCEN": {

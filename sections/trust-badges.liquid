@@ -16,10 +16,13 @@
 >
   <div class="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-5">
 
-    {%- comment -%} Desktop: Sempre flex horizontal {%- endcomment -%}
-    <div class="hidden md:flex md:justify-center md:items-center md:gap-6 lg:gap-10">
+    {%- comment -%} Desktop: Sempre flex horizontal, com fios finos entre os badges {%- endcomment -%}
+    <div class="hidden md:flex md:justify-center md:items-center">
       {% for block in section.blocks %}
-        <div class="trust-badge-item text-center" {{ block.shopify_attributes }}>
+        <div
+          class="trust-badge-item text-center px-6 lg:px-12 {% unless forloop.first %}md:border-l md:border-border{% endunless %}"
+          {{ block.shopify_attributes }}
+        >
           {% render 'trust-badge-item',
             block: block
           %}

@@ -15,13 +15,13 @@
 
 {% if compact %}
   {%- comment -%} Layout Compacto (horizontal) {%- endcomment -%}
-  <div class="flex items-center gap-2">
+  <div class="flex items-center gap-2.5">
     <div class="flex-shrink-0 color-icon">
       {% render 'trust-badge-icon', icon: icon, size: 20 %}
     </div>
     <div class="text-left">
       {% if title != blank %}
-        <p class="font-semibold text-sm leading-tight color-text">
+        <p class="font-medium text-sm tracking-wide leading-tight color-text">
           {{ title }}
         </p>
       {% endif %}
@@ -35,18 +35,18 @@
 
 {% else %}
   {%- comment -%} Layout Padrão (vertical/centralizado) {%- endcomment -%}
-  <div class="flex flex-col items-center gap-2">
+  <div class="flex flex-col items-center gap-2.5">
     <div class="flex-shrink-0 color-icon">
-      {% render 'trust-badge-icon', icon: icon, size: 32 %}
+      {% render 'trust-badge-icon', icon: icon, size: 26 %}
     </div>
     <div class="text-center">
       {% if title != blank %}
-        <p class="font-semibold text-sm md:text-base leading-tight color-text">
+        <p class="font-medium text-sm tracking-wide leading-tight color-text">
           {{ title }}
         </p>
       {% endif %}
       {% if description != blank %}
-        <p class="text-xs md:text-sm color-text-muted mt-1">
+        <p class="text-xs color-text-muted mt-1 tracking-wide">
           {{ description }}
         </p>
       {% endif %}
