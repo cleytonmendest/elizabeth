@@ -6,14 +6,15 @@
         <div class="relative flex justify-center items-center h-full group/menu">
           <a
             href="{{ link.url }}"
-            class="transition-colors text-sm flex items-center {% if fixed_transparent %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
+            class="color-text transition-colors text-sm flex items-center"
+            aria-haspopup="true"
           >
             {{ link.title }}
           </a>
-          <ul class="transition-all duration-300 min-w-52 absolute p-3 -translate-y-full top-full bg-[--bg-header] pointer-events-none opacity-0 group-hover/menu:opacity-100 group-hover/menu:translate-y-0 group-hover/menu:pointer-events-auto">
+          <ul class="color-background color-shadow rounded-lg transition-all duration-300 min-w-52 absolute p-3 -translate-y-full top-full pointer-events-none opacity-0 group-hover/menu:opacity-100 group-hover/menu:translate-y-0 group-hover/menu:pointer-events-auto group-focus-within/menu:opacity-100 group-focus-within/menu:translate-y-0 group-focus-within/menu:pointer-events-auto">
             {% for sublink in link.links %}
               <li class="py-1">
-                <a class="text-sm" href="{{ sublink.url }}">
+                <a class="color-text text-sm" href="{{ sublink.url }}">
                   {{ sublink.title }}
                 </a>
               </li>
@@ -22,7 +23,7 @@
         </div>
       {% else %}
         <a
-          class="transition-colors text-sm flex items-center {% if fixed_transparent %}text-[--icons_color2] group-hover:text-[--icons_color] group-[.is-scrolling]:text-[--icons_color]{% else %}text-[--icons_color]{% endif %}"
+          class="color-text transition-colors text-sm flex items-center"
           href="{{ link.url }}"
         >
           {{ link.title }}
@@ -35,7 +36,10 @@
   <div class="menu-toggle lg:hidden">
     <button
       id="mobile-menu-open"
-      class="p-2 text-xl {% if fixed_transparent %}lg:text-[--icons_color2] lg:group-hover:text-[--icons_color] lg:group-[.is-scrolling]:text-[--icons_color] text-[--icons_color]{% endif %}"
+      class="color-text p-2 text-xl"
+      aria-label="{{ 'header.menu' | t }}"
+      aria-controls="mobile-menu"
+      aria-expanded="false"
     >
       <!-- Ícone do menu, por exemplo, um hamburger -->
       {% render 'icon-menu', size: 24 %}
@@ -46,13 +50,13 @@
 <!-- Estrutura do menu mobile off-canvas -->
 <div
   id="mobile-menu"
-  class="menu-mob fixed w-full max-w-md inset-0 bg-[--bg-header] z-50 transform -translate-x-full transition-transform duration-300 lg:hidden mb-5 h-full"
+  class="menu-mob color-background fixed w-full max-w-md inset-0 z-50 transform -translate-x-full transition-transform duration-300 lg:hidden mb-5 h-full"
   aria-hidden="true"
 >
   <div class="p-4">
     <div class="flex items-center justify-center gap-2 mb-5">
       {% render 'search-component', flex: 1, showMobile: true %}
-      <button id="mobile-menu-close" class="p-4 text-[--icons_color]">
+      <button id="mobile-menu-close" class="color-text p-4" aria-label="{{ 'general.accessibility.close_menu' | t }}">
         {% render 'icon-close', size: 24 %}
       </button>
     </div>
@@ -63,7 +67,8 @@
             {% if link.links.size > 0 %}
               <button
                 type="button"
-                class="submenu-toggle text-sm text-[--icons_color] flex items-center w-full justify-between h-8"
+                class="submenu-toggle color-text text-sm flex items-center w-full justify-between h-8"
+                aria-expanded="false"
               >
                 {{ link.title }}
                 <!-- Ícone que indica abertura/fechamento, por exemplo uma seta -->
@@ -74,14 +79,14 @@
               <ul class="submenu overflow-hidden transition-all duration-300 ml-4" style="height: 0;" aria-hidden="true">
                 {% for sublink in link.links %}
                   <li class="py-1">
-                    <a href="{{ sublink.url }}" class="text-sm text-[--icons_color] block h-8">
+                    <a href="{{ sublink.url }}" class="color-text text-sm block h-8">
                       {{ sublink.title }}
                     </a>
                   </li>
                 {% endfor %}
               </ul>
             {% else %}
-              <a href="{{ link.url }}" class="text-sm text-[--icons_color] h-8 flex items-center">
+              <a href="{{ link.url }}" class="color-text text-sm h-8 flex items-center">
                 {{ link.title }}
               </a>
             {% endif %}
@@ -91,4 +96,4 @@
     </nav>
   </div>
 </div>
-<div id="mobile-menu-overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden"></div>
+<div id="mobile-menu-overlay" class="fixed inset-0 bg-foreground/50 z-40 hidden"></div>

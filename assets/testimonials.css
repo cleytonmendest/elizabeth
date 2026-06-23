@@ -55,29 +55,28 @@
   }
 }
 
-/* Dots do Owl Carousel (customização mínima) */
-.testimonials-slider .owl-dots {
+/* Dots do Swiper (customização mínima, usa currentColor do scheme da seção) */
+.testimonials-slider .my-slider__container .swiper-pagination {
   margin-top: 2rem;
-  text-align: center;
 }
 
-.testimonials-slider .owl-dot {
-  display: inline-block;
+.testimonials-slider .my-slider__container .swiper-pagination-bullet {
   width: 10px;
   height: 10px;
   background: currentColor;
+  border: none;
   opacity: 0.3;
   border-radius: 50%;
-  margin: 0 5px;
   transition: opacity 0.3s;
-  border: none;
-  padding: 0;
 }
 
-.testimonials-slider .owl-dot.active {
-  opacity: 1;
-}
-
-.testimonials-slider .owl-dot:hover {
+.testimonials-slider .my-slider__container .swiper-pagination-bullet:hover {
   opacity: 0.6;
+}
+
+.testimonials-slider .my-slider__container .swiper-pagination-bullet-active {
+  width: 10px;
+  background: currentColor;
+  border-radius: 50%;
+  opacity: 1;
 }

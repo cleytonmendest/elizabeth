@@ -80,7 +80,7 @@
             {% for media in product.media limit: 6 %}
               <button
                 type="button"
-                class="product-gallery__thumbnail border border-gray-200 rounded overflow-hidden hover:border-gray-400 transition-colors {% if forloop.first %}is-active{% endif %}"
+                class="product-gallery__thumbnail border border-border rounded-theme overflow-hidden hover:border-foreground/40 transition-colors {% if forloop.first %}is-active{% endif %}"
                 data-media-id="{{ media.id }}"
                 data-index="{{ forloop.index0 }}"
               >
@@ -122,18 +122,18 @@
                   <img
                     src="{{ media | image_url: width: 1000 }}"
                     alt="{{ media.alt | escape }}"
-                    class="w-full rounded cursor-zoom-in"
+                    class="w-full rounded-theme cursor-zoom-in"
                     data-zoom-image="{{ media | image_url: width: 2000 }}"
                     loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                     {% if forloop.first %}fetchpriority="high"{% endif %}
                     decoding="async"
                   >
                 {% elsif media.media_type == 'video' %}
-                  {{ media | video_tag: controls: true, class: 'w-full rounded' }}
+                  {{ media | video_tag: controls: true, class: 'w-full rounded-theme' }}
                 {% elsif media.media_type == 'external_video' %}
-                  {{ media | external_video_tag: class: 'w-full rounded' }}
+                  {{ media | external_video_tag: class: 'w-full rounded-theme' }}
                 {% elsif media.media_type == 'model' %}
-                  {{ media | model_viewer_tag: reveal: 'interaction', toggleable: true, class: 'w-full rounded' }}
+                  {{ media | model_viewer_tag: reveal: 'interaction', toggleable: true, class: 'w-full rounded-theme' }}
                 {% endif %}
               </div>
             {% endfor %}
@@ -142,12 +142,12 @@
             {% if has_discount or product.metafields.custom.badge %}
               <div class="absolute top-3 left-3 flex flex-col gap-2 z-10">
                 {% if has_discount %}
-                  <span class="bg-red-600 text-white px-2 py-1 text-xs font-semibold rounded">
+                  <span class="bg-badge text-badge-text px-2 py-1 text-xs font-semibold rounded-theme">
                     -{{ discount_percentage }}%
                   </span>
                 {% endif %}
                 {% if product.metafields.custom.badge %}
-                  <span class="bg-black text-white px-2 py-1 text-xs font-semibold rounded">
+                  <span class="bg-foreground text-background px-2 py-1 text-xs font-semibold rounded-theme">
                     {{ product.metafields.custom.badge }}
                   </span>
                 {% endif %}
@@ -195,12 +195,12 @@
           {% if has_discount or product.metafields.custom.badge %}
             <div class="absolute top-3 left-3 flex flex-col gap-2 z-10">
               {% if has_discount %}
-                <span class="bg-red-600 text-white px-2 py-1 text-xs font-semibold rounded">
+                <span class="bg-badge text-badge-text px-2 py-1 text-xs font-semibold rounded-theme">
                   -{{ discount_percentage }}%
                 </span>
               {% endif %}
               {% if product.metafields.custom.badge %}
-                <span class="bg-black text-white px-2 py-1 text-xs font-semibold rounded">
+                <span class="bg-foreground text-background px-2 py-1 text-xs font-semibold rounded-theme">
                   {{ product.metafields.custom.badge }}
                 </span>
               {% endif %}
@@ -209,7 +209,7 @@
         </div>
 
         {%- comment -%} Lightbox Modal {%- endcomment -%}
-        <div id="product-lightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+        <div id="product-lightbox" class="product-lightbox hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
           <button class="absolute top-4 right-4 text-white text-4xl" data-lightbox-close>&times;</button>
           <button class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl" data-lightbox-prev>‹</button>
           <button class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl" data-lightbox-next>›</button>

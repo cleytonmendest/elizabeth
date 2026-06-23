@@ -45,10 +45,10 @@
   data-mi="{{ max_installment }}"
 >
   <div class="flex gap-2 items-center">
-    <span class="listing-price line-through {% if compare_at_price > price %}{% else %} hidden {%- endif -%} {% if pdp %} text-lg {% else %} text-sm {% endif %} text-[#A9A9A9] font-light">
+    <span class="listing-price line-through {% if compare_at_price > price %}{% else %} hidden {%- endif -%} {% if pdp %} text-lg {% else %} text-sm {% endif %} text-foreground/40 font-light">
       {{- compare_at_price | money -}}
     </span>
-    <span class="selling-price {% if pdp %} text-lg font-semibold {% else %} text-sm {% endif %} text-[#1E1E1E]">
+    <span class="selling-price {% if pdp %} text-lg font-semibold {% else %} text-sm {% endif %} text-foreground">
       {{ money_price }}
     </span>
   </div>

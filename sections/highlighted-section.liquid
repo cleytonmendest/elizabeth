@@ -18,14 +18,14 @@
               {% if block.settings.image != blank %}
                 {{ block.settings.image | image_url: width: 1500 | image_tag: class: 'w-full h-auto rounded-lg', loading: 'lazy' }}
               {% else %}
-                {{ 'image' | placeholder_svg_tag: 'w-full h-auto rounded-lg bg-gray-100' }}
+                {{ 'image' | placeholder_svg_tag: 'w-full h-auto rounded-lg bg-foreground/5' }}
               {% endif %}
             </a>
           {% else %}
             {% if block.settings.image != blank %}
               {{ block.settings.image | image_url: width: 1500 | image_tag: class: 'w-full h-auto rounded-lg', loading: 'lazy' }}
             {% else %}
-              {{ 'image' | placeholder_svg_tag: 'w-full h-auto rounded-lg bg-gray-100' }}
+              {{ 'image' | placeholder_svg_tag: 'w-full h-auto rounded-lg bg-foreground/5' }}
             {% endif %}
           {% endif %}
         </div>
@@ -61,7 +61,7 @@
             {% endif %}
 
             {% if block.settings.button_label != blank and block.settings.button_url != blank %}
-              <a href="{{ block.settings.button_url }}" class="inline-block mt-6 px-6 py-3 bg-black text-white rounded-lg hover:opacity-90 transition-opacity">
+              <a href="{{ block.settings.button_url }}" class="inline-block mt-6 px-6 py-3 color-button rounded-lg hover:opacity-90 transition-opacity">
                 {{ block.settings.button_label }}
               </a>
             {% elsif block.settings.url != blank %}

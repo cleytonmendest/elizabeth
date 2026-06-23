@@ -1,16 +1,16 @@
 <!-- /templates/customers/order.liquid -->
 
-<div class="py-12 px-4 sm:px-6 lg:px-8">
+<div class="color-{{ settings.customer_color_scheme }} color-background color-text min-h-screen py-12 px-4 sm:px-6 lg:px-8">
   <div class="max-w-7xl mx-auto">
 
     {%- comment -%} Header {%- endcomment -%}
     <div class="mb-8">
       <div class="flex items-center justify-between mb-4">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900 mb-2">
+          <h1 class="text-3xl font-bold text-foreground mb-2">
             Pedido #{{ order.name }}
           </h1>
-          <p class="text-sm text-gray-600">
+          <p class="text-sm text-foreground/60">
             Realizado em {{ order.created_at | date: "%d de %B de %Y às %H:%M" }}
           </p>
         </div>
@@ -18,7 +18,7 @@
         {%- comment -%} Print Button {%- endcomment -%}
         <button
           onclick="window.print()"
-          class="hidden sm:inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-900 bg-white hover:bg-gray-50 transition-colors print:hidden"
+          class="hidden sm:inline-flex items-center px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors print:hidden"
         >
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
@@ -30,7 +30,7 @@
       {%- comment -%} Back Link {%- endcomment -%}
       <a
         href="{{ routes.account_url }}"
-        class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors print:hidden"
+        class="inline-flex items-center text-sm text-foreground/60 hover:text-foreground transition-colors print:hidden"
       >
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -40,26 +40,26 @@
     </div>
 
     {%- comment -%} Status Timeline {%- endcomment -%}
-    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-      <h2 class="text-lg font-bold text-gray-900 mb-6">Status do Pedido</h2>
+    <div class="bg-background rounded-lg shadow-lg p-6 mb-6">
+      <h2 class="text-lg font-bold text-foreground mb-6">Status do Pedido</h2>
 
       <div class="relative">
         {%- comment -%} Timeline Line {%- endcomment -%}
-        <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200" aria-hidden="true"></div>
+        <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-foreground/10" aria-hidden="true"></div>
 
         <div class="relative space-y-8">
           {%- comment -%} Step 1: Order Placed {%- endcomment -%}
           <div class="flex items-start">
             <div class="flex-shrink-0">
-              <div class="flex items-center justify-center h-8 w-8 rounded-full bg-green-100 border-4 border-white">
-                <svg class="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <div class="flex items-center justify-center h-8 w-8 rounded-full color-success-bg border-4 border-background">
+                <svg class="h-4 w-4 color-success" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                 </svg>
               </div>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-bold text-gray-900">Pedido Realizado</p>
-              <p class="text-xs text-gray-600 mt-1">{{ order.created_at | date: "%d/%m/%Y às %H:%M" }}</p>
+              <p class="text-sm font-bold text-foreground">Pedido Realizado</p>
+              <p class="text-xs text-foreground/60 mt-1">{{ order.created_at | date: "%d/%m/%Y às %H:%M" }}</p>
             </div>
           </div>
 
@@ -68,26 +68,26 @@
             <div class="flex-shrink-0">
               {%- case order.financial_status -%}
                 {%- when 'paid' or 'authorized' -%}
-                  <div class="flex items-center justify-center h-8 w-8 rounded-full bg-green-100 border-4 border-white">
-                    <svg class="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                  <div class="flex items-center justify-center h-8 w-8 rounded-full color-success-bg border-4 border-background">
+                    <svg class="h-4 w-4 color-success" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                     </svg>
                   </div>
                 {%- when 'pending' -%}
-                  <div class="flex items-center justify-center h-8 w-8 rounded-full bg-yellow-100 border-4 border-white">
-                    <svg class="h-4 w-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <div class="flex items-center justify-center h-8 w-8 rounded-full color-warning-bg border-4 border-background">
+                    <svg class="h-4 w-4 color-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                   </div>
                 {%- else -%}
-                  <div class="flex items-center justify-center h-8 w-8 rounded-full bg-gray-100 border-4 border-white">
-                    <div class="h-2 w-2 rounded-full bg-gray-400"></div>
+                  <div class="flex items-center justify-center h-8 w-8 rounded-full bg-foreground/5 border-4 border-background">
+                    <div class="h-2 w-2 rounded-full bg-foreground/40"></div>
                   </div>
               {%- endcase -%}
             </div>
             <div class="ml-4">
-              <p class="text-sm font-bold text-gray-900">Pagamento</p>
-              <p class="text-xs text-gray-600 mt-1">
+              <p class="text-sm font-bold text-foreground">Pagamento</p>
+              <p class="text-xs text-foreground/60 mt-1">
                 {%- case order.financial_status -%}
                   {%- when 'paid' -%}Confirmado
                   {%- when 'authorized' -%}Autorizado
@@ -105,26 +105,26 @@
             <div class="flex-shrink-0">
               {%- case order.fulfillment_status -%}
                 {%- when 'fulfilled' -%}
-                  <div class="flex items-center justify-center h-8 w-8 rounded-full bg-green-100 border-4 border-white">
-                    <svg class="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                  <div class="flex items-center justify-center h-8 w-8 rounded-full color-success-bg border-4 border-background">
+                    <svg class="h-4 w-4 color-success" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                     </svg>
                   </div>
                 {%- when 'partial' -%}
-                  <div class="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 border-4 border-white">
+                  <div class="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 border-4 border-background">
                     <svg class="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                   </div>
                 {%- else -%}
-                  <div class="flex items-center justify-center h-8 w-8 rounded-full bg-gray-100 border-4 border-white">
-                    <div class="h-2 w-2 rounded-full bg-gray-400"></div>
+                  <div class="flex items-center justify-center h-8 w-8 rounded-full bg-foreground/5 border-4 border-background">
+                    <div class="h-2 w-2 rounded-full bg-foreground/40"></div>
                   </div>
               {%- endcase -%}
             </div>
             <div class="ml-4">
-              <p class="text-sm font-bold text-gray-900">Envio</p>
-              <p class="text-xs text-gray-600 mt-1">
+              <p class="text-sm font-bold text-foreground">Envio</p>
+              <p class="text-xs text-foreground/60 mt-1">
                 {%- case order.fulfillment_status -%}
                   {%- when 'fulfilled' -%}Enviado
                   {%- when 'partial' -%}Parcialmente Enviado
@@ -138,13 +138,13 @@
           {%- comment -%} Step 4: Delivered {%- endcomment -%}
           <div class="flex items-start">
             <div class="flex-shrink-0">
-              <div class="flex items-center justify-center h-8 w-8 rounded-full bg-gray-100 border-4 border-white">
-                <div class="h-2 w-2 rounded-full bg-gray-400"></div>
+              <div class="flex items-center justify-center h-8 w-8 rounded-full bg-foreground/5 border-4 border-background">
+                <div class="h-2 w-2 rounded-full bg-foreground/40"></div>
               </div>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-bold text-gray-900">Entregue</p>
-              <p class="text-xs text-gray-600 mt-1">Aguardando confirmação</p>
+              <p class="text-sm font-bold text-foreground">Entregue</p>
+              <p class="text-xs text-foreground/60 mt-1">Aguardando confirmação</p>
             </div>
           </div>
         </div>
@@ -155,12 +155,12 @@
         {%- if order.fulfillments.size > 0 -%}
           {%- assign fulfillment = order.fulfillments.first -%}
           {%- if fulfillment.tracking_url -%}
-            <div class="mt-6 pt-6 border-t border-gray-100">
+            <div class="mt-6 pt-6 border-t border-border">
               <a
                 href="{{ fulfillment.tracking_url }}"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-gray-900 hover:bg-gray-800 transition-colors print:hidden"
+                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-background bg-foreground hover:opacity-90 transition-colors print:hidden"
               >
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -171,7 +171,7 @@
                 </svg>
               </a>
               {%- if fulfillment.tracking_number -%}
-                <p class="text-xs text-gray-600 mt-2">Código de rastreio: <span class="font-mono">{{ fulfillment.tracking_number }}</span></p>
+                <p class="text-xs text-foreground/60 mt-2">Código de rastreio: <span class="font-mono">{{ fulfillment.tracking_number }}</span></p>
               {%- endif -%}
             </div>
           {%- endif -%}
@@ -183,14 +183,14 @@
 
       {%- comment -%} Order Items {%- endcomment -%}
       <div class="lg:col-span-2">
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <h2 class="text-lg font-bold text-gray-900 mb-6">Itens do Pedido</h2>
+        <div class="bg-background rounded-lg shadow-lg p-6">
+          <h2 class="text-lg font-bold text-foreground mb-6">Itens do Pedido</h2>
 
           <div class="space-y-4">
             {%- for line_item in order.line_items -%}
-              <div class="flex items-start pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+              <div class="flex items-start pb-4 border-b border-border last:border-0 last:pb-0">
                 {%- comment -%} Product Image {%- endcomment -%}
-                <div class="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
+                <div class="flex-shrink-0 w-20 h-20 bg-foreground/5 rounded-lg overflow-hidden">
                   {%- if line_item.image -%}
                     <img
                       src="{{ line_item.image | image_url: width: 160 }}"
@@ -201,7 +201,7 @@
                     >
                   {%- else -%}
                     <div class="w-full h-full flex items-center justify-center">
-                      <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <svg class="w-8 h-8 text-foreground/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                       </svg>
                     </div>
@@ -210,9 +210,9 @@
 
                 {%- comment -%} Product Details {%- endcomment -%}
                 <div class="ml-4 flex-1">
-                  <h3 class="text-sm font-medium text-gray-900">
+                  <h3 class="text-sm font-medium text-foreground">
                     {%- if line_item.product.url -%}
-                      <a href="{{ line_item.product.url }}" class="hover:text-gray-700 transition-colors">
+                      <a href="{{ line_item.product.url }}" class="hover:text-foreground/70 transition-colors">
                         {{ line_item.title }}
                       </a>
                     {%- else -%}
@@ -221,32 +221,32 @@
                   </h3>
 
                   {%- if line_item.variant_title and line_item.variant_title != 'Default Title' -%}
-                    <p class="text-xs text-gray-600 mt-1">{{ line_item.variant_title }}</p>
+                    <p class="text-xs text-foreground/60 mt-1">{{ line_item.variant_title }}</p>
                   {%- endif -%}
 
                   {%- if line_item.sku != blank -%}
-                    <p class="text-xs text-gray-500 mt-1">SKU: {{ line_item.sku }}</p>
+                    <p class="text-xs text-foreground/50 mt-1">SKU: {{ line_item.sku }}</p>
                   {%- endif -%}
 
                   <div class="mt-2 flex items-center justify-between">
-                    <p class="text-sm text-gray-600">
-                      Quantidade: <span class="font-medium text-gray-900">{{ line_item.quantity }}</span>
+                    <p class="text-sm text-foreground/60">
+                      Quantidade: <span class="font-medium text-foreground">{{ line_item.quantity }}</span>
                     </p>
                     <div class="text-right">
                       {%- if line_item.original_price != line_item.final_price -%}
-                        <p class="text-xs text-gray-500 line-through">{{ line_item.original_price | money }}</p>
-                        <p class="text-sm font-bold text-gray-900">{{ line_item.final_price | money }}</p>
+                        <p class="text-xs text-foreground/50 line-through">{{ line_item.original_price | money }}</p>
+                        <p class="text-sm font-bold text-foreground">{{ line_item.final_price | money }}</p>
                       {%- else -%}
-                        <p class="text-sm font-bold text-gray-900">{{ line_item.final_price | money }}</p>
+                        <p class="text-sm font-bold text-foreground">{{ line_item.final_price | money }}</p>
                       {%- endif -%}
                     </div>
                   </div>
 
                   {%- comment -%} Line Total {%- endcomment -%}
-                  <div class="mt-2 pt-2 border-t border-gray-100">
+                  <div class="mt-2 pt-2 border-t border-border">
                     <div class="flex items-center justify-between">
-                      <p class="text-xs text-gray-600">Subtotal:</p>
-                      <p class="text-sm font-bold text-gray-900">{{ line_item.final_line_price | money }}</p>
+                      <p class="text-xs text-foreground/60">Subtotal:</p>
+                      <p class="text-sm font-bold text-foreground">{{ line_item.final_line_price | money }}</p>
                     </div>
                   </div>
                 </div>
@@ -255,10 +255,10 @@
           </div>
 
           {%- comment -%} Buy Again Button {%- endcomment -%}
-          <div class="mt-6 pt-6 border-t border-gray-100 print:hidden">
+          <div class="mt-6 pt-6 border-t border-border print:hidden">
             <a
               href="{{ routes.root_url }}"
-              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-900 bg-white hover:bg-gray-50 transition-colors"
+              class="inline-flex items-center px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
             >
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -273,40 +273,40 @@
       <div class="space-y-6">
 
         {%- comment -%} Order Summary {%- endcomment -%}
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <h2 class="text-lg font-bold text-gray-900 mb-4">Resumo do Pedido</h2>
+        <div class="bg-background rounded-lg shadow-lg p-6">
+          <h2 class="text-lg font-bold text-foreground mb-4">Resumo do Pedido</h2>
 
           <div class="space-y-3">
             <div class="flex items-center justify-between text-sm">
-              <span class="text-gray-600">Subtotal</span>
-              <span class="font-medium text-gray-900">{{ order.line_items_subtotal_price | money }}</span>
+              <span class="text-foreground/60">Subtotal</span>
+              <span class="font-medium text-foreground">{{ order.line_items_subtotal_price | money }}</span>
             </div>
 
             {%- if order.total_discounts > 0 -%}
               <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Descontos</span>
-                <span class="font-medium text-green-600">-{{ order.total_discounts | money }}</span>
+                <span class="text-foreground/60">Descontos</span>
+                <span class="font-medium color-success">-{{ order.total_discounts | money }}</span>
               </div>
             {%- endif -%}
 
             {%- if order.shipping_price > 0 -%}
               <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Frete</span>
-                <span class="font-medium text-gray-900">{{ order.shipping_price | money }}</span>
+                <span class="text-foreground/60">Frete</span>
+                <span class="font-medium text-foreground">{{ order.shipping_price | money }}</span>
               </div>
             {%- endif -%}
 
             {%- if order.tax_price > 0 -%}
               <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Impostos</span>
-                <span class="font-medium text-gray-900">{{ order.tax_price | money }}</span>
+                <span class="text-foreground/60">Impostos</span>
+                <span class="font-medium text-foreground">{{ order.tax_price | money }}</span>
               </div>
             {%- endif -%}
 
-            <div class="pt-3 border-t border-gray-200">
+            <div class="pt-3 border-t border-border">
               <div class="flex items-center justify-between">
-                <span class="text-base font-bold text-gray-900">Total</span>
-                <span class="text-lg font-bold text-gray-900">{{ order.total_price | money }}</span>
+                <span class="text-base font-bold text-foreground">Total</span>
+                <span class="text-lg font-bold text-foreground">{{ order.total_price | money }}</span>
               </div>
             </div>
           </div>
@@ -314,12 +314,12 @@
 
         {%- comment -%} Shipping Address {%- endcomment -%}
         {%- if order.shipping_address -%}
-          <div class="bg-white rounded-lg shadow-lg p-6">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Endereço de Entrega</h3>
-            <div class="text-sm text-gray-700 space-y-1">
-              <p class="font-medium text-gray-900">{{ order.shipping_address.name }}</p>
+          <div class="bg-background rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-bold text-foreground mb-4">Endereço de Entrega</h3>
+            <div class="text-sm text-foreground/70 space-y-1">
+              <p class="font-medium text-foreground">{{ order.shipping_address.name }}</p>
               {%- if order.shipping_address.company != blank -%}
-                <p class="text-xs text-gray-600">{{ order.shipping_address.company }}</p>
+                <p class="text-xs text-foreground/60">{{ order.shipping_address.company }}</p>
               {%- endif -%}
               <p>{{ order.shipping_address.street }}</p>
               <p>
@@ -328,7 +328,7 @@
               <p>{{ order.shipping_address.zip }}</p>
               <p>{{ order.shipping_address.country }}</p>
               {%- if order.shipping_address.phone != blank -%}
-                <p class="pt-2 border-t border-gray-100 mt-2">{{ order.shipping_address.phone }}</p>
+                <p class="pt-2 border-t border-border mt-2">{{ order.shipping_address.phone }}</p>
               {%- endif -%}
             </div>
           </div>
@@ -336,15 +336,15 @@
 
         {%- comment -%} Billing Address {%- endcomment -%}
         {%- if order.billing_address -%}
-          <div class="bg-white rounded-lg shadow-lg p-6">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Endereço de Cobrança</h3>
+          <div class="bg-background rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-bold text-foreground mb-4">Endereço de Cobrança</h3>
             {%- if order.billing_address == order.shipping_address -%}
-              <p class="text-sm text-gray-600">Mesmo endereço de entrega</p>
+              <p class="text-sm text-foreground/60">Mesmo endereço de entrega</p>
             {%- else -%}
-              <div class="text-sm text-gray-700 space-y-1">
-                <p class="font-medium text-gray-900">{{ order.billing_address.name }}</p>
+              <div class="text-sm text-foreground/70 space-y-1">
+                <p class="font-medium text-foreground">{{ order.billing_address.name }}</p>
                 {%- if order.billing_address.company != blank -%}
-                  <p class="text-xs text-gray-600">{{ order.billing_address.company }}</p>
+                  <p class="text-xs text-foreground/60">{{ order.billing_address.company }}</p>
                 {%- endif -%}
                 <p>{{ order.billing_address.street }}</p>
                 <p>
@@ -353,7 +353,7 @@
                 <p>{{ order.billing_address.zip }}</p>
                 <p>{{ order.billing_address.country }}</p>
                 {%- if order.billing_address.phone != blank -%}
-                  <p class="pt-2 border-t border-gray-100 mt-2">{{ order.billing_address.phone }}</p>
+                  <p class="pt-2 border-t border-border mt-2">{{ order.billing_address.phone }}</p>
                 {%- endif -%}
               </div>
             {%- endif -%}
@@ -361,14 +361,14 @@
         {%- endif -%}
 
         {%- comment -%} Need Help? {%- endcomment -%}
-        <div class="bg-gray-50 rounded-lg p-6 print:hidden">
-          <h3 class="text-sm font-bold text-gray-900 mb-2">Precisa de Ajuda?</h3>
-          <p class="text-xs text-gray-600 mb-4">
+        <div class="bg-foreground/5 rounded-lg p-6 print:hidden">
+          <h3 class="text-sm font-bold text-foreground mb-2">Precisa de Ajuda?</h3>
+          <p class="text-xs text-foreground/60 mb-4">
             Entre em contato conosco se tiver dúvidas sobre seu pedido.
           </p>
           <a
             href="{{ routes.root_url }}/pages/contato"
-            class="inline-flex items-center text-xs font-medium text-gray-900 hover:text-gray-700 transition-colors"
+            class="inline-flex items-center text-xs font-medium text-foreground hover:text-foreground/70 transition-colors"
           >
             Falar com Suporte
             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

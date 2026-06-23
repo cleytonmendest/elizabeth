@@ -23,7 +23,7 @@
     {%- comment -%} Botão Fechar {%- endcomment -%}
     <button
       type="button"
-      class="close-modal absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 hover:bg-opacity-10 transition-colors z-10"
+      class="close-modal absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-foreground/5 hover:bg-opacity-10 transition-colors z-10"
       aria-label="Fechar modal"
     >
       <svg class="w-5 h-5 color-icon-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,7 +105,7 @@
       {%- if section.settings.show_dont_show_again -%}
         <div class="mt-6 text-center">
           <label class="inline-flex items-center cursor-pointer text-sm color-text-muted hover:opacity-80">
-            <input type="checkbox" class="dont-show-again mr-2 rounded color-border">
+            <input type="checkbox" class="dont-show-again mr-2 rounded-theme-sm color-border">
             Não mostrar novamente
           </label>
         </div>

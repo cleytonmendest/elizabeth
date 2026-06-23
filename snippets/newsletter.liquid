@@ -1,6 +1,6 @@
-<div id="newsletter-signup" class="newsletter w-full bg-black flex min-h-56 items-center">
+<div id="newsletter-signup" class="newsletter w-full color-background flex min-h-56 items-center">
   <div class="flex page-width w-full items-center lg:flex-row flex-col !py-6 gap-7">
-    <div class="flex-1 w-full text-white
+    <div class="flex-1 w-full color-text
         [&_h2]:font-semibold [&_h2]:lg:text-2xl [&_h2]:text-xl
         [&_h3]:font-semibold [&_h3]:lg:text-xl [&_h3]:text-lg
         [&_h4]:font-semibold [&_h4]:lg:text-lg [&_h4]:text-base
@@ -12,7 +12,7 @@
       method="post"
       action="/contact#newsletter-signup"
       accept-charset="UTF-8"
-      class="w-full flex bg-[#FFFFFF80] backdrop-blur-sm p-4 contact-form lg:flex-[2] rounded gap-2 h-fit lg:items-center lg:flex-row flex-col items-start"
+      class="w-full flex bg-foreground/10 backdrop-blur-sm p-4 contact-form lg:flex-[2] rounded-theme gap-2 h-fit lg:items-center lg:flex-row flex-col items-start"
     >
       <!-- Indica ao Shopify que é um formulário de cadastro de contato -->
       <input type="hidden" name="form_type" value="customer">
@@ -27,7 +27,7 @@
           type="text"
           name="contact[first_name]"
           id="NewsletterFirstName"
-          class="h-10 bg-white rounded px-3 w-full text-sm placeholder:text-sm placeholder:text-[#696969]"
+          class="h-10 color-input rounded-theme-sm px-3 w-full text-sm placeholder:text-sm"
           placeholder="{{ 'newsletter.placeholder_first_name' | t }}"
           required
         >
@@ -41,7 +41,7 @@
           name="contact[last_name]"
           id="NewsletterLastName"
           placeholder="{{ 'newsletter.placeholder_last_name' | t }}"
-          class="h-10 bg-white rounded px-3 w-full text-sm placeholder:text-sm placeholder:text-[#696969]"
+          class="h-10 color-input rounded-theme-sm px-3 w-full text-sm placeholder:text-sm"
         >
       </div>
 
@@ -53,13 +53,13 @@
           name="contact[email]"
           id="NewsletterEmail"
           placeholder="{{ 'newsletter.placeholder_email' | t }}"
-          class="h-10 bg-white rounded px-3 w-full text-sm placeholder:text-sm placeholder:text-[#696969]"
+          class="h-10 color-input rounded-theme-sm px-3 w-full text-sm placeholder:text-sm"
           required
         >
       </div>
 
       <!-- Botão de enviar -->
-      <button type="submit" class="text-black">
+      <button type="submit" class="color-text" aria-label="{{ 'footer.newsletter.submit' | t }}">
         {% render 'icon-arrow-right', size: 40 %}
       </button>
     </form>

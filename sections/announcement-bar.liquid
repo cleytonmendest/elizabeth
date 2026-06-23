@@ -2,17 +2,24 @@
   data-section-id="{{ section.id }}"
   data-direction="{{ section.settings.direction }}"
   data-duration="{{ section.settings.duration }}"
-  data-gap="{{ section.settings.gap }}"
   data-pauseHover="{{ section.settings.pause_hover }}"
+  style="--marquee-duration: {{ section.settings.duration }}s; --marquee-gap: {{ section.settings.gap }}px;"
   class="color-{{ section.settings.color_scheme }} color-background color-text w-full overflow-hidden py-1 lg:py-2 flex"
 >
-  <div class="announcement-content flex flex-nowrap whitespace-nowrap announcement-inner items-center">
-    {%- for block in section.blocks -%}
-      <div class="inline-block px-2 text-xs lg:text-base">
-        {{ block.settings.text_item }}
-      </div>
-      <span class="inline-block px-2">•</span>
-    {%- endfor -%}
+  {%- comment -%}
+    O conteúdo é renderizado uma vez; o JS (announcement-bar) clona até preencher
+    a viewport e duplica a trilha para o loop contínuo (translateX 0 -> -50%).
+    Sem JS, fica estático (degradação graciosa).
+  {%- endcomment -%}
+  <div class="announcement-marquee">
+    <div class="announcement-track">
+      {%- for block in section.blocks -%}
+        <div class="inline-block px-2 text-xs lg:text-base">
+          {{ block.settings.text_item }}
+        </div>
+        <span class="inline-block px-2">•</span>
+      {%- endfor -%}
+    </div>
   </div>
 </announcement-bar>
 

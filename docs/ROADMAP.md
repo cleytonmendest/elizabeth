@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.3.0 | **Atualizado:** 2024-12-24
+**Versão:** 2.4.0 | **Atualizado:** 2026-06-23
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -123,14 +123,12 @@ Tabela de medidas customizável.
 
 Centralizar em Tailwind config (`rounded-theme`).
 
-### jQuery → Vanilla JS
-**Esforço:** 37-46h
-
-Migração completa + Owl Carousel → Swiper.
-
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.4.0 - Remoção do jQuery** (2026-06-23)
+- jQuery/Owl Carousel/jQuery Marquee removidos. Sliders migrados para Swiper 11 (`<my-slider>` vanilla); announcement-bar marquee → CSS keyframes; product-gallery.js vanilla puro (lightbox e thumbnail ativo corrigidos). Tema 100% sem jQuery.
 
 **v2.3.0 - i18n, Color Schemes & Gift Card** (2024-12-26)
 - Sistema i18n: locales PT-BR/EN completos (~225 strings), guia migração, 9 arquivos migrados (cart-drawer, testimonials, etc.)

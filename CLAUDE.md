@@ -69,8 +69,8 @@ TailwindCSS is the primary styling framework:
 - Custom styles in `@layer base` include scrolling header behaviors and variant availability states
 
 Additional stylesheets:
-- `carousel-style.css`: Custom carousel styling
-- `owl.carousel.min.css` & `owl.theme.default.min.css`: Owl Carousel library styles
+- `carousel-style.css`: Custom carousel styling (Swiper pagination + CSS announcement-bar marquee)
+- `swiper-bundle.min.css`: Swiper library styles
 
 ### JavaScript Architecture
 
@@ -82,14 +82,14 @@ Key components in `assets/`:
 - **`price-component.js`**: Price display updates based on variant changes
 - **`quantity-selector.js`**: Quantity input controls
 - **`search-component.js`**: Predictive search functionality
-- **`carousel-manager.js`**: Owl Carousel initialization and configuration
+- **`carousel-manager.js`**: `<my-slider>` custom element — Swiper initialization and configuration (vanilla, no jQuery). The announcement-bar marquee is now pure CSS (no JS).
 - **`header.js`**: Header scroll behavior and sticky positioning
 - **`theme.js`**: Global theme utilities
 
 **Vendor Libraries** (loaded in `theme.liquid`):
-- jQuery 3.x
-- Owl Carousel 2.x for sliders/carousels
-- jQuery Marquee for scrolling text
+- Swiper 11.x for sliders/carousels (UMD bundle, no build step)
+
+The theme is jQuery-free. Sliders use Swiper; the announcement bar uses a CSS keyframe marquee.
 
 **Global Variables** (set in `theme.liquid`):
 ```javascript
@@ -164,11 +164,47 @@ Sections like `slider-image` include separate images for desktop/tablet/mobile w
 
 ### Color Scheme
 
-**Status atual:** Cores hardcoded em alguns arquivos (a ser migrado)
+**Status:** Design tokens implementados. Cores mapeadas dos color schemes em `tailwind.config.js`.
 
-**Roadmap:** Sistema de design tokens centralizado com CSS variables + Tailwind config. Todas as cores serão configuráveis globalmente via `assets/color-scheme.css` para facilitar mudanças de tema e suporte a dark mode.
+**Como usar:** prefira os tokens Tailwind em vez de hex hardcoded — eles seguem o color scheme (e dark mode futuro) automaticamente:
+- `bg-background`, `text-foreground`, `border-border`
+- `bg-button` / `text-button-text`, `bg-badge` / `text-badge-text`
+- `text-success` / `text-error` / `text-warning`, `text-link`, `shadow`
+- Opacidade suportada: `text-foreground/70`, `bg-background/50` (vars em formato espaço habilitam `<alpha-value>`)
 
-**Prioridade:** Alta - próxima implementação
+As CSS variables são geradas em `layout/theme.liquid` a partir das configs do admin e consumidas via `assets/color-scheme.css` (classes `.color-*`, legado em transição) + tokens Tailwind (preferencial).
+
+**Mapeamento de migração (cinza/preto/branco → token):**
+- `text-gray-700/600/500/400/300` → `text-foreground/70` `/60` `/50` `/40` `/30`
+- `bg-gray-50/100` → `bg-foreground/5`; `bg-gray-200` → `bg-foreground/10`; `bg-gray-300` → `bg-foreground/20`
+- `border-gray-*` → `border-border`; `ring-gray-*` → `ring-foreground/40`
+- `text-black` → `text-foreground`; `bg-white` → `bg-background`; `border-black` → `border-foreground`
+- Par `bg-black text-white` (botões/badges/tags) → `bg-foreground text-background`; hover `bg-gray-800` → `opacity-90`
+- Badge de desconto/erro → `bg-badge text-badge-text`; botão primário → `color-button` ou `bg-button text-button-text`
+
+**Hex/cores fixas legítimas (NÃO migrar):** cores de marca (ícones de pagamento, botões WhatsApp/Facebook), defaults de settings no schema, **scrims de imagem** (overlay escuro sobre foto + texto branco, ex: hero de coleção), **lightbox** (visualizador de imagem, sempre escuro), **indicadores semânticos** (azul de status "info" sem token equivalente, espectro de medidor de força de senha). Seções dark autocontidas (ex: `newsletter.liquid`) ficam pendentes de refator scheme-aware dedicado.
+
+**Páginas de cliente:** controladas pelo setting global `settings.customer_color_scheme` (admin > Cores > Páginas de Cliente). Cada template (`templates/customers/*.liquid`) tem o wrapper `color-{{ settings.customer_color_scheme }} color-background color-text` na div raiz. Status de feedback usam tokens: success/warning/error (verde/amarelo/vermelho); "info" (azul) fica literal por não ter token.
+
+### Tipografia
+
+**Corpo padrão:** `14px` (`text-sm`). O `body` herda 14px em `layout/theme.liquid`. Não há setting de tamanho no editor (só família via `font_picker`).
+
+**Escala** (fonte única da verdade em `tailwind.config.js > fontSize`):
+
+| Classe | Tamanho | Uso |
+|--------|---------|-----|
+| `text-xs` | 12px | legendas, labels, legal |
+| `text-sm` | 14px | **corpo (padrão)** |
+| `text-base` | 16px | corpo destacado / títulos pequenos |
+| `text-lg` | 18px | subtítulo / h6 |
+| `text-xl` | 20px | h5 |
+| `text-2xl` | 24px | h4 / título de seção |
+| `text-3xl` | 30px | h3 |
+| `text-4xl` | 36px | h2 |
+| `text-5xl` | 48px | h1 / hero |
+
+**Regra:** corpo de texto usa `text-sm`. Não usar tamanhos arbitrários (`text-[15px]`) sem justificativa — escolher o degrau mais próximo da escala.
 
 ## Shopify CLI Integration
 

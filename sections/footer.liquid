@@ -1,7 +1,9 @@
 <div class="color-{{ section.settings.color_scheme }}">
   <div>
     {% if section.settings.active_newsletter %}
-      {% render 'newsletter', text: section.settings.newsletter_text %}
+      <div class="color-{{ section.settings.newsletter_color_scheme }}">
+        {% render 'newsletter', text: section.settings.newsletter_text %}
+      </div>
     {% endif %}
   </div>
   <div class="flex page-width !py-8 flex-col lg:flex-row gap-8 lg:gap-0">
@@ -123,6 +125,13 @@
       "id": "newsletter_text",
       "label": "Texto da Newsletter",
       "default": "<h2>INSCREVA-SE EM NOSSA NEWSLETTER</h2><p>Fique por dentro das novidades, promoções e muito mais.</p>"
+    },
+    {
+      "type": "color_scheme",
+      "id": "newsletter_color_scheme",
+      "label": "Esquema de cores da Newsletter",
+      "default": "scheme-2",
+      "info": "Faixa da newsletter, independente do footer"
     }
   ],
   "blocks": [
