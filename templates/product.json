@@ -42,21 +42,54 @@
             "show_product_price": true
           }
         },
+        "inventory_St0ckk": {
+          "type": "inventory",
+          "settings": {
+            "text_style": "body",
+            "inventory_threshold": 10,
+            "show_inventory_quantity": true
+          }
+        },
         "description_m7ryRj": {
           "type": "description",
           "settings": {
             "show_title": true,
             "title_text": "Descrição"
           }
+        },
+        "assurances_Tru5t": {
+          "type": "assurances",
+          "settings": {}
+        },
+        "payment_icons_Pay123": {
+          "type": "payment_icons",
+          "settings": {
+            "show_title": false,
+            "icon_style": "grayscale",
+            "icon_size": "small",
+            "show_installment_text": false,
+            "installment_text": ""
+          }
+        },
+        "collapsible_entrega": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Entrega e devoluções",
+            "content": "<p>Enviamos para todo o Brasil. Você pode trocar ou devolver em até 30 dias após o recebimento. Edite este texto no editor de tema (seção Produto → bloco \"Entrega e devoluções\").</p>"
+          }
         }
       },
       "block_order": [
         "title_Vfy3m9",
         "price_Pk6bTQ",
-        "quantity_selector_XF4zQk",
         "variant_picker_xzjJXf",
+        "inventory_St0ckk",
+        "quantity_selector_XF4zQk",
         "buy_button_HnrRzY",
-        "description_m7ryRj"
+        "assurances_Tru5t",
+        "payment_icons_Pay123",
+        "description_m7ryRj",
+        "collapsible_entrega"
       ],
       "settings": {
         "color_scheme": "",

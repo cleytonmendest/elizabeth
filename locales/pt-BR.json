@@ -121,7 +121,10 @@
       "in_stock": "Em estoque",
       "out_of_stock": "Fora de estoque",
       "low_stock": "Estoque limitado",
-      "low_stock_with_quantity": "Apenas {{ quantity }} {{ quantity | pluralize: 'unidade', 'unidades' }} em estoque!",
+      "low_stock_with_quantity": {
+        "one": "Apenas {{ count }} unidade em estoque!",
+        "other": "Apenas {{ count }} unidades em estoque!"
+      },
       "low_stock_message": "Garanta o seu agora antes que acabe",
       "units_available": "{{ quantity }} unidades em estoque",
       "last_units": "Últimas unidades disponíveis"

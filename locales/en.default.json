@@ -121,7 +121,10 @@
       "in_stock": "In stock",
       "out_of_stock": "Out of stock",
       "low_stock": "Limited stock",
-      "low_stock_with_quantity": "Only {{ quantity }} {{ quantity | pluralize: 'unit', 'units' }} in stock!",
+      "low_stock_with_quantity": {
+        "one": "Only {{ count }} unit in stock!",
+        "other": "Only {{ count }} units in stock!"
+      },
       "low_stock_message": "Get yours now before it's gone",
       "units_available": "{{ quantity }} units in stock",
       "last_units": "Last units available"

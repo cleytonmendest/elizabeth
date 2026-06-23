@@ -2,7 +2,7 @@
   {%- form 'product',
     product,
     id: product.id,
-    class: 'form flex lg:gap-8 gap-2 w-full',
+    class: 'form flex gap-3 w-full',
     novalidate: 'novalidate',
     data-type: 'add-to-cart-form'
   -%}
@@ -16,14 +16,14 @@
       {% endif %}
     >
     {% if hasQtd %}
-      {% render 'quantity-selector', addToCart: true %}
+      {% render 'quantity-selector', addToCart: true, height_class: 'h-12' %}
     {% else %}
       <input class="hidden" type="number" name="quantity" value="1" min="1">
     {% endif %}
     <button
       type="submit"
       name="add"
-      class="color-button w-full h-10 font-bold transition-all hover:opacity-90"
+      class="color-button w-full h-12 text-xs font-medium uppercase tracking-[0.18em] transition-all hover:opacity-90"
       aria-haspopup="dialog"
       aria-live="polite"
       data-sold-out-message="true"

@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.4.0 | **Atualizado:** 2026-06-23
+**Versão:** 2.5.0 | **Atualizado:** 2026-06-23
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -110,9 +110,9 @@ Judge.me ou Loox (apps).
 ### Size Guide Modal
 **Esforço:** 8-12h
 
-Tabela de medidas customizável.
+Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/produto — precisa de fonte de dados que não exija o lojista preencher manualmente (metaobjects/automação). Não entregar como texto global no editor.
 - Imagens + dicas de modelagem
-- Configurável via metafields
+- Estratégia de dados por categoria (sem setup técnico do lojista)
 
 ---
 
@@ -126,6 +126,10 @@ Substituir resíduos de `rounded-lg` → `rounded-theme` e hex/cinzas hardcoded 
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.5.0 - Redesign PDP (minimalista de luxo)** (2026-06-23)
+- Coluna direita reorganizada (ritmo vertical `gap-5`, tipografia editorial: eyebrow de categoria + título `font-light text-4xl`); preço maior (`text-2xl`) com parcelamento visível (fonte única: settings Parcelamento); CTA `h-12` alinhado ao seletor de qtd. Ativados blocos prontos no `product.json` (estoque, formas de pagamento). Novos: bloco `assurances` (selos de confiança editáveis — política global da loja + ícones truck/return/lock) e acordeão "Entrega e devoluções" (collapsible_tab, texto global). Todos reordenáveis/removíveis no editor — zero setup técnico. Conteúdo per-produto (composição, guia de medidas) ficou de fora por não ter fonte de dados sem trabalho manual do lojista. Sticky ATC alinhado ao CTA (cantos retos, maiúsculas tracked); galeria mobile com dots minimalistas + contador "X/N" (setas só no desktop, via `data-dot` + `.index-active` do carousel-manager).
+- Fix: bug de pluralização no estoque (`pluralize` dentro de string de tradução → pluralização nativa `count` em pt-BR/en).
 
 **v2.4.0 - Design System & Remoção do jQuery** (2026-06-23)
 - jQuery 100% removido (Owl/marquee → Swiper 11 + CSS); design tokens de cor + `rounded-theme` centralizados no `tailwind.config.js`; sections/templates de cliente e newsletter padronizados com tokens; header sticky; asset loading core (`theme.liquid`) + CSS/JS co-locados por componente.

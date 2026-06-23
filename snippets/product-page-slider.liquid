@@ -2,8 +2,27 @@
   {% assign product = product_ref %}
 {% endif %}
 
+{%- comment -%}
+  Navegação por breakpoint:
+  - Mobile: dots minimalistas + contador "X / N" (setas ocultas)
+  - Desktop: setas ‹ › (dots/contador ocultos) — comportamento original preservado
+{%- endcomment -%}
+<style>
+  my-slider.pdp-gallery { display: block; position: relative; }
+  my-slider.pdp-gallery .swiper-pagination {
+    position: absolute; bottom: 12px; left: 0; right: 0;
+    display: flex; justify-content: center; align-items: center; gap: 6px; z-index: 10;
+  }
+  my-slider.pdp-gallery .swiper-pagination-bullet {
+    width: 6px; height: 6px; margin: 0 !important; border-radius: 9999px;
+    background: rgb(var(--color-foreground)); opacity: .3; transition: all .25s ease;
+  }
+  my-slider.pdp-gallery .swiper-pagination-bullet-active { opacity: 1; width: 18px; border-radius: 3px; }
+  @media (min-width: 1024px) { my-slider.pdp-gallery .swiper-pagination { display: none; } }
+</style>
+
 <my-slider
-  class="block w-full"
+  class="pdp-gallery block w-full"
   data-section-id="{{ section.id }}"
   data-loop="true"
   data-items="{{ product.images.size }}"
@@ -13,7 +32,7 @@
   data-autoplay="false"
   data-ap-time=""
   data-pause-hover=""
-  data-dot=""
+  data-dot="true"
 >
   {% comment %} OBRIGATORIO TER A DIV "my-slider__container" PARA O CORRETO FUNCIONAMENTO {% endcomment %}
   <div class="my-slider__container overflow-hidden">
@@ -29,8 +48,17 @@
       </div>
     {% endfor %}
   </div>
+
+  {%- comment -%} Contador de posição — somente mobile {%- endcomment -%}
+  {%- if product.images.size > 1 -%}
+    <div class="lg:hidden absolute top-3 right-3 z-10 bg-background/85 text-foreground text-xs tracking-wide rounded-theme px-2.5 py-1">
+      <span class="index-active">1</span> / {{ product.images.size }}
+    </div>
+  {%- endif -%}
 </my-slider>
-<div class="flex absolute w-full justify-between">
+
+{%- comment -%} Setas — somente desktop {%- endcomment -%}
+<div class="hidden lg:flex absolute w-full justify-between top-[50%] z-10">
   <button
     onclick="sliderPrev('{{ section.id }}')"
     class="text-foreground"

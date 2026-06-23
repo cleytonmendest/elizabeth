@@ -44,21 +44,21 @@
   data-mv="{{ min_value }}"
   data-mi="{{ max_installment }}"
 >
-  <div class="flex gap-2 items-center">
-    <span class="listing-price line-through {% if compare_at_price > price %}{% else %} hidden {%- endif -%} {% if pdp %} text-lg {% else %} text-sm {% endif %} text-foreground/40 font-light">
+  <div class="flex gap-2 items-baseline">
+    <span class="listing-price line-through {% if compare_at_price > price %}{% else %} hidden {%- endif -%} {% if pdp %} text-base {% else %} text-sm {% endif %} text-foreground/40 font-light">
       {{- compare_at_price | money -}}
     </span>
-    <span class="selling-price {% if pdp %} text-lg font-semibold {% else %} text-sm {% endif %} text-foreground">
+    <span class="selling-price {% if pdp %} text-2xl font-medium tracking-tight {% else %} text-sm {% endif %} text-foreground">
       {{ money_price }}
     </span>
   </div>
   {%- if show_installments and show_installments_settings %}
     <div>
-      <p class="instalment-container">
+      <p class="instalment-container {% if pdp %} text-xs text-foreground/55 mt-1.5 {% endif %}">
         {{ 'product.installments.up_to' | t }}
-        <span class="installment-value">{{ actual_installments }}x</span>
+        <span class="installment-value {% if pdp %} font-medium text-foreground {% endif %}">{{ actual_installments }}x</span>
         {{ 'product.installments.of' | t }}
-        <span class="installment-price-value">{{ final_installment_value | money }}</span>
+        <span class="installment-price-value {% if pdp %} font-medium text-foreground {% endif %}">{{ final_installment_value | money }}</span>
       </p>
     </div>
   {%- endif %}

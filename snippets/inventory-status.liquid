@@ -28,13 +28,13 @@
 
   {% if inventory_threshold == 0 or inventory_quantity <= inventory_threshold %}
     <div
-      class="product-inventory-status my-4"
+      class="product-inventory-status"
       {{ block.shopify_attributes }}
       data-inventory-status
     >
       {%- comment -%} Badge de Urgência (estoque baixo) {%- endcomment -%}
       {% if inventory_quantity > 0 and inventory_quantity <= 10 %}
-        <div class="flex items-center gap-2 p-3 color-error-bg border color-border rounded-lg">
+        <div class="flex items-center gap-2 p-3 color-error-bg border color-border rounded-theme">
           <svg class="w-5 h-5 color-error flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
           </svg>
@@ -42,7 +42,7 @@
           <div class="flex-1">
             {% if show_quantity %}
               <p class="color-error font-medium text-sm{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
-                {{ 'product.inventory.low_stock_with_quantity' | t: quantity: inventory_quantity }}
+                {{ 'product.inventory.low_stock_with_quantity' | t: count: inventory_quantity }}
               </p>
               <p class="color-error text-xs mt-0.5">{{ 'product.inventory.low_stock_message' | t }}</p>
             {% else %}
@@ -78,7 +78,7 @@
 {%- comment -%} Mensagem de fora de estoque {%- endcomment -%}
 {% elsif inventory_management != blank and current_variant.available == false %}
   <div
-    class="product-inventory-status my-4"
+    class="product-inventory-status"
     {{ block.shopify_attributes }}
     data-inventory-status
   >
@@ -106,8 +106,8 @@
       inStock: "{{ 'product.inventory.in_stock' | t }}",
       outOfStock: "{{ 'product.inventory.out_of_stock' | t }}",
       unitsAvailable: "{{ 'product.inventory.units_available' | t }}",
-      unit: "{{ 'product.inventory.low_stock_with_quantity' | t: quantity: 1 }}",
-      units: "{{ 'product.inventory.low_stock_with_quantity' | t: quantity: 2 }}"
+      unit: "{{ 'product.inventory.low_stock_with_quantity' | t: count: 1 }}",
+      units: "{{ 'product.inventory.low_stock_with_quantity' | t: count: 2 }}"
     };
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -140,14 +140,14 @@
           if (quantity > 0 && quantity <= 10) {
             // Estoque baixo - urgência
             const quantityText = showQuantity
-              ? i18n.units.replace('{{ quantity }}', quantity).replace('2', quantity)
+              ? (quantity === 1 ? i18n.unit : i18n.units.replace(/\d+/, quantity))
               : i18n.lowStock;
             const subtitleText = showQuantity
               ? i18n.lowStockMessage
               : i18n.lastUnits;
 
             inventoryStatusEl.innerHTML = `
-              <div class="flex items-center gap-2 p-3 color-error-bg border color-border rounded-lg">
+              <div class="flex items-center gap-2 p-3 color-error-bg border color-border rounded-theme">
                 <svg class="w-5 h-5 color-error flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                 </svg>

@@ -1,4 +1,5 @@
-<quantity-selector class="border border-border p-1 flex h-10 w-fit max-w-28">
+{%- assign qty_height = height_class | default: 'h-10' -%}
+<quantity-selector class="border border-border p-1 flex {{ qty_height }} w-fit max-w-28">
   <button
     type="button"
     name="minus"

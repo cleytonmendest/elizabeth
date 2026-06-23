@@ -1,0 +1,46 @@
+{%- comment -%}
+  Selos de confiança da PDP (envio, troca, segurança)
+
+  Totalmente configurável pelo lojista via bloco `assurances` (3 itens com
+  título + subtítulo editáveis). Cada item só é exibido se tiver título.
+  Os ícones de cada slot são fixos: 1=envio, 2=troca, 3=segurança.
+
+  Parâmetros:
+  - block: bloco com configurações (obrigatório)
+{%- endcomment -%}
+
+<div class="product-assurances flex flex-col gap-4" {% if block %}{{ block.shopify_attributes }}{% endif %}>
+  {%- if block.settings.item_1_title != blank -%}
+    <div class="flex items-start gap-3">
+      {% render 'icon-truck', size: 20, class: 'shrink-0 mt-0.5' %}
+      <div>
+        <p class="text-sm text-foreground">{{ block.settings.item_1_title }}</p>
+        {%- if block.settings.item_1_text != blank -%}
+          <p class="text-xs text-foreground/55">{{ block.settings.item_1_text }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+  {%- if block.settings.item_2_title != blank -%}
+    <div class="flex items-start gap-3">
+      {% render 'icon-return', size: 20, class: 'shrink-0 mt-0.5' %}
+      <div>
+        <p class="text-sm text-foreground">{{ block.settings.item_2_title }}</p>
+        {%- if block.settings.item_2_text != blank -%}
+          <p class="text-xs text-foreground/55">{{ block.settings.item_2_text }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+  {%- if block.settings.item_3_title != blank -%}
+    <div class="flex items-start gap-3">
+      {% render 'icon-lock', size: 20, class: 'shrink-0 mt-0.5' %}
+      <div>
+        <p class="text-sm text-foreground">{{ block.settings.item_3_title }}</p>
+        {%- if block.settings.item_3_text != blank -%}
+          <p class="text-xs text-foreground/55">{{ block.settings.item_3_text }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+</div>
