@@ -47,6 +47,7 @@
                     srcset="{{ block.settings.imgDesktop | image_url }}"
                     width="{{ block.settings.imgDesktopWidth | default: 1920 }}"
                     height="{{ block.settings.imgDesktopHeight | default: 540 }}"
+                    class="w-full"
                   >
                 {% endif %}
                 {% if block.settings.imgTablet %}
@@ -55,6 +56,7 @@
                     srcset="{{ block.settings.imgTablet | image_url }}"
                     width="{{ block.settings.imgTabletWidth | default: 1024 }}"
                     height="{{ block.settings.imgTabletHeight | default: 540 }}"
+                    class="w-full"
                   >
                 {% endif %}
                 <img
@@ -62,6 +64,7 @@
                   alt="{{ block.settings.alt_text | escape | default: 'Slider Image' }}"
                   width="{{ block.settings.imgMobWidth | default: 500 }}"
                   height="{{ block.settings.imgMobHeight | default: 540 }}"
+                  class="w-full"
                   loading="{% if is_first_slide %}eager{% else %}lazy{% endif %}"
                   decoding="async"
                   {% if is_first_slide %}fetchpriority="high"{% endif %}
@@ -76,6 +79,7 @@
                   srcset="{{ block.settings.imgDesktop | image_url }}"
                   width="{{ block.settings.imgDesktopWidth | default: 1920 }}"
                   height="{{ block.settings.imgDesktopHeight | default: 540 }}"
+                  class="w-full"
                 >
               {% endif %}
               {% if block.settings.imgTablet %}
@@ -84,6 +88,7 @@
                   srcset="{{ block.settings.imgTablet | image_url }}"
                   width="{{ block.settings.imgTabletWidth | default: 1024 }}"
                   height="{{ block.settings.imgTabletHeight | default: 540 }}"
+                  class="w-full"
                 >
               {% endif %}
               <img
@@ -91,6 +96,7 @@
                 alt="{{ block.settings.alt_text | escape | default: 'Slider Image' }}"
                 width="{{ block.settings.imgMobWidth | default: 500 }}"
                 height="{{ block.settings.imgMobHeight | default: 540 }}"
+                class="w-full"
                 loading="{% if is_first_slide %}eager{% else %}lazy{% endif %}"
                 decoding="async"
                 {% if is_first_slide %}fetchpriority="high"{% endif %}
