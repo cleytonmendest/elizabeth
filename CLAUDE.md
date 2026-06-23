@@ -8,22 +8,9 @@ This is a Shopify theme built with TailwindCSS, based on Shopify's Online Store 
 
 ## 🚨 DEVELOPMENT PRIORITY RULES
 
-**⚠️ MANDATORY: Always consult `docs/ROADMAP.md` before any implementation.**
-
-1. **Priority hierarchy**: Shopify Theme Store requirements FIRST. Secondary features wait until all critical blockers are resolved.
-2. **Always update ROADMAP**: After completing or modifying any feature, update `docs/ROADMAP.md` with:
-   - Status changes (Planejado → Em Progresso → Concluído)
-   - Completion summaries in "✅ CONCLUÍDO" section
-   - New features or important discoveries
-3. **Current focus** (v2.3.0): Theme Store launch blockers
-   - i18n (internationalization) - 1% complete
-   - Color Schemes refinement - 60% complete
-   - Accessibility WCAG 2.1 AA
-   - Performance benchmarks
-   - Gift card template
-   - Documentation for merchants
-
-**This rule cannot be broken unless explicitly requested to ignore.**
+1. **Prioridade:** requisitos da Shopify Theme Store vêm primeiro; features secundárias esperam os bloqueadores críticos. **As prioridades e seu status são fonte da verdade em `docs/ROADMAP.md`** — não duplicar aqui.
+2. **Consulte o ROADMAP** antes de iniciar uma feature ou mudança que afete escopo/prioridades. Não é necessário para ajustes triviais (typo, tweak pontual, dúvida).
+3. **Atualize o ROADMAP** ao concluir ou alterar uma feature (status, linha em `✅ CONCLUÍDO`, novas descobertas).
 
 ## Development Commands
 
@@ -71,6 +58,8 @@ TailwindCSS is the primary styling framework:
 Additional stylesheets:
 - `carousel-style.css`: Custom carousel styling (Swiper pagination + CSS announcement-bar marquee)
 - `swiper-bundle.min.css`: Swiper library styles
+- `color-scheme.css`: `.color-*` scheme classes consuming the CSS variables generated in `theme.liquid` (legacy, in transition to Tailwind tokens)
+- **Per-component CSS** (co-located, rendered only where used): `cart.css`, `product-gallery.css`, `sticky-atc.css`, `newsletter-modal.css`, `testimonials.css`, `variant-selector.css`
 
 ### JavaScript Architecture
 
@@ -83,13 +72,20 @@ Key components in `assets/`:
 - **`quantity-selector.js`**: Quantity input controls
 - **`search-component.js`**: Predictive search functionality
 - **`carousel-manager.js`**: `<my-slider>` custom element — Swiper initialization and configuration (vanilla, no jQuery). The announcement-bar marquee is now pure CSS (no JS).
+- **`product-gallery.js`**: PDP gallery — thumbnail switching and lightbox (vanilla, no jQuery)
+- **`sticky-atc.js`**: Sticky Add to Cart bar (IntersectionObserver, adaptive text)
+- **`newsletter-modal.js`**: Newsletter modal triggers (exit-intent / scroll / delay)
 - **`header.js`**: Header scroll behavior and sticky positioning
 - **`theme.js`**: Global theme utilities
 
-**Vendor Libraries** (loaded in `theme.liquid`):
-- Swiper 11.x for sliders/carousels (UMD bundle, no build step)
+**Vendor Libraries**:
+- Swiper 11.x for sliders/carousels (UMD bundle, no build step), loaded in `theme.liquid`
 
 The theme is jQuery-free. Sliders use Swiper; the announcement bar uses a CSS keyframe marquee.
+
+**Asset loading pattern** (two strategies):
+- **Global/shared** — loaded in `theme.liquid` footer with `defer`: `swiper-bundle.min.js`, `carousel-manager.js`, `search-component.js`, `price-component.js`, `variations-selector.js`, `quantity-selector.js`, `theme.js`.
+- **Co-located per-component** — each feature renders its own CSS + JS inside its section/snippet (so it only loads where used): `cart.js`/`cart.css` (cart-drawer), `product-gallery.js`/`.css` (PDP gallery), `sticky-atc.js`/`.css`, `newsletter-modal.js`/`.css`, `testimonials.css`, `variant-selector.css`. `header.js` is loaded with `async` inside `header.liquid`.
 
 **Global Variables** (set in `theme.liquid`):
 ```javascript
@@ -140,27 +136,27 @@ Sections like `slider-image` include separate images for desktop/tablet/mobile w
 3. **Custom Element Registration**: Always check if element is registered before defining: `if (!customElements.get('element-name'))`
 4. **Currency Formatting**: Use `formatPrice()` helper in `cart.js` for consistent BRL formatting
 5. **Shopify Routes**: Access cart/search URLs via `window.routes` object, never hardcode
-6. **Asset Loading**: All JS loaded with `defer` attribute in `theme.liquid` footer
+6. **Asset Loading**: Shared/core JS lives in `theme.liquid` footer with `defer`; feature-specific CSS+JS is co-located in its own section/snippet (rendered only where used). See "Asset loading pattern" above before adding a new script.
 
 ## Design Standards
 
 ### Border Radius (Arredondamentos)
 
-**Padrão definido:** `rounded-lg` (8px) ou sem arredondamento
+**Padrão definido:** `rounded-theme` (8px) ou sem arredondamento. Os tokens estão centralizados em `tailwind.config.js > borderRadius`:
+
+| Classe | Valor | Uso |
+|--------|-------|-----|
+| `rounded-theme-sm` | 4px | inputs internos, checkboxes, detalhes |
+| `rounded-theme` | 8px | **padrão** — botões, cards, modais, inputs, imagens |
+| `rounded-theme-lg` | 12px | containers maiores quando justificado |
 
 **Regras:**
-- ✅ Botões: `rounded-lg`
-- ✅ Cards: `rounded-lg`
-- ✅ Modais: `rounded-lg`
-- ✅ Inputs: `rounded-lg`
-- ✅ Imagens (quando aplicável): `rounded-lg`
+- ✅ Use `rounded-theme` como padrão (botões, cards, modais, inputs, imagens). Mudar o arredondamento do tema inteiro = uma linha no config.
 - ✅ Exceções permitidas:
   - `rounded-full`: Avatares, botões circulares de ícone
   - `rounded-none`: Elementos que não devem ter arredondamento
 
-**IMPORTANTE:** Todos os layouts devem seguir o mesmo nível de arredondamento padrão (`rounded-lg` ou nenhum). Não use `rounded`, `rounded-md`, `rounded-xl`, ou `rounded-2xl` sem justificativa.
-
-**Roadmap:** Centralização futura via Tailwind config com classes `rounded-theme`, `rounded-theme-sm`, `rounded-theme-lg`.
+**IMPORTANTE:** Prefira os tokens `rounded-theme*`. Não use `rounded`, `rounded-md`, `rounded-xl`, ou `rounded-2xl` sem justificativa. Código legado ainda usa `rounded-lg` (equivalente a `rounded-theme`); ao tocar nesses pontos, migre para o token.
 
 ### Color Scheme
 
@@ -182,7 +178,9 @@ As CSS variables são geradas em `layout/theme.liquid` a partir das configs do a
 - Par `bg-black text-white` (botões/badges/tags) → `bg-foreground text-background`; hover `bg-gray-800` → `opacity-90`
 - Badge de desconto/erro → `bg-badge text-badge-text`; botão primário → `color-button` ou `bg-button text-button-text`
 
-**Hex/cores fixas legítimas (NÃO migrar):** cores de marca (ícones de pagamento, botões WhatsApp/Facebook), defaults de settings no schema, **scrims de imagem** (overlay escuro sobre foto + texto branco, ex: hero de coleção), **lightbox** (visualizador de imagem, sempre escuro), **indicadores semânticos** (azul de status "info" sem token equivalente, espectro de medidor de força de senha). Seções dark autocontidas (ex: `newsletter.liquid`) ficam pendentes de refator scheme-aware dedicado.
+**Hex/cores fixas legítimas (NÃO migrar):** cores de marca (ícones de pagamento, botões WhatsApp/Facebook), defaults de settings no schema, **scrims de imagem** (overlay escuro sobre foto + texto branco, ex: hero de coleção), **lightbox** (visualizador de imagem, sempre escuro), **indicadores semânticos** (azul de status "info" sem token equivalente, espectro de medidor de força de senha).
+
+O `newsletter.liquid` (snippet) e o `newsletter-modal.liquid` (section) já são scheme-aware: usam classes `color-*` + tokens e o modal expõe seu próprio `color_scheme` no schema.
 
 **Páginas de cliente:** controladas pelo setting global `settings.customer_color_scheme` (admin > Cores > Páginas de Cliente). Cada template (`templates/customers/*.liquid`) tem o wrapper `color-{{ settings.customer_color_scheme }} color-background color-text` na div raiz. Status de feedback usam tokens: success/warning/error (verde/amarelo/vermelho); "info" (azul) fica literal por não ter token.
 
@@ -212,44 +210,7 @@ Theme uses standard Shopify CLI commands. Configuration stored in `.shopify/` di
 
 ## ROADMAP Maintenance
 
-**Location:** `docs/ROADMAP.md`
-
-### Format Rules
-
-1. **Keep it concise** - Maximum 150 lines total
-2. **Priority ordering** - Most important tasks at the top
-3. **One-line completions** - Completed items get ONE line in the "Concluído" section at the bottom
-4. **10-line maximum** - Tools/features can have up to 10 lines of detail
-5. **Always update** - When a feature is completed, move it to the bottom and update the top with next priorities
-
-### Update Workflow
-
-**When completing a task:**
-1. Move completed item to `## ✅ CONCLUÍDO (Resumo)` section at bottom
-2. Summarize in ONE line with date (e.g., "Sticky ATC melhorado (2025-01-22)")
-3. Remove from top priority section
-4. Update version number in header
-5. Update "Atualizado" date
-
-**When planning new features:**
-1. Add to appropriate priority section (🔴 Alta, 🟡 Média)
-2. Include: Status, Esforço (hours), Prioridade
-3. Keep description under 10 lines
-4. Order by importance (most important first)
-
-### Example Format
-
-```markdown
-### 1. Feature Name
-**Status:** Planejado | **Esforço:** 12-16h | **Prioridade:** 🔴 Alta
-
-Brief description (1 line).
-- Key point 1
-- Key point 2
-- Key point 3
-```
-
-**IMPORTANT:** The ROADMAP must always reflect the current state of the project. Never let it become outdated.
+Sempre consulte e mantenha `docs/ROADMAP.md` atualizado e enxuto. As regras de formato/workflow ficam na seção **"Como manter"** no próprio ROADMAP.
 
 ## Theme Context
 

@@ -118,39 +118,33 @@ Tabela de medidas customizável.
 
 ## 🟡 MELHORIAS PLANEJADAS (Médio/Longo Prazo)
 
-### Border Radius Tokens
-**Esforço:** 4-6h
+### Migração de tokens (legado)
+**Esforço:** contínuo
 
-Centralizar em Tailwind config (`rounded-theme`).
+Substituir resíduos de `rounded-lg` → `rounded-theme` e hex/cinzas hardcoded → tokens conforme se toca em cada arquivo (sem refator big-bang).
 
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
 
-**v2.4.0 - Remoção do jQuery** (2026-06-23)
-- jQuery/Owl Carousel/jQuery Marquee removidos. Sliders migrados para Swiper 11 (`<my-slider>` vanilla); announcement-bar marquee → CSS keyframes; product-gallery.js vanilla puro (lightbox e thumbnail ativo corrigidos). Tema 100% sem jQuery.
+**v2.4.0 - Design System & Remoção do jQuery** (2026-06-23)
+- jQuery 100% removido (Owl/marquee → Swiper 11 + CSS); design tokens de cor + `rounded-theme` centralizados no `tailwind.config.js`; sections/templates de cliente e newsletter padronizados com tokens; header sticky; asset loading core (`theme.liquid`) + CSS/JS co-locados por componente.
 
 **v2.3.0 - i18n, Color Schemes & Gift Card** (2024-12-26)
-- Sistema i18n: locales PT-BR/EN completos (~225 strings), guia migração, 9 arquivos migrados (cart-drawer, testimonials, etc.)
-- Color Schemes: Sistema dual (section + card) implementado em testimonials, CSS variables geradas dinamicamente via theme.liquid, color-scheme.css otimizado (9 classes obsoletas removidas, -26% linhas), documentação atualizada
-- Gift Card: template completo com layout standalone, QR code, código copiável, status/saldo, print otimizado (@page margins, background white), Apple Wallet, 100% i18n + color schemes
-- Testimonials: 100% i18n (storefront + schema), dual color schemes funcional, defaults/presets em inglês, zero hardcoded
-- Announcement-bar: 100% i18n schema, color schemes moderno, defaults em inglês
-- Trust-badges: refatoração completa (sistema obsoleto de 3 cores → color_scheme moderno), removidos inline styles, 100% i18n schema, defaults/presets em inglês
+- Locales PT-BR/EN (~225 strings) + guia; color schemes dual (section + card) em testimonials; gift card standalone (QR, print); announcement-bar e trust-badges refatorados scheme-aware + i18n schema.
 
-**v2.2.0 - Sticky ATC & Padronização** (2025-01-22)
-- Sticky Add to Cart com IntersectionObserver e texto adaptativo
-- Arredondamentos padronizados: `rounded-lg` (8px) global
+**v2.2.0 - Sticky ATC & Padronização** (2025-01-22) — Sticky Add to Cart (IntersectionObserver, texto adaptativo); arredondamentos padronizados.
 
-**v2.1.0 - Prova Social & SEO** (2025-11)
-- Testimonials Section (slider 3 cards, ratings, verified badges)
-- SEO Estruturado: Product/Organization/Breadcrumb/BlogPosting Schemas
+**v2.1.0 - Prova Social & SEO** (2025-11) — Testimonials (slider, ratings); schemas SEO (Product/Organization/Breadcrumb/Article).
 
-**v2.0.0 - Core Features** (2025-11)
-- 7 customer templates (login, register, account, addresses, orders, reset, activate)
-- Blog completo + busca preditiva + minicart polido
-- Newsletter modal (3 triggers) + trust badges + payment icons
-- Sistema componentes reutilizáveis
+**v2.0.0 - Core Features** (2025-11) — 7 templates de cliente; blog + busca preditiva + minicart; newsletter modal + trust badges + payment icons; componentes reutilizáveis.
+
+---
+
+## 🛠️ Como manter
+
+- Máx. **150 linhas**, prioridades no topo, cada feature ≤ 10 linhas (Status | Esforço | Prioridade). Deve sempre refletir o estado atual.
+- **Ao concluir:** mover para `✅ CONCLUÍDO` em 1 linha com data, remover do topo, atualizar **Versão**/**Atualizado** no header.
 
 ---
 

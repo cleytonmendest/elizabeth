@@ -1,7 +1,7 @@
 {
   "name": "elizabeth_clean",
-  "version": "1.0.0",
-  "description": "[![Generic badge](https://img.shields.io/badge/course%20available%3F-yes-green.svg)](https://shields.io/)",
+  "version": "2.4.0",
+  "description": "Tema Shopify Online Store 2.0 para moda feminina (TailwindCSS, vanilla JS, Swiper).",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
