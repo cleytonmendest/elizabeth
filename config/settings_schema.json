@@ -178,6 +178,17 @@
           "on_secondary_button": "secondary_button_label",
           "secondary_button_border": "border"
         }
+      },
+      {
+        "type": "header",
+        "content": "Páginas de Cliente"
+      },
+      {
+        "type": "color_scheme",
+        "id": "customer_color_scheme",
+        "label": "Esquema de cores das páginas de conta",
+        "default": "scheme-1",
+        "info": "Aplica-se a login, cadastro, conta, pedidos e endereços"
       }
     ]
   },

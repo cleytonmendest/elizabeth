@@ -182,7 +182,9 @@ As CSS variables são geradas em `layout/theme.liquid` a partir das configs do a
 - Par `bg-black text-white` (botões/badges/tags) → `bg-foreground text-background`; hover `bg-gray-800` → `opacity-90`
 - Badge de desconto/erro → `bg-badge text-badge-text`; botão primário → `color-button` ou `bg-button text-button-text`
 
-**Hex/cores fixas legítimas (NÃO migrar):** cores de marca (ícones de pagamento, botões WhatsApp/Facebook), defaults de settings no schema, **scrims de imagem** (overlay escuro sobre foto + texto branco, ex: hero de coleção), **lightbox** (visualizador de imagem, sempre escuro). Seções dark autocontidas (ex: `newsletter.liquid`) ficam pendentes de refator scheme-aware dedicado.
+**Hex/cores fixas legítimas (NÃO migrar):** cores de marca (ícones de pagamento, botões WhatsApp/Facebook), defaults de settings no schema, **scrims de imagem** (overlay escuro sobre foto + texto branco, ex: hero de coleção), **lightbox** (visualizador de imagem, sempre escuro), **indicadores semânticos** (azul de status "info" sem token equivalente, espectro de medidor de força de senha). Seções dark autocontidas (ex: `newsletter.liquid`) ficam pendentes de refator scheme-aware dedicado.
+
+**Páginas de cliente:** controladas pelo setting global `settings.customer_color_scheme` (admin > Cores > Páginas de Cliente). Cada template (`templates/customers/*.liquid`) tem o wrapper `color-{{ settings.customer_color_scheme }} color-background color-text` na div raiz. Status de feedback usam tokens: success/warning/error (verde/amarelo/vermelho); "info" (azul) fica literal por não ter token.
 
 ### Tipografia
 
