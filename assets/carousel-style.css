@@ -4,81 +4,92 @@
     align-items: center;
 }
 
-/* .custom-prev-slide,
-.custom-next-slide {
-    position: absolute;
-    z-index: 10;
-    cursor: pointer;
-    background-color: #FFF;
-    width: 40px;
-    height: 40px;
-    padding: 10px;
-    border-radius: 100%;
-    transition: all .3s ease-in-out;
-    box-shadow: #0000001f 0 8px 16px;
-}
-
-.custom-next-slide:hover .icon-angle-right,
-.custom-prev-slide:hover .icon-angle-left {
-    fill: red;
-}
-
-.custom-prev-slide {
-    left: 0px;
-}
-
-.custom-next-slide {
-    right: 0px;
-}
-
-@media (max-width: 1024px) {
-    .custom-prev-slide {
-        left: 10px;
-    }
-
-    .custom-next-slide {
-        right: 10px;
-    }
-} */
-
 .slider-container .icon-angle-right,
 .slider-container .icon-angle-left {
     width: 100%;
     height: 100%;
 }
 
-.slider-container .owl-dots {
-    gap: 5px;
+.carousel-item {
+    height: inherit;
+    padding: 1px;
+}
+
+/* ==========================================================================
+   Swiper — paginação (dots)
+   Mantém o comportamento legado do Owl: dots em fluxo normal abaixo do slider,
+   pílula ativa na cor do botão (token, scheme-aware).
+   ========================================================================== */
+.my-slider__container .swiper-pagination {
+    position: static;
     display: flex;
+    gap: 5px;
     align-items: center;
     justify-content: center;
     margin-top: 15px;
 }
 
-.slider-container .owl-dots .owl-dot {
+.my-slider__container .swiper-pagination-bullet {
     width: 10px;
     height: 10px;
-    border: 1px solid #3a3a3a;
+    margin: 0;
+    background: transparent;
+    border: 1px solid rgb(var(--color-foreground) / 0.4);
     border-radius: 100%;
-    transition: all ease-in-out .4s;
+    opacity: 1;
+    transition: all ease-in-out 0.4s;
 }
 
-.slider-container .owl-dots .owl-dot.active {
-    background: #EB1F24;
-    border-color: #EB1F24;
+.my-slider__container .swiper-pagination-bullet-active {
     width: 35px;
+    background: rgb(var(--color-button));
+    border-color: rgb(var(--color-button));
     border-radius: 20px;
 }
 
-.owl-item {
-    height: 100%;
+/* ==========================================================================
+   Announcement bar — marquee em CSS puro (sem JS / sem jQuery.marquee)
+   Duas trilhas idênticas; o trilho anima translateX(0 -> -50%) garantindo
+   loop contínuo sem "pulo". O gap fica DENTRO de cada trilha (padding-inline-end)
+   para preservar o alinhamento do -50%.
+   ========================================================================== */
+.announcement-marquee {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    will-change: transform;
+    animation: announcement-scroll var(--marquee-duration, 40s) linear infinite;
 }
 
-.carousel-item{
-    height: inherit;
-    padding: 1px;
+.announcement-track {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    padding-inline-end: var(--marquee-gap, 0px);
 }
 
-.categories-slider__owl-container .owl-stage{
-    display: flex;
+/* Direção: "left" rola para a esquerda (padrão); "right" inverte. */
+announcement-bar[data-direction='right'] .announcement-marquee {
+    animation-direction: reverse;
+}
+
+/* Pausa no hover quando habilitado no editor. */
+announcement-bar[data-pausehover='true']:hover .announcement-marquee {
+    animation-play-state: paused;
+}
+
+@keyframes announcement-scroll {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* Acessibilidade: respeita preferência de movimento reduzido. */
+@media (prefers-reduced-motion: reduce) {
+    .announcement-marquee {
+        animation: none;
+    }
 }

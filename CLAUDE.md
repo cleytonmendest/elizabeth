@@ -69,8 +69,8 @@ TailwindCSS is the primary styling framework:
 - Custom styles in `@layer base` include scrolling header behaviors and variant availability states
 
 Additional stylesheets:
-- `carousel-style.css`: Custom carousel styling
-- `owl.carousel.min.css` & `owl.theme.default.min.css`: Owl Carousel library styles
+- `carousel-style.css`: Custom carousel styling (Swiper pagination + CSS announcement-bar marquee)
+- `swiper-bundle.min.css`: Swiper library styles
 
 ### JavaScript Architecture
 
@@ -82,14 +82,14 @@ Key components in `assets/`:
 - **`price-component.js`**: Price display updates based on variant changes
 - **`quantity-selector.js`**: Quantity input controls
 - **`search-component.js`**: Predictive search functionality
-- **`carousel-manager.js`**: Owl Carousel initialization and configuration
+- **`carousel-manager.js`**: `<my-slider>` custom element — Swiper initialization and configuration (vanilla, no jQuery). The announcement-bar marquee is now pure CSS (no JS).
 - **`header.js`**: Header scroll behavior and sticky positioning
 - **`theme.js`**: Global theme utilities
 
 **Vendor Libraries** (loaded in `theme.liquid`):
-- jQuery 3.x
-- Owl Carousel 2.x for sliders/carousels
-- jQuery Marquee for scrolling text
+- Swiper 11.x for sliders/carousels (UMD bundle, no build step)
+
+The theme is jQuery-free. Sliders use Swiper; the announcement bar uses a CSS keyframe marquee.
 
 **Global Variables** (set in `theme.liquid`):
 ```javascript

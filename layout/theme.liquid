@@ -43,8 +43,7 @@
     <!-- CSS Imports -->
     {{ 'application.css' | asset_url | stylesheet_tag }}
     {{ 'color-scheme.css' | asset_url | stylesheet_tag }}
-    {{ 'owl.carousel.min.css' | asset_url | stylesheet_tag }}
-    {{ 'owl.theme.default.min.css' | asset_url | stylesheet_tag }}
+    {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
     {{ 'carousel-style.css' | asset_url | stylesheet_tag }}
 
     {%- liquid
@@ -189,9 +188,7 @@
     {% sections 'footer-group' %}
 
     <!-- JS Imports -->
-    <script src="{{ 'jquery.min.js' | asset_url }}" defer></script>
-    <script src="{{ 'owl.carousel.min.js' | asset_url }}" defer></script>
-    <script src="{{ 'jquery.marquee.min.js' | asset_url }}" defer></script>
+    <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
     <script src="{{ 'carousel-manager.js' | asset_url }}" defer></script>
     <script src="{{ 'search-component.js' | asset_url }}" defer></script>
     <script src="{{ 'price-component.js' | asset_url }}" defer></script>

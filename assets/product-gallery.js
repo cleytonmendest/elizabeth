@@ -1,9 +1,9 @@
 /**
- * Product Gallery Interactive Features
- * - Thumbnail navigation
- * - Image zoom
- * - Lightbox modal
- * - Keyboard navigation
+ * Product Gallery Interactive Features (vanilla, sem jQuery)
+ * - Navegação por thumbnails
+ * - Zoom / Lightbox modal
+ * - Navegação por teclado
+ * - Sincronização com a troca de variante (galeria mobile via Swiper)
  */
 
 class ProductGallery {
@@ -14,7 +14,7 @@ class ProductGallery {
     this.currentIndex = 0;
     this.images = Array.from(this.gallery.querySelectorAll('.product-gallery__image'));
     this.thumbnails = Array.from(this.gallery.querySelectorAll('.product-gallery__thumbnail'));
-    this.lightbox = document.querySelector('[data-lightbox]');
+    this.lightbox = document.getElementById('product-lightbox');
 
     this.init();
   }
@@ -37,72 +37,51 @@ class ProductGallery {
   }
 
   /**
-   * Mostra imagem específica
+   * Mostra imagem específica e marca o thumbnail ativo via classe `is-active`
+   * (estilizada em product-gallery.css com token scheme-aware).
    */
   showImage(index) {
-    // Esconde todas as imagens
-    this.images.forEach(img => img.classList.add('hidden'));
+    this.images.forEach((img) => img.classList.add('hidden'));
 
-    // Mostra imagem selecionada
     if (this.images[index]) {
       this.images[index].classList.remove('hidden');
       this.currentIndex = index;
     }
 
-    // Atualiza thumbnail ativo
     this.thumbnails.forEach((thumb, i) => {
-      if (i === index) {
-        thumb.classList.remove('border-gray-200', 'hover:border-gray-400');
-        thumb.classList.add('border-black');
-        thumb.dataset.active = 'true';
-      } else {
-        thumb.classList.remove('border-black');
-        thumb.classList.add('border-gray-200', 'hover:border-gray-400');
-        thumb.dataset.active = 'false';
-      }
+      thumb.classList.toggle('is-active', i === index);
     });
   }
 
   /**
-   * Lightbox modal
+   * Lightbox modal (dark intencional)
    */
   setupLightbox() {
     if (!this.lightbox) return;
 
-    const lightboxImage = this.lightbox.querySelector('[data-lightbox-image]');
     const closeBtn = this.lightbox.querySelector('[data-lightbox-close]');
     const prevBtn = this.lightbox.querySelector('[data-lightbox-prev]');
     const nextBtn = this.lightbox.querySelector('[data-lightbox-next]');
-    const currentSpan = this.lightbox.querySelector('[data-lightbox-current]');
 
-    // Clique na imagem principal abre lightbox
+    // Clique na imagem principal abre o lightbox
     this.images.forEach((imageContainer, index) => {
       const img = imageContainer.querySelector('img[data-zoom-image]');
       if (!img) return;
 
-      img.addEventListener('click', () => {
-        this.openLightbox(index);
-      });
-
-      // Cursor pointer
+      img.addEventListener('click', () => this.openLightbox(index));
       img.style.cursor = 'zoom-in';
     });
 
-    // Fechar lightbox
     closeBtn?.addEventListener('click', () => this.closeLightbox());
     this.lightbox.addEventListener('click', (e) => {
-      if (e.target === this.lightbox) {
-        this.closeLightbox();
-      }
+      if (e.target === this.lightbox) this.closeLightbox();
     });
 
-    // Navegação
     prevBtn?.addEventListener('click', () => this.lightboxNav('prev'));
     nextBtn?.addEventListener('click', () => this.lightboxNav('next'));
 
-    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
-      if (!this.lightbox.classList.contains('active')) return;
+      if (this.lightbox.classList.contains('hidden')) return;
 
       if (e.key === 'Escape') this.closeLightbox();
       if (e.key === 'ArrowLeft') this.lightboxNav('prev');
@@ -110,70 +89,61 @@ class ProductGallery {
     });
   }
 
-  /**
-   * Abre lightbox
-   */
   openLightbox(index) {
-    const lightboxImage = this.lightbox.querySelector('[data-lightbox-image]');
+    const lightboxImage = this.lightbox.querySelector('#lightbox-image');
     const currentSpan = this.lightbox.querySelector('[data-lightbox-current]');
 
     const img = this.images[index]?.querySelector('img[data-zoom-image]');
-    if (!img) return;
+    if (!img || !lightboxImage) return;
 
     lightboxImage.src = img.dataset.zoomImage;
     lightboxImage.alt = img.alt;
-    currentSpan.textContent = index + 1;
+    if (currentSpan) currentSpan.textContent = index + 1;
 
     this.currentIndex = index;
-    this.lightbox.classList.add('active');
+    this.lightbox.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
   }
 
-  /**
-   * Fecha lightbox
-   */
   closeLightbox() {
-    this.lightbox.classList.remove('active');
+    this.lightbox.classList.add('hidden');
     document.body.style.overflow = '';
   }
 
-  /**
-   * Navegação no lightbox
-   */
   lightboxNav(direction) {
-    const newIndex = direction === 'next'
-      ? (this.currentIndex + 1) % this.images.length
-      : (this.currentIndex - 1 + this.images.length) % this.images.length;
+    const total = this.images.length;
+    const newIndex =
+      direction === 'next'
+        ? (this.currentIndex + 1) % total
+        : (this.currentIndex - 1 + total) % total;
 
     this.openLightbox(newIndex);
   }
 
   /**
-   * Atualiza galeria quando variante muda
+   * Atualiza a galeria quando a variante muda.
+   * Sincroniza a galeria mobile (Swiper) com a mídia da variante.
    */
   setupVariantChange() {
     document.addEventListener('variant:change', (event) => {
       const variant = event.detail.variant;
       if (!variant || !variant.featured_media) return;
 
-      // Encontra index da mídia da variante
       const mediaId = variant.featured_media.id;
-      const index = this.images.findIndex(img =>
-        img.dataset.mediaId == mediaId
-      );
+      const index = this.images.findIndex((img) => img.dataset.mediaId == mediaId);
+      if (index === -1) return;
 
-      if (index !== -1) {
-        this.showImage(index);
+      this.showImage(index);
 
-        // Scroll suave para a imagem no mobile
-        if (window.innerWidth < 1024) {
-          const galleryMobile = document.querySelector('.product-gallery-mobile');
-          if (galleryMobile) {
-            // Trigger owl carousel to go to index
-            const owlCarousel = jQuery(galleryMobile).find('.my-slider__container');
-            if (owlCarousel.length) {
-              owlCarousel.trigger('to.owl.carousel', [index, 300]);
-            }
+      // Sincroniza o slider mobile (Swiper) com a mídia da variante.
+      if (window.innerWidth < 1024) {
+        const sliderContainer = this.gallery.querySelector('my-slider .my-slider__container');
+        const swiper = sliderContainer?.swiper;
+        if (swiper) {
+          if (typeof swiper.slideToLoop === 'function' && swiper.params.loop) {
+            swiper.slideToLoop(index, 300);
+          } else {
+            swiper.slideTo(index, 300);
           }
         }
       }
@@ -181,7 +151,6 @@ class ProductGallery {
   }
 }
 
-// Initialize quando DOM carregar
 document.addEventListener('DOMContentLoaded', () => {
   new ProductGallery();
 });

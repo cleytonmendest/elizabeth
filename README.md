@@ -39,9 +39,8 @@ Utiliza Web Components nativos para melhor performance:
 
 - **Shopify Liquid** - Template engine
 - **TailwindCSS 3.4.7** - Framework CSS utility-first
-- **JavaScript (ES6+)** - Web Components e funcionalidades interativas
-- **jQuery 3.x** - Manipulação DOM e eventos
-- **Owl Carousel 2.x** - Carrosséis e sliders
+- **JavaScript (ES6+)** - Web Components e funcionalidades interativas (vanilla, sem jQuery)
+- **Swiper 11.x** - Carrosséis e sliders
 - **Shopify Online Store 2.0** - Arquitetura baseada em seções
 
 ## 📦 Instalação
