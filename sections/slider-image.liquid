@@ -101,7 +101,7 @@
       {%- endfor -%}
     </div>
     {% if nav %}
-      <div class="flex w-full items-center justify-center gap-10 absolute {% if dot %} bottom-10 {% else %} bottom-6 {% endif %}">
+      <div class="flex w-full items-center justify-center gap-10 absolute z-10 {% if dot %} bottom-10 {% else %} bottom-6 {% endif %}">
         <button
           onclick="sliderPrev('{{ section.id }}')"
           class="text-foreground"
