@@ -1350,6 +1350,10 @@ label.not-swatch.is-unavailable {
   align-items: flex-start;
 }
 
+.items-end {
+  align-items: flex-end;
+}
+
 .items-center {
   align-items: center;
 }
@@ -1376,10 +1380,6 @@ label.not-swatch.is-unavailable {
 
 .gap-1 {
   gap: 0.25rem;
-}
-
-.gap-10 {
-  gap: 2.5rem;
 }
 
 .gap-2 {
@@ -1894,6 +1894,11 @@ label.not-swatch.is-unavailable {
   padding-bottom: 0.75rem;
 }
 
+.py-3\.5 {
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
+}
+
 .py-4 {
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -2004,6 +2009,10 @@ label.not-swatch.is-unavailable {
   line-height: 2.5rem;
 }
 
+.text-\[11px\] {
+  font-size: 11px;
+}
+
 .text-base {
   font-size: 1rem;
   line-height: 1.5rem;
@@ -2077,8 +2086,16 @@ label.not-swatch.is-unavailable {
   letter-spacing: 0.12em;
 }
 
+.tracking-\[0\.16em\] {
+  letter-spacing: 0.16em;
+}
+
 .tracking-\[0\.18em\] {
   letter-spacing: 0.18em;
+}
+
+.tracking-\[0\.3em\] {
+  letter-spacing: 0.3em;
 }
 
 .tracking-tight {
@@ -2217,6 +2234,10 @@ label.not-swatch.is-unavailable {
 
 .opacity-80 {
   opacity: 0.8;
+}
+
+.opacity-90 {
+  opacity: 0.9;
 }
 
 .shadow {
@@ -2410,6 +2431,10 @@ label.not-swatch.is-unavailable {
 .hover\:bg-\[\#1fb855\]:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(31 184 85 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-background\/80:hover {
+  background-color: rgb(var(--color-background) / 0.8);
 }
 
 .hover\:bg-foreground:hover {
@@ -2818,6 +2843,14 @@ label.not-swatch.is-unavailable {
 }
 
 @media (min-width: 768px) {
+  .md\:mb-4 {
+    margin-bottom: 1rem;
+  }
+
+  .md\:mb-7 {
+    margin-bottom: 1.75rem;
+  }
+
   .md\:block {
     display: block;
   }
@@ -2878,6 +2911,11 @@ label.not-swatch.is-unavailable {
     padding: 2rem;
   }
 
+  .md\:px-14 {
+    padding-left: 3.5rem;
+    padding-right: 3.5rem;
+  }
+
   .md\:px-6 {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
@@ -2936,6 +2974,11 @@ label.not-swatch.is-unavailable {
   .md\:text-xl {
     font-size: 1.25rem;
     line-height: 1.75rem;
+  }
+
+  .md\:text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
   }
 }
 
@@ -3095,6 +3138,11 @@ label.not-swatch.is-unavailable {
 
   .lg\:p-8 {
     padding: 2rem;
+  }
+
+  .lg\:px-20 {
+    padding-left: 5rem;
+    padding-right: 5rem;
   }
 
   .lg\:px-8 {

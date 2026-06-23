@@ -8,9 +8,22 @@
 {% assign pause_hover = section.settings['pause-hover'] %}
 {% assign dot = section.settings.dot %}
 
-<div class="{% if section.settings.fullwidth %}w-full{% else %}page-width{% endif %}">
-  <my-slider
-    class="w-full relative"
+<style>
+  my-slider.hero-slider .swiper-pagination {
+    position: absolute; bottom: 12px; left: 0; right: 0;
+    display: flex; justify-content: center; align-items: center; gap: 6px; z-index: 10;
+  }
+  my-slider.hero-slider .swiper-pagination-bullet {
+    width: 6px; height: 6px; margin: 0 !important; border-radius: 9999px;
+    background: rgb(var(--color-foreground)); opacity: .35; transition: all .25s ease;
+  }
+  my-slider.hero-slider .swiper-pagination-bullet-active { opacity: 1; width: 18px; border-radius: 3px; }
+</style>
+
+<div class="color-{{ section.settings.color_scheme }} bg-background">
+  <div class="{% if section.settings.fullwidth %}w-full{% else %}page-width{% endif %}">
+    <my-slider
+      class="hero-slider w-full relative"
     data-section-id="{{ section.id }}"
     data-loop="{{ loop }}"
     data-items="{{ section.blocks.size }}"
@@ -36,102 +49,154 @@
           if forloop.first
             assign is_first_slide = true
           endif
+
+          assign content_position = block.settings.content_position | default: 'left'
+
+          comment
+            UM único link por slide (campo "Link"):
+            - com "Texto do botão" preenchido -> vira CTA (o botão redireciona)
+            - sem "Texto do botão"            -> a imagem inteira é o link
+            Sem link não há redirecionamento; CTA sem link não é renderizado (botão sem ação é inútil).
+          endcomment
+          assign cta_text = block.settings.cta_label | default: 'Ver mais'
+          assign show_cta = false
+          if block.settings.cta_label != blank and block.settings.link != blank
+            assign show_cta = true
+          endif
+          assign wrap_link = false
+          if block.settings.link != blank and show_cta == false
+            assign wrap_link = true
+          endif
+
+          assign has_overlay = false
+          if block.settings.eyebrow != blank or block.settings.heading != blank or show_cta
+            assign has_overlay = true
+          endif
+
+          assign pos_cls = 'items-start text-left'
+          if content_position == 'center'
+            assign pos_cls = 'items-center text-center'
+          elsif content_position == 'right'
+            assign pos_cls = 'items-end text-right'
+          endif
+
+          comment
+            Scrim usa a COR DE FUNDO do color scheme (semi-transparente). Assim o texto
+            (que usa a cor de TEXTO do scheme) sempre contrasta sobre qualquer foto,
+            seja o scheme claro ou escuro. "Lateral" acompanha a posição do conteúdo;
+            aceita 'side' (atual) e 'left' (legado).
+          endcomment
+          assign op = block.settings.scrim_opacity | default: 30 | divided_by: 100.0
+          assign scrim_color = 'rgb(var(--color-background) / ' | append: op | append: ')'
+          assign scrim_bg = 'none'
+          case block.settings.scrim
+            when 'side', 'left'
+              if content_position == 'right'
+                assign scrim_bg = 'linear-gradient(270deg, ' | append: scrim_color | append: ' 0%, transparent 65%)'
+              elsif content_position == 'center'
+                assign scrim_bg = scrim_color
+              else
+                assign scrim_bg = 'linear-gradient(90deg, ' | append: scrim_color | append: ' 0%, transparent 65%)'
+              endif
+            when 'bottom'
+              assign scrim_bg = 'linear-gradient(0deg, ' | append: scrim_color | append: ' 0%, transparent 60%)'
+            when 'full'
+              assign scrim_bg = scrim_color
+          endcase
         -%}
-        <div class="item">
-          {% if block.settings.link != blank %}
-            <a href="{{ block.settings.link }}">
-              <picture>
-                {% if block.settings.imgDesktop %}
-                  <source
-                    media="(min-width: 1024px)"
-                    srcset="{{ block.settings.imgDesktop | image_url }}"
-                    width="{{ block.settings.imgDesktopWidth | default: 1920 }}"
-                    height="{{ block.settings.imgDesktopHeight | default: 540 }}"
-                    class="w-full"
-                  >
-                {% endif %}
-                {% if block.settings.imgTablet %}
-                  <source
-                    media="(min-width: 500px)"
-                    srcset="{{ block.settings.imgTablet | image_url }}"
-                    width="{{ block.settings.imgTabletWidth | default: 1024 }}"
-                    height="{{ block.settings.imgTabletHeight | default: 540 }}"
-                    class="w-full"
-                  >
-                {% endif %}
-                <img
-                  src="{{ block.settings.imgMob | image_url }}"
-                  alt="{{ block.settings.alt_text | escape | default: 'Slider Image' }}"
-                  width="{{ block.settings.imgMobWidth | default: 500 }}"
-                  height="{{ block.settings.imgMobHeight | default: 540 }}"
-                  class="w-full"
-                  loading="{% if is_first_slide %}eager{% else %}lazy{% endif %}"
-                  decoding="async"
-                  {% if is_first_slide %}fetchpriority="high"{% endif %}
-                >
-              </picture>
-            </a>
-          {% else %}
-            <picture>
-              {% if block.settings.imgDesktop %}
-                <source
-                  media="(min-width: 1024px)"
-                  srcset="{{ block.settings.imgDesktop | image_url }}"
-                  width="{{ block.settings.imgDesktopWidth | default: 1920 }}"
-                  height="{{ block.settings.imgDesktopHeight | default: 540 }}"
-                  class="w-full"
-                >
-              {% endif %}
-              {% if block.settings.imgTablet %}
-                <source
-                  media="(min-width: 500px)"
-                  srcset="{{ block.settings.imgTablet | image_url }}"
-                  width="{{ block.settings.imgTabletWidth | default: 1024 }}"
-                  height="{{ block.settings.imgTabletHeight | default: 540 }}"
-                  class="w-full"
-                >
-              {% endif %}
-              <img
-                src="{{ block.settings.imgMob | image_url }}"
-                alt="{{ block.settings.alt_text | escape | default: 'Slider Image' }}"
-                width="{{ block.settings.imgMobWidth | default: 500 }}"
-                height="{{ block.settings.imgMobHeight | default: 540 }}"
+
+        {%- capture slide_picture -%}
+          <picture>
+            {% if block.settings.imgDesktop %}
+              <source
+                media="(min-width: 1024px)"
+                srcset="{{ block.settings.imgDesktop | image_url }}"
+                width="{{ block.settings.imgDesktopWidth | default: 1920 }}"
+                height="{{ block.settings.imgDesktopHeight | default: 540 }}"
                 class="w-full"
-                loading="{% if is_first_slide %}eager{% else %}lazy{% endif %}"
-                decoding="async"
-                {% if is_first_slide %}fetchpriority="high"{% endif %}
               >
-            </picture>
-          {% endif %}
+            {% endif %}
+            {% if block.settings.imgTablet %}
+              <source
+                media="(min-width: 500px)"
+                srcset="{{ block.settings.imgTablet | image_url }}"
+                width="{{ block.settings.imgTabletWidth | default: 1024 }}"
+                height="{{ block.settings.imgTabletHeight | default: 540 }}"
+                class="w-full"
+              >
+            {% endif %}
+            <img
+              src="{{ block.settings.imgMob | image_url }}"
+              alt="{{ block.settings.alt_text | escape | default: 'Slider Image' }}"
+              width="{{ block.settings.imgMobWidth | default: 500 }}"
+              height="{{ block.settings.imgMobHeight | default: 540 }}"
+              class="w-full"
+              loading="{% if is_first_slide %}eager{% else %}lazy{% endif %}"
+              decoding="async"
+              {% if is_first_slide %}fetchpriority="high"{% endif %}
+            >
+          </picture>
+        {%- endcapture -%}
+
+        {%- capture slide_overlay -%}
+          {%- if has_overlay -%}
+            {%- if scrim_bg != 'none' -%}
+              <div class="absolute inset-0 pointer-events-none" style="background: {{ scrim_bg }};"></div>
+            {%- endif -%}
+            <div class="absolute inset-0 flex flex-col justify-center {{ pos_cls }} text-foreground px-6 md:px-14 lg:px-20">
+              {%- if block.settings.eyebrow != blank -%}
+                <p class="text-[11px] md:text-xs uppercase tracking-[0.3em] opacity-90 mb-3 md:mb-4">{{ block.settings.eyebrow }}</p>
+              {%- endif -%}
+              {%- if block.settings.heading != blank -%}
+                <h2 class="font-light text-3xl md:text-5xl leading-tight max-w-xl mb-5 md:mb-7">{{ block.settings.heading }}</h2>
+              {%- endif -%}
+              {%- if show_cta -%}
+                <a
+                  href="{{ block.settings.link }}"
+                  class="inline-flex items-center gap-2 bg-button text-button-text text-xs uppercase tracking-[0.16em] px-6 py-3.5 transition-opacity hover:opacity-90"
+                >
+                  {{ cta_text }}
+                  {% render 'icon-arrow-right', size: 16 %}
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endcapture -%}
+
+        <div class="item relative">
+          {%- if wrap_link -%}
+            <a href="{{ block.settings.link }}" class="block">{{ slide_picture }}{{ slide_overlay }}</a>
+          {%- else -%}
+            {{ slide_picture }}{{ slide_overlay }}
+          {%- endif -%}
         </div>
       {%- endfor -%}
     </div>
     {% if nav %}
-      <div class="flex w-full items-center justify-center gap-10 absolute z-10 {% if dot %} bottom-10 {% else %} bottom-6 {% endif %}">
+      <div class="flex w-full items-center justify-center gap-5 absolute z-10 {% if dot %} bottom-10 {% else %} bottom-6 {% endif %}">
         <button
           onclick="sliderPrev('{{ section.id }}')"
-          class="text-foreground"
+          class="flex items-center justify-center w-9 h-9 rounded-full bg-background/60 backdrop-blur-sm text-foreground hover:bg-background/80 transition-colors"
+          aria-label="{{ 'sections.slider.previous' | t }}"
         >
-          {% render 'icon-arrow-left', size: 40 %}
+          {% render 'icon-angle-left', size: 20 %}
         </button>
 
-        <div class="text-xs text-foreground rounded-full bg-background/60 backdrop-blur-sm py-1 px-2">
-          <span class="index-active"> 1 </span>
-          de
-          <span>
-            {{ section.blocks.size }}
-          </span>
+        <div class="text-xs tracking-wide text-foreground rounded-full bg-background/60 backdrop-blur-sm py-1 px-3">
+          <span class="index-active">1</span> / {{ section.blocks.size }}
         </div>
 
         <button
           onclick="sliderNext('{{ section.id }}')"
-          class="text-foreground"
+          class="flex items-center justify-center w-9 h-9 rounded-full bg-background/60 backdrop-blur-sm text-foreground hover:bg-background/80 transition-colors"
+          aria-label="{{ 'sections.slider.next' | t }}"
         >
-          {% render 'icon-arrow-right', size: 40 %}
+          {% render 'icon-angle-right', size: 20 %}
         </button>
       </div>
     {% endif %}
-  </my-slider>
+    </my-slider>
+  </div>
 </div>
 
 {% schema %}
@@ -143,6 +208,13 @@
     "groups": ["header", "footer"]
   },
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Esquema de cores",
+      "info": "Aplica-se a todo o slider: fundo, navegação (setas/contador/pontos), texto sobreposto, botão e o sombreado (scrim).",
+      "default": "scheme-1"
+    },
     {
       "type": "checkbox",
       "id": "fullwidth",
@@ -230,7 +302,8 @@
         {
           "type": "url",
           "id": "link",
-          "label": "Link de direcionamento"
+          "label": "Link",
+          "info": "Único link do slide. Com 'Texto do botão' preenchido, vira o link do botão (CTA). Sem texto de botão, a imagem inteira vira o link."
         },
         {
           "type": "image_picker",
@@ -279,6 +352,70 @@
           "type": "number",
           "id": "imgMobHeight",
           "label": "Altura da imagem Mobile"
+        },
+        {
+          "type": "text",
+          "id": "alt_text",
+          "label": "Texto alternativo (alt)",
+          "info": "Descrição da imagem para acessibilidade e SEO"
+        },
+        {
+          "type": "header",
+          "content": "Conteúdo sobreposto (opcional)"
+        },
+        {
+          "type": "paragraph",
+          "content": "Deixe em branco para usar como banner apenas (imagem). Preencha para sobrepor texto editável sobre a foto — sem precisar editar a imagem."
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Texto pequeno (eyebrow)"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Título"
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "Texto do botão (CTA)",
+          "info": "Se preenchido, exibe um botão que usa o campo 'Link' acima como destino. Em branco, a imagem inteira vira o link."
+        },
+        {
+          "type": "select",
+          "id": "content_position",
+          "label": "Posição do conteúdo",
+          "default": "left",
+          "options": [
+            { "value": "left", "label": "Esquerda" },
+            { "value": "center", "label": "Centro" },
+            { "value": "right", "label": "Direita" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "scrim",
+          "label": "Sombreado (scrim)",
+          "info": "Gradiente escuro para o texto ficar legível sobre a foto. 'Lateral' acompanha a posição do conteúdo.",
+          "default": "side",
+          "options": [
+            { "value": "none", "label": "Nenhum" },
+            { "value": "side", "label": "Lateral (segue o conteúdo)" },
+            { "value": "bottom", "label": "Inferior" },
+            { "value": "full", "label": "Total" }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "scrim_opacity",
+          "label": "Intensidade do sombreado",
+          "min": 0,
+          "max": 80,
+          "step": 5,
+          "unit": "%",
+          "default": 30
         }
       ]
     }
