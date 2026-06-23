@@ -1602,10 +1602,6 @@ label.not-swatch.is-unavailable {
   background-color: rgb(37 211 102 / var(--tw-bg-opacity));
 }
 
-.bg-\[\#FFFFFF80\] {
-  background-color: #FFFFFF80;
-}
-
 .bg-background {
   --tw-bg-opacity: 1;
   background-color: rgb(var(--color-background) / var(--tw-bg-opacity));
@@ -1702,11 +1698,6 @@ label.not-swatch.is-unavailable {
 
 .bg-transparent {
   background-color: transparent;
-}
-
-.bg-white {
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
 .bg-yellow-500 {
@@ -2071,11 +2062,6 @@ label.not-swatch.is-unavailable {
   color: rgb(var(--color-badge-text) / var(--tw-text-opacity));
 }
 
-.text-black {
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
-}
-
 .text-blue-400 {
   --tw-text-opacity: 1;
   color: rgb(96 165 250 / var(--tw-text-opacity));
@@ -2325,16 +2311,6 @@ label.not-swatch.is-unavailable {
 
 .placeholder\:font-light::placeholder {
   font-weight: 300;
-}
-
-.placeholder\:text-\[\#696969\]::-moz-placeholder {
-  --tw-text-opacity: 1;
-  color: rgb(105 105 105 / var(--tw-text-opacity));
-}
-
-.placeholder\:text-\[\#696969\]::placeholder {
-  --tw-text-opacity: 1;
-  color: rgb(105 105 105 / var(--tw-text-opacity));
 }
 
 .placeholder\:text-foreground\/50::-moz-placeholder {
