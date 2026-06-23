@@ -1,3 +1,8 @@
+/* Custom element é inline por padrão; garante box em bloco para largura/posição. */
+my-slider {
+    display: block;
+}
+
 .slider-container {
     position: relative;
     display: flex;

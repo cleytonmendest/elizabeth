@@ -1,25 +1,25 @@
 <announcement-bar
   data-section-id="{{ section.id }}"
   data-direction="{{ section.settings.direction }}"
+  data-duration="{{ section.settings.duration }}"
   data-pauseHover="{{ section.settings.pause_hover }}"
   style="--marquee-duration: {{ section.settings.duration }}s; --marquee-gap: {{ section.settings.gap }}px;"
   class="color-{{ section.settings.color_scheme }} color-background color-text w-full overflow-hidden py-1 lg:py-2 flex"
 >
   {%- comment -%}
-    Duas trilhas idênticas: o CSS anima translateX(0 -> -50%) para loop contínuo.
-    A segunda trilha é aria-hidden por ser apenas duplicata visual.
+    O conteúdo é renderizado uma vez; o JS (announcement-bar) clona até preencher
+    a viewport e duplica a trilha para o loop contínuo (translateX 0 -> -50%).
+    Sem JS, fica estático (degradação graciosa).
   {%- endcomment -%}
   <div class="announcement-marquee">
-    {%- for i in (1..2) -%}
-      <div class="announcement-track"{% if forloop.last %} aria-hidden="true"{% endif %}>
-        {%- for block in section.blocks -%}
-          <div class="inline-block px-2 text-xs lg:text-base">
-            {{ block.settings.text_item }}
-          </div>
-          <span class="inline-block px-2">•</span>
-        {%- endfor -%}
-      </div>
-    {%- endfor -%}
+    <div class="announcement-track">
+      {%- for block in section.blocks -%}
+        <div class="inline-block px-2 text-xs lg:text-base">
+          {{ block.settings.text_item }}
+        </div>
+        <span class="inline-block px-2">•</span>
+      {%- endfor -%}
+    </div>
   </div>
 </announcement-bar>
 
