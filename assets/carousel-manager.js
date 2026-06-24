@@ -34,19 +34,22 @@ class MySlider extends HTMLElement {
     const pauseHover = this.dataset.pauseHover === 'true';
     const autoplayDelay = parseInt(this.dataset.apTime, 10) * 1000 || 5000;
 
-    const itemsDesk = parseInt(this.dataset.qtyDesk, 10) || 4;
-    const itemsTab = parseInt(this.dataset.qtyTab, 10) || 2;
-    const itemsMob = parseInt(this.dataset.qtyMob, 10) || 1;
-    const maxPerView = Math.max(itemsDesk, itemsTab, itemsMob);
+    const itemsDesk = parseFloat(this.dataset.qtyDesk) || 4;
+    const itemsTab = parseFloat(this.dataset.qtyTab) || 2;
+    const itemsMob = parseFloat(this.dataset.qtyMob) || 1;
+    // "peek": mostra uma fração do próximo slide na borda, sinalizando que há mais
+    // itens para deslizar. Só ativa quando o consumidor passa data-peek="true".
+    const peek = this.dataset.peek === 'true' ? 0.28 : 0;
+    const maxPerView = Math.ceil(Math.max(itemsDesk, itemsTab, itemsMob) + peek);
 
     this._normalizeMarkup({ dots, loop, maxPerView });
 
     const config = {
-      slidesPerView: itemsMob,
+      slidesPerView: itemsMob + peek,
       loop: loop,
       breakpoints: {
-        768: { slidesPerView: itemsTab },
-        1024: { slidesPerView: itemsDesk },
+        768: { slidesPerView: itemsTab + peek },
+        1024: { slidesPerView: itemsDesk + peek },
       },
     };
 
