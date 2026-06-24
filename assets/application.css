@@ -779,10 +779,6 @@ label.not-swatch.is-unavailable {
   z-index: 50;
 }
 
-.z-\[1\] {
-  z-index: 1;
-}
-
 .z-\[2\] {
   z-index: 2;
 }
@@ -1023,6 +1019,10 @@ label.not-swatch.is-unavailable {
 
 .aspect-\[3\/4\] {
   aspect-ratio: 3/4;
+}
+
+.aspect-\[4\/3\] {
+  aspect-ratio: 4/3;
 }
 
 .h-1\.5 {
@@ -1669,10 +1669,6 @@ label.not-swatch.is-unavailable {
   background-color: rgb(var(--color-background) / var(--tw-bg-opacity));
 }
 
-.bg-background\/50 {
-  background-color: rgb(var(--color-background) / 0.5);
-}
-
 .bg-background\/60 {
   background-color: rgb(var(--color-background) / 0.6);
 }
@@ -1839,19 +1835,9 @@ label.not-swatch.is-unavailable {
   padding: 2rem;
 }
 
-.\!px-0 {
-  padding-left: 0px !important;
-  padding-right: 0px !important;
-}
-
 .\!py-3 {
   padding-top: 0.75rem !important;
   padding-bottom: 0.75rem !important;
-}
-
-.\!py-4 {
-  padding-top: 1rem !important;
-  padding-bottom: 1rem !important;
 }
 
 .\!py-6 {
@@ -1862,11 +1848,6 @@ label.not-swatch.is-unavailable {
 .\!py-8 {
   padding-top: 2rem !important;
   padding-bottom: 2rem !important;
-}
-
-.px-12 {
-  padding-left: 3rem;
-  padding-right: 3rem;
 }
 
 .px-2 {
@@ -1962,6 +1943,11 @@ label.not-swatch.is-unavailable {
 .py-8 {
   padding-top: 2rem;
   padding-bottom: 2rem;
+}
+
+.\!py-4 {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
 }
 
 .pb-10 {
@@ -2158,6 +2144,10 @@ label.not-swatch.is-unavailable {
 
 .tracking-\[0\.18em\] {
   letter-spacing: 0.18em;
+}
+
+.tracking-\[0\.2em\] {
+  letter-spacing: 0.2em;
 }
 
 .tracking-\[0\.3em\] {
@@ -2719,24 +2709,8 @@ label.not-swatch.is-unavailable {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.group:hover .group-hover\:scale-125 {
-  --tw-scale-x: 1.25;
-  --tw-scale-y: 1.25;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
 .group:hover .group-hover\:gap-3 {
   gap: 0.75rem;
-}
-
-.group:hover .group-hover\:bg-foreground {
-  --tw-bg-opacity: 1;
-  background-color: rgb(var(--color-foreground) / var(--tw-bg-opacity));
-}
-
-.group:hover .group-hover\:text-background {
-  --tw-text-opacity: 1;
-  color: rgb(var(--color-background) / var(--tw-text-opacity));
 }
 
 .group:hover .group-hover\:text-foreground {
@@ -3239,6 +3213,11 @@ label.not-swatch.is-unavailable {
     padding-bottom: 0.5rem;
   }
 
+  .lg\:py-6 {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
   .lg\:pl-16 {
     padding-left: 4rem;
   }
@@ -3256,6 +3235,11 @@ label.not-swatch.is-unavailable {
   .lg\:text-base {
     font-size: 1rem;
     line-height: 1.5rem;
+  }
+
+  .lg\:text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
   }
 
   .group:hover .lg\:group-hover\:bg-foreground\/10 {

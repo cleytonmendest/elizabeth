@@ -1,13 +1,23 @@
-<section class="!lg:py-6 !py-4 flex flex-col lg:flex-row page-width !px-0 !lg:px-4">
+<section class="color-{{ section.settings.color_scheme }} page-width !py-4 !lg:py-6">
+  <div class="flex flex-col lg:flex-row">
     {% for block in section.blocks %}
-        <a href="{{ block.settings.link }}" class="flex-1 flex relative items-center justify-center group overflow-hidden">
-            {{ block.settings.image | image_url: width: 1500 | image_tag: class:"group-hover:scale-125 transition-all duration-500 "}}
-
-            <span class="absolute z-[1] py-2 px-12 bg-background/50 text-xl lg:text-4xl text-foreground font-light rounded-full group-hover:bg-foreground group-hover:text-background transition-all duration-500 ">
-                {{ block.settings.label }}
-            </span>
-        </a>
+      <a href="{{ block.settings.link }}" class="group relative flex-1 block overflow-hidden">
+        {%- if block.settings.image != blank -%}
+          {{
+            block.settings.image
+            | image_url: width: 1500
+            | image_tag: alt: block.settings.label, class: 'w-full aspect-[4/3] object-cover transition-transform duration-500 ease-out group-hover:scale-105', loading: 'lazy'
+          }}
+        {%- else -%}
+          <div class="w-full aspect-[4/3] bg-foreground/5"></div>
+        {%- endif -%}
+        <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(0deg, rgba(0,0,0,.45) 0%, transparent 55%)"></div>
+        <span class="absolute bottom-6 left-0 right-0 text-center text-white text-base lg:text-xl font-light uppercase tracking-[0.2em]">
+          {{ block.settings.label }}
+        </span>
+      </a>
     {% endfor %}
+  </div>
 </section>
 
 {% schema %}
@@ -18,6 +28,14 @@
   "disabled_on": {
     "groups": ["header", "footer"]
   },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Esquema de cores",
+      "default": "scheme-1"
+    }
+  ],
   "blocks": [
     {
       "name": "Imagem",
