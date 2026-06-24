@@ -5,7 +5,7 @@
 
 {%- liquid
   assign text_alignment = section.settings.text_alignment | default: 'center'
-  assign enable_curved_background = section.settings.enable_curved_background | default: true
+  assign enable_curved_background = section.settings.enable_curved_background
 -%}
 
 <section class="color-{{ section.settings.color_scheme }} color-background">
@@ -13,20 +13,10 @@
     {% for block in section.blocks %}
       {% if block.type == 'image' %}
         <div class="flex-1 {{ block.shopify_attributes }}">
-          {% if block.settings.url != blank %}
-            <a href="{{ block.settings.url }}" class="block">
-              {% if block.settings.image != blank %}
-                {{ block.settings.image | image_url: width: 1500 | image_tag: class: 'w-full h-auto rounded-lg', loading: 'lazy' }}
-              {% else %}
-                {{ 'image' | placeholder_svg_tag: 'w-full h-auto rounded-lg bg-foreground/5' }}
-              {% endif %}
-            </a>
+          {% if block.settings.image != blank %}
+            {{ block.settings.image | image_url: width: 1500 | image_tag: class: 'w-full h-auto rounded-theme', loading: 'lazy' }}
           {% else %}
-            {% if block.settings.image != blank %}
-              {{ block.settings.image | image_url: width: 1500 | image_tag: class: 'w-full h-auto rounded-lg', loading: 'lazy' }}
-            {% else %}
-              {{ 'image' | placeholder_svg_tag: 'w-full h-auto rounded-lg bg-foreground/5' }}
-            {% endif %}
+            {{ 'image' | placeholder_svg_tag: 'w-full h-auto rounded-theme bg-foreground/5' }}
           {% endif %}
         </div>
 
@@ -49,27 +39,32 @@
             {% if forloop.index == 1 %} lg:pl-16 {% endif %}">
 
             {% if block.settings.pre_title != blank %}
-              <p class="text-sm lg:text-lg mb-2 opacity-80">{{ block.settings.pre_title }}</p>
+              <p class="text-xs uppercase tracking-[0.18em] opacity-60 mb-4">{{ block.settings.pre_title }}</p>
             {% endif %}
 
             {% if block.settings.title != blank %}
-              <h2 class="text-2xl lg:text-4xl font-bold mb-4 lg:mb-6">{{ block.settings.title }}</h2>
+              <h2 class="text-2xl lg:text-4xl font-light tracking-tight leading-tight mb-4 lg:mb-6">{{ block.settings.title }}</h2>
             {% endif %}
 
             {% if block.settings.text != blank %}
-              <div class="text-sm lg:text-base leading-relaxed">{{ block.settings.text }}</div>
+              <div class="text-sm lg:text-base leading-relaxed opacity-80">{{ block.settings.text }}</div>
             {% endif %}
 
-            {% if block.settings.button_label != blank and block.settings.button_url != blank %}
-              <a href="{{ block.settings.button_url }}" class="inline-block mt-6 px-6 py-3 color-button rounded-lg hover:opacity-90 transition-opacity">
-                {{ block.settings.button_label }}
-              </a>
-            {% elsif block.settings.url != blank %}
-              <a href="{{ block.settings.url }}" class="group inline-block mt-6">
-                <span class="inline-block transition-all duration-300 transform group-hover:translate-x-2 color-text">
-                  {% render 'icon-arrow-right', size: 54 %}
-                </span>
-              </a>
+            {% if block.settings.link != blank %}
+              {%- assign cta_label = block.settings.button_label | default: 'Ver mais' -%}
+              {% if block.settings.button_style == 'link' %}
+                <a href="{{ block.settings.link }}" class="group inline-flex items-center gap-2 mt-7 text-xs uppercase tracking-[0.18em] color-text hover:opacity-70 transition-opacity">
+                  {{ cta_label }}
+                  <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">
+                    {% render 'icon-arrow-right', size: 16 %}
+                  </span>
+                </a>
+              {% else %}
+                <a href="{{ block.settings.link }}" class="inline-flex items-center gap-2 mt-7 px-6 py-3.5 color-button text-xs uppercase tracking-[0.18em] hover:opacity-90 transition-opacity">
+                  {{ cta_label }}
+                  {% render 'icon-arrow-right', size: 15 %}
+                </a>
+              {% endif %}
             {% endif %}
           </div>
         </div>
@@ -128,7 +123,7 @@
       "type": "checkbox",
       "id": "enable_curved_background",
       "label": "t:sections.highlighted_section.settings.enable_curved_background.label",
-      "default": true,
+      "default": false,
       "info": "t:sections.highlighted_section.settings.enable_curved_background.info"
     }
   ],
@@ -143,12 +138,6 @@
           "type": "image_picker",
           "id": "image",
           "label": "t:sections.highlighted_section.blocks.image.settings.image.label"
-        },
-        {
-          "type": "url",
-          "id": "url",
-          "label": "t:sections.highlighted_section.blocks.image.settings.url.label",
-          "info": "t:sections.highlighted_section.blocks.image.settings.url.info"
         }
       ]
     },
@@ -178,6 +167,16 @@
           "content": "t:sections.highlighted_section.blocks.text.settings.button_header.content"
         },
         {
+          "type": "select",
+          "id": "button_style",
+          "label": "Tipo de botão",
+          "default": "primary",
+          "options": [
+            { "value": "primary", "label": "Botão sólido" },
+            { "value": "link", "label": "Link com seta" }
+          ]
+        },
+        {
           "type": "text",
           "id": "button_label",
           "label": "t:sections.highlighted_section.blocks.text.settings.button_label.label",
@@ -185,14 +184,9 @@
         },
         {
           "type": "url",
-          "id": "button_url",
-          "label": "t:sections.highlighted_section.blocks.text.settings.button_url.label"
-        },
-        {
-          "type": "url",
-          "id": "url",
-          "label": "t:sections.highlighted_section.blocks.text.settings.url.label",
-          "info": "t:sections.highlighted_section.blocks.text.settings.url.info"
+          "id": "link",
+          "label": "Link do botão",
+          "info": "Único link do bloco. Deixe em branco para não exibir botão."
         }
       ]
     }
