@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.5.0 | **Atualizado:** 2026-06-23
+**Versão:** 2.6.0 | **Atualizado:** 2026-06-24
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -127,21 +127,15 @@ Substituir resíduos de `rounded-lg` → `rounded-theme` e hex/cinzas hardcoded 
 
 ## ✅ CONCLUÍDO (Resumo)
 
-**v2.5.0 - Redesign PDP (minimalista de luxo)** (2026-06-23)
-- Coluna direita reorganizada (ritmo vertical `gap-5`, tipografia editorial: eyebrow de categoria + título `font-light text-4xl`); preço maior (`text-2xl`) com parcelamento visível (fonte única: settings Parcelamento); CTA `h-12` alinhado ao seletor de qtd. Ativados blocos prontos no `product.json` (estoque, formas de pagamento). Novos: bloco `assurances` (selos de confiança editáveis — política global da loja + ícones truck/return/lock) e acordeão "Entrega e devoluções" (collapsible_tab, texto global). Todos reordenáveis/removíveis no editor — zero setup técnico. Conteúdo per-produto (composição, guia de medidas) ficou de fora por não ter fonte de dados sem trabalho manual do lojista. Sticky ATC alinhado ao CTA (cantos retos, maiúsculas tracked); galeria mobile com dots minimalistas + contador "X/N" (setas só no desktop, via `data-dot` + `.index-active` do carousel-manager).
-- Fix: bug de pluralização no estoque (`pluralize` dentro de string de tradução → pluralização nativa `count` em pt-BR/en).
+**v2.6.0 - Revisão da Home (minimalista de luxo)** (2026-06-24) — Varredura das 9 seções no registro editorial: hero com overlay editável por slide + color scheme regendo tudo (fundo/nav/texto/botão/scrim); trust-badges (traço fino, fios); card de produto reformulado (swatches hover/chip mobile, quick-add via `card-quick-add`, parcelamento das settings, peek nos sliders via `data-peek`); highlighted-section (blob off + fix `default:true`, link único + dropdown tipo de botão); slider-cards (3:4 + label sobre scrim); section-images-link (tiles flush); testimonials (declutter, defaults pt-BR); newsletter-modal. Tudo segue color scheme e tokens, zero setup técnico.
 
-**v2.4.0 - Design System & Remoção do jQuery** (2026-06-23)
-- jQuery 100% removido (Owl/marquee → Swiper 11 + CSS); design tokens de cor + `rounded-theme` centralizados no `tailwind.config.js`; sections/templates de cliente e newsletter padronizados com tokens; header sticky; asset loading core (`theme.liquid`) + CSS/JS co-locados por componente.
+**v2.5.0 - Redesign PDP (minimalista de luxo)** (2026-06-23) — Coluna direita editorial (eyebrow + título `font-light`, preço `text-2xl` + parcelamento, CTA alinhado); blocos estoque/pagamento ativados; bloco `assurances` + acordeão Entrega; sticky ATC + galeria mobile (dots/contador). Fix pluralização do estoque (`count` nativo pt-BR/en).
 
-**v2.3.0 - i18n, Color Schemes & Gift Card** (2024-12-26)
-- Locales PT-BR/EN (~225 strings) + guia; color schemes dual (section + card) em testimonials; gift card standalone (QR, print); announcement-bar e trust-badges refatorados scheme-aware + i18n schema.
-
-**v2.2.0 - Sticky ATC & Padronização** (2025-01-22) — Sticky Add to Cart (IntersectionObserver, texto adaptativo); arredondamentos padronizados.
-
+**v2.4.0 - Design System & Remoção do jQuery** (2026-06-23) — jQuery removido (Swiper 11 + CSS); design tokens de cor + `rounded-theme` no config; header sticky; asset loading co-locado.
+**v2.3.0 - i18n, Color Schemes & Gift Card** (2024-12-26) — Locales PT-BR/EN (~225 strings); color schemes dual em testimonials; gift card standalone; announcement-bar/trust-badges scheme-aware.
+**v2.2.0 - Sticky ATC & Padronização** (2025-01-22) — Sticky Add to Cart (IntersectionObserver); arredondamentos padronizados.
 **v2.1.0 - Prova Social & SEO** (2025-11) — Testimonials (slider, ratings); schemas SEO (Product/Organization/Breadcrumb/Article).
-
-**v2.0.0 - Core Features** (2025-11) — 7 templates de cliente; blog + busca preditiva + minicart; newsletter modal + trust badges + payment icons; componentes reutilizáveis.
+**v2.0.0 - Core Features** (2025-11) — 7 templates de cliente; blog + busca preditiva + minicart; newsletter modal + trust badges + payment icons.
 
 ---
 

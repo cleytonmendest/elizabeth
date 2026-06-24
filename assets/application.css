@@ -1041,6 +1041,10 @@ label.not-swatch.is-unavailable {
   height: 3rem;
 }
 
+.h-14 {
+  height: 3.5rem;
+}
+
 .h-16 {
   height: 4rem;
 }
@@ -1140,6 +1144,10 @@ label.not-swatch.is-unavailable {
 
 .w-12 {
   width: 3rem;
+}
+
+.w-14 {
+  width: 3.5rem;
 }
 
 .w-16 {
@@ -1557,6 +1565,10 @@ label.not-swatch.is-unavailable {
 
 .rounded-theme {
   border-radius: 8px;
+}
+
+.rounded-theme-lg {
+  border-radius: 12px;
 }
 
 .rounded-theme-sm {
