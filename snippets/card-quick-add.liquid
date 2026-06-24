@@ -1,0 +1,26 @@
+{%- comment -%}
+  Botão de quick-add do card de produto.
+  1 variante → adiciona via ajax (cart.js); várias variantes → leva à PDP.
+
+  Parâmetros:
+  - product: objeto do produto (obrigatório)
+  - button_class: classes do botão/link (obrigatório)
+{%- endcomment -%}
+
+{%- if product.variants.size == 1 -%}
+  <add-to-cart>
+    {%- form 'product', product, class: 'w-full', data-type: 'add-to-cart-form' -%}
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+      <input type="hidden" name="quantity" value="1">
+      <button type="submit" name="add" aria-haspopup="dialog" class="{{ button_class }}">
+        {% render 'icon-cart', size: 15 %}
+        Adicionar
+      </button>
+    {%- endform -%}
+  </add-to-cart>
+{%- else -%}
+  <a href="{{ product.url }}" class="{{ button_class }}">
+    {% render 'icon-cart', size: 15 %}
+    Adicionar
+  </a>
+{%- endif -%}

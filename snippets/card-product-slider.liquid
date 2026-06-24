@@ -1,96 +1,203 @@
 {%- comment -%}
+  Card de produto (prateleiras, coleção e busca).
+
   Parâmetros:
   - card_product: Objeto do produto (obrigatório)
   - show_second_image: Mostrar segunda imagem no hover (default: true)
   - show_badges: Mostrar badges de esgotado e desconto (default: true)
-  - show_installments: Mostrar parcelamento (default: false)
+  - show_swatches: Mostrar amostras de cor das variantes (default: true; some se não houver)
+  - show_installments: Mostrar parcelamento (default: true; some se não aplicável)
+  - show_quick_add: Botão "Adicionar" no hover (desktop) (default: true)
   - lazy_load: Usar lazy loading (default: true)
+  - remove_padding: Remove o padding horizontal do card (default: false)
   - image_sizes: Sizes attribute para srcset (opcional)
 {%- endcomment -%}
 
 {%- liquid
   assign show_second_image = show_second_image | default: true
   assign show_badges = show_badges | default: true
-  assign show_installments = show_installments | default: false
+  assign show_swatches = show_swatches | default: true
+  assign show_installments = show_installments | default: true
+  assign show_quick_add = show_quick_add | default: true
   assign lazy_load = lazy_load | default: true
   assign loading_attr = 'lazy'
   if lazy_load == false
     assign loading_attr = 'eager'
   endif
+
+  assign has_discount = false
+  if card_product.compare_at_price > card_product.price
+    assign has_discount = true
+    assign discount_percent = card_product.compare_at_price | minus: card_product.price | times: 100 | divided_by: card_product.compare_at_price | round
+  endif
+
+  comment
+    Parcelamento a partir das configurações globais (mesma lógica do price-v2).
+  endcomment
+  assign max_installment = settings.max_installments | default: 1
+  assign min_value = settings.min_value_installment | times: 100
+  assign show_inst_global = settings.show_installments | default: true
+  assign actual_installments = 1
+  assign final_installment_value = card_product.price
+  if card_product.price > 0 and max_installment > 1 and min_value >= 0
+    for i in (2..max_installment) reversed
+      assign installment_check = card_product.price | divided_by: i
+      if installment_check >= min_value
+        assign actual_installments = i
+        assign final_installment_value = installment_check
+        break
+      endif
+    endfor
+  endif
+
+  assign color_option = null
+  for opt in card_product.options_with_values
+    assign opt_down = opt.name | downcase
+    if opt_down contains 'cor' or opt_down contains 'color'
+      assign color_option = opt
+      break
+    endif
+  endfor
+  assign swatch_count = 0
+  if color_option
+    assign swatch_count = color_option.values | map: 'swatch' | compact | size
+  endif
 -%}
 
 <div class="group {% unless remove_padding %}px-4{% endunless %}">
-  <a class="block" href="{{ card_product.url }}">
-    <div class="relative w-full flex items-center justify-center overflow-hidden rounded-lg bg-foreground/5">
-      {%- if card_product.featured_image -%}
-        <img
-          class="w-full h-auto aspect-[2/3] object-cover transition-opacity duration-500 ease-in-out {% if show_second_image and card_product.images.size > 1 %}group-hover:opacity-0{% endif %}"
-          src="{{ card_product.featured_image | image_url: width: 400 }}"
-          srcset="{{ card_product.featured_image | image_url: width: 200 }} 200w,
-                  {{ card_product.featured_image | image_url: width: 400 }} 400w,
-                  {{ card_product.featured_image | image_url: width: 600 }} 600w"
-          sizes="{{ image_sizes | default: '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw' }}"
-          alt="{{ card_product.featured_image.alt | default: card_product.title | escape }}"
-          width="{{ card_product.featured_image.width }}"
-          height="{{ card_product.featured_image.height }}"
-          loading="{{ loading_attr }}"
-          decoding="async"
-        >
-        {%- if show_second_image and card_product.images.size > 1 -%}
-          {%- assign second_image = card_product.images[1] -%}
+  <div class="relative">
+    <a class="block" href="{{ card_product.url }}" aria-label="{{ card_product.title | escape }}">
+      <div class="relative w-full overflow-hidden rounded-theme bg-foreground/5">
+        {%- if card_product.featured_image -%}
           <img
-            class="absolute top-0 left-0 w-full h-auto aspect-[2/3] object-cover opacity-0 transition-opacity ease-in-out duration-500 group-hover:opacity-100"
-            src="{{ second_image | image_url: width: 400 }}"
-            alt="{{ second_image.alt | default: card_product.title | escape }}"
-            width="{{ second_image.width }}"
-            height="{{ second_image.height }}"
+            class="w-full h-auto aspect-[2/3] object-cover transition-opacity duration-500 ease-in-out {% if show_second_image and card_product.images.size > 1 %}group-hover:opacity-0{% endif %}"
+            src="{{ card_product.featured_image | image_url: width: 400 }}"
+            srcset="{{ card_product.featured_image | image_url: width: 200 }} 200w,
+                    {{ card_product.featured_image | image_url: width: 400 }} 400w,
+                    {{ card_product.featured_image | image_url: width: 600 }} 600w"
+            sizes="{{ image_sizes | default: '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw' }}"
+            alt="{{ card_product.featured_image.alt | default: card_product.title | escape }}"
+            width="{{ card_product.featured_image.width }}"
+            height="{{ card_product.featured_image.height }}"
             loading="{{ loading_attr }}"
             decoding="async"
           >
+          {%- if show_second_image and card_product.images.size > 1 -%}
+            {%- assign second_image = card_product.images[1] -%}
+            <img
+              class="absolute top-0 left-0 w-full h-auto aspect-[2/3] object-cover opacity-0 transition-opacity ease-in-out duration-500 group-hover:opacity-100"
+              src="{{ second_image | image_url: width: 400 }}"
+              alt="{{ second_image.alt | default: card_product.title | escape }}"
+              width="{{ second_image.width }}"
+              height="{{ second_image.height }}"
+              loading="{{ loading_attr }}"
+              decoding="async"
+            >
+          {%- endif -%}
+        {%- else -%}
+          <div class="w-full aspect-[2/3] flex items-center justify-center bg-foreground/10">
+            <svg class="w-16 h-16 text-foreground/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
         {%- endif -%}
-      {%- else -%}
-        {%- comment -%} Placeholder quando não tem imagem {%- endcomment -%}
-        <div class="w-full aspect-[2/3] flex items-center justify-center bg-foreground/10">
-          <svg class="w-16 h-16 text-foreground/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-          </svg>
+      </div>
+    </a>
+
+    {%- if show_badges -%}
+      {%- unless card_product.available -%}
+        <div class="absolute top-2 right-2 color-error-bg color-error text-xs px-2 py-1 rounded-theme border color-border z-10">
+          Esgotado
+        </div>
+      {%- endunless -%}
+      {%- if has_discount -%}
+        <div class="absolute top-2 left-2 color-badge text-xs px-2 py-1 rounded-theme font-medium z-10">
+          {{ discount_percent }}% OFF
         </div>
       {%- endif -%}
+    {%- endif -%}
 
-      {%- if show_badges -%}
-        {%- comment -%} Badge de esgotado {%- endcomment -%}
-        {%- unless card_product.available -%}
-          <div class="absolute top-2 right-2 color-error-bg color-error text-xs px-2 py-1 rounded-theme border color-border">
-            Esgotado
-          </div>
-        {%- endunless -%}
-
-        {%- comment -%} Badge de desconto {%- endcomment -%}
-        {%- if card_product.compare_at_price > card_product.price -%}
-          {%- assign discount_percent = card_product.compare_at_price | minus: card_product.price | times: 100 | divided_by: card_product.compare_at_price -%}
-          <div class="absolute top-2 left-2 color-badge text-xs px-2 py-1 rounded-theme font-semibold">
-            -{{ discount_percent }}%
-          </div>
+    {%- comment -%} Swatches + quick-add sobre a imagem {%- endcomment -%}
+    {%- liquid
+      assign has_swatch_display = false
+      if show_swatches and swatch_count > 0
+        assign has_swatch_display = true
+      endif
+      assign has_quick_add = false
+      if show_quick_add and card_product.available
+        assign has_quick_add = true
+      endif
+    -%}
+    {%- if has_swatch_display -%}
+      {%- capture swatches_dots -%}
+        {%- for value in color_option.values limit: 5 -%}
+          {%- if value.swatch.color or value.swatch.image -%}
+            <span
+              class="w-3.5 h-3.5 rounded-full border border-white/70"
+              style="{% if value.swatch.image %}background-image:url({{ value.swatch.image | image_url: width: 30 }});background-size:cover;{% else %}background:rgb({{ value.swatch.color.rgb }});{% endif %}"
+              title="{{ value | escape }}"
+            ></span>
+          {%- endif -%}
+        {%- endfor -%}
+        {%- if swatch_count > 5 -%}
+          <span class="text-[10px] text-white/80 ml-0.5">+{{ swatch_count | minus: 5 }}</span>
         {%- endif -%}
-      {%- endif -%}
-    </div>
+      {%- endcapture -%}
+    {%- endif -%}
 
-    <h3 class="h-6 line-clamp-1 uppercase font-light text-foreground/60 mt-2 text-sm">
+    {%- comment -%} Desktop: painel no hover (swatches + Adicionar) {%- endcomment -%}
+    {%- if has_swatch_display or has_quick_add -%}
+      <div
+        class="hidden lg:flex absolute inset-x-0 bottom-0 z-10 flex-col items-center gap-2.5 px-3 pt-10 pb-3 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0"
+        style="background:linear-gradient(0deg, rgba(0,0,0,.55) 0%, transparent 100%)"
+      >
+        {%- if has_swatch_display -%}
+          <div class="flex items-center gap-1.5">{{ swatches_dots }}</div>
+        {%- endif -%}
+        {%- if has_quick_add -%}
+          {% render 'card-quick-add',
+            product: card_product,
+            button_class: 'w-full flex items-center justify-center gap-2 bg-background/95 text-foreground text-xs uppercase tracking-[0.14em] py-2.5 rounded-theme backdrop-blur-sm hover:bg-foreground hover:text-background transition-colors'
+          %}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Mobile: swatches em chip discreto sobre a imagem {%- endcomment -%}
+    {%- if has_swatch_display -%}
+      <div class="lg:hidden absolute left-2 bottom-2 z-10 flex items-center gap-1.5 px-2 py-1 rounded-full backdrop-blur-sm" style="background:rgba(0,0,0,.3)">
+        {{ swatches_dots }}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <a class="block" href="{{ card_product.url }}">
+    <h3 class="h-6 line-clamp-1 uppercase font-light tracking-wide text-foreground/60 mt-2.5 text-sm">
       {{ card_product.title | escape }}
     </h3>
+  </a>
 
-    <div class="my-2 flex gap-2 items-center">
-      {%- if card_product.compare_at_price_max > card_product.price_max -%}
-        {%- render 'discount-flag', product: card_product -%}
+  <div class="mt-2">
+    <div class="flex items-baseline gap-2 flex-wrap">
+      <span class="text-sm font-medium text-foreground">{{ card_product.price | money }}</span>
+      {%- if has_discount -%}
+        <span class="text-xs text-foreground/40 line-through">{{ card_product.compare_at_price | money }}</span>
       {%- endif -%}
-      {%- render 'price-v2', product: card_product, price_class: '', show_compare_at_price: true -%}
     </div>
-
-    {%- if show_installments and card_product.price > 10000 -%}
-      {%- assign installment_value = card_product.price | divided_by: 3 -%}
-      <p class="text-xs text-foreground/50 mt-1">
-        ou 3x de {{ installment_value | money }} sem juros
+    {%- if show_installments and show_inst_global and actual_installments > 1 -%}
+      <p class="text-xs text-foreground/50 mt-0.5">
+        em {{ actual_installments }}x de {{ final_installment_value | money }}
       </p>
     {%- endif -%}
-  </a>
+  </div>
+
+  {%- comment -%} Mobile: botão Adicionar estático (não há hover no toque) {%- endcomment -%}
+  {%- if has_quick_add -%}
+    <div class="lg:hidden mt-2.5">
+      {% render 'card-quick-add',
+        product: card_product,
+        button_class: 'w-full flex items-center justify-center gap-2 bg-button text-button-text text-xs uppercase tracking-[0.14em] py-2.5 rounded-theme'
+      %}
+    </div>
+  {%- endif -%}
 </div>
