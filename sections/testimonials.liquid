@@ -22,7 +22,7 @@
     {% if heading != blank or subheading != blank %}
       <div class="text-center mb-8">
         {% if heading != blank %}
-          <h2 class="text-3xl md:text-4xl font-bold mb-4">
+          <h2 class="text-2xl md:text-3xl font-light tracking-tight mb-4">
             {{ heading }}
           </h2>
         {% endif %}
@@ -70,7 +70,7 @@
           <div class="hidden md:block">
             <button
               type="button"
-              class="testimonials-nav testimonials-nav--prev color-button color-border border"
+              class="testimonials-nav testimonials-nav--prev color-background color-border border color-text"
               onclick="sliderPrev('{{ section.id }}')"
               aria-label="{{ 'general.accessibility.previous' | t }}"
             >
@@ -81,7 +81,7 @@
 
             <button
               type="button"
-              class="testimonials-nav testimonials-nav--next color-border color-button border"
+              class="testimonials-nav testimonials-nav--next color-background color-border border color-text"
               onclick="sliderNext('{{ section.id }}')"
               aria-label="{{ 'general.accessibility.next' | t }}"
             >
@@ -133,13 +133,13 @@
       "type": "text",
       "id": "heading",
       "label": "t:sections.testimonials.settings.heading.label",
-      "default": "What our customers say"
+      "default": "O que nossos clientes dizem"
     },
     {
       "type": "textarea",
       "id": "subheading",
       "label": "t:sections.testimonials.settings.subheading.label",
-      "default": "Check out the experience of those who have already purchased from us"
+      "default": "Confira a experiência de quem já comprou com a gente"
     },
     {
       "type": "header",
@@ -187,13 +187,13 @@
           "type": "text",
           "id": "customer_name",
           "label": "t:sections.testimonials.blocks.testimonial.settings.customer_name.label",
-          "default": "Sarah Johnson"
+          "default": "Ana Carolina"
         },
         {
           "type": "text",
           "id": "customer_location",
           "label": "t:sections.testimonials.blocks.testimonial.settings.customer_location.label",
-          "default": "New York, NY",
+          "default": "Rio de Janeiro, RJ",
           "info": "t:sections.testimonials.blocks.testimonial.settings.customer_location.info"
         },
         {
@@ -213,7 +213,7 @@
           "type": "textarea",
           "id": "testimonial_text",
           "label": "t:sections.testimonials.blocks.testimonial.settings.testimonial_text.label",
-          "default": "I loved the quality of the dresses! The fabric is excellent and the fit is perfect. I will definitely buy again.",
+          "default": "Adorei a qualidade dos vestidos! O tecido é excelente e o caimento perfeito. Com certeza voltarei a comprar.",
           "info": "t:sections.testimonials.blocks.testimonial.settings.testimonial_text.info"
         },
         {
@@ -233,31 +233,31 @@
         {
           "type": "testimonial",
           "settings": {
-            "customer_name": "Sarah Johnson",
-            "customer_location": "New York, NY",
+            "customer_name": "Ana Carolina",
+            "customer_location": "Rio de Janeiro, RJ",
             "rating": 5,
-            "testimonial_text": "I loved the quality of the dresses! The fabric is excellent and the fit is perfect. I will definitely buy again.",
-            "product_purchased": "Floral Midi Dress"
+            "testimonial_text": "Adorei a qualidade dos vestidos! O tecido é excelente e o caimento perfeito. Com certeza voltarei a comprar.",
+            "product_purchased": "Vestido Floral Midi"
           }
         },
         {
           "type": "testimonial",
           "settings": {
-            "customer_name": "Emily Martinez",
-            "customer_location": "Los Angeles, CA",
+            "customer_name": "Juliana Mendes",
+            "customer_location": "Belo Horizonte, MG",
             "rating": 5,
-            "testimonial_text": "Impeccable service and fast delivery. The dress arrived exactly as in the photo. Highly recommend!",
-            "product_purchased": "Evening Maxi Dress"
+            "testimonial_text": "Atendimento impecável e entrega rápida. O vestido chegou exatamente como na foto. Super recomendo!",
+            "product_purchased": "Vestido Longo Festa"
           }
         },
         {
           "type": "testimonial",
           "settings": {
-            "customer_name": "Jessica Williams",
-            "customer_location": "Miami, FL",
+            "customer_name": "Fernanda Costa",
+            "customer_location": "São Paulo, SP",
             "rating": 5,
-            "testimonial_text": "This is my third purchase and I'm always impressed by the quality. The pieces are beautiful and elegant!",
-            "product_purchased": "Blazer Set"
+            "testimonial_text": "Já é a terceira vez que compro e sempre me surpreendo com a qualidade. As peças são lindas e elegantes!",
+            "product_purchased": "Conjunto Blazer"
           }
         }
       ]

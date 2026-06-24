@@ -13,14 +13,13 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s;
+  transition: all 0.25s;
   cursor: pointer;
   z-index: 10;
 }
@@ -34,7 +33,7 @@
 }
 
 .testimonials-nav:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0.7;
   transform: translateY(-50%) scale(1.05);
 }
 
@@ -61,13 +60,14 @@
 }
 
 .testimonials-slider .my-slider__container .swiper-pagination-bullet {
-  width: 10px;
-  height: 10px;
+  width: 6px;
+  height: 6px;
+  margin: 0 4px;
   background: currentColor;
   border: none;
   opacity: 0.3;
-  border-radius: 50%;
-  transition: opacity 0.3s;
+  border-radius: 9999px;
+  transition: all 0.25s;
 }
 
 .testimonials-slider .my-slider__container .swiper-pagination-bullet:hover {
@@ -75,8 +75,7 @@
 }
 
 .testimonials-slider .my-slider__container .swiper-pagination-bullet-active {
-  width: 10px;
-  background: currentColor;
-  border-radius: 50%;
+  width: 18px;
+  border-radius: 3px;
   opacity: 1;
 }
