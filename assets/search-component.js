@@ -9,7 +9,7 @@ class Search extends HTMLElement {
         this.collectionTemplate = this.querySelector('#collection-result-template');
         this.loadingState = this.querySelector('.search-loading');
         this.footer = this.querySelector('.search-footer');
-        this.overlay = this.querySelector('.search-overlay');
+        this.overlay = document.querySelector('.search-overlay');
         this.debounceTimeout = null;
         this.debounceDelay = 300;
         this.maxResults = 6; // Máximo de resultados a exibir
@@ -104,7 +104,7 @@ class Search extends HTMLElement {
 
         // Se não tem resultados
         if (totalResults === 0) {
-            this.resultsContent.innerHTML = `<div class="p-6 text-center text-gray-500">Nenhum resultado encontrado para "${query}".</div>`;
+            this.resultsContent.innerHTML = `<div class="p-6 text-center text-sm text-foreground/50">Nenhum resultado encontrado para "${query}".</div>`;
             this.resultsContainer.classList.remove('hidden');
             this.classList.add('is-searching');
             if (this.overlay) {
@@ -163,12 +163,12 @@ class Search extends HTMLElement {
             if (badge && !product.available) {
                 badge.textContent = 'Esgotado';
                 badge.classList.remove('hidden');
-                badge.classList.add('bg-red-100', 'text-red-700');
+                badge.classList.add('bg-foreground/10', 'text-foreground/60');
             } else if (badge && product.compare_at_price && product.compare_at_price > product.price) {
                 const discount = Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100);
                 badge.textContent = `-${discount}%`;
                 badge.classList.remove('hidden');
-                badge.classList.add('bg-green-100', 'text-green-700');
+                badge.classList.add('bg-foreground', 'text-background');
             }
 
             this.resultsContent.appendChild(clone);
@@ -244,7 +244,7 @@ class Search extends HTMLElement {
     _highlightQuery(text, query) {
         if (!query) return text;
         const regex = new RegExp(`(${query})`, 'gi');
-        return text.replace(regex, '<mark class="bg-yellow-200 font-semibold">$1</mark>');
+        return text.replace(regex, '<mark class="bg-transparent font-normal text-foreground">$1</mark>');
     }
 
     _onKeyDown(event) {
@@ -270,10 +270,10 @@ class Search extends HTMLElement {
     _updateSelection() {
         this.currentResults.forEach((item, index) => {
             if (index === this.selectedIndex) {
-                item.classList.add('bg-gray-100');
+                item.classList.add('bg-foreground/5');
                 item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
             } else {
-                item.classList.remove('bg-gray-100');
+                item.classList.remove('bg-foreground/5');
             }
         });
     }

@@ -56,7 +56,7 @@
   <main-header class="w-full block relative z-10" data-type="{{ header_type }}">
     <div
       id="main-header-container"
-      class="color-background w-full transition-shadow duration-300 group"
+      class="color-background w-full transition-shadow duration-300 group relative z-[1]"
     >
       <div class="!py-3 page-width w-full">
         <div class="flex justify-between">
@@ -86,6 +86,8 @@
         {% endif %}
       </div>
     </div>
+    {%- comment -%} Overlay da busca preditiva: cobre a página, mas fica atrás do header (z menor que o container) {%- endcomment -%}
+    <div class="search-overlay fixed inset-0 bg-foreground/40 z-0 hidden"></div>
   </main-header>
 </div>
 

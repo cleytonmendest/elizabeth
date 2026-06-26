@@ -11,6 +11,11 @@ This is a Shopify theme built with TailwindCSS, based on Shopify's Online Store 
 1. **Prioridade:** requisitos da Shopify Theme Store vêm primeiro; features secundárias esperam os bloqueadores críticos. **As prioridades e seu status são fonte da verdade em `docs/ROADMAP.md`** — não duplicar aqui.
 2. **Consulte o ROADMAP** antes de iniciar uma feature ou mudança que afete escopo/prioridades. Não é necessário para ajustes triviais (typo, tweak pontual, dúvida).
 3. **Atualize o ROADMAP** ao concluir ou alterar uma feature (status, linha em `✅ CONCLUÍDO`, novas descobertas).
+4. **Theme Check é quality gate (bloqueador para Theme Store).** Em **toda implementação**, rode `shopify theme check` antes de commitar:
+   - **Nenhum offense novo** pode ser introduzido pela mudança.
+   - Se você tocou um arquivo que **já tinha** offenses pré-existentes, corrija-os também antes de commitar (regra "deixou o arquivo melhor do que encontrou"). Não herde dívida só por ter passado pelo arquivo.
+   - O inventário de offenses pendentes do tema vive em `docs/ROADMAP.md` (seção **Code Quality**) — ao zerar offenses de um arquivo/check, atualize lá.
+   - `assets/application.css` é gerado pelo Tailwind; offenses nele se resolvem na origem (`.liquid`/config), não editando o CSS compilado.
 
 ## Development Commands
 
@@ -35,6 +40,12 @@ Deploy theme to Shopify store.
 shopify theme pull
 ```
 Pull latest theme files from Shopify store.
+
+### Theme Check (quality gate)
+```bash
+shopify theme check
+```
+Lint Liquid/HTML/JSON. **Obrigatório antes de commitar** — ver regra 4 em DEVELOPMENT PRIORITY RULES. Para inspecionar só os arquivos tocados, gere JSON e filtre: `shopify theme check --output json`.
 
 ## Architecture Overview
 

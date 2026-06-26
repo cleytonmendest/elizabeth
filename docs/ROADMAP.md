@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.6.0 | **Atualizado:** 2026-06-24
+**Versão:** 2.7.0 | **Atualizado:** 2026-06-26
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -66,13 +66,12 @@ README para lojistas (não desenvolvedores).
 
 ---
 
-### 5. Code Quality
-**Status:** Parcial | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
+### 5. Code Quality (Theme Check)
+**Status:** Parcial — 15 errors, 30 warnings (baseline 2026-06-26) | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
 
-Theme Check compliance (zero erros críticos).
-- ⏳ Executar `shopify theme check`
-- ⏳ Corrigir warnings/erros
-- ⏳ Validar Liquid syntax
+Theme Check zerado para a Theme Store. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. Arquivos já revisados (Home/PDP/Coleção/Busca) sem offenses próprios.
+- 🔴 `ImgWidthAndHeight` (12× → add `width`/`height`): customers/order, main-article, newsletter-modal, card-article, product-gallery, testimonial-card, gift_card · `ValidSchemaTranslations` (2×, testimonials, i18n schema) · `UnknownFilter` (1×, gift_card).
+- 🟡 `UnusedAssign` (11×) · `UndefinedObject` (9×) · `OrphanedSnippet` (7× snippets sem uso) · `HardcodedRoutes` (1×, cart) · `RemoteAsset` (2×, inerente a imagem dinâmica — aceitável).
 
 ---
 
@@ -126,6 +125,8 @@ Substituir resíduos de `rounded-lg` → `rounded-theme` e hex/cinzas hardcoded 
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.7.0 - Revisão Coleção + Busca (minimalista de luxo)** (2026-06-25) — Registro editorial aplicado às páginas de listagem: hero/cabeçalho com `font-light tracking-tight` + scrim mais leve (`bg-black/30`), descrição da coleção sobre o hero; sidebar de filtros e contagem com eyebrow `uppercase tracking-[0.18em]` + bordas tokenizadas (`border-border`); pills de tipo (busca) e buscas populares como chips outline uppercase; cards de artigo/página com `rounded-theme` + hover de borda (sem shadow); estados vazios e CTAs no padrão editorial. Tudo via tokens/color scheme, `rounded-lg`→`rounded-theme`, zero setup técnico. **Fixes:** busca preditiva (dropdown editorial, highlight sutil sem amarelo, badges/estado em tokens, overlay agora atrás do header via `z-[1]` no container), `?q=&q=` duplicado removido (`name="q"` do botão submit), botão "Todos" legível (CSS real no lugar de `@apply` em `<style>`), **safelist `grid-cols-[2-5]`** (classe `lg:grid-cols-N` dinâmica do Liquid não era detectada → coleção/busca agora respeitam `products_per_row`), swatches do card limitados a 4 + chip "+N" discreto.
 
 **v2.6.0 - Revisão da Home (minimalista de luxo)** (2026-06-24) — Varredura das 9 seções no registro editorial: hero com overlay editável por slide + color scheme regendo tudo (fundo/nav/texto/botão/scrim); trust-badges (traço fino, fios); card de produto reformulado (swatches hover/chip mobile, quick-add via `card-quick-add`, parcelamento das settings, peek nos sliders via `data-peek`); highlighted-section (blob off + fix `default:true`, link único + dropdown tipo de botão); slider-cards (3:4 + label sobre scrim); section-images-link (tiles flush); testimonials (declutter, defaults pt-BR); newsletter-modal. Tudo segue color scheme e tokens, zero setup técnico.
 

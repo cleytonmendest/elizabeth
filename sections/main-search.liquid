@@ -2,8 +2,8 @@
 {%- assign articles_per_page = 6 -%}
 
 <div class="page-width py-8">
-  <div class="text-center mb-8">
-    <h1 class="text-3xl md:text-5xl font-bold mb-4">
+  <div class="text-center mb-10 md:mb-12">
+    <h1 class="text-3xl md:text-4xl font-light tracking-tight mb-5">
       {%- if search.performed -%}
         Resultados para "{{ search.terms }}"
       {%- else -%}
@@ -19,7 +19,7 @@
           name="q"
           value="{{ search.terms | escape }}"
           placeholder="O que você está procurando?"
-          class="w-full px-4 py-3 pr-12 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground/40 text-lg"
+          class="w-full px-4 py-3 pr-12 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground/40 text-base"
           required
         >
         <button
@@ -35,7 +35,7 @@
     </form>
 
     {%- if search.performed -%}
-      <p class="text-foreground/60">
+      <p class="text-sm text-foreground/55">
         {{ search.results_count }}
         {% if search.results_count == 1 %}resultado encontrado{% else %}resultados encontrados{% endif %}
       </p>
@@ -52,22 +52,22 @@
 
         {%- comment -%} Filtros de tipo {%- endcomment -%}
         {%- if section.settings.enable_type_filter -%}
-          <div class="flex flex-wrap gap-2 justify-center mb-8">
-            <button class="filter-button active px-4 py-2 border rounded-full text-sm font-medium transition-all" data-filter="all">
+          <div class="flex flex-wrap gap-2 justify-center mb-10">
+            <button class="filter-button active px-5 py-2 border border-border rounded-full text-xs uppercase tracking-[0.12em] text-foreground/70 transition-colors" data-filter="all">
               Todos ({{ search.results_count }})
             </button>
             {%- if products.size > 0 -%}
-              <button class="filter-button px-4 py-2 border rounded-full text-sm font-medium transition-all" data-filter="products">
+              <button class="filter-button px-5 py-2 border border-border rounded-full text-xs uppercase tracking-[0.12em] text-foreground/70 transition-colors" data-filter="products">
                 Produtos ({{ products.size }})
               </button>
             {%- endif -%}
             {%- if articles.size > 0 -%}
-              <button class="filter-button px-4 py-2 border rounded-full text-sm font-medium transition-all" data-filter="articles">
+              <button class="filter-button px-5 py-2 border border-border rounded-full text-xs uppercase tracking-[0.12em] text-foreground/70 transition-colors" data-filter="articles">
                 Artigos ({{ articles.size }})
               </button>
             {%- endif -%}
             {%- if pages.size > 0 -%}
-              <button class="filter-button px-4 py-2 border rounded-full text-sm font-medium transition-all" data-filter="pages">
+              <button class="filter-button px-5 py-2 border border-border rounded-full text-xs uppercase tracking-[0.12em] text-foreground/70 transition-colors" data-filter="pages">
                 Páginas ({{ pages.size }})
               </button>
             {%- endif -%}
@@ -77,7 +77,7 @@
         {%- comment -%} PRODUTOS {%- endcomment -%}
         {%- if products.size > 0 -%}
           <div class="search-section" data-section="products">
-            <h2 class="text-2xl font-semibold mb-6">Produtos</h2>
+            <h2 class="text-xl md:text-2xl font-light tracking-tight mb-6">Produtos</h2>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-{{ section.settings.products_per_row }} gap-4 md:gap-6 mb-12">
               {%- for product in products -%}
                 {%- render 'card-product-slider',
@@ -96,27 +96,29 @@
         {%- comment -%} ARTIGOS {%- endcomment -%}
         {%- if articles.size > 0 -%}
           <div class="search-section" data-section="articles">
-            <h2 class="text-2xl font-semibold mb-6">Artigos do Blog</h2>
+            <h2 class="text-xl md:text-2xl font-light tracking-tight mb-6">Artigos do Blog</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {%- for article in articles limit: articles_per_page -%}
-                <article class="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                <article class="group border border-border rounded-theme overflow-hidden transition-colors hover:border-foreground/30">
                   <a href="{{ article.url }}" class="block">
                     {%- if article.image -%}
                       <div class="aspect-[16/9] overflow-hidden bg-foreground/5">
                         <img
                           src="{{ article.image | image_url: width: 600 }}"
                           alt="{{ article.image.alt | escape }}"
-                          class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          width="{{ article.image.width }}"
+                          height="{{ article.image.height }}"
                           loading="lazy"
                           decoding="async"
                         >
                       </div>
                     {%- endif -%}
                     <div class="p-4">
-                      <p class="text-xs text-foreground/50 mb-2">
+                      <p class="text-xs uppercase tracking-[0.12em] text-foreground/50 mb-2">
                         {{ article.published_at | date: "%d/%m/%Y" }}
                       </p>
-                      <h3 class="text-lg font-semibold mb-2 line-clamp-2">
+                      <h3 class="text-base font-normal mb-2 line-clamp-2">
                         {{ article.title }}
                       </h3>
                       {%- if article.excerpt != blank -%}
@@ -135,12 +137,12 @@
         {%- comment -%} PÁGINAS {%- endcomment -%}
         {%- if pages.size > 0 -%}
           <div class="search-section" data-section="pages">
-            <h2 class="text-2xl font-semibold mb-6">Páginas</h2>
+            <h2 class="text-xl md:text-2xl font-light tracking-tight mb-6">Páginas</h2>
             <div class="space-y-4 mb-12">
               {%- for page in pages -%}
-                <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="border border-border rounded-theme p-4 transition-colors hover:border-foreground/30">
                   <a href="{{ page.url }}" class="block">
-                    <h3 class="text-lg font-semibold mb-2">{{ page.title }}</h3>
+                    <h3 class="text-base font-normal mb-2">{{ page.title }}</h3>
                     {%- if page.content != blank -%}
                       <p class="text-sm text-foreground/60 line-clamp-2">
                         {{ page.content | strip_html | truncatewords: 30 }}
@@ -160,20 +162,20 @@
         {%- endif -%}
       {%- else -%}
         {%- comment -%} Nenhum resultado {%- endcomment -%}
-        <div class="text-center py-16">
-          <svg class="w-24 h-24 mx-auto text-foreground/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        <div class="text-center py-20">
+          <svg class="w-16 h-16 mx-auto text-foreground/25 mb-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
-          <h2 class="text-2xl font-semibold mb-2">Nenhum resultado encontrado</h2>
-          <p class="text-foreground/60 mb-6">
+          <h2 class="text-2xl font-light tracking-tight mb-2">Nenhum resultado encontrado</h2>
+          <p class="text-sm text-foreground/55 mb-6">
             Não encontramos nada para "{{ search.terms }}". <br>
             Tente usar palavras diferentes ou verificar a ortografia.
           </p>
 
           {%- if section.settings.show_suggestions -%}
             <div class="max-w-md mx-auto">
-              <h3 class="text-lg font-medium mb-4">Sugestões:</h3>
-              <ul class="text-left text-foreground/60 space-y-2">
+              <h3 class="text-xs uppercase tracking-[0.18em] text-foreground/60 mb-4">Sugestões</h3>
+              <ul class="text-left text-sm text-foreground/55 space-y-2">
                 <li>• Verifique se todas as palavras estão escritas corretamente</li>
                 <li>• Tente palavras-chave diferentes</li>
                 <li>• Tente palavras-chave mais genéricas</li>
@@ -182,7 +184,7 @@
             </div>
           {%- endif -%}
 
-          <a href="/collections/all" class="inline-block mt-8 bg-foreground text-background px-6 py-3 rounded-lg hover:opacity-90 transition-colors">
+          <a href="{{ routes.all_products_collection_url }}" class="inline-flex items-center mt-8 bg-foreground text-background text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity">
             Ver todos os produtos
           </a>
         </div>
@@ -191,14 +193,14 @@
   {%- else -%}
     {%- comment -%} Página inicial de busca - mostrar sugestões ou categorias populares {%- endcomment -%}
     {%- if section.settings.show_popular_searches -%}
-      <div class="max-w-2xl mx-auto">
-        <h2 class="text-xl font-semibold mb-4">Buscas populares</h2>
-        <div class="flex flex-wrap gap-2">
+      <div class="max-w-2xl mx-auto text-center">
+        <h2 class="text-xs uppercase tracking-[0.18em] text-foreground/60 mb-5">Buscas populares</h2>
+        <div class="flex flex-wrap gap-2 justify-center">
           {%- assign popular_terms = section.settings.popular_terms | split: ',' -%}
           {%- for term in popular_terms -%}
             <a
               href="{{ routes.search_url }}?q={{ term | strip | url_encode }}"
-              class="px-4 py-2 bg-foreground/5 hover:bg-foreground/10 rounded-full text-sm transition-colors"
+              class="px-5 py-2 border border-border hover:border-foreground/30 rounded-full text-xs uppercase tracking-[0.12em] text-foreground/70 transition-colors"
             >
               {{ term | strip }}
             </a>
@@ -218,9 +220,9 @@
     button.addEventListener('click', function() {
       const filter = this.getAttribute('data-filter');
 
-      // Atualizar botões ativos
-      filterButtons.forEach(btn => btn.classList.remove('active', 'bg-foreground', 'text-background'));
-      this.classList.add('active', 'bg-foreground', 'text-background');
+      // Atualizar botões ativos (aparência controlada pela regra CSS .filter-button.active)
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      this.classList.add('active');
 
       // Filtrar seções
       searchSections.forEach(section => {
@@ -233,13 +235,14 @@
     });
   });
 
-  // Adicionar classe active inicial
-  document.querySelector('.filter-button.active')?.classList.add('bg-foreground', 'text-background');
 </script>
 
 <style>
+  /* CSS real: o Tailwind não processa @apply em blocos de estilo dentro de .liquid */
   .filter-button.active {
-    @apply bg-foreground text-background border-foreground;
+    background-color: rgb(var(--color-foreground));
+    color: rgb(var(--color-background));
+    border-color: rgb(var(--color-foreground));
   }
 </style>
 

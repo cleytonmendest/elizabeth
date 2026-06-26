@@ -1,9 +1,9 @@
 {% assign sort_by = collection.sort_by | default: collection.default_sort_by %}
 {%- assign products_per_page = section.settings.products_per_page | default: 12 -%}
 
-<div class="page-width py-8 color-{{ section.settings.color_scheme }}">
+<div class="page-width !py-8 color-{{ section.settings.color_scheme }}">
   {%- if collection.image and section.settings.show_collection_image -%}
-    <div class="collection-hero mb-8 relative h-64 md:h-96 rounded-lg overflow-hidden">
+    <div class="collection-hero mb-10 md:mb-12 relative h-64 md:h-[26rem] rounded-theme overflow-hidden">
       <img
         src="{{ collection.image | image_url: width: 1600 }}"
         srcset="{{ collection.image | image_url: width: 600 }} 600w,
@@ -12,19 +12,26 @@
         sizes="100vw"
         alt="{{ collection.image.alt | escape }}"
         class="w-full h-full object-cover"
+        width="{{ collection.image.width }}"
+        height="{{ collection.image.height }}"
         loading="eager"
       >
-      <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-        <h1 class="text-white text-4xl md:text-6xl font-bold text-center px-4">
+      <div class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center text-center px-4">
+        <h1 class="text-white text-3xl md:text-5xl font-light tracking-tight">
           {{ collection.title }}
         </h1>
+        {%- if collection.description != blank and section.settings.show_collection_description -%}
+          <div class="text-white/80 text-sm md:text-base max-w-2xl mx-auto mt-4">
+            {{ collection.description }}
+          </div>
+        {%- endif -%}
       </div>
     </div>
   {%- else -%}
-    <div class="text-center mb-8">
-      <h1 class="text-3xl md:text-5xl font-bold mb-4">{{ collection.title }}</h1>
+    <div class="text-center mb-10 md:mb-12">
+      <h1 class="text-3xl md:text-4xl font-light tracking-tight mb-3">{{ collection.title }}</h1>
       {%- if collection.description != blank and section.settings.show_collection_description -%}
-        <div class="text-foreground/60 max-w-3xl mx-auto">
+        <div class="text-sm text-foreground/55 max-w-2xl mx-auto">
           {{ collection.description }}
         </div>
       {%- endif -%}
@@ -33,17 +40,40 @@
 
   {%- paginate collection.products by products_per_page -%}
     <div class="flex flex-col lg:flex-row gap-8">
-      {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
-        {%- comment -%} Sidebar com filtros (desktop) / Drawer (mobile) {%- endcomment -%}
-        <aside class="lg:w-64 flex-shrink-0">
-          <div class="lg:sticky lg:top-4">
+      {%- if section.settings.enable_filtering -%}
+        {%- comment -%} Filtros: sidebar inline no desktop, drawer off-canvas no mobile {%- endcomment -%}
+        <div
+          class="fixed inset-0 z-40 bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"
+          data-filters-overlay
+        ></div>
+        <aside
+          class="filters-panel fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] -translate-x-full overflow-y-auto bg-background p-6 transition-transform duration-300 lg:static lg:z-auto lg:w-64 lg:max-w-none lg:translate-x-0 lg:overflow-visible lg:bg-transparent lg:p-0 lg:transition-none flex-shrink-0"
+          data-filters-panel
+          aria-label="Filtros"
+        >
+          <div class="lg:sticky lg:top-20">
+            {%- comment -%} Cabeçalho do drawer (somente mobile) {%- endcomment -%}
+            <div class="flex items-center justify-between mb-6 lg:hidden">
+              <h2 class="text-xs uppercase tracking-[0.18em] text-foreground/60">Filtrar</h2>
+              <button
+                type="button"
+                data-filters-close
+                aria-label="Fechar filtros"
+                class="text-foreground/60 hover:text-foreground transition-colors"
+              >
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
             {%- if section.settings.enable_filtering -%}
               <div class="mb-8">
-                <h2 class="text-xl font-semibold mb-4">Filtrar</h2>
+                <h2 class="hidden lg:block text-xs uppercase tracking-[0.18em] text-foreground/60 mb-5">Filtrar</h2>
 
                 {%- comment -%} Filtro de disponibilidade {%- endcomment -%}
-                <details class="mb-4 border-b pb-4" open>
-                  <summary class="cursor-pointer font-medium mb-2 flex justify-between items-center">
+                <details class="mb-4 border-b border-border pb-4" open>
+                  <summary class="cursor-pointer text-sm font-medium mb-2 flex justify-between items-center">
                     Disponibilidade
                     <svg class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -63,8 +93,8 @@
 
                 {%- comment -%} Filtro de preço {%- endcomment -%}
                 {%- if section.settings.enable_price_filter -%}
-                  <details class="mb-4 border-b pb-4">
-                    <summary class="cursor-pointer font-medium mb-2 flex justify-between items-center">
+                  <details class="mb-4 border-b border-border pb-4">
+                    <summary class="cursor-pointer text-sm font-medium mb-2 flex justify-between items-center">
                       Preço
                       <svg class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -95,20 +125,39 @@
           </div>
         </aside>
       {%- endif -%}
+      {%- comment -%} fim filtros {%- endcomment -%}
 
       {%- comment -%} Produtos {%- endcomment -%}
       <div class="flex-1">
         {%- comment -%} Barra de ferramentas {%- endcomment -%}
-        <div class="flex flex-wrap items-center justify-between mb-6 gap-4">
-          <p class="text-foreground/60">
+        <div class="grid grid-cols-[1fr_auto_1fr] items-center mb-6 gap-3">
+          {%- comment -%} Esquerda: gatilho de filtros (mobile) {%- endcomment -%}
+          <div class="justify-self-start">
+            {%- if section.settings.enable_filtering -%}
+              <button
+                type="button"
+                data-filters-open
+                class="lg:hidden inline-flex items-center gap-2 border border-border rounded-theme px-4 py-2 text-sm text-foreground/80 hover:border-foreground/30 transition-colors"
+              >
+                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M6 12h12M10 20h4" />
+                </svg>
+                Filtrar
+              </button>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Centro: contagem de produtos {%- endcomment -%}
+          <p class="justify-self-center text-center text-sm text-foreground/55">
             {{ paginate.current_offset | plus: 1 }}-{{ paginate.current_offset | plus: paginate.page_size | at_most: collection.products_count }}
             de {{ collection.products_count }}
             {% if collection.products_count == 1 %}produto{% else %}produtos{% endif %}
           </p>
 
-          {%- if section.settings.enable_sorting -%}
-            <div class="flex items-center gap-2">
-              <label for="SortBy" class="text-sm font-medium">Ordenar por:</label>
+          {%- comment -%} Direita: ordenação {%- endcomment -%}
+          <div class="justify-self-end flex items-center gap-2">
+            {%- if section.settings.enable_sorting -%}
+              <label for="SortBy" class="text-sm font-medium hidden sm:inline">Ordenar por:</label>
               <select
                 id="SortBy"
                 name="sort_by"
@@ -124,8 +173,8 @@
                 <option value="created-descending" {% if sort_by == 'created-descending' %}selected{% endif %}>Mais recente</option>
                 <option value="created-ascending" {% if sort_by == 'created-ascending' %}selected{% endif %}>Mais antigo</option>
               </select>
-            </div>
-          {%- endif -%}
+            {%- endif -%}
+          </div>
         </div>
 
         {%- if collection.products.size > 0 -%}
@@ -148,13 +197,13 @@
             </div>
           {%- endif -%}
         {%- else -%}
-          <div class="text-center py-16">
-            <svg class="w-24 h-24 mx-auto text-foreground/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+          <div class="text-center py-20">
+            <svg class="w-16 h-16 mx-auto text-foreground/25 mb-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
             </svg>
-            <h2 class="text-2xl font-semibold mb-2">Nenhum produto encontrado</h2>
-            <p class="text-foreground/60 mb-6">Esta coleção está vazia no momento.</p>
-            <a href="/collections" class="inline-block color-button px-6 py-3 rounded-lg hover:opacity-90 transition-colors">
+            <h2 class="text-2xl font-light tracking-tight mb-2">Nenhum produto encontrado</h2>
+            <p class="text-sm text-foreground/55 mb-8">Esta coleção está vazia no momento.</p>
+            <a href="{{ routes.collections_url }}" class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity">
               Ver todas as coleções
             </a>
           </div>
@@ -164,7 +213,36 @@
   {%- endpaginate -%}
 </div>
 
+<style>
+  .filters-panel.is-open { transform: translateX(0); }
+  [data-filters-overlay].is-open { opacity: 1; pointer-events: auto; }
+</style>
+
 <script>
+  // Drawer de filtros (mobile)
+  (function () {
+    const panel = document.querySelector('[data-filters-panel]');
+    const overlay = document.querySelector('[data-filters-overlay]');
+    if (panel && overlay) {
+      const open = () => {
+        panel.classList.add('is-open');
+        overlay.classList.add('is-open');
+        document.body.classList.add('overflow-hidden');
+      };
+      const close = () => {
+        panel.classList.remove('is-open');
+        overlay.classList.remove('is-open');
+        document.body.classList.remove('overflow-hidden');
+      };
+      document.querySelectorAll('[data-filters-open]').forEach((b) => b.addEventListener('click', open));
+      document.querySelectorAll('[data-filters-close]').forEach((b) => b.addEventListener('click', close));
+      overlay.addEventListener('click', close);
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+      // Garante estado limpo ao cruzar para desktop
+      window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => { if (e.matches) close(); });
+    }
+  })();
+
   // Ordenação
   const sortSelect = document.getElementById('SortBy');
   if (sortSelect) {

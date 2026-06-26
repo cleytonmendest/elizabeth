@@ -130,7 +130,7 @@
     -%}
     {%- if has_swatch_display -%}
       {%- capture swatches_dots -%}
-        {%- for value in color_option.values limit: 5 -%}
+        {%- for value in color_option.values limit: 4 -%}
           {%- if value.swatch.color or value.swatch.image -%}
             <span
               class="w-3.5 h-3.5 rounded-full border border-white/70"
@@ -139,8 +139,12 @@
             ></span>
           {%- endif -%}
         {%- endfor -%}
-        {%- if swatch_count > 5 -%}
-          <span class="text-[10px] text-white/80 ml-0.5">+{{ swatch_count | minus: 5 }}</span>
+        {%- if swatch_count > 4 -%}
+          <span
+            class="flex items-center justify-center w-3.5 h-3.5 rounded-full border border-white/70 bg-black/30 text-[8px] leading-none text-white/90"
+            title="Mais cores disponíveis"
+            aria-label="Mais cores disponíveis"
+          >+{{ swatch_count | minus: 4 }}</span>
         {%- endif -%}
       {%- endcapture -%}
     {%- endif -%}
