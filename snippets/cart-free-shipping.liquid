@@ -1,0 +1,39 @@
+{%- comment -%}
+  Barra de progresso de frete grátis (carrinho + mini-carrinho).
+  Settings (grupo "Carrinho"): cart_free_shipping_enabled, cart_free_shipping_threshold (R$),
+  cart_free_shipping_message ({valor} = restante), cart_free_shipping_success.
+  Atualizada por assets/cart-extras.js via cart-update / quantity-update.
+  Hooks: [data-free-shipping-bar], [data-fs-message], [data-fs-fill].
+{%- endcomment -%}
+{%- liquid
+  assign fs_enabled = settings.cart_free_shipping_enabled
+  assign fs_threshold = settings.cart_free_shipping_threshold | default: 0 | times: 100
+-%}
+{%- if fs_enabled and fs_threshold > 0 -%}
+  {%- assign fs_total = cart.total_price -%}
+  {%- assign fs_remaining = fs_threshold | minus: fs_total -%}
+  {%- if fs_remaining < 0 -%}{%- assign fs_remaining = 0 -%}{%- endif -%}
+  {%- assign fs_pct = fs_total | times: 100 | divided_by: fs_threshold -%}
+  {%- if fs_pct > 100 -%}{%- assign fs_pct = 100 -%}{%- endif -%}
+  {%- assign fs_msg_success = settings.cart_free_shipping_success | default: 'Você ganhou frete grátis!' -%}
+  {%- assign fs_msg_progress = settings.cart_free_shipping_message | default: 'Faltam {valor} para o frete grátis' -%}
+  <div
+    class="cart-free-shipping"
+    data-free-shipping-bar
+    data-threshold="{{ fs_threshold }}"
+    data-msg-success="{{ fs_msg_success | escape }}"
+    data-msg-progress="{{ fs_msg_progress | escape }}"
+  >
+    <p class="text-xs text-foreground/70 mb-2 text-center" data-fs-message>
+      {%- if fs_remaining == 0 -%}
+        {{ fs_msg_success }}
+      {%- else -%}
+        {%- capture fs_amount -%}<strong>{{ fs_remaining | money }}</strong>{%- endcapture -%}
+        {{ fs_msg_progress | replace: '{valor}', fs_amount }}
+      {%- endif -%}
+    </p>
+    <div class="h-1 w-full rounded-full bg-foreground/10 overflow-hidden">
+      <div class="h-full rounded-full bg-foreground transition-[width] duration-500" data-fs-fill style="width: {{ fs_pct }}%"></div>
+    </div>
+  </div>
+{%- endif -%}

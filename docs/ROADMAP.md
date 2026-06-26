@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.7.0 | **Atualizado:** 2026-06-26
+**Versão:** 2.8.0 | **Atualizado:** 2026-06-26
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -69,9 +69,7 @@ README para lojistas (não desenvolvedores).
 ### 5. Code Quality (Theme Check)
 **Status:** Parcial — 15 errors, 30 warnings (baseline 2026-06-26) | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
 
-Theme Check zerado para a Theme Store. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. Arquivos já revisados (Home/PDP/Coleção/Busca) sem offenses próprios.
-- 🔴 `ImgWidthAndHeight` (12× → add `width`/`height`): customers/order, main-article, newsletter-modal, card-article, product-gallery, testimonial-card, gift_card · `ValidSchemaTranslations` (2×, testimonials, i18n schema) · `UnknownFilter` (1×, gift_card).
-- 🟡 `UnusedAssign` (11×) · `UndefinedObject` (9×) · `OrphanedSnippet` (7× snippets sem uso) · `HardcodedRoutes` (1×, cart) · `RemoteAsset` (2×, inerente a imagem dinâmica — aceitável).
+Theme Check zerado para a Theme Store. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. Arquivos já revisados (Home/PDP/Coleção/Busca/Carrinho) sem offenses próprios. Pendentes — 🔴 (15): `ImgWidthAndHeight` (12× → add `width`/`height`) em customers/order, main-article, newsletter-modal, card-article, product-gallery, testimonial-card, gift_card; `ValidSchemaTranslations` (2×, testimonials); `UnknownFilter` (1×, gift_card). 🟡 (29): `UnusedAssign` (11×), `UndefinedObject` (9×), `OrphanedSnippet` (7×), `RemoteAsset` (2×, inerente).
 
 ---
 
@@ -125,6 +123,8 @@ Substituir resíduos de `rounded-lg` → `rounded-theme` e hex/cinzas hardcoded 
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.8.0 - Revisão Carrinho (página + drawer)** (2026-06-26) — Página de carrinho reescrita no registro editorial (2 colunas, resumo sticky, tipografia leve, tokens) + estado vazio. Drawer alinhado (pesos leves, a11y: `role=dialog`/`aria-modal`/`aria-hidden` sincronizado + foco). Barra de **frete grátis** (page+drawer) via setting global `cart_free_shipping_threshold`. Reatividade da página por `assets/cart-extras.js` (escuta eventos do `cart.js` **sem modificá-lo**) — totais/linhas/vazio. **Fixes:** `#cart-items-container` id na página (drawer lê dela — acoplamento corrigido), `data-product-id` Liquid inválido, `action` hardcoded → `routes.cart_url`. Contrato de hooks do `cart.js` preservado.
 
 **v2.7.0 - Revisão Coleção + Busca (minimalista de luxo)** (2026-06-25) — Registro editorial aplicado às páginas de listagem: hero/cabeçalho com `font-light tracking-tight` + scrim mais leve (`bg-black/30`), descrição da coleção sobre o hero; sidebar de filtros e contagem com eyebrow `uppercase tracking-[0.18em]` + bordas tokenizadas (`border-border`); pills de tipo (busca) e buscas populares como chips outline uppercase; cards de artigo/página com `rounded-theme` + hover de borda (sem shadow); estados vazios e CTAs no padrão editorial. Tudo via tokens/color scheme, `rounded-lg`→`rounded-theme`, zero setup técnico. **Fixes:** busca preditiva (dropdown editorial, highlight sutil sem amarelo, badges/estado em tokens, overlay agora atrás do header via `z-[1]` no container), `?q=&q=` duplicado removido (`name="q"` do botão submit), botão "Todos" legível (CSS real no lugar de `@apply` em `<style>`), **safelist `grid-cols-[2-5]`** (classe `lg:grid-cols-N` dinâmica do Liquid não era detectada → coleção/busca agora respeitam `products_per_row`), swatches do card limitados a 4 + chip "+N" discreto.
 

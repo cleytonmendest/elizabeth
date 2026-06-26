@@ -341,4 +341,39 @@
       }
     ]
   },
+  {
+    "name": "Carrinho",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Frete grátis"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_free_shipping_enabled",
+        "label": "Mostrar barra de progresso de frete grátis",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "cart_free_shipping_threshold",
+        "label": "Valor mínimo para frete grátis (R$)",
+        "default": 299,
+        "info": "Usado na barra de progresso do carrinho e do mini-carrinho. Defina 0 para desativar."
+      },
+      {
+        "type": "text",
+        "id": "cart_free_shipping_message",
+        "label": "Mensagem de progresso",
+        "default": "Faltam {valor} para o frete grátis",
+        "info": "Use {valor} onde o valor restante deve aparecer."
+      },
+      {
+        "type": "text",
+        "id": "cart_free_shipping_success",
+        "label": "Mensagem ao atingir o frete grátis",
+        "default": "Você ganhou frete grátis!"
+      }
+    ]
+  }
 ]

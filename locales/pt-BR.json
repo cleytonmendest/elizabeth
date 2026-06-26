@@ -90,7 +90,9 @@
       "remove": "Remover",
       "update": "Atualizar",
       "quantity": "Quantidade",
-      "item_added": "Item adicionado ao carrinho"
+      "item_added": "Item adicionado ao carrinho",
+      "order_summary": "Resumo",
+      "taxes_shipping_checkout": "Impostos e frete calculados no checkout"
     },
     "label": {
       "product": "Produto",

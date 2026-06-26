@@ -1,38 +1,75 @@
-{% if cart.item_count > 0 %}
-  <section>
-    <h1 class="text-2xl font-bold text-center">Carrinho</h1>
-    <form action="/cart" method="post" novalidate>
-      <div class="flex flex-col md:flex-row max-w-[1080px] mx-auto px-4">
-        <div class="flex-1">
-          <div class="cart-items-container flex flex-col flex-1 gap-4 p-4">
-            {% for item in cart.items %}
-              {% render 'cart-drawer-item', item: item %}
-            {% endfor %}
-          </div>
+<div class="page-width w-full !py-10 md:!py-14 min-h-[60vh] flex flex-col" data-cart-page>
+  <h1 class="text-3xl md:text-4xl font-light tracking-tight mb-8 md:mb-10">{{ 'cart.general.title' | t }}</h1>
+
+  {%- if cart.item_count > 0 -%}
+    <div class="flex flex-col lg:flex-row gap-10 lg:gap-12">
+      {%- comment -%} Itens (mesmo snippet do drawer — fonte do #cart-items-container) {%- endcomment -%}
+      <div class="flex-1 min-w-0">
+        <div id="cart-items-container" class="border-t border-border">
+          {%- for item in cart.items -%}
+            {% render 'cart-drawer-item', item: item %}
+          {%- endfor -%}
         </div>
-        <div class="w-full md:max-w-80 border border-orange-500 h-fit p-3">
-          <div class="mb-5">
-            <div class="flex justify-between border-b border-slate-400">
-              <div>Subtotal</div>
-              <div>{{ cart.items_subtotal_price | money }}</div>
+        <a
+          href="{{ routes.all_products_collection_url }}"
+          class="inline-flex items-center gap-2 mt-6 text-xs uppercase tracking-[0.18em] text-foreground/70 hover:text-foreground transition-colors"
+        >
+          {% render 'icon-angle-left', size: 14 %}
+          {{ 'cart.general.continue_shopping' | t }}
+        </a>
+      </div>
+
+      {%- comment -%} Resumo (sticky no desktop) {%- endcomment -%}
+      <aside class="w-full lg:w-80 flex-shrink-0">
+        <div class="lg:sticky lg:top-24 border border-border rounded-theme p-6">
+          <h2 class="text-xs uppercase tracking-[0.18em] text-foreground/60 mb-5">{{ 'cart.general.order_summary' | t }}</h2>
+
+          {% render 'cart-free-shipping' %}
+
+          <div class="mt-5 space-y-2.5 text-sm">
+            <div class="flex justify-between">
+              <span class="text-foreground/60">{{ 'cart.general.subtotal' | t }}</span>
+              <span class="font-medium" data-cart-subtotal>{{ cart.items_subtotal_price | money }}</span>
             </div>
-            <div class="flex justify-between border-b border-slate-400">
-              <div>Descontos</div>
-              <div>{{ cart.total_discount | money }}</div>
-            </div>
-            <div class="flex justify-between border-b border-slate-400">
-              <div>Total Estimado</div>
-              <div>{{ cart.total_price | money }}</div>
+            <div class="flex justify-between {% if cart.total_discount <= 0 %}hidden{% endif %}" data-cart-discount-row>
+              <span class="text-foreground/60">{{ 'cart.general.discounts' | t }}</span>
+              <span class="font-medium color-success" data-cart-discount>-{{ cart.total_discount | money }}</span>
             </div>
           </div>
 
-          <button class="w-full h-10 mb-4 bg-orange-500 text-white flex items-center justify-center" type="submit" name="checkout">Finalizar Compra</button>
-          <a class="w-full h-10 border border-orange-500 flex items-center justify-center text-orange-500" href="{{ routes.root_url }}">Incluir mais produtos</a>
+          <div class="flex justify-between items-baseline mt-4 pt-4 border-t border-border">
+            <span class="text-sm font-medium">{{ 'cart.general.total' | t }}</span>
+            <span class="text-lg font-light" data-cart-total>{{ cart.total_price | money }}</span>
+          </div>
+
+          <form action="{{ routes.cart_url }}" method="post" class="mt-6">
+            <button
+              type="submit"
+              name="checkout"
+              class="w-full inline-flex items-center justify-center color-button text-xs uppercase tracking-[0.18em] py-3.5 rounded-theme hover:opacity-90 transition-opacity"
+            >
+              {{ 'cart.general.checkout' | t }}
+            </button>
+          </form>
+
+          <p class="text-xs text-foreground/40 text-center mt-3">{{ 'cart.general.taxes_shipping_checkout' | t }}</p>
         </div>
-      </div>
-    </form>
-  </section>
-{% else %}
-  <h2>cart</h2>
-  Cart is empty
-{% endif %}
+      </aside>
+    </div>
+  {%- else -%}
+    {%- comment -%} Estado vazio (centralizado no espaço restante; título permanece no topo) {%- endcomment -%}
+    <div class="flex-1 flex flex-col items-center justify-center text-center py-10">
+      <svg class="w-16 h-16 mx-auto text-foreground/25 mb-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+      <h2 class="text-2xl font-light tracking-tight mb-2">{{ 'cart.general.empty' | t }}</h2>
+      <p class="text-sm text-foreground/55 mb-8">{{ 'cart.general.empty_text' | t }}</p>
+      <a
+        href="{{ routes.all_products_collection_url }}"
+        class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity"
+      >
+        {{ 'cart.general.continue_shopping' | t }}
+      </a>
+    </div>
+  {%- endif -%}
+</div>

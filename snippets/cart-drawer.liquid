@@ -1,11 +1,17 @@
 {{ 'cart.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'cart.js' | asset_url }}" defer></script>
+<script src="{{ 'cart-extras.js' | asset_url }}" defer></script>
 
-<cart-drawer class="cart-drawer fixed z-50 left-0 top-0 w-screen h-full flex justify-end bg-foreground/50">
+<cart-drawer
+  class="cart-drawer fixed z-50 left-0 top-0 w-screen h-full flex justify-end bg-foreground/50"
+  role="dialog"
+  aria-modal="true"
+  aria-label="{{ 'cart.general.title' | t }}"
+>
   <div class="cart-drawer">
-    <div class="cart-inner pb-10 h-full w-full sm:w-[385px] bg-background z-10 relative">
-      <div class="cart-header flex h-16 shadow-lg px-4 items-center">
-        <span class="flex-1 flex items-center justify-center font-bold text-lg">{{ 'cart.general.title' | t }}</span>
+    <div class="cart-inner pb-16 h-full w-full sm:w-[385px] bg-background z-10 relative" tabindex="-1">
+      <div class="cart-header flex h-16 px-4 items-center border-b border-border">
+        <span class="flex-1 flex items-center justify-center text-sm uppercase tracking-[0.18em] text-foreground/70">{{ 'cart.general.title' | t }}</span>
         <button
           class="w-5 hover:opacity-70 transition-opacity"
           type="button"
@@ -16,9 +22,16 @@
         </button>
       </div>
 
-      <div id="cart-empty" class="h-full {% if cart == empty %}flex{% else %}hidden{% endif %} items-center justify-center flex-col">
-        <h3 class="text-2xl font-bold">{{ 'cart.general.empty' | t }}</h3>
-        <p class="text-base text-foreground/70">{{ 'cart.general.empty_text' | t }}</p>
+      <div id="cart-empty" class="h-full {% if cart == empty %}flex{% else %}hidden{% endif %} items-center justify-center flex-col px-6 text-center">
+        <h3 class="text-xl font-light tracking-tight mb-1">{{ 'cart.general.empty' | t }}</h3>
+        <p class="text-sm text-foreground/55 mb-6">{{ 'cart.general.empty_text' | t }}</p>
+        <button
+          type="button"
+          onclick="this.closest('cart-drawer').close()"
+          class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 rounded-theme hover:opacity-90 transition-opacity"
+        >
+          {{ 'cart.general.continue_shopping' | t }}
+        </button>
       </div>
 
       <div id="cart-container" class="{% if cart == empty %}hidden{% else %}flex{% endif %} flex-col h-full">
@@ -27,8 +40,10 @@
             {% render 'cart-drawer-item', item: item %}
           {% endfor %}
         </div>
-        <div class="p-4 shadow-[0_0_12px_rgba(0,0,0,0.15)]">
-          <div id="cart-summary-total" class="summary flex flex-col gap-2 mb-4">
+        <div class="p-4 border-t border-border shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+          {% render 'cart-free-shipping' %}
+
+          <div id="cart-summary-total" class="summary flex flex-col gap-2 mt-4 mb-4">
             <div class="flex justify-between text-sm">
               <div class="text-foreground/60">{{ 'cart.general.subtotal' | t }}</div>
               <div class="subtotal font-medium">
@@ -37,21 +52,21 @@
             </div>
             {% if cart.total_discount > 0 %}
               <div class="flex justify-between text-sm">
-                <div class="color-text-muted">{{ 'cart.general.discounts' | t }}</div>
+                <div class="text-foreground/60">{{ 'cart.general.discounts' | t }}</div>
                 <div class="discounts font-medium color-success">
                   -{{ cart.total_discount | money }}
                 </div>
               </div>
             {% endif %}
-            <div class="flex justify-between pt-2 border-t border-border">
-              <div class="font-semibold">{{ 'cart.general.total' | t }}</div>
-              <div class="total-price font-bold text-lg">
+            <div class="flex justify-between items-baseline pt-2 border-t border-border">
+              <div class="text-sm font-medium">{{ 'cart.general.total' | t }}</div>
+              <div class="total-price text-base font-light">
                 {{ cart.total_price | money }}
               </div>
             </div>
           </div>
           <button
-            class="color-button-secondary w-full h-10 flex items-center justify-center mt-4 font-bold transition-colors rounded-theme"
+            class="color-button-secondary w-full h-11 flex items-center justify-center text-xs uppercase tracking-[0.18em] transition-colors rounded-theme"
             type="button"
             onclick="this.closest('cart-drawer').close()"
           >
@@ -59,7 +74,7 @@
           </button>
           <a
             href="/checkout"
-            class="color-button flex cursor-pointer h-10 w-full items-center justify-center mt-4 font-bold transition-colors rounded-theme hover:opacity-90"
+            class="color-button flex cursor-pointer h-11 w-full items-center justify-center mt-3 text-xs uppercase tracking-[0.18em] transition-opacity rounded-theme hover:opacity-90"
             >{{ 'cart.general.checkout' | t }}</a
           >
         </div>

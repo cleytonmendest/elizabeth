@@ -90,7 +90,9 @@
       "remove": "Remove",
       "update": "Update",
       "quantity": "Quantity",
-      "item_added": "Item added to cart"
+      "item_added": "Item added to cart",
+      "order_summary": "Summary",
+      "taxes_shipping_checkout": "Taxes and shipping calculated at checkout"
     },
     "label": {
       "product": "Product",

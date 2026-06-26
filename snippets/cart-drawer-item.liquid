@@ -1,9 +1,9 @@
-<div class="flex gap-3 cart-item p-4 border-b border-border last:border-b-0" data-index="{{ item.index | plus: 1 }}" data-product="{{ item.id }}" data-product-id="{{ item. }}" data-key="{{ item.key }}">
+<div class="flex gap-3 cart-item p-4 border-b border-border last:border-b-0" data-index="{{ item.index | plus: 1 }}" data-product="{{ item.id }}" data-product-id="{{ item.product_id }}" data-key="{{ item.key }}">
   <div class="flex-shrink-0">
     {% if item.image %}
       <a href="{{ item.url }}" class="block hover:opacity-80 transition-opacity">
         <img
-          class="cart-item__image rounded-theme"
+          class="cart-item__image rounded-theme w-20 h-auto"
           src="{{ item.image | image_url: width: 200 }}"
           alt="{{ item.image.alt | escape }}"
           loading="lazy"
@@ -38,7 +38,7 @@
         </button>
         <input
           id="quantity-input"
-          class="w-9 h-9 outline-none text-center text-sm font-semibold"
+          class="w-9 h-9 outline-none text-center text-sm font-medium"
           type="number"
           readonly
           value="{{ item.quantity }}"
@@ -48,7 +48,7 @@
         </button>
       </quantity-input>
 
-      <div class="item-total-price font-semibold">
+      <div class="item-total-price text-sm font-medium">
         {{ item.final_line_price | money }}
       </div>
     </div>
