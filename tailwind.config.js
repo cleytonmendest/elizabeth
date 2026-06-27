@@ -10,7 +10,7 @@ module.exports = {
   // Classes geradas dinamicamente em Liquid (ex.: lg:grid-cols-{{ products_per_row }})
   // não são detectadas pelo scanner do Tailwind — precisam ser garantidas aqui.
   safelist: [
-    { pattern: /grid-cols-([2-5])/, variants: ['md', 'lg'] },
+    { pattern: /grid-cols-([2-6])/, variants: ['md', 'lg'] },
   ],
   theme: {
     extend: {

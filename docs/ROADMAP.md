@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.8.0 | **Atualizado:** 2026-06-26
+**Versão:** 2.9.0 | **Atualizado:** 2026-06-27
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -67,9 +67,9 @@ README para lojistas (não desenvolvedores).
 ---
 
 ### 5. Code Quality (Theme Check)
-**Status:** Parcial — 15 errors, 30 warnings (baseline 2026-06-26) | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
+**Status:** Parcial — 13 errors, 29 warnings (2026-06-27) | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
 
-Theme Check zerado para a Theme Store. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. Arquivos já revisados (Home/PDP/Coleção/Busca/Carrinho) sem offenses próprios. Pendentes — 🔴 (15): `ImgWidthAndHeight` (12× → add `width`/`height`) em customers/order, main-article, newsletter-modal, card-article, product-gallery, testimonial-card, gift_card; `ValidSchemaTranslations` (2×, testimonials); `UnknownFilter` (1×, gift_card). 🟡 (29): `UnusedAssign` (11×), `UndefinedObject` (9×), `OrphanedSnippet` (7×), `RemoteAsset` (2×, inerente).
+Theme Check zerado para a Theme Store. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. Arquivos já revisados (Home/PDP/Coleção/Busca/Carrinho/Blog) sem offenses próprios. Pendentes — 🔴 (13): `ImgWidthAndHeight` (10× → add `width`/`height`) em customers/order, newsletter-modal, product-gallery, testimonial-card, gift_card; `ValidSchemaTranslations` (2×, testimonials); `UnknownFilter` (1×, gift_card). 🟡 (29): `UnusedAssign` (11×), `UndefinedObject` (9×), `OrphanedSnippet` (7×), `RemoteAsset` (2×, inerente).
 
 ---
 
@@ -115,23 +115,23 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 
 ## 🟡 MELHORIAS PLANEJADAS (Médio/Longo Prazo)
 
-### Migração de tokens (legado)
-**Esforço:** contínuo
+### Página 404 (`templates/404.liquid`)
+**Esforço:** 1-2h — Template **cru**, sem registro editorial nem color scheme. Redesenhar (mensagem + CTA + busca opcional) no padrão minimalista de luxo, com tokens.
 
-Substituir resíduos de `rounded-lg` → `rounded-theme` e hex/cinzas hardcoded → tokens conforme se toca em cada arquivo (sem refator big-bang).
+### Migração de tokens (legado)
+**Esforço:** contínuo — Substituir `rounded-lg`→`rounded-theme` e hex/cinzas → tokens ao tocar cada arquivo. Sections com `color_scheme` devem **pintar o fundo** (`color-background color-text`), não só setar variáveis — senão schemes escuros ficam ilegíveis (corrigido em footer/blog/artigo).
 
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
 
-**v2.8.0 - Revisão Carrinho (página + drawer)** (2026-06-26) — Página de carrinho reescrita no registro editorial (2 colunas, resumo sticky, tipografia leve, tokens) + estado vazio. Drawer alinhado (pesos leves, a11y: `role=dialog`/`aria-modal`/`aria-hidden` sincronizado + foco). Barra de **frete grátis** (page+drawer) via setting global `cart_free_shipping_threshold`. Reatividade da página por `assets/cart-extras.js` (escuta eventos do `cart.js` **sem modificá-lo**) — totais/linhas/vazio. **Fixes:** `#cart-items-container` id na página (drawer lê dela — acoplamento corrigido), `data-product-id` Liquid inválido, `action` hardcoded → `routes.cart_url`. Contrato de hooks do `cart.js` preservado.
+**v2.9.0 - Revisão Blog + Artigo (editorial)** (2026-06-27) — Blog (header `font-light`, filtros/categorias como chips outline uppercase, sidebar com bordas tokenizadas, estado vazio), card de artigo (eyebrow de tag, `rounded-theme`, "Ler mais" uppercase) e artigo (título `font-light`, tags/share/bio/prev-next/comentários tokenizados). **Fix:** corpo do artigo (`.article-content`) usava `@apply` em `<style>` .liquid (ignorado pelo navegador) + `prose` sem plugin → movido para `assets/article.css` (CSS real co-locado). Safelist `grid-cols` até 6 (blog), `ImgWidthAndHeight` corrigido nos arquivos tocados.
 
+**v2.8.0 - Revisão Carrinho (página + drawer)** (2026-06-26) — Página de carrinho reescrita no registro editorial (2 colunas, resumo sticky, tipografia leve, tokens) + estado vazio. Drawer alinhado (pesos leves, a11y: `role=dialog`/`aria-modal`/`aria-hidden` sincronizado + foco). Barra de **frete grátis** (page+drawer) via setting global `cart_free_shipping_threshold`. Reatividade da página por `assets/cart-extras.js` (escuta eventos do `cart.js` **sem modificá-lo**) — totais/linhas/vazio. **Fixes:** `#cart-items-container` id na página (drawer lê dela — acoplamento corrigido), `data-product-id` Liquid inválido, `action` hardcoded → `routes.cart_url`. Contrato de hooks do `cart.js` preservado.
 **v2.7.0 - Revisão Coleção + Busca (minimalista de luxo)** (2026-06-25) — Registro editorial aplicado às páginas de listagem: hero/cabeçalho com `font-light tracking-tight` + scrim mais leve (`bg-black/30`), descrição da coleção sobre o hero; sidebar de filtros e contagem com eyebrow `uppercase tracking-[0.18em]` + bordas tokenizadas (`border-border`); pills de tipo (busca) e buscas populares como chips outline uppercase; cards de artigo/página com `rounded-theme` + hover de borda (sem shadow); estados vazios e CTAs no padrão editorial. Tudo via tokens/color scheme, `rounded-lg`→`rounded-theme`, zero setup técnico. **Fixes:** busca preditiva (dropdown editorial, highlight sutil sem amarelo, badges/estado em tokens, overlay agora atrás do header via `z-[1]` no container), `?q=&q=` duplicado removido (`name="q"` do botão submit), botão "Todos" legível (CSS real no lugar de `@apply` em `<style>`), **safelist `grid-cols-[2-5]`** (classe `lg:grid-cols-N` dinâmica do Liquid não era detectada → coleção/busca agora respeitam `products_per_row`), swatches do card limitados a 4 + chip "+N" discreto.
 
 **v2.6.0 - Revisão da Home (minimalista de luxo)** (2026-06-24) — Varredura das 9 seções no registro editorial: hero com overlay editável por slide + color scheme regendo tudo (fundo/nav/texto/botão/scrim); trust-badges (traço fino, fios); card de produto reformulado (swatches hover/chip mobile, quick-add via `card-quick-add`, parcelamento das settings, peek nos sliders via `data-peek`); highlighted-section (blob off + fix `default:true`, link único + dropdown tipo de botão); slider-cards (3:4 + label sobre scrim); section-images-link (tiles flush); testimonials (declutter, defaults pt-BR); newsletter-modal. Tudo segue color scheme e tokens, zero setup técnico.
-
 **v2.5.0 - Redesign PDP (minimalista de luxo)** (2026-06-23) — Coluna direita editorial (eyebrow + título `font-light`, preço `text-2xl` + parcelamento, CTA alinhado); blocos estoque/pagamento ativados; bloco `assurances` + acordeão Entrega; sticky ATC + galeria mobile (dots/contador). Fix pluralização do estoque (`count` nativo pt-BR/en).
-
 **v2.4.0 - Design System & Remoção do jQuery** (2026-06-23) — jQuery removido (Swiper 11 + CSS); design tokens de cor + `rounded-theme` no config; header sticky; asset loading co-locado.
 **v2.3.0 - i18n, Color Schemes & Gift Card** (2024-12-26) — Locales PT-BR/EN (~225 strings); color schemes dual em testimonials; gift card standalone; announcement-bar/trust-badges scheme-aware.
 **v2.2.0 - Sticky ATC & Padronização** (2025-01-22) — Sticky Add to Cart (IntersectionObserver); arredondamentos padronizados.
@@ -142,7 +142,7 @@ Substituir resíduos de `rounded-lg` → `rounded-theme` e hex/cinzas hardcoded 
 
 ## 🛠️ Como manter
 
-- Máx. **150 linhas**, prioridades no topo, cada feature ≤ 10 linhas (Status | Esforço | Prioridade). Deve sempre refletir o estado atual.
+- Máx. **250 linhas**, prioridades no topo, cada feature ≤ 10 linhas (Status | Esforço | Prioridade). Deve sempre refletir o estado atual.
 - **Ao concluir:** mover para `✅ CONCLUÍDO` em 1 linha com data, remover do topo, atualizar **Versão**/**Atualizado** no header.
 
 ---

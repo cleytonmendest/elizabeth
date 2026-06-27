@@ -1,0 +1,122 @@
+/*
+ * Estilos do corpo do artigo (rich text vindo de {{ article.content }}).
+ * CSS real (não @apply): blocos <style> em .liquid não são processados pelo Tailwind.
+ * Co-locado em main-article.liquid (carrega só na página de artigo).
+ * Usa as CSS variables do color scheme para respeitar o tema.
+ */
+.article-content {
+  color: rgb(var(--color-foreground) / 0.75);
+  line-height: 1.75;
+  font-size: 1rem;
+}
+
+.article-content > * + * {
+  margin-top: 1rem;
+}
+
+.article-content h2 {
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  color: rgb(var(--color-foreground));
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.article-content h3 {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: rgb(var(--color-foreground));
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.article-content p {
+  margin-bottom: 1rem;
+}
+
+.article-content ul,
+.article-content ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.article-content ul {
+  list-style: disc;
+}
+
+.article-content ol {
+  list-style: decimal;
+}
+
+.article-content li {
+  margin-bottom: 0.5rem;
+}
+
+.article-content a {
+  color: rgb(var(--color-foreground));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.article-content a:hover {
+  text-decoration: none;
+}
+
+.article-content img {
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
+.article-content blockquote {
+  border-left: 2px solid rgb(var(--color-foreground));
+  padding-left: 1rem;
+  font-style: italic;
+  margin: 1.5rem 0;
+  color: rgb(var(--color-foreground) / 0.6);
+}
+
+.article-content strong {
+  font-weight: 600;
+  color: rgb(var(--color-foreground));
+}
+
+.article-content code {
+  background: rgb(var(--color-foreground) / 0.05);
+  padding: 0.125rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.article-content pre {
+  background: rgb(var(--color-foreground));
+  color: rgb(var(--color-background));
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.article-content pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.article-content table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+}
+
+.article-content th,
+.article-content td {
+  border: 1px solid rgb(var(--color-border));
+  padding: 0.5rem 1rem;
+  text-align: left;
+}
+
+.article-content th {
+  background: rgb(var(--color-foreground) / 0.05);
+  font-weight: 600;
+}
