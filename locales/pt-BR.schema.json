@@ -670,10 +670,6 @@
           "settings": {
             "image": {
               "label": "Imagem"
-            },
-            "url": {
-              "label": "Link da imagem",
-              "info": "Opcional - torna a imagem clicável"
             }
           }
         },
@@ -693,16 +689,20 @@
             "button_header": {
               "content": "Botão (opcional)"
             },
+            "button_style": {
+              "label": "Tipo de botão",
+              "options": {
+                "primary": "Botão sólido",
+                "link": "Link com seta"
+              }
+            },
             "button_label": {
               "label": "Texto do botão",
               "info": "Se preenchido, exibe um botão ao invés da seta"
             },
-            "button_url": {
-              "label": "Link do botão"
-            },
-            "url": {
-              "label": "Link alternativo (seta)",
-              "info": "Usado apenas se o botão não estiver configurado"
+            "link": {
+              "label": "Link do botão",
+              "info": "Único link do bloco. Deixe em branco para não exibir botão."
             }
           }
         }

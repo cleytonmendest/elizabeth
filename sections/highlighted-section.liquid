@@ -51,7 +51,12 @@
             {% endif %}
 
             {% if block.settings.link != blank %}
-              {%- assign cta_label = block.settings.button_label | default: 'Ver mais' -%}
+              {%- liquid
+                assign cta_label = block.settings.button_label
+                if cta_label == blank
+                  assign cta_label = 'general.see_more' | t
+                endif
+              -%}
               {% if block.settings.button_style == 'link' %}
                 <a href="{{ block.settings.link }}" class="group inline-flex items-center gap-2 mt-7 text-xs uppercase tracking-[0.18em] color-text hover:opacity-70 transition-opacity">
                   {{ cta_label }}
@@ -169,11 +174,11 @@
         {
           "type": "select",
           "id": "button_style",
-          "label": "Tipo de botão",
+          "label": "t:sections.highlighted_section.blocks.text.settings.button_style.label",
           "default": "primary",
           "options": [
-            { "value": "primary", "label": "Botão sólido" },
-            { "value": "link", "label": "Link com seta" }
+            { "value": "primary", "label": "t:sections.highlighted_section.blocks.text.settings.button_style.options.primary" },
+            { "value": "link", "label": "t:sections.highlighted_section.blocks.text.settings.button_style.options.link" }
           ]
         },
         {
@@ -185,8 +190,8 @@
         {
           "type": "url",
           "id": "link",
-          "label": "Link do botão",
-          "info": "Único link do bloco. Deixe em branco para não exibir botão."
+          "label": "t:sections.highlighted_section.blocks.text.settings.link.label",
+          "info": "t:sections.highlighted_section.blocks.text.settings.link.info"
         }
       ]
     }

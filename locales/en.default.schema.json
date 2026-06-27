@@ -670,10 +670,6 @@
           "settings": {
             "image": {
               "label": "Image"
-            },
-            "url": {
-              "label": "Image link",
-              "info": "Optional - makes the image clickable"
             }
           }
         },
@@ -693,16 +689,20 @@
             "button_header": {
               "content": "Button (optional)"
             },
+            "button_style": {
+              "label": "Button type",
+              "options": {
+                "primary": "Solid button",
+                "link": "Link with arrow"
+              }
+            },
             "button_label": {
               "label": "Button text",
               "info": "If filled, displays a button instead of arrow"
             },
-            "button_url": {
-              "label": "Button link"
-            },
-            "url": {
-              "label": "Alternative link (arrow)",
-              "info": "Only used if button is not configured"
+            "link": {
+              "label": "Button link",
+              "info": "Single link for the block. Leave empty to hide the button."
             }
           }
         }

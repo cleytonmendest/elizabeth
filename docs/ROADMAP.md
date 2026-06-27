@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.11.0 | **Atualizado:** 2026-06-27
+**Versão:** 2.12.0 | **Atualizado:** 2026-06-27
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -27,11 +27,12 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 - ✅ `main-blog.liquid` (i18n storefront + schema; + `card-article` snippet)
 - ✅ `main-article.liquid` (i18n storefront + schema)
 - ✅ `main-product.liquid` (PDP — i18n storefront + schema; 89 chaves de schema; snippets `sticky-add-to-cart`, `main-product-right` migrados)
+- ✅ `highlighted-section.liquid` (i18n schema + storefront; chave reutilizável `general.see_more`)
 - ✅ Carrinho (`templates/cart.liquid` + `cart-drawer*` snippets) — storefront via `cart.general.*` (sem schema)
 
 Snippets compartilhados migrados junto: `card-product-slider`, `card-article`, `search-component`. PDP storefront já usava chaves (`product.*`) em price/inventory/quantity/add-to-cart.
 
-**Pendente:** ~7 sections de Home restantes (hero/sliders/highlighted/newsletter) → depois migrar os snippets restantes.
+**Pendente:** ~6 sections de Home restantes (hero/sliders/highlighted-product/section-images-link/newsletter) → depois migrar os snippets restantes.
 
 **Locales:** `pt-BR.json` (~225 strings), `en.default.json`, `pt-BR.schema.json`, `en.default.schema.json`
 
@@ -130,6 +131,8 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.12.0 - i18n do Highlighted Section** (2026-06-27) — `highlighted-section.liquid` 100% i18n: schema fechado (`button_style` + `link` migrados, chaves órfãs `button_url`/`url` removidas dos locales) e storefront (fallback do CTA agora via nova chave reutilizável `general.see_more`, que servirá às demais sections de Home). Theme Check limpo, ValidSchemaTranslations 0.
 
 **v2.11.0 - i18n da PDP (Produto)** (2026-06-27) — `main-product.liquid` 100% i18n: 89 chaves de schema (`t:sections.main_product.*`) em settings + 11 blocos (title/price/inventory/quantity/variant/buy_button/description/collapsible/assurances/payment_icons), com entradas em `pt-BR.schema.json` + `en.default.schema.json`. Storefront: `sticky-add-to-cart` migrado (aria-labels + botão via `product.general.*`, nova chave `add_to_cart_short`); price/inventory/quantity/add-to-cart já usavam chaves. **Limpeza:** removido placeholder morto `SKU não implementado` e `UnusedAssign` (`product_form_id`) no sticky-atc. Theme-wide 39→38 offenses, ValidSchemaTranslations 0.
 
