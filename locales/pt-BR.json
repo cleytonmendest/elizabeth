@@ -227,8 +227,15 @@
       "tagged": "Marcado",
       "comments": "Comentários",
       "comment": "Comentário",
-      "no_posts": "Nenhuma postagem encontrada",
-      "reading_time": "{{ minutes }} min de leitura"
+      "no_posts": "Nenhum artigo encontrado",
+      "no_posts_text": "Não há artigos publicados nesta categoria ainda.",
+      "reading_time": "{{ minutes }} min de leitura",
+      "all": "Todos",
+      "view_all": "Ver todos os artigos",
+      "search_articles": "Buscar Artigos",
+      "search_placeholder": "Buscar...",
+      "categories": "Categorias",
+      "recent_posts": "Artigos Recentes"
     },
     "article": {
       "previous": "Anterior",

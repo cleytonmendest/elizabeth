@@ -227,8 +227,15 @@
       "tagged": "Tagged",
       "comments": "Comments",
       "comment": "Comment",
-      "no_posts": "No posts found",
-      "reading_time": "{{ minutes }} min read"
+      "no_posts": "No articles found",
+      "no_posts_text": "There are no articles published in this category yet.",
+      "reading_time": "{{ minutes }} min read",
+      "all": "All",
+      "view_all": "View all articles",
+      "search_articles": "Search Articles",
+      "search_placeholder": "Search...",
+      "categories": "Categories",
+      "recent_posts": "Recent Articles"
     },
     "article": {
       "previous": "Previous",

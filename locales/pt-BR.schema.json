@@ -102,6 +102,48 @@
         }
       }
     },
+    "main_blog": {
+      "name": "Blog Principal",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores",
+          "info": "Esquema de cores da página do blog"
+        },
+        "layout_header": {
+          "content": "Layout do Blog"
+        },
+        "posts_per_page": {
+          "label": "Artigos por página"
+        },
+        "grid_columns": {
+          "label": "Colunas no grid (desktop)"
+        },
+        "show_tags": {
+          "label": "Mostrar filtro de tags"
+        },
+        "show_article_tags": {
+          "label": "Mostrar tags nos cards"
+        },
+        "sidebar_header": {
+          "content": "Sidebar"
+        },
+        "show_sidebar": {
+          "label": "Mostrar sidebar"
+        },
+        "show_search": {
+          "label": "Mostrar busca na sidebar"
+        },
+        "show_sidebar_tags": {
+          "label": "Mostrar categorias na sidebar"
+        },
+        "show_recent_posts": {
+          "label": "Mostrar artigos recentes"
+        }
+      },
+      "presets": {
+        "name": "Blog Principal"
+      }
+    },
     "header": {
       "name": "Header",
       "settings": {

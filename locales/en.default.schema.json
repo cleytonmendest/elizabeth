@@ -102,6 +102,48 @@
         }
       }
     },
+    "main_blog": {
+      "name": "Main Blog",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Color scheme for the blog page"
+        },
+        "layout_header": {
+          "content": "Blog Layout"
+        },
+        "posts_per_page": {
+          "label": "Articles per page"
+        },
+        "grid_columns": {
+          "label": "Grid columns (desktop)"
+        },
+        "show_tags": {
+          "label": "Show tag filter"
+        },
+        "show_article_tags": {
+          "label": "Show tags on cards"
+        },
+        "sidebar_header": {
+          "content": "Sidebar"
+        },
+        "show_sidebar": {
+          "label": "Show sidebar"
+        },
+        "show_search": {
+          "label": "Show search in sidebar"
+        },
+        "show_sidebar_tags": {
+          "label": "Show categories in sidebar"
+        },
+        "show_recent_posts": {
+          "label": "Show recent articles"
+        }
+      },
+      "presets": {
+        "name": "Main Blog"
+      }
+    },
     "header": {
       "name": "Header",
       "settings": {

@@ -73,7 +73,7 @@
       {% assign reading_time = word_count | divided_by: 200 %}
       {% if reading_time == 0 %}{% assign reading_time = 1 %}{% endif %}
       <span class="text-foreground/40">•</span>
-      <span>{{ reading_time }} min de leitura</span>
+      <span>{{ 'blog.general.reading_time' | t: minutes: reading_time }}</span>
     </div>
 
     {%- comment -%} Excerpt {%- endcomment -%}
@@ -89,7 +89,7 @@
 
     {%- comment -%} Link "Ler mais" {%- endcomment -%}
     <div class="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-foreground/70 group-hover:gap-3 transition-all">
-      <span>Ler mais</span>
+      <span>{{ 'blog.general.read_more' | t }}</span>
       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
       </svg>
