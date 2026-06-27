@@ -6,7 +6,11 @@
   class="items-center max-lg:!flex-1 lg:flex {% if showMobile %} flex {% else %} hidden {% endif %}"
   style="flex: {{ flex }};"
 >
-  <search-component class="w-full relative flex justify-center group group-[.is-searching]">
+  <search-component
+    class="w-full relative flex justify-center group group-[.is-searching]"
+    data-no-results-template="{{ 'general.search.no_results' | t: terms: '@@QUERY@@' | escape }}"
+    data-sold-out-label="{{ 'product.general.sold_out' | t | escape }}"
+  >
     <form action="{{ routes.search_url }}" method="get" role="search">
       <div class="flex rounded-full transition-all duration-300 py-2 px-4 bg-foreground/5 lg:bg-foreground/5 h-10 lg:group-hover:bg-foreground/10 relative">
         <input
@@ -50,7 +54,10 @@
       <template id="search-result-template">
         <a href="#" class="search-result-item flex items-center gap-3 p-3 hover:bg-foreground/5 transition-colors border-b border-border last:border-b-0">
           <div class="flex-shrink-0 w-16 h-16 bg-foreground/10 rounded-theme overflow-hidden">
+            {%- comment -%} src/alt preenchidos em runtime pelo search-component.js (CDN da Shopify) {%- endcomment -%}
+            {% # theme-check-disable RemoteAsset %}
             <img src="" alt="" width="64" height="64" class="search-result-image w-full h-full object-cover">
+            {% # theme-check-enable RemoteAsset %}
           </div>
           <div class="flex-1 min-w-0">
             <p class="search-result-title font-light text-sm text-foreground line-clamp-2"></p>

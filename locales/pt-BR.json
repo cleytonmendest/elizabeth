@@ -36,7 +36,26 @@
       "results_with_count": {
         "one": "{{ count }} resultado para \"{{ terms }}\"",
         "other": "{{ count }} resultados para \"{{ terms }}\""
-      }
+      },
+      "results_for": "Resultados para \"{{ terms }}\"",
+      "results_count": {
+        "one": "{{ count }} resultado encontrado",
+        "other": "{{ count }} resultados encontrados"
+      },
+      "all": "Todos",
+      "products": "Produtos",
+      "articles": "Artigos",
+      "pages": "Páginas",
+      "blog_articles": "Artigos do Blog",
+      "no_results_title": "Nenhum resultado encontrado",
+      "no_results_text_html": "Não encontramos nada para \"{{ terms }}\". <br> Tente usar palavras diferentes ou verificar a ortografia.",
+      "suggestions_title": "Sugestões",
+      "suggestion_1": "Verifique se todas as palavras estão escritas corretamente",
+      "suggestion_2": "Tente palavras-chave diferentes",
+      "suggestion_3": "Tente palavras-chave mais genéricas",
+      "suggestion_4": "Tente usar menos palavras-chave",
+      "view_all_products": "Ver todos os produtos",
+      "popular_searches": "Buscas populares"
     },
     "pagination": {
       "previous": "Anterior",

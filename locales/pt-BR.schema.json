@@ -64,6 +64,44 @@
         }
       }
     },
+    "main_search": {
+      "name": "Página de Busca",
+      "settings": {
+        "layout_header": {
+          "content": "Layout"
+        },
+        "products_per_page": {
+          "label": "Resultados por página"
+        },
+        "products_per_row": {
+          "label": "Produtos por linha (desktop)"
+        },
+        "filters_header": {
+          "content": "Filtros"
+        },
+        "enable_type_filter": {
+          "label": "Ativar filtro por tipo",
+          "info": "Permite filtrar entre produtos, artigos e páginas"
+        },
+        "no_results_header": {
+          "content": "Sem resultados"
+        },
+        "show_suggestions": {
+          "label": "Mostrar sugestões quando não houver resultados"
+        },
+        "popular_header": {
+          "content": "Buscas Populares"
+        },
+        "show_popular_searches": {
+          "label": "Mostrar buscas populares",
+          "info": "Exibido quando nenhuma busca foi realizada ainda"
+        },
+        "popular_terms": {
+          "label": "Termos populares",
+          "info": "Separar por vírgulas"
+        }
+      }
+    },
     "header": {
       "name": "Header",
       "settings": {

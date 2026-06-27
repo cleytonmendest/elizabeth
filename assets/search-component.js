@@ -104,7 +104,9 @@ class Search extends HTMLElement {
 
         // Se não tem resultados
         if (totalResults === 0) {
-            this.resultsContent.innerHTML = `<div class="p-6 text-center text-sm text-foreground/50">Nenhum resultado encontrado para "${query}".</div>`;
+            const noResultsTemplate = this.getAttribute('data-no-results-template') || '';
+            const noResultsMessage = noResultsTemplate.replace('@@QUERY@@', query);
+            this.resultsContent.innerHTML = `<div class="p-6 text-center text-sm text-foreground/50">${noResultsMessage}</div>`;
             this.resultsContainer.classList.remove('hidden');
             this.classList.add('is-searching');
             if (this.overlay) {
@@ -161,7 +163,7 @@ class Search extends HTMLElement {
 
             // Badge de disponibilidade
             if (badge && !product.available) {
-                badge.textContent = 'Esgotado';
+                badge.textContent = this.getAttribute('data-sold-out-label') || '';
                 badge.classList.remove('hidden');
                 badge.classList.add('bg-foreground/10', 'text-foreground/60');
             } else if (badge && product.compare_at_price && product.compare_at_price > product.price) {

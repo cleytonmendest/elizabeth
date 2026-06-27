@@ -36,7 +36,26 @@
       "results_with_count": {
         "one": "{{ count }} result for \"{{ terms }}\"",
         "other": "{{ count }} results for \"{{ terms }}\""
-      }
+      },
+      "results_for": "Results for \"{{ terms }}\"",
+      "results_count": {
+        "one": "{{ count }} result found",
+        "other": "{{ count }} results found"
+      },
+      "all": "All",
+      "products": "Products",
+      "articles": "Articles",
+      "pages": "Pages",
+      "blog_articles": "Blog Articles",
+      "no_results_title": "No results found",
+      "no_results_text_html": "We couldn't find anything for \"{{ terms }}\". <br> Try using different words or checking the spelling.",
+      "suggestions_title": "Suggestions",
+      "suggestion_1": "Check that all words are spelled correctly",
+      "suggestion_2": "Try different keywords",
+      "suggestion_3": "Try more general keywords",
+      "suggestion_4": "Try using fewer keywords",
+      "view_all_products": "View all products",
+      "popular_searches": "Popular searches"
     },
     "pagination": {
       "previous": "Previous",
