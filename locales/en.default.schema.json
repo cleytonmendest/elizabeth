@@ -378,7 +378,7 @@
         "testimonial": {
           "name": "Testimonial",
           "settings": {
-            "customer": {
+            "customer_header": {
               "content": "Customer"
             },
             "customer_image": {
@@ -392,7 +392,7 @@
               "label": "City/State",
               "info": "Optional"
             },
-            "review": {
+            "review_header": {
               "content": "Review"
             },
             "rating": {

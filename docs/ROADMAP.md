@@ -15,15 +15,22 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 
 **Abordagem:** Section 100% completa = i18n storefront + i18n schema + color schemes
 
-**Sections 100% completas (17%):**
+**Sections 100% completas:**
 - ✅ `header.liquid` (i18n schema + color schemes)
 - ✅ `footer.liquid` (i18n schema + color schemes)
 - ✅ `announcement-bar.liquid` (i18n schema + color schemes)
 - ✅ `testimonials.liquid` (i18n front + schema + dual color schemes: section + card)
 - ✅ `trust-badges.liquid` (i18n schema + color schemes)
 - ✅ `main-404.liquid` (i18n storefront + schema + color scheme)
+- ✅ `main-collection.liquid` (i18n storefront + schema)
+- ✅ `main-search.liquid` (i18n storefront + schema; + `search-component` snippet/js)
+- ✅ `main-blog.liquid` (i18n storefront + schema; + `card-article` snippet)
+- ✅ `main-article.liquid` (i18n storefront + schema)
+- ✅ Carrinho (`templates/cart.liquid` + `cart-drawer*` snippets) — storefront via `cart.general.*` (sem schema)
 
-**Pendente:** ~12 sections restantes → depois migrar ~92 snippets. ⚠️ As revisões editoriais recentes (coleção, busca, carrinho, blog, artigo) adicionaram color schemes + storefront parcial, mas **faltou i18n de schema** — completar a migração nelas (ver regra 5 em CLAUDE.md).
+Snippets compartilhados migrados junto: `card-product-slider`, `card-article`, `search-component`.
+
+**Pendente:** ~8 sections restantes → depois migrar os snippets restantes.
 
 **Locales:** `pt-BR.json` (~225 strings), `en.default.json`, `pt-BR.schema.json`, `en.default.schema.json`
 
@@ -68,9 +75,9 @@ README para lojistas (não desenvolvedores).
 ---
 
 ### 5. Code Quality (Theme Check)
-**Status:** Parcial — 13 errors, 29 warnings (2026-06-27) | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
+**Status:** Parcial — 11 errors, 28 warnings (2026-06-27) | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
 
-Theme Check zerado para a Theme Store. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. Arquivos já revisados (Home/PDP/Coleção/Busca/Carrinho/Blog) sem offenses próprios. Pendentes — 🔴 (13): `ImgWidthAndHeight` (10× → add `width`/`height`) em customers/order, newsletter-modal, product-gallery, testimonial-card, gift_card; `ValidSchemaTranslations` (2×, testimonials); `UnknownFilter` (1×, gift_card). 🟡 (29): `UnusedAssign` (11×), `UndefinedObject` (9×), `OrphanedSnippet` (7×), `RemoteAsset` (2×, inerente).
+Theme Check zerado para a Theme Store. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. Arquivos já revisados (Home/PDP/Coleção/Busca/Carrinho/Blog/Artigo) sem offenses próprios. `ValidSchemaTranslations` **zerado** (testimonials corrigido). Pendentes — 🔴 (11): `ImgWidthAndHeight` (10× → add `width`/`height`) em customers/order, newsletter-modal, product-gallery, testimonial-card, gift_card; `UnknownFilter` (1×, gift_card). 🟡 (28): `UnusedAssign` (11×), `UndefinedObject` (9×), `OrphanedSnippet` (7×), `RemoteAsset` (1×, inerente).
 
 ---
 
