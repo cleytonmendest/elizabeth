@@ -102,6 +102,229 @@
         }
       }
     },
+    "main_product": {
+      "name": "Produto",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores",
+          "info": "Esquema de cores para a página de produto"
+        },
+        "media_header": {
+          "content": "Mídia (Imagens do produto)"
+        },
+        "media_size": {
+          "label": "Largura da mídia para desktop",
+          "info": "A mídia é otimizada automaticamente para dispositivos móveis.",
+          "options": {
+            "small": "Pequeno (1/3 da tela)",
+            "medium": "Médio (1/2 da tela)",
+            "large": "Largo (2/3 da tela)"
+          }
+        },
+        "gallery_layout": {
+          "label": "Layout para desktop",
+          "options": {
+            "stacked": "Empilhado",
+            "two_columns": "2 colunas",
+            "one_images_slider": "Carrosel 1 imagem",
+            "two_images_slider": "Carrosel 2 imagens",
+            "thumbnails_gallery": "Galeria com Thumbnails"
+          }
+        },
+        "media_position": {
+          "label": "Posição da mídia no desktop",
+          "info": "A posição é otimizada automaticamente para dispositivos móveis.",
+          "options": {
+            "left": "Esquerda",
+            "right": "Direita"
+          }
+        },
+        "image_zoom": {
+          "label": "Zoom de imagem",
+          "info": "Clique e passe o cursor para abrir a janela modal no celular.",
+          "options": {
+            "lightbox": "Abrir Modal",
+            "hover": "Clicar e passar o cursor",
+            "none": "Sem zoom"
+          }
+        },
+        "mobile_thumbnails": {
+          "label": "Layout em dispositivos móveis",
+          "options": {
+            "columns": "Colunas",
+            "show": "Exibir miniaturas",
+            "hide": "Ocultar miniaturas"
+          }
+        }
+      },
+      "blocks": {
+        "text": {
+          "name": "Texto",
+          "settings": {
+            "text": {
+              "label": "Texto"
+            }
+          }
+        },
+        "title": {
+          "name": "Nome do Produto"
+        },
+        "price": {
+          "name": "Preço do Produto"
+        },
+        "inventory": {
+          "name": "Status de Estoque",
+          "settings": {
+            "text_style": {
+              "label": "Estilo do Texto",
+              "options": {
+                "body": "Corpo",
+                "subtitle": "Legenda",
+                "uppercase": "Letras Maiúsculas"
+              }
+            },
+            "inventory_threshold": {
+              "label": "Limite de Estoque para Alerta",
+              "info": "Mostra alerta quando estoque <= este valor. Use 0 para sempre mostrar quantidade disponível"
+            },
+            "show_inventory_quantity": {
+              "label": "Mostrar Quantidade Exata",
+              "info": "Exibe número de unidades disponíveis no alerta"
+            }
+          }
+        },
+        "quantity_selector": {
+          "name": "Seletor de quantidade",
+          "settings": {
+            "sideToBuyButton": {
+              "label": "Seletor de Quantidade ao lado do Botão Comprar?",
+              "info": "Caso ativado, incluirá o Seletor de Quantidade ao lado do Botão Comprar e sua localização dentro dos blocos não afetará sua localização na página."
+            }
+          }
+        },
+        "variant_picker": {
+          "name": "Seletor de variante",
+          "settings": {
+            "picker_type": {
+              "label": "Estilo",
+              "options": {
+                "dropdown": "Menu suspenso",
+                "button": "Pílulas (Botões)"
+              }
+            },
+            "swatch_shape": {
+              "label": "Amostra",
+              "options": {
+                "circle": "Círculo",
+                "square": "Quadrado",
+                "none": "Nenhum"
+              }
+            }
+          }
+        },
+        "buy_button": {
+          "name": "Botão Comprar",
+          "settings": {
+            "settings_header": {
+              "content": "Configurações de botão"
+            },
+            "button_text": {
+              "label": "Texto do botão"
+            },
+            "floating_header": {
+              "content": "Configurações de botão flutuante"
+            },
+            "floating_button": {
+              "label": "Ativa botão de comprar flutuante?",
+              "info": "Somente quando mobile"
+            },
+            "show_product_name": {
+              "label": "Exibe Nome do produto?"
+            },
+            "show_product_price": {
+              "label": "Exibe Preço do produto?"
+            }
+          }
+        },
+        "description": {
+          "name": "Descrição do produto",
+          "settings": {
+            "show_title": {
+              "label": "Mostrar título?"
+            },
+            "title_text": {
+              "label": "Título"
+            }
+          }
+        },
+        "collapsible_tab": {
+          "name": "Linha recolhível",
+          "settings": {
+            "heading": {
+              "label": "Título"
+            },
+            "content": {
+              "label": "Texto"
+            },
+            "page": {
+              "label": "Conteúdo de página"
+            }
+          }
+        },
+        "assurances": {
+          "name": "Selos de Confiança",
+          "settings": {
+            "item_1_header": {
+              "content": "Item 1"
+            },
+            "item_2_header": {
+              "content": "Item 2"
+            },
+            "item_3_header": {
+              "content": "Item 3"
+            },
+            "item_title": {
+              "label": "Título"
+            },
+            "item_text": {
+              "label": "Subtítulo"
+            }
+          }
+        },
+        "payment_icons": {
+          "name": "Formas de Pagamento",
+          "settings": {
+            "show_title": {
+              "label": "Mostrar Título"
+            },
+            "title": {
+              "label": "Título"
+            },
+            "icon_style": {
+              "label": "Estilo dos Ícones",
+              "options": {
+                "color": "Colorido",
+                "grayscale": "Preto e Branco (hover colorido)"
+              }
+            },
+            "icon_size": {
+              "label": "Tamanho dos Ícones",
+              "options": {
+                "small": "Pequeno",
+                "medium": "Médio",
+                "large": "Grande"
+              }
+            },
+            "show_installment_text": {
+              "label": "Mostrar Texto de Parcelamento"
+            },
+            "installment_text": {
+              "label": "Texto de Parcelamento"
+            }
+          }
+        }
+      }
+    },
     "main_blog": {
       "name": "Blog Principal",
       "settings": {

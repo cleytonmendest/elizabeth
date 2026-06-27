@@ -26,9 +26,6 @@
           {%- render 'quantity-selector' -%}
         {% endif %}
 
-      {%- when 'sku' -%}
-        <div>SKU não implementado</div>
-
       {%- when 'title' -%}
         <div class="product__title" {{ block.shopify_attributes }}>
           {%- if product.type != blank -%}

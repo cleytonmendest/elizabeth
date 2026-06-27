@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.10.0 | **Atualizado:** 2026-06-27
+**Versão:** 2.11.0 | **Atualizado:** 2026-06-27
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -26,11 +26,12 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 - ✅ `main-search.liquid` (i18n storefront + schema; + `search-component` snippet/js)
 - ✅ `main-blog.liquid` (i18n storefront + schema; + `card-article` snippet)
 - ✅ `main-article.liquid` (i18n storefront + schema)
+- ✅ `main-product.liquid` (PDP — i18n storefront + schema; 89 chaves de schema; snippets `sticky-add-to-cart`, `main-product-right` migrados)
 - ✅ Carrinho (`templates/cart.liquid` + `cart-drawer*` snippets) — storefront via `cart.general.*` (sem schema)
 
-Snippets compartilhados migrados junto: `card-product-slider`, `card-article`, `search-component`.
+Snippets compartilhados migrados junto: `card-product-slider`, `card-article`, `search-component`. PDP storefront já usava chaves (`product.*`) em price/inventory/quantity/add-to-cart.
 
-**Pendente:** ~8 sections restantes → depois migrar os snippets restantes.
+**Pendente:** ~7 sections de Home restantes (hero/sliders/highlighted/newsletter) → depois migrar os snippets restantes.
 
 **Locales:** `pt-BR.json` (~225 strings), `en.default.json`, `pt-BR.schema.json`, `en.default.schema.json`
 
@@ -75,7 +76,7 @@ README para lojistas (não desenvolvedores).
 ---
 
 ### 5. Code Quality (Theme Check)
-**Status:** Parcial — 11 errors, 28 warnings (2026-06-27) | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
+**Status:** Parcial — 11 errors, 27 warnings (2026-06-27) | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
 
 Theme Check zerado para a Theme Store. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. Arquivos já revisados (Home/PDP/Coleção/Busca/Carrinho/Blog/Artigo) sem offenses próprios. `ValidSchemaTranslations` **zerado** (testimonials corrigido). Pendentes — 🔴 (11): `ImgWidthAndHeight` (10× → add `width`/`height`) em customers/order, newsletter-modal, product-gallery, testimonial-card, gift_card; `UnknownFilter` (1×, gift_card). 🟡 (28): `UnusedAssign` (11×), `UndefinedObject` (9×), `OrphanedSnippet` (7×), `RemoteAsset` (1×, inerente).
 
@@ -129,6 +130,8 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.11.0 - i18n da PDP (Produto)** (2026-06-27) — `main-product.liquid` 100% i18n: 89 chaves de schema (`t:sections.main_product.*`) em settings + 11 blocos (title/price/inventory/quantity/variant/buy_button/description/collapsible/assurances/payment_icons), com entradas em `pt-BR.schema.json` + `en.default.schema.json`. Storefront: `sticky-add-to-cart` migrado (aria-labels + botão via `product.general.*`, nova chave `add_to_cart_short`); price/inventory/quantity/add-to-cart já usavam chaves. **Limpeza:** removido placeholder morto `SKU não implementado` e `UnusedAssign` (`product_form_id`) no sticky-atc. Theme-wide 39→38 offenses, ValidSchemaTranslations 0.
 
 **v2.10.0 - Página 404 + color schemes** (2026-06-27) — 404 convertida de `.liquid` cru para template JSON + section `main-404` (editorial: 404 grande, título `font-light`, busca opcional, CTA; color scheme + tokens, editável no editor). Color scheme adicionado a Blog e Artigo; **fix** footer/blog/artigo pintavam só as variáveis sem o fundo (`color-background color-text`) → ilegível em schemes escuros.
 

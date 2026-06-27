@@ -31,20 +31,20 @@
 
 {% schema %}
 {
-  "name": "Produto",
+  "name": "t:sections.main_product.name",
   "class": "section",
   "tag": "section",
   "settings": [
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Esquema de cores",
+      "label": "t:sections.main_product.settings.color_scheme.label",
       "default": "scheme-1",
-      "info": "Esquema de cores para a página de produto"
+      "info": "t:sections.main_product.settings.color_scheme.info"
     },
     {
       "type": "header",
-      "content": "Mídia (Imagens do produto)"
+      "content": "t:sections.main_product.settings.media_header.content"
     },
     {
       "type": "select",
@@ -52,20 +52,20 @@
       "options": [
         {
           "value": "small",
-          "label": "Pequeno (1/3 da tela)"
+          "label": "t:sections.main_product.settings.media_size.options.small"
         },
         {
           "value": "medium",
-          "label": "Médio (1/2 da tela)"
+          "label": "t:sections.main_product.settings.media_size.options.medium"
         },
         {
           "value": "large",
-          "label": "Largo (2/3 da tela)"
+          "label": "t:sections.main_product.settings.media_size.options.large"
         }
       ],
       "default": "medium",
-      "label": "Largura da mídia para desktop",
-      "info": "A mídia é otimizada automaticamente para dispositivos móveis."
+      "label": "t:sections.main_product.settings.media_size.label",
+      "info": "t:sections.main_product.settings.media_size.info"
     },
     {
       "type": "select",
@@ -73,27 +73,27 @@
       "options": [
         {
           "value": "stacked",
-          "label": "Empilhado"
+          "label": "t:sections.main_product.settings.gallery_layout.options.stacked"
         },
         {
           "value": "two_columns",
-          "label": "2 colunas"
+          "label": "t:sections.main_product.settings.gallery_layout.options.two_columns"
         },
         {
           "value": "one_images_slider",
-          "label": "Carrosel 1 imagem"
+          "label": "t:sections.main_product.settings.gallery_layout.options.one_images_slider"
         },
         {
           "value": "two_images_slider",
-          "label": "Carrosel 2 imagens"
+          "label": "t:sections.main_product.settings.gallery_layout.options.two_images_slider"
         },
         {
           "value": "thumbnails_gallery",
-          "label": "Galeria com Thumbnails"
+          "label": "t:sections.main_product.settings.gallery_layout.options.thumbnails_gallery"
         }
       ],
       "default": "stacked",
-      "label": "Layout para desktop"
+      "label": "t:sections.main_product.settings.gallery_layout.label"
     },
     {
       "type": "select",
@@ -101,16 +101,16 @@
       "options": [
         {
           "value": "left",
-          "label": "Esquerda"
+          "label": "t:sections.main_product.settings.media_position.options.left"
         },
         {
           "value": "right",
-          "label": "Direita"
+          "label": "t:sections.main_product.settings.media_position.options.right"
         }
       ],
       "default": "left",
-      "label": "Posição da mídia no desktop",
-      "info": "A posição é otimizada automaticamente para dispositivos móveis."
+      "label": "t:sections.main_product.settings.media_position.label",
+      "info": "t:sections.main_product.settings.media_position.info"
     },
     {
       "type": "select",
@@ -118,20 +118,20 @@
       "options": [
         {
           "value": "lightbox",
-          "label": "Abrir Modal"
+          "label": "t:sections.main_product.settings.image_zoom.options.lightbox"
         },
         {
           "value": "hover",
-          "label": "Clicar e passar o cursor"
+          "label": "t:sections.main_product.settings.image_zoom.options.hover"
         },
         {
           "value": "none",
-          "label": "Sem zoom"
+          "label": "t:sections.main_product.settings.image_zoom.options.none"
         }
       ],
       "default": "lightbox",
-      "label": "Zoom de imagem",
-      "info": "Clique e passe o cursor para abrir a janela modal no celular."
+      "label": "t:sections.main_product.settings.image_zoom.label",
+      "info": "t:sections.main_product.settings.image_zoom.info"
     },
     {
       "type": "select",
@@ -139,46 +139,46 @@
       "options": [
         {
           "value": "columns",
-          "label": "Colunas"
+          "label": "t:sections.main_product.settings.mobile_thumbnails.options.columns"
         },
         {
           "value": "show",
-          "label": "Exibir miniaturas"
+          "label": "t:sections.main_product.settings.mobile_thumbnails.options.show"
         },
         {
           "value": "hide",
-          "label": "Ocultar miniaturas"
+          "label": "t:sections.main_product.settings.mobile_thumbnails.options.hide"
         }
       ],
       "default": "hide",
-      "label": "Layout em dispositivos móveis"
+      "label": "t:sections.main_product.settings.mobile_thumbnails.label"
     }
   ],
   "blocks": [
     {
       "type": "text",
-      "name": "Texto",
+      "name": "t:sections.main_product.blocks.text.name",
       "settings": [
         {
           "type": "inline_richtext",
           "id": "text",
-          "label": "Texto"
+          "label": "t:sections.main_product.blocks.text.settings.text.label"
         }
       ]
     },
     {
       "type": "title",
-      "name": "Nome do Produto",
+      "name": "t:sections.main_product.blocks.title.name",
       "limit": 1
     },
     {
       "type": "price",
-      "name": "Preço do Produto",
+      "name": "t:sections.main_product.blocks.price.name",
       "limit": 1
     },
     {
       "type": "inventory",
-      "name": "Status de Estoque",
+      "name": "t:sections.main_product.blocks.inventory.name",
       "limit": 1,
       "settings": [
         {
@@ -187,56 +187,56 @@
           "options": [
             {
               "value": "body",
-              "label": "Corpo"
+              "label": "t:sections.main_product.blocks.inventory.settings.text_style.options.body"
             },
             {
               "value": "subtitle",
-              "label": "Legenda"
+              "label": "t:sections.main_product.blocks.inventory.settings.text_style.options.subtitle"
             },
             {
               "value": "uppercase",
-              "label": "Letras Maiúsculas"
+              "label": "t:sections.main_product.blocks.inventory.settings.text_style.options.uppercase"
             }
           ],
           "default": "body",
-          "label": "Estilo do Texto"
+          "label": "t:sections.main_product.blocks.inventory.settings.text_style.label"
         },
         {
           "type": "range",
           "id": "inventory_threshold",
-          "label": "Limite de Estoque para Alerta",
+          "label": "t:sections.main_product.blocks.inventory.settings.inventory_threshold.label",
           "min": 0,
           "max": 100,
           "step": 1,
-          "info": "Mostra alerta quando estoque <= este valor. Use 0 para sempre mostrar quantidade disponível",
+          "info": "t:sections.main_product.blocks.inventory.settings.inventory_threshold.info",
           "default": 10
         },
         {
           "type": "checkbox",
           "id": "show_inventory_quantity",
-          "label": "Mostrar Quantidade Exata",
+          "label": "t:sections.main_product.blocks.inventory.settings.show_inventory_quantity.label",
           "default": true,
-          "info": "Exibe número de unidades disponíveis no alerta"
+          "info": "t:sections.main_product.blocks.inventory.settings.show_inventory_quantity.info"
         }
       ]
     },
     {
       "type": "quantity_selector",
-      "name": "Seletor de quantidade",
+      "name": "t:sections.main_product.blocks.quantity_selector.name",
       "limit": 1,
       "settings": [
         {
           "type": "checkbox",
           "id": "sideToBuyButton",
-          "label": "Seletor de Quantidade ao lado do Botão Comprar?",
-          "info": "Caso ativado, incluirá o Seletor de Quantidade ao lado do Botão Comprar e sua localização dentro dos blocos não afetará sua localização na página.",
+          "label": "t:sections.main_product.blocks.quantity_selector.settings.sideToBuyButton.label",
+          "info": "t:sections.main_product.blocks.quantity_selector.settings.sideToBuyButton.info",
           "default": true
         }
       ]
     },
     {
       "type": "variant_picker",
-      "name": "Seletor de variante",
+      "name": "t:sections.main_product.blocks.variant_picker.name",
       "limit": 1,
       "settings": [
         {
@@ -245,32 +245,32 @@
           "options": [
             {
               "value": "dropdown",
-              "label": "Menu suspenso"
+              "label": "t:sections.main_product.blocks.variant_picker.settings.picker_type.options.dropdown"
             },
             {
               "value": "button",
-              "label": "Pílulas (Botões)"
+              "label": "t:sections.main_product.blocks.variant_picker.settings.picker_type.options.button"
             }
           ],
           "default": "button",
-          "label": "Estilo"
+          "label": "t:sections.main_product.blocks.variant_picker.settings.picker_type.label"
         },
         {
           "id": "swatch_shape",
-          "label": "Amostra",
+          "label": "t:sections.main_product.blocks.variant_picker.settings.swatch_shape.label",
           "type": "select",
           "options": [
             {
               "value": "circle",
-              "label": "Círculo"
+              "label": "t:sections.main_product.blocks.variant_picker.settings.swatch_shape.options.circle"
             },
             {
               "value": "square",
-              "label": "Quadrado"
+              "label": "t:sections.main_product.blocks.variant_picker.settings.swatch_shape.options.square"
             },
             {
               "value": "none",
-              "label": "Nenhum"
+              "label": "t:sections.main_product.blocks.variant_picker.settings.swatch_shape.options.none"
             }
           ],
           "default": "circle"
@@ -279,39 +279,39 @@
     },
     {
       "type": "buy_button",
-      "name": "Botão Comprar",
+      "name": "t:sections.main_product.blocks.buy_button.name",
       "limit": 1,
       "settings": [
         {
           "type": "header",
-          "content": "Configurações de botão"
+          "content": "t:sections.main_product.blocks.buy_button.settings.settings_header.content"
         },
         {
           "type": "text",
-          "label": "Texto do botão",
+          "label": "t:sections.main_product.blocks.buy_button.settings.button_text.label",
           "id": "button_text",
           "default": "ADICIONAR AO CARRINHO"
         },
         {
           "type": "header",
-          "content": "Configurações de botão flutuante"
+          "content": "t:sections.main_product.blocks.buy_button.settings.floating_header.content"
         },
         {
           "type": "checkbox",
-          "label": "Ativa botão de comprar flutuante?",
-          "info": "Somente quando mobile",
+          "label": "t:sections.main_product.blocks.buy_button.settings.floating_button.label",
+          "info": "t:sections.main_product.blocks.buy_button.settings.floating_button.info",
           "id": "floating_button",
           "default": true
         },
         {
           "type": "checkbox",
-          "label": "Exibe Nome do produto?",
+          "label": "t:sections.main_product.blocks.buy_button.settings.show_product_name.label",
           "id": "show_product_name",
           "default": true
         },
         {
           "type": "checkbox",
-          "label": "Exibe Preço do produto?",
+          "label": "t:sections.main_product.blocks.buy_button.settings.show_product_price.label",
           "id": "show_product_price",
           "default": true
         }
@@ -319,129 +319,129 @@
     },
     {
       "type": "description",
-      "name": "Descrição do produto",
+      "name": "t:sections.main_product.blocks.description.name",
       "limit": 1,
       "settings": [
         {
           "type": "checkbox",
           "id": "show_title",
-          "label": "Mostrar título?",
+          "label": "t:sections.main_product.blocks.description.settings.show_title.label",
           "default": true
         },
         {
           "type": "text",
           "id": "title_text",
-          "label": "Título",
+          "label": "t:sections.main_product.blocks.description.settings.title_text.label",
           "default": "Descrição"
         }
       ]
     },
     {
       "type": "collapsible_tab",
-      "name": "Linha recolhível",
+      "name": "t:sections.main_product.blocks.collapsible_tab.name",
       "settings": [
         {
           "type": "text",
           "id": "heading",
           "default": "Linha recolhível",
-          "label": "Título"
+          "label": "t:sections.main_product.blocks.collapsible_tab.settings.heading.label"
         },
         {
           "type": "richtext",
           "id": "content",
-          "label": "Texto"
+          "label": "t:sections.main_product.blocks.collapsible_tab.settings.content.label"
         },
         {
           "type": "page",
           "id": "page",
-          "label": "Conteúdo de página"
+          "label": "t:sections.main_product.blocks.collapsible_tab.settings.page.label"
         }
       ]
     },
     {
       "type": "assurances",
-      "name": "Selos de Confiança",
+      "name": "t:sections.main_product.blocks.assurances.name",
       "limit": 1,
       "settings": [
         {
           "type": "header",
-          "content": "Item 1"
+          "content": "t:sections.main_product.blocks.assurances.settings.item_1_header.content"
         },
         {
           "type": "text",
           "id": "item_1_title",
-          "label": "Título",
+          "label": "t:sections.main_product.blocks.assurances.settings.item_title.label",
           "default": "Envio para todo o Brasil"
         },
         {
           "type": "text",
           "id": "item_1_text",
-          "label": "Subtítulo",
+          "label": "t:sections.main_product.blocks.assurances.settings.item_text.label",
           "default": "Frete grátis acima de R$ 499"
         },
         {
           "type": "header",
-          "content": "Item 2"
+          "content": "t:sections.main_product.blocks.assurances.settings.item_2_header.content"
         },
         {
           "type": "text",
           "id": "item_2_title",
-          "label": "Título",
+          "label": "t:sections.main_product.blocks.assurances.settings.item_title.label",
           "default": "Troca grátis em 30 dias"
         },
         {
           "type": "text",
           "id": "item_2_text",
-          "label": "Subtítulo",
+          "label": "t:sections.main_product.blocks.assurances.settings.item_text.label",
           "default": "Primeira troca por nossa conta"
         },
         {
           "type": "header",
-          "content": "Item 3"
+          "content": "t:sections.main_product.blocks.assurances.settings.item_3_header.content"
         },
         {
           "type": "text",
           "id": "item_3_title",
-          "label": "Título",
+          "label": "t:sections.main_product.blocks.assurances.settings.item_title.label",
           "default": "Compra 100% segura"
         },
         {
           "type": "text",
           "id": "item_3_text",
-          "label": "Subtítulo",
+          "label": "t:sections.main_product.blocks.assurances.settings.item_text.label",
           "default": "Ambiente protegido e criptografado"
         }
       ]
     },
     {
       "type": "payment_icons",
-      "name": "Formas de Pagamento",
+      "name": "t:sections.main_product.blocks.payment_icons.name",
       "limit": 1,
       "settings": [
         {
           "type": "checkbox",
           "id": "show_title",
-          "label": "Mostrar Título",
+          "label": "t:sections.main_product.blocks.payment_icons.settings.show_title.label",
           "default": true
         },
         {
           "type": "text",
           "id": "title",
-          "label": "Título",
+          "label": "t:sections.main_product.blocks.payment_icons.settings.title.label",
           "default": "Formas de Pagamento"
         },
         {
           "type": "select",
           "id": "icon_style",
-          "label": "Estilo dos Ícones",
+          "label": "t:sections.main_product.blocks.payment_icons.settings.icon_style.label",
           "options": [
             {
               "value": "color",
-              "label": "Colorido"
+              "label": "t:sections.main_product.blocks.payment_icons.settings.icon_style.options.color"
             },
             {
               "value": "grayscale",
-              "label": "Preto e Branco (hover colorido)"
+              "label": "t:sections.main_product.blocks.payment_icons.settings.icon_style.options.grayscale"
             }
           ],
           "default": "color"
@@ -449,19 +449,19 @@
         {
           "type": "select",
           "id": "icon_size",
-          "label": "Tamanho dos Ícones",
+          "label": "t:sections.main_product.blocks.payment_icons.settings.icon_size.label",
           "options": [
             {
               "value": "small",
-              "label": "Pequeno"
+              "label": "t:sections.main_product.blocks.payment_icons.settings.icon_size.options.small"
             },
             {
               "value": "medium",
-              "label": "Médio"
+              "label": "t:sections.main_product.blocks.payment_icons.settings.icon_size.options.medium"
             },
             {
               "value": "large",
-              "label": "Grande"
+              "label": "t:sections.main_product.blocks.payment_icons.settings.icon_size.options.large"
             }
           ],
           "default": "medium"
@@ -469,13 +469,13 @@
         {
           "type": "checkbox",
           "id": "show_installment_text",
-          "label": "Mostrar Texto de Parcelamento",
+          "label": "t:sections.main_product.blocks.payment_icons.settings.show_installment_text.label",
           "default": true
         },
         {
           "type": "text",
           "id": "installment_text",
-          "label": "Texto de Parcelamento",
+          "label": "t:sections.main_product.blocks.payment_icons.settings.installment_text.label",
           "default": "Parcele em até 6x sem juros no cartão de crédito"
         }
       ]

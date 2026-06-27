@@ -8,7 +8,6 @@
 
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
-  assign product_form_id = 'product-form-' | append: section.id
 -%}
 
 {{ 'sticky-atc.css' | asset_url | stylesheet_tag }}
@@ -49,7 +48,7 @@
           <button
             type="button"
             name="minus"
-            aria-label="Diminuir quantidade"
+            aria-label="{{ 'product.general.decrease_quantity' | t }}"
             class="h-full flex items-center justify-center w-[25px]"
           >
             {% render 'icon-minus', size: 16 %}
@@ -59,7 +58,7 @@
             name="quantity"
             value="1"
             min="1"
-            aria-label="Quantidade"
+            aria-label="{{ 'product.general.quantity' | t }}"
             inputmode="numeric"
             pattern="[0-9]*"
             class="h-full text-center w-[30px]"
@@ -67,7 +66,7 @@
           <button
             type="button"
             name="plus"
-            aria-label="Aumentar quantidade"
+            aria-label="{{ 'product.general.increase_quantity' | t }}"
             class="h-full flex items-center justify-center w-[25px]"
           >
             {% render 'icon-plus', size: 16 %}
@@ -81,14 +80,14 @@
           class="flex items-center justify-center bg-button text-button-text px-5 h-10 text-xs font-medium uppercase tracking-[0.12em] transition-all border-0 cursor-pointer whitespace-nowrap flex-shrink-0 min-w-[100px] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97] active:opacity-95"
           aria-haspopup="dialog"
           aria-live="polite"
-          data-text-desktop="ADICIONAR AO CARRINHO"
-          data-text-mobile="Adicionar"
+          data-text-desktop="{{ 'product.general.add_to_cart' | t }}"
+          data-text-mobile="{{ 'product.general.add_to_cart_short' | t }}"
           {% unless current_variant.available %}disabled{% endunless %}
         >
           {% if current_variant.available %}
-            Adicionar
+            {{ 'product.general.add_to_cart_short' | t }}
           {% else %}
-            Esgotado
+            {{ 'product.general.sold_out' | t }}
           {% endif %}
         </button>
       {%- endform -%}

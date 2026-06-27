@@ -102,6 +102,229 @@
         }
       }
     },
+    "main_product": {
+      "name": "Product",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Color scheme for the product page"
+        },
+        "media_header": {
+          "content": "Media (Product images)"
+        },
+        "media_size": {
+          "label": "Desktop media width",
+          "info": "Media is automatically optimized for mobile devices.",
+          "options": {
+            "small": "Small (1/3 of screen)",
+            "medium": "Medium (1/2 of screen)",
+            "large": "Large (2/3 of screen)"
+          }
+        },
+        "gallery_layout": {
+          "label": "Desktop layout",
+          "options": {
+            "stacked": "Stacked",
+            "two_columns": "2 columns",
+            "one_images_slider": "Carousel 1 image",
+            "two_images_slider": "Carousel 2 images",
+            "thumbnails_gallery": "Thumbnails gallery"
+          }
+        },
+        "media_position": {
+          "label": "Desktop media position",
+          "info": "Position is automatically optimized for mobile devices.",
+          "options": {
+            "left": "Left",
+            "right": "Right"
+          }
+        },
+        "image_zoom": {
+          "label": "Image zoom",
+          "info": "Click and hover to open the modal window on mobile.",
+          "options": {
+            "lightbox": "Open modal",
+            "hover": "Click and hover",
+            "none": "No zoom"
+          }
+        },
+        "mobile_thumbnails": {
+          "label": "Mobile layout",
+          "options": {
+            "columns": "Columns",
+            "show": "Show thumbnails",
+            "hide": "Hide thumbnails"
+          }
+        }
+      },
+      "blocks": {
+        "text": {
+          "name": "Text",
+          "settings": {
+            "text": {
+              "label": "Text"
+            }
+          }
+        },
+        "title": {
+          "name": "Product name"
+        },
+        "price": {
+          "name": "Product price"
+        },
+        "inventory": {
+          "name": "Inventory status",
+          "settings": {
+            "text_style": {
+              "label": "Text style",
+              "options": {
+                "body": "Body",
+                "subtitle": "Caption",
+                "uppercase": "Uppercase"
+              }
+            },
+            "inventory_threshold": {
+              "label": "Inventory alert threshold",
+              "info": "Shows an alert when inventory <= this value. Use 0 to always show available quantity"
+            },
+            "show_inventory_quantity": {
+              "label": "Show exact quantity",
+              "info": "Displays the number of available units in the alert"
+            }
+          }
+        },
+        "quantity_selector": {
+          "name": "Quantity selector",
+          "settings": {
+            "sideToBuyButton": {
+              "label": "Quantity selector next to the Buy button?",
+              "info": "When enabled, the quantity selector is placed next to the Buy button and its location within the blocks will not affect its position on the page."
+            }
+          }
+        },
+        "variant_picker": {
+          "name": "Variant picker",
+          "settings": {
+            "picker_type": {
+              "label": "Style",
+              "options": {
+                "dropdown": "Dropdown",
+                "button": "Pills (Buttons)"
+              }
+            },
+            "swatch_shape": {
+              "label": "Swatch",
+              "options": {
+                "circle": "Circle",
+                "square": "Square",
+                "none": "None"
+              }
+            }
+          }
+        },
+        "buy_button": {
+          "name": "Buy button",
+          "settings": {
+            "settings_header": {
+              "content": "Button settings"
+            },
+            "button_text": {
+              "label": "Button text"
+            },
+            "floating_header": {
+              "content": "Floating button settings"
+            },
+            "floating_button": {
+              "label": "Enable floating buy button?",
+              "info": "Mobile only"
+            },
+            "show_product_name": {
+              "label": "Show product name?"
+            },
+            "show_product_price": {
+              "label": "Show product price?"
+            }
+          }
+        },
+        "description": {
+          "name": "Product description",
+          "settings": {
+            "show_title": {
+              "label": "Show title?"
+            },
+            "title_text": {
+              "label": "Title"
+            }
+          }
+        },
+        "collapsible_tab": {
+          "name": "Collapsible row",
+          "settings": {
+            "heading": {
+              "label": "Title"
+            },
+            "content": {
+              "label": "Text"
+            },
+            "page": {
+              "label": "Page content"
+            }
+          }
+        },
+        "assurances": {
+          "name": "Trust badges",
+          "settings": {
+            "item_1_header": {
+              "content": "Item 1"
+            },
+            "item_2_header": {
+              "content": "Item 2"
+            },
+            "item_3_header": {
+              "content": "Item 3"
+            },
+            "item_title": {
+              "label": "Title"
+            },
+            "item_text": {
+              "label": "Subtitle"
+            }
+          }
+        },
+        "payment_icons": {
+          "name": "Payment methods",
+          "settings": {
+            "show_title": {
+              "label": "Show title"
+            },
+            "title": {
+              "label": "Title"
+            },
+            "icon_style": {
+              "label": "Icon style",
+              "options": {
+                "color": "Color",
+                "grayscale": "Black and white (color on hover)"
+              }
+            },
+            "icon_size": {
+              "label": "Icon size",
+              "options": {
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large"
+              }
+            },
+            "show_installment_text": {
+              "label": "Show installment text"
+            },
+            "installment_text": {
+              "label": "Installment text"
+            }
+          }
+        }
+      }
+    },
     "main_blog": {
       "name": "Main Blog",
       "settings": {

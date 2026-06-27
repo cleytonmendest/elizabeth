@@ -123,6 +123,7 @@
   "product": {
     "general": {
       "add_to_cart": "ADICIONAR AO CARRINHO",
+      "add_to_cart_short": "Adicionar",
       "sold_out": "Esgotado",
       "unavailable": "Indisponível",
       "quantity": "Quantidade",

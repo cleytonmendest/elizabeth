@@ -123,6 +123,7 @@
   "product": {
     "general": {
       "add_to_cart": "ADD TO CART",
+      "add_to_cart_short": "Add",
       "sold_out": "Sold Out",
       "unavailable": "Unavailable",
       "quantity": "Quantity",
