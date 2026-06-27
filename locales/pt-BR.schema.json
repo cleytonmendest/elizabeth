@@ -1,5 +1,20 @@
 {
   "sections": {
+    "main_404": {
+      "name": "Página 404",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores",
+          "info": "Esquema de cores da página 404"
+        },
+        "show_search": {
+          "label": "Mostrar campo de busca"
+        },
+        "button_label": {
+          "label": "Texto do botão"
+        }
+      }
+    },
     "header": {
       "name": "Header",
       "settings": {

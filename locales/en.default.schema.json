@@ -1,5 +1,20 @@
 {
   "sections": {
+    "main_404": {
+      "name": "404 page",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Color scheme for the 404 page"
+        },
+        "show_search": {
+          "label": "Show search field"
+        },
+        "button_label": {
+          "label": "Button text"
+        }
+      }
+    },
     "header": {
       "name": "Header",
       "settings": {

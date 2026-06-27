@@ -21,8 +21,9 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 - ✅ `announcement-bar.liquid` (i18n schema + color schemes)
 - ✅ `testimonials.liquid` (i18n front + schema + dual color schemes: section + card)
 - ✅ `trust-badges.liquid` (i18n schema + color schemes)
+- ✅ `main-404.liquid` (i18n storefront + schema + color scheme)
 
-**Pendente:** ~13 sections restantes → depois migrar ~92 snippets
+**Pendente:** ~12 sections restantes → depois migrar ~92 snippets. ⚠️ As revisões editoriais recentes (coleção, busca, carrinho, blog, artigo) adicionaram color schemes + storefront parcial, mas **faltou i18n de schema** — completar a migração nelas (ver regra 5 em CLAUDE.md).
 
 **Locales:** `pt-BR.json` (~225 strings), `en.default.json`, `pt-BR.schema.json`, `en.default.schema.json`
 

@@ -16,6 +16,10 @@ This is a Shopify theme built with TailwindCSS, based on Shopify's Online Store 
    - Se você tocou um arquivo que **já tinha** offenses pré-existentes, corrija-os também antes de commitar (regra "deixou o arquivo melhor do que encontrou"). Não herde dívida só por ter passado pelo arquivo.
    - O inventário de offenses pendentes do tema vive em `docs/ROADMAP.md` (seção **Code Quality**) — ao zerar offenses de um arquivo/check, atualize lá.
    - `assets/application.css` é gerado pelo Tailwind; offenses nele se resolvem na origem (`.liquid`/config), não editando o CSS compilado.
+5. **i18n é obrigatório em toda implementação (bloqueador para Theme Store).** Nenhuma **string nova** voltada ao usuário pode ser hardcoded. Em **toda implementação**, junto com o Theme Check:
+   - **Storefront:** todo texto visível usa `{{ '...' | t }}`, com as chaves em `locales/pt-BR.json` **e** `locales/en.default.json`. Nunca usar `| t: default: '...'` para "fingir" tradução (chave faltante vira "translation missing") — criar a chave de verdade.
+   - **Schema:** `label`/`info`/`content`/`options[].label` e o `name` da section usam chaves `t:sections.<nome_com_underscore>.…`, com entradas em `locales/pt-BR.schema.json` **e** `locales/en.default.schema.json`. (Defaults de setting são conteúdo do lojista — texto literal, não precisam de chave.)
+   - Se você tocou um arquivo com strings hardcoded **pré-existentes**, migre-as no que mexeu (mesma regra "deixou melhor do que encontrou"). O status da migração section-por-section vive em `docs/ROADMAP.md` (requisito i18n).
 
 ## Development Commands
 
