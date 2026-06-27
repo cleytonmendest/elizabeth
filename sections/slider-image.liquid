@@ -52,13 +52,21 @@
 
           assign content_position = block.settings.content_position | default: 'left'
 
+          assign slide_alt = block.settings.alt_text
+          if slide_alt == blank
+            assign slide_alt = 'sections.slider.image_alt' | t
+          endif
+
           comment
             UM único link por slide (campo "Link"):
             - com "Texto do botão" preenchido -> vira CTA (o botão redireciona)
             - sem "Texto do botão"            -> a imagem inteira é o link
             Sem link não há redirecionamento; CTA sem link não é renderizado (botão sem ação é inútil).
           endcomment
-          assign cta_text = block.settings.cta_label | default: 'Ver mais'
+          assign cta_text = block.settings.cta_label
+          if cta_text == blank
+            assign cta_text = 'general.see_more' | t
+          endif
           assign show_cta = false
           if block.settings.cta_label != blank and block.settings.link != blank
             assign show_cta = true
@@ -127,7 +135,7 @@
             {% endif %}
             <img
               src="{{ block.settings.imgMob | image_url }}"
-              alt="{{ block.settings.alt_text | escape | default: 'Slider Image' }}"
+              alt="{{ slide_alt | escape }}"
               width="{{ block.settings.imgMobWidth | default: 500 }}"
               height="{{ block.settings.imgMobHeight | default: 540 }}"
               class="w-full"
@@ -201,7 +209,7 @@
 
 {% schema %}
 {
-  "name": "Slider de Imagens",
+  "name": "t:sections.slider_image.name",
   "tag": "section",
   "class": "section",
   "disabled_on": {
@@ -211,36 +219,36 @@
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Esquema de cores",
-      "info": "Aplica-se a todo o slider: fundo, navegação (setas/contador/pontos), texto sobreposto, botão e o sombreado (scrim).",
+      "label": "t:sections.slider_image.settings.color_scheme.label",
+      "info": "t:sections.slider_image.settings.color_scheme.info",
       "default": "scheme-1"
     },
     {
       "type": "checkbox",
       "id": "fullwidth",
-      "label": "Ocupa tamanho total?",
-      "info": "Define se o slider obedecerá o tamanho máximo ou utilizará tamanho total",
+      "label": "t:sections.slider_image.settings.fullwidth.label",
+      "info": "t:sections.slider_image.settings.fullwidth.info",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "loop",
-      "label": "Ativa loop infinito?",
-      "info": "Quando chega no ultimo slider volta para o inicio automaticamente",
+      "label": "t:sections.slider_image.settings.loop.label",
+      "info": "t:sections.slider_image.settings.loop.info",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "nav",
-      "label": "Exibe Flechas de Navegação",
-      "info": "Exibe botões de proximo e anterior",
+      "label": "t:sections.slider_image.settings.nav.label",
+      "info": "t:sections.slider_image.settings.nav.info",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "dot",
-      "label": "Exibe Pontos de Navegação",
-      "info": "Exibe botões",
+      "label": "t:sections.slider_image.settings.dot.label",
+      "info": "t:sections.slider_image.settings.dot.info",
       "default": true
     },
     {
@@ -248,7 +256,7 @@
       "min": 1,
       "max": 10,
       "step": 1,
-      "label": "Quantidade de Imagens quando desktop",
+      "label": "t:sections.slider_image.settings.qty_desk.label",
       "id": "qty-desk",
       "default": 3
     },
@@ -257,7 +265,7 @@
       "min": 1,
       "max": 10,
       "step": 1,
-      "label": "Quantidade de Imagens quando Tablet",
+      "label": "t:sections.slider_image.settings.qty_tablet.label",
       "id": "qty-tablet",
       "default": 2
     },
@@ -266,15 +274,15 @@
       "min": 1,
       "max": 10,
       "step": 1,
-      "label": "Quantidade de Imagens quando mobile",
+      "label": "t:sections.slider_image.settings.qty_mob.label",
       "id": "qty-mob",
       "default": 1
     },
     {
       "type": "checkbox",
-      "label": "Ativa Autoplay",
+      "label": "t:sections.slider_image.settings.autoplay.label",
       "id": "autoplay",
-      "info": "Autoplay mantém o slider ativo, sempre passando as imagens automaticamente",
+      "info": "t:sections.slider_image.settings.autoplay.info",
       "default": true
     },
     {
@@ -283,134 +291,134 @@
       "max": 20,
       "min": 1,
       "step": 1,
-      "label": "Tempo entre os sliders (autoplay ativo)",
+      "label": "t:sections.slider_image.settings.play_time.label",
       "unit": "s",
       "default": 5
     },
     {
       "type": "checkbox",
       "id": "pause-hover",
-      "label": "Pausa autoplay quando o mouse estiver no imagem",
+      "label": "t:sections.slider_image.settings.pause_hover.label",
       "default": false
     }
   ],
   "blocks": [
     {
-      "name": "Imagem",
+      "name": "t:sections.slider_image.blocks.image.name",
       "type": "test",
       "settings": [
         {
           "type": "url",
           "id": "link",
-          "label": "Link",
-          "info": "Único link do slide. Com 'Texto do botão' preenchido, vira o link do botão (CTA). Sem texto de botão, a imagem inteira vira o link."
+          "label": "t:sections.slider_image.blocks.image.settings.link.label",
+          "info": "t:sections.slider_image.blocks.image.settings.link.info"
         },
         {
           "type": "image_picker",
           "id": "imgDesktop",
-          "label": "Imagem Desktop",
-          "info": "Imagem que exibirá quando tela for maior que 1024px"
+          "label": "t:sections.slider_image.blocks.image.settings.imgDesktop.label",
+          "info": "t:sections.slider_image.blocks.image.settings.imgDesktop.info"
         },
         {
           "type": "number",
           "id": "imgDesktopWidth",
-          "label": "Largura da imagem Desktop"
+          "label": "t:sections.slider_image.blocks.image.settings.imgDesktopWidth.label"
         },
         {
           "type": "number",
           "id": "imgDesktopHeight",
-          "label": "Altura da imagem Desktop"
+          "label": "t:sections.slider_image.blocks.image.settings.imgDesktopHeight.label"
         },
         {
           "type": "image_picker",
           "id": "imgTablet",
-          "label": "Imagem Tablet",
-          "info": "Imagem que exibirá quando tela for menor que 1024px e maior que 500px"
+          "label": "t:sections.slider_image.blocks.image.settings.imgTablet.label",
+          "info": "t:sections.slider_image.blocks.image.settings.imgTablet.info"
         },
         {
           "type": "number",
           "id": "imgTabletWidth",
-          "label": "Largura da imagem Tablet"
+          "label": "t:sections.slider_image.blocks.image.settings.imgTabletWidth.label"
         },
         {
           "type": "number",
           "id": "imgTabletHeight",
-          "label": "Altura da imagem Tablet"
+          "label": "t:sections.slider_image.blocks.image.settings.imgTabletHeight.label"
         },
         {
           "type": "image_picker",
           "id": "imgMob",
-          "label": "Imagem Mobile",
-          "info": "Imagem que exibirá quando tela for menor que 500px"
+          "label": "t:sections.slider_image.blocks.image.settings.imgMob.label",
+          "info": "t:sections.slider_image.blocks.image.settings.imgMob.info"
         },
         {
           "type": "number",
           "id": "imgMobWidth",
-          "label": "Largura da imagem Mobile"
+          "label": "t:sections.slider_image.blocks.image.settings.imgMobWidth.label"
         },
         {
           "type": "number",
           "id": "imgMobHeight",
-          "label": "Altura da imagem Mobile"
+          "label": "t:sections.slider_image.blocks.image.settings.imgMobHeight.label"
         },
         {
           "type": "text",
           "id": "alt_text",
-          "label": "Texto alternativo (alt)",
-          "info": "Descrição da imagem para acessibilidade e SEO"
+          "label": "t:sections.slider_image.blocks.image.settings.alt_text.label",
+          "info": "t:sections.slider_image.blocks.image.settings.alt_text.info"
         },
         {
           "type": "header",
-          "content": "Conteúdo sobreposto (opcional)"
+          "content": "t:sections.slider_image.blocks.image.settings.content_header.content"
         },
         {
           "type": "paragraph",
-          "content": "Deixe em branco para usar como banner apenas (imagem). Preencha para sobrepor texto editável sobre a foto — sem precisar editar a imagem."
+          "content": "t:sections.slider_image.blocks.image.settings.content_paragraph.content"
         },
         {
           "type": "text",
           "id": "eyebrow",
-          "label": "Texto pequeno (eyebrow)"
+          "label": "t:sections.slider_image.blocks.image.settings.eyebrow.label"
         },
         {
           "type": "text",
           "id": "heading",
-          "label": "Título"
+          "label": "t:sections.slider_image.blocks.image.settings.heading.label"
         },
         {
           "type": "text",
           "id": "cta_label",
-          "label": "Texto do botão (CTA)",
-          "info": "Se preenchido, exibe um botão que usa o campo 'Link' acima como destino. Em branco, a imagem inteira vira o link."
+          "label": "t:sections.slider_image.blocks.image.settings.cta_label.label",
+          "info": "t:sections.slider_image.blocks.image.settings.cta_label.info"
         },
         {
           "type": "select",
           "id": "content_position",
-          "label": "Posição do conteúdo",
+          "label": "t:sections.slider_image.blocks.image.settings.content_position.label",
           "default": "left",
           "options": [
-            { "value": "left", "label": "Esquerda" },
-            { "value": "center", "label": "Centro" },
-            { "value": "right", "label": "Direita" }
+            { "value": "left", "label": "t:sections.slider_image.blocks.image.settings.content_position.options.left" },
+            { "value": "center", "label": "t:sections.slider_image.blocks.image.settings.content_position.options.center" },
+            { "value": "right", "label": "t:sections.slider_image.blocks.image.settings.content_position.options.right" }
           ]
         },
         {
           "type": "select",
           "id": "scrim",
-          "label": "Sombreado (scrim)",
-          "info": "Gradiente escuro para o texto ficar legível sobre a foto. 'Lateral' acompanha a posição do conteúdo.",
+          "label": "t:sections.slider_image.blocks.image.settings.scrim.label",
+          "info": "t:sections.slider_image.blocks.image.settings.scrim.info",
           "default": "side",
           "options": [
-            { "value": "none", "label": "Nenhum" },
-            { "value": "side", "label": "Lateral (segue o conteúdo)" },
-            { "value": "bottom", "label": "Inferior" },
-            { "value": "full", "label": "Total" }
+            { "value": "none", "label": "t:sections.slider_image.blocks.image.settings.scrim.options.none" },
+            { "value": "side", "label": "t:sections.slider_image.blocks.image.settings.scrim.options.side" },
+            { "value": "bottom", "label": "t:sections.slider_image.blocks.image.settings.scrim.options.bottom" },
+            { "value": "full", "label": "t:sections.slider_image.blocks.image.settings.scrim.options.full" }
           ]
         },
         {
           "type": "range",
           "id": "scrim_opacity",
-          "label": "Intensidade do sombreado",
+          "label": "t:sections.slider_image.blocks.image.settings.scrim_opacity.label",
           "min": 0,
           "max": 80,
           "step": 5,
@@ -423,7 +431,7 @@
   "max_blocks": 6,
   "presets": [
     {
-      "name": "Slider de Imagens",
+      "name": "t:sections.slider_image.presets.name",
       "blocks": []
     }
   ]

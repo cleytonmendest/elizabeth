@@ -711,6 +711,135 @@
         "name": "Highlighted Section"
       }
     },
+    "slider_image": {
+      "name": "Image Slider",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Applies to the whole slider: background, navigation (arrows/counter/dots), overlay text, button and the scrim."
+        },
+        "fullwidth": {
+          "label": "Full width?",
+          "info": "Defines whether the slider follows the max width or uses full width"
+        },
+        "loop": {
+          "label": "Enable infinite loop?",
+          "info": "When it reaches the last slide it returns to the beginning automatically"
+        },
+        "nav": {
+          "label": "Show navigation arrows",
+          "info": "Shows next and previous buttons"
+        },
+        "dot": {
+          "label": "Show navigation dots",
+          "info": "Shows buttons"
+        },
+        "qty_desk": {
+          "label": "Number of images on desktop"
+        },
+        "qty_tablet": {
+          "label": "Number of images on tablet"
+        },
+        "qty_mob": {
+          "label": "Number of images on mobile"
+        },
+        "autoplay": {
+          "label": "Enable autoplay",
+          "info": "Autoplay keeps the slider active, always advancing the images automatically"
+        },
+        "play_time": {
+          "label": "Time between slides (autoplay on)"
+        },
+        "pause_hover": {
+          "label": "Pause autoplay when the mouse is over the image"
+        }
+      },
+      "blocks": {
+        "image": {
+          "name": "Image",
+          "settings": {
+            "link": {
+              "label": "Link",
+              "info": "Single link for the slide. With 'Button text' filled, it becomes the button link (CTA). Without button text, the whole image becomes the link."
+            },
+            "imgDesktop": {
+              "label": "Desktop image",
+              "info": "Image shown when the screen is wider than 1024px"
+            },
+            "imgDesktopWidth": {
+              "label": "Desktop image width"
+            },
+            "imgDesktopHeight": {
+              "label": "Desktop image height"
+            },
+            "imgTablet": {
+              "label": "Tablet image",
+              "info": "Image shown when the screen is narrower than 1024px and wider than 500px"
+            },
+            "imgTabletWidth": {
+              "label": "Tablet image width"
+            },
+            "imgTabletHeight": {
+              "label": "Tablet image height"
+            },
+            "imgMob": {
+              "label": "Mobile image",
+              "info": "Image shown when the screen is narrower than 500px"
+            },
+            "imgMobWidth": {
+              "label": "Mobile image width"
+            },
+            "imgMobHeight": {
+              "label": "Mobile image height"
+            },
+            "alt_text": {
+              "label": "Alternative text (alt)",
+              "info": "Image description for accessibility and SEO"
+            },
+            "content_header": {
+              "content": "Overlay content (optional)"
+            },
+            "content_paragraph": {
+              "content": "Leave empty to use as a banner only (image). Fill in to overlay editable text on the photo — without editing the image."
+            },
+            "eyebrow": {
+              "label": "Small text (eyebrow)"
+            },
+            "heading": {
+              "label": "Title"
+            },
+            "cta_label": {
+              "label": "Button text (CTA)",
+              "info": "If filled, shows a button that uses the 'Link' field above as the destination. If empty, the whole image becomes the link."
+            },
+            "content_position": {
+              "label": "Content position",
+              "options": {
+                "left": "Left",
+                "center": "Center",
+                "right": "Right"
+              }
+            },
+            "scrim": {
+              "label": "Scrim",
+              "info": "Dark gradient so the text stays readable over the photo. 'Side' follows the content position.",
+              "options": {
+                "none": "None",
+                "side": "Side (follows content)",
+                "bottom": "Bottom",
+                "full": "Full"
+              }
+            },
+            "scrim_opacity": {
+              "label": "Scrim intensity"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Image Slider"
+      }
+    },
     "trust_badges": {
       "name": "Trust Badges",
       "settings": {

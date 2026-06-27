@@ -711,6 +711,135 @@
         "name": "Seção Destaque"
       }
     },
+    "slider_image": {
+      "name": "Slider de Imagens",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores",
+          "info": "Aplica-se a todo o slider: fundo, navegação (setas/contador/pontos), texto sobreposto, botão e o sombreado (scrim)."
+        },
+        "fullwidth": {
+          "label": "Ocupa tamanho total?",
+          "info": "Define se o slider obedecerá o tamanho máximo ou utilizará tamanho total"
+        },
+        "loop": {
+          "label": "Ativa loop infinito?",
+          "info": "Quando chega no ultimo slider volta para o inicio automaticamente"
+        },
+        "nav": {
+          "label": "Exibe Flechas de Navegação",
+          "info": "Exibe botões de proximo e anterior"
+        },
+        "dot": {
+          "label": "Exibe Pontos de Navegação",
+          "info": "Exibe botões"
+        },
+        "qty_desk": {
+          "label": "Quantidade de Imagens quando desktop"
+        },
+        "qty_tablet": {
+          "label": "Quantidade de Imagens quando Tablet"
+        },
+        "qty_mob": {
+          "label": "Quantidade de Imagens quando mobile"
+        },
+        "autoplay": {
+          "label": "Ativa Autoplay",
+          "info": "Autoplay mantém o slider ativo, sempre passando as imagens automaticamente"
+        },
+        "play_time": {
+          "label": "Tempo entre os sliders (autoplay ativo)"
+        },
+        "pause_hover": {
+          "label": "Pausa autoplay quando o mouse estiver no imagem"
+        }
+      },
+      "blocks": {
+        "image": {
+          "name": "Imagem",
+          "settings": {
+            "link": {
+              "label": "Link",
+              "info": "Único link do slide. Com 'Texto do botão' preenchido, vira o link do botão (CTA). Sem texto de botão, a imagem inteira vira o link."
+            },
+            "imgDesktop": {
+              "label": "Imagem Desktop",
+              "info": "Imagem que exibirá quando tela for maior que 1024px"
+            },
+            "imgDesktopWidth": {
+              "label": "Largura da imagem Desktop"
+            },
+            "imgDesktopHeight": {
+              "label": "Altura da imagem Desktop"
+            },
+            "imgTablet": {
+              "label": "Imagem Tablet",
+              "info": "Imagem que exibirá quando tela for menor que 1024px e maior que 500px"
+            },
+            "imgTabletWidth": {
+              "label": "Largura da imagem Tablet"
+            },
+            "imgTabletHeight": {
+              "label": "Altura da imagem Tablet"
+            },
+            "imgMob": {
+              "label": "Imagem Mobile",
+              "info": "Imagem que exibirá quando tela for menor que 500px"
+            },
+            "imgMobWidth": {
+              "label": "Largura da imagem Mobile"
+            },
+            "imgMobHeight": {
+              "label": "Altura da imagem Mobile"
+            },
+            "alt_text": {
+              "label": "Texto alternativo (alt)",
+              "info": "Descrição da imagem para acessibilidade e SEO"
+            },
+            "content_header": {
+              "content": "Conteúdo sobreposto (opcional)"
+            },
+            "content_paragraph": {
+              "content": "Deixe em branco para usar como banner apenas (imagem). Preencha para sobrepor texto editável sobre a foto — sem precisar editar a imagem."
+            },
+            "eyebrow": {
+              "label": "Texto pequeno (eyebrow)"
+            },
+            "heading": {
+              "label": "Título"
+            },
+            "cta_label": {
+              "label": "Texto do botão (CTA)",
+              "info": "Se preenchido, exibe um botão que usa o campo 'Link' acima como destino. Em branco, a imagem inteira vira o link."
+            },
+            "content_position": {
+              "label": "Posição do conteúdo",
+              "options": {
+                "left": "Esquerda",
+                "center": "Centro",
+                "right": "Direita"
+              }
+            },
+            "scrim": {
+              "label": "Sombreado (scrim)",
+              "info": "Gradiente escuro para o texto ficar legível sobre a foto. 'Lateral' acompanha a posição do conteúdo.",
+              "options": {
+                "none": "Nenhum",
+                "side": "Lateral (segue o conteúdo)",
+                "bottom": "Inferior",
+                "full": "Total"
+              }
+            },
+            "scrim_opacity": {
+              "label": "Intensidade do sombreado"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Slider de Imagens"
+      }
+    },
     "trust_badges": {
       "name": "Trust Badges",
       "settings": {

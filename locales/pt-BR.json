@@ -401,7 +401,8 @@
     "slider": {
       "previous": "Anterior",
       "next": "Próximo",
-      "slide": "Slide {{ number }}"
+      "slide": "Slide {{ number }}",
+      "image_alt": "Imagem do slider"
     }
   }
 }

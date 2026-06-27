@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.12.0 | **Atualizado:** 2026-06-27
+**Versão:** 2.13.0 | **Atualizado:** 2026-06-27
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -28,11 +28,12 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 - ✅ `main-article.liquid` (i18n storefront + schema)
 - ✅ `main-product.liquid` (PDP — i18n storefront + schema; 89 chaves de schema; snippets `sticky-add-to-cart`, `main-product-right` migrados)
 - ✅ `highlighted-section.liquid` (i18n schema + storefront; chave reutilizável `general.see_more`)
+- ✅ `slider-image.liquid` (hero — i18n schema 53 chaves + storefront; fallbacks via `general.see_more` e `sections.slider.image_alt`)
 - ✅ Carrinho (`templates/cart.liquid` + `cart-drawer*` snippets) — storefront via `cart.general.*` (sem schema)
 
 Snippets compartilhados migrados junto: `card-product-slider`, `card-article`, `search-component`. PDP storefront já usava chaves (`product.*`) em price/inventory/quantity/add-to-cart.
 
-**Pendente:** ~6 sections de Home restantes (hero/sliders/highlighted-product/section-images-link/newsletter) → depois migrar os snippets restantes.
+**Pendente:** ~5 sections de Home restantes (slider-product/slider-cards/highlighted-product/section-images-link/newsletter) → depois migrar os snippets restantes.
 
 **Locales:** `pt-BR.json` (~225 strings), `en.default.json`, `pt-BR.schema.json`, `en.default.schema.json`
 
@@ -131,6 +132,8 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.13.0 - i18n do Slider de Imagens (hero)** (2026-06-27) — `slider-image.liquid` 100% i18n: 53 chaves de schema (`t:sections.slider_image.*`) em settings + bloco Imagem (imagens responsivas, alt, overlay: eyebrow/heading/cta, `content_position` + `scrim` com opções), em PT/EN. Storefront: fallback do CTA via `general.see_more` e do alt via nova chave `sections.slider.image_alt`. Theme Check limpo, ValidSchemaTranslations 0.
 
 **v2.12.0 - i18n do Highlighted Section** (2026-06-27) — `highlighted-section.liquid` 100% i18n: schema fechado (`button_style` + `link` migrados, chaves órfãs `button_url`/`url` removidas dos locales) e storefront (fallback do CTA agora via nova chave reutilizável `general.see_more`, que servirá às demais sections de Home). Theme Check limpo, ValidSchemaTranslations 0.
 
