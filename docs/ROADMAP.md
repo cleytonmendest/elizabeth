@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.13.0 | **Atualizado:** 2026-06-27
+**Versão:** 2.14.0 | **Atualizado:** 2026-06-27
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -16,8 +16,8 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 **Abordagem:** Section 100% completa = i18n storefront + i18n schema + color schemes
 
 **Sections 100% completas:**
-- ✅ `header.liquid` (i18n schema + color schemes)
-- ✅ `footer.liquid` (i18n schema + color schemes)
+- ⚠️ `header.liquid` (color schemes ok; **i18n schema reaberto** — `.liquid` ainda hardcoded)
+- ⚠️ `footer.liquid` (color schemes ok; **i18n schema reaberto** — `.liquid` ainda hardcoded)
 - ✅ `announcement-bar.liquid` (i18n schema + color schemes)
 - ✅ `testimonials.liquid` (i18n front + schema + dual color schemes: section + card)
 - ✅ `trust-badges.liquid` (i18n schema + color schemes)
@@ -29,11 +29,14 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 - ✅ `main-product.liquid` (PDP — i18n storefront + schema; 89 chaves de schema; snippets `sticky-add-to-cart`, `main-product-right` migrados)
 - ✅ `highlighted-section.liquid` (i18n schema + storefront; chave reutilizável `general.see_more`)
 - ✅ `slider-image.liquid` (hero — i18n schema 53 chaves + storefront; fallbacks via `general.see_more` e `sections.slider.image_alt`)
+- ✅ `slider-product.liquid` + `slider-cards.liquid` (i18n schema + aria-labels via `sections.slider.previous/next`)
+- ✅ `highlighted-product.liquid` (i18n schema; removidos placeholders mortos `SKU`/`inventory`)
+- ✅ `section-images-link.liquid` (i18n schema)
 - ✅ Carrinho (`templates/cart.liquid` + `cart-drawer*` snippets) — storefront via `cart.general.*` (sem schema)
 
 Snippets compartilhados migrados junto: `card-product-slider`, `card-article`, `search-component`. PDP storefront já usava chaves (`product.*`) em price/inventory/quantity/add-to-cart.
 
-**Pendente:** ~5 sections de Home restantes (slider-product/slider-cards/highlighted-product/section-images-link/newsletter) → depois migrar os snippets restantes.
+**Pendente:** `blog-posts` e `newsletter-modal` (schema cru). **⚠️ Reabrir `header` e `footer`:** auditoria mostrou schema ainda hardcoded no `.liquid` (entradas existem nos `*.schema.json` mas não são referenciadas) — apesar de marcados como concluídos antes. Depois, migrar os snippets restantes.
 
 **Locales:** `pt-BR.json` (~225 strings), `en.default.json`, `pt-BR.schema.json`, `en.default.schema.json`
 
@@ -132,6 +135,8 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.14.0 - i18n das sections de Home (sliders + destaque)** (2026-06-27) — `slider-product`, `slider-cards`, `highlighted-product` e `section-images-link` 100% i18n (schema PT/EN + aria-labels dos sliders via `sections.slider.previous/next`). Removidos placeholders mortos `SKU`/`inventory` do `highlighted-product`. **Auditoria** revelou que `header`/`footer` ainda têm schema hardcoded no `.liquid` (reabertos no requisito i18n). Theme Check limpo, ValidSchemaTranslations 0.
 
 **v2.13.0 - i18n do Slider de Imagens (hero)** (2026-06-27) — `slider-image.liquid` 100% i18n: 53 chaves de schema (`t:sections.slider_image.*`) em settings + bloco Imagem (imagens responsivas, alt, overlay: eyebrow/heading/cta, `content_position` + `scrim` com opções), em PT/EN. Storefront: fallback do CTA via `general.see_more` e do alt via nova chave `sections.slider.image_alt`. Theme Check limpo, ValidSchemaTranslations 0.
 

@@ -26,14 +26,14 @@
       <div class="flex gap-2 shrink-0">
         <button
           onclick="sliderPrev('{{ section.id }}')"
-          aria-label="Anterior"
+          aria-label="{{ 'sections.slider.previous' | t }}"
           class="w-9 h-9 flex items-center justify-center rounded-full border border-border text-foreground hover:bg-foreground hover:text-background transition-colors"
         >
           {% render 'icon-angle-left', size: 18 %}
         </button>
         <button
           onclick="sliderNext('{{ section.id }}')"
-          aria-label="Próximo"
+          aria-label="{{ 'sections.slider.next' | t }}"
           class="w-9 h-9 flex items-center justify-center rounded-full border border-border text-foreground hover:bg-foreground hover:text-background transition-colors"
         >
           {% render 'icon-angle-right', size: 18 %}
@@ -69,7 +69,7 @@
 
 {% schema %}
 {
-  "name": "Slider de Produtos",
+  "name": "t:sections.slider_product.name",
   "tag": "section",
   "class": "section",
   "disabled_on": {
@@ -79,50 +79,50 @@
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Esquema de cores",
+      "label": "t:sections.slider_product.settings.color_scheme.label",
       "default": "scheme-1"
     },
     {
       "type": "collection",
       "id": "collection",
-      "label": "Coleção de Produtos"
+      "label": "t:sections.slider_product.settings.collection.label"
     },
     {
       "type": "checkbox",
       "id": "show_quick_add",
-      "label": "Botão \"Adicionar\" no hover (desktop)",
-      "info": "Produtos de 1 variante adicionam direto; com várias variantes, leva à página do produto.",
+      "label": "t:sections.slider_product.settings.show_quick_add.label",
+      "info": "t:sections.slider_product.settings.show_quick_add.info",
       "default": true
     },
     {
       "type": "inline_richtext",
-      "label": "Título da prateleira",
+      "label": "t:sections.slider_product.settings.title.label",
       "id": "title"
     },
     {
       "type": "richtext",
       "id": "subtitle",
-      "label": "Subtítulo da prateleira"
+      "label": "t:sections.slider_product.settings.subtitle.label"
     },
     {
       "type": "checkbox",
       "id": "loop",
-      "label": "Ativa loop infinito?",
-      "info": "Quando chega no ultimo slider volta para o inicio automaticamente",
+      "label": "t:sections.slider_product.settings.loop.label",
+      "info": "t:sections.slider_product.settings.loop.info",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "nav",
-      "label": "Exibe Flechas de Navegação",
-      "info": "Exibe botões de proximo e anterior",
+      "label": "t:sections.slider_product.settings.nav.label",
+      "info": "t:sections.slider_product.settings.nav.info",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "dot",
-      "label": "Exibe Pontos de Navegação",
-      "info": "Exibe botões",
+      "label": "t:sections.slider_product.settings.dot.label",
+      "info": "t:sections.slider_product.settings.dot.info",
       "default": true
     },
     {
@@ -130,7 +130,7 @@
       "min": 1,
       "max": 10,
       "step": 1,
-      "label": "Quantidade de Produtos quando desktop",
+      "label": "t:sections.slider_product.settings.qty_desk.label",
       "id": "qty-desk",
       "default": 5
     },
@@ -139,7 +139,7 @@
       "min": 1,
       "max": 10,
       "step": 1,
-      "label": "Quantidade de Produtos quando Tablet",
+      "label": "t:sections.slider_product.settings.qty_tablet.label",
       "id": "qty-tablet",
       "default": 3
     },
@@ -148,15 +148,15 @@
       "min": 1,
       "max": 10,
       "step": 1,
-      "label": "Quantidade de Produtos quando mobile",
+      "label": "t:sections.slider_product.settings.qty_mob.label",
       "id": "qty-mob",
       "default": 1
     },
     {
       "type": "checkbox",
-      "label": "Ativa Autoplay",
+      "label": "t:sections.slider_product.settings.autoplay.label",
       "id": "autoplay",
-      "info": "Autoplay mantém o slider ativo, sempre passando as produtos automaticamente",
+      "info": "t:sections.slider_product.settings.autoplay.info",
       "default": true
     },
     {
@@ -165,20 +165,20 @@
       "max": 20,
       "min": 1,
       "step": 1,
-      "label": "Tempo entre os sliders (autoplay ativo)",
+      "label": "t:sections.slider_product.settings.play_time.label",
       "unit": "s",
       "default": 5
     },
     {
       "type": "checkbox",
       "id": "pause-hover",
-      "label": "Pausa autoplay quando o mouse estiver no Produto",
+      "label": "t:sections.slider_product.settings.pause_hover.label",
       "default": true
     }
   ],
   "presets": [
     {
-      "name": "Slider de Produtos",
+      "name": "t:sections.slider_product.presets.name",
       "blocks": []
     }
   ]

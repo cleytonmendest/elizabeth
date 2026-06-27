@@ -840,6 +840,266 @@
         "name": "Slider de Imagens"
       }
     },
+    "slider_product": {
+      "name": "Slider de Produtos",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
+        "collection": {
+          "label": "Coleção de Produtos"
+        },
+        "show_quick_add": {
+          "label": "Botão \"Adicionar\" no hover (desktop)",
+          "info": "Produtos de 1 variante adicionam direto; com várias variantes, leva à página do produto."
+        },
+        "title": {
+          "label": "Título da prateleira"
+        },
+        "subtitle": {
+          "label": "Subtítulo da prateleira"
+        },
+        "loop": {
+          "label": "Ativa loop infinito?",
+          "info": "Quando chega no ultimo slider volta para o inicio automaticamente"
+        },
+        "nav": {
+          "label": "Exibe Flechas de Navegação",
+          "info": "Exibe botões de proximo e anterior"
+        },
+        "dot": {
+          "label": "Exibe Pontos de Navegação",
+          "info": "Exibe botões"
+        },
+        "qty_desk": {
+          "label": "Quantidade de Produtos quando desktop"
+        },
+        "qty_tablet": {
+          "label": "Quantidade de Produtos quando Tablet"
+        },
+        "qty_mob": {
+          "label": "Quantidade de Produtos quando mobile"
+        },
+        "autoplay": {
+          "label": "Ativa Autoplay",
+          "info": "Autoplay mantém o slider ativo, sempre passando as produtos automaticamente"
+        },
+        "play_time": {
+          "label": "Tempo entre os sliders (autoplay ativo)"
+        },
+        "pause_hover": {
+          "label": "Pausa autoplay quando o mouse estiver no Produto"
+        }
+      },
+      "presets": {
+        "name": "Slider de Produtos"
+      }
+    },
+    "slider_cards": {
+      "name": "Slider de Cards",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
+        "title": {
+          "label": "Título da Seção"
+        },
+        "loop": {
+          "label": "Ativa loop infinito?",
+          "info": "Quando chega no ultimo slider volta para o inicio automaticamente"
+        },
+        "nav": {
+          "label": "Exibe Flechas de Navegação",
+          "info": "Exibe botões de proximo e anterior"
+        },
+        "dot": {
+          "label": "Exibe Pontos de Navegação",
+          "info": "Exibe botões"
+        },
+        "peek": {
+          "label": "Espiar próximo card",
+          "info": "Mostra uma fração do próximo card na borda, indicando que há mais itens para deslizar."
+        },
+        "qty_desk": {
+          "label": "Quantidade de Imagens quando desktop"
+        },
+        "qty_tablet": {
+          "label": "Quantidade de Imagens quando Tablet"
+        },
+        "qty_mob": {
+          "label": "Quantidade de Imagens quando mobile"
+        },
+        "autoplay": {
+          "label": "Ativa Autoplay",
+          "info": "Autoplay mantém o slider ativo, sempre passando as imagens automaticamente"
+        },
+        "play_time": {
+          "label": "Tempo entre os sliders (autoplay ativo)"
+        },
+        "pause_hover": {
+          "label": "Pausa autoplay quando o mouse estiver no imagem"
+        }
+      },
+      "blocks": {
+        "card": {
+          "name": "Card",
+          "settings": {
+            "title": {
+              "label": "Título"
+            },
+            "link": {
+              "label": "Link"
+            },
+            "image": {
+              "label": "Imagem"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Slider de Cards"
+      }
+    },
+    "highlighted_product": {
+      "name": "Produto Destaque",
+      "settings": {
+        "product": {
+          "label": "Produto"
+        },
+        "media_position": {
+          "label": "Posição da mídia no desktop",
+          "info": "A posição é otimizada automaticamente para dispositivos móveis.",
+          "options": {
+            "left": "Esquerda",
+            "right": "Direita"
+          }
+        }
+      },
+      "blocks": {
+        "text": {
+          "name": "Texto",
+          "settings": {
+            "text": {
+              "label": "Texto"
+            }
+          }
+        },
+        "title": {
+          "name": "Nome do Produto"
+        },
+        "price": {
+          "name": "Preço do Produto"
+        },
+        "quantity_selector": {
+          "name": "Seletor de quantidade",
+          "settings": {
+            "sideToBuyButton": {
+              "label": "Seletor de Quantidade ao lado do Botão Comprar?",
+              "info": "Caso ativado, incluirá o Seletor de Quantidade ao lado do Botão Comprar e sua localização dentro dos blocos não afetará sua localização na página."
+            }
+          }
+        },
+        "variant_picker": {
+          "name": "Seletor de variante",
+          "settings": {
+            "picker_type": {
+              "label": "Estilo",
+              "options": {
+                "dropdown": "Menu suspenso",
+                "button": "Pílulas (Botões)"
+              }
+            },
+            "swatch_shape": {
+              "label": "Amostra",
+              "options": {
+                "circle": "Círculo",
+                "square": "Quadrado",
+                "none": "Nenhum"
+              }
+            }
+          }
+        },
+        "buy_button": {
+          "name": "Botão Comprar",
+          "settings": {
+            "settings_header": {
+              "content": "Configurações de botão"
+            },
+            "button_text": {
+              "label": "Texto do botão"
+            },
+            "floating_header": {
+              "content": "Configurações de botão flutuante"
+            },
+            "floating_button": {
+              "label": "Ativa botão de comprar flutuante?",
+              "info": "Somente quando mobile"
+            },
+            "show_product_name": {
+              "label": "Exibe Nome do produto?"
+            },
+            "show_product_price": {
+              "label": "Exibe Preço do produto?"
+            }
+          }
+        },
+        "description": {
+          "name": "Descrição do produto",
+          "settings": {
+            "show_title": {
+              "label": "Mostrar título?"
+            },
+            "title_text": {
+              "label": "Título"
+            }
+          }
+        },
+        "collapsible_tab": {
+          "name": "Linha recolhível",
+          "settings": {
+            "heading": {
+              "label": "Título"
+            },
+            "content": {
+              "label": "Texto"
+            },
+            "page": {
+              "label": "Conteúdo de página"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Produto Destaque"
+      }
+    },
+    "section_images_link": {
+      "name": "Seção Imagens-Link",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        }
+      },
+      "blocks": {
+        "image": {
+          "name": "Imagem",
+          "settings": {
+            "link": {
+              "label": "Link de direcionamento"
+            },
+            "image": {
+              "label": "Imagem"
+            },
+            "label": {
+              "label": "Texto de Exibição"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Seção Imagens-Link"
+      }
+    },
     "trust_badges": {
       "name": "Trust Badges",
       "settings": {

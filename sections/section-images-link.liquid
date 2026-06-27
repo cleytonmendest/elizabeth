@@ -22,7 +22,7 @@
 
 {% schema %}
 {
-  "name": "Seção Imagens-Link",
+  "name": "t:sections.section_images_link.name",
   "tag": "section",
   "max_blocks": 2,
   "disabled_on": {
@@ -32,36 +32,36 @@
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Esquema de cores",
+      "label": "t:sections.section_images_link.settings.color_scheme.label",
       "default": "scheme-1"
     }
   ],
   "blocks": [
     {
-      "name": "Imagem",
+      "name": "t:sections.section_images_link.blocks.image.name",
       "type": "image",
       "settings": [
         {
           "type": "url",
           "id": "link",
-          "label": "Link de direcionamento"
+          "label": "t:sections.section_images_link.blocks.image.settings.link.label"
         },
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Imagem"
+          "label": "t:sections.section_images_link.blocks.image.settings.image.label"
         },
         {
             "type": "text",
             "id": "label",
-            "label": "Texto de Exibição"
+            "label": "t:sections.section_images_link.blocks.image.settings.label.label"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Seção Imagens-Link",
+      "name": "t:sections.section_images_link.presets.name",
       "blocks": [
         {
           "type": "image"

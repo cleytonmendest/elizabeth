@@ -840,6 +840,266 @@
         "name": "Image Slider"
       }
     },
+    "slider_product": {
+      "name": "Product Slider",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "collection": {
+          "label": "Product collection"
+        },
+        "show_quick_add": {
+          "label": "\"Add\" button on hover (desktop)",
+          "info": "Single-variant products add directly; with multiple variants, it goes to the product page."
+        },
+        "title": {
+          "label": "Shelf title"
+        },
+        "subtitle": {
+          "label": "Shelf subtitle"
+        },
+        "loop": {
+          "label": "Enable infinite loop?",
+          "info": "When it reaches the last slide it returns to the beginning automatically"
+        },
+        "nav": {
+          "label": "Show navigation arrows",
+          "info": "Shows next and previous buttons"
+        },
+        "dot": {
+          "label": "Show navigation dots",
+          "info": "Shows buttons"
+        },
+        "qty_desk": {
+          "label": "Number of products on desktop"
+        },
+        "qty_tablet": {
+          "label": "Number of products on tablet"
+        },
+        "qty_mob": {
+          "label": "Number of products on mobile"
+        },
+        "autoplay": {
+          "label": "Enable autoplay",
+          "info": "Autoplay keeps the slider active, always advancing the products automatically"
+        },
+        "play_time": {
+          "label": "Time between slides (autoplay on)"
+        },
+        "pause_hover": {
+          "label": "Pause autoplay when the mouse is over the product"
+        }
+      },
+      "presets": {
+        "name": "Product Slider"
+      }
+    },
+    "slider_cards": {
+      "name": "Cards Slider",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "title": {
+          "label": "Section title"
+        },
+        "loop": {
+          "label": "Enable infinite loop?",
+          "info": "When it reaches the last slide it returns to the beginning automatically"
+        },
+        "nav": {
+          "label": "Show navigation arrows",
+          "info": "Shows next and previous buttons"
+        },
+        "dot": {
+          "label": "Show navigation dots",
+          "info": "Shows buttons"
+        },
+        "peek": {
+          "label": "Peek next card",
+          "info": "Shows a fraction of the next card at the edge, indicating there are more items to slide."
+        },
+        "qty_desk": {
+          "label": "Number of images on desktop"
+        },
+        "qty_tablet": {
+          "label": "Number of images on tablet"
+        },
+        "qty_mob": {
+          "label": "Number of images on mobile"
+        },
+        "autoplay": {
+          "label": "Enable autoplay",
+          "info": "Autoplay keeps the slider active, always advancing the images automatically"
+        },
+        "play_time": {
+          "label": "Time between slides (autoplay on)"
+        },
+        "pause_hover": {
+          "label": "Pause autoplay when the mouse is over the image"
+        }
+      },
+      "blocks": {
+        "card": {
+          "name": "Card",
+          "settings": {
+            "title": {
+              "label": "Title"
+            },
+            "link": {
+              "label": "Link"
+            },
+            "image": {
+              "label": "Image"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Cards Slider"
+      }
+    },
+    "highlighted_product": {
+      "name": "Highlighted Product",
+      "settings": {
+        "product": {
+          "label": "Product"
+        },
+        "media_position": {
+          "label": "Desktop media position",
+          "info": "Position is automatically optimized for mobile devices.",
+          "options": {
+            "left": "Left",
+            "right": "Right"
+          }
+        }
+      },
+      "blocks": {
+        "text": {
+          "name": "Text",
+          "settings": {
+            "text": {
+              "label": "Text"
+            }
+          }
+        },
+        "title": {
+          "name": "Product name"
+        },
+        "price": {
+          "name": "Product price"
+        },
+        "quantity_selector": {
+          "name": "Quantity selector",
+          "settings": {
+            "sideToBuyButton": {
+              "label": "Quantity selector next to the Buy button?",
+              "info": "When enabled, the quantity selector is placed next to the Buy button and its location within the blocks will not affect its position on the page."
+            }
+          }
+        },
+        "variant_picker": {
+          "name": "Variant picker",
+          "settings": {
+            "picker_type": {
+              "label": "Style",
+              "options": {
+                "dropdown": "Dropdown",
+                "button": "Pills (Buttons)"
+              }
+            },
+            "swatch_shape": {
+              "label": "Swatch",
+              "options": {
+                "circle": "Circle",
+                "square": "Square",
+                "none": "None"
+              }
+            }
+          }
+        },
+        "buy_button": {
+          "name": "Buy button",
+          "settings": {
+            "settings_header": {
+              "content": "Button settings"
+            },
+            "button_text": {
+              "label": "Button text"
+            },
+            "floating_header": {
+              "content": "Floating button settings"
+            },
+            "floating_button": {
+              "label": "Enable floating buy button?",
+              "info": "Mobile only"
+            },
+            "show_product_name": {
+              "label": "Show product name?"
+            },
+            "show_product_price": {
+              "label": "Show product price?"
+            }
+          }
+        },
+        "description": {
+          "name": "Product description",
+          "settings": {
+            "show_title": {
+              "label": "Show title?"
+            },
+            "title_text": {
+              "label": "Title"
+            }
+          }
+        },
+        "collapsible_tab": {
+          "name": "Collapsible row",
+          "settings": {
+            "heading": {
+              "label": "Title"
+            },
+            "content": {
+              "label": "Text"
+            },
+            "page": {
+              "label": "Page content"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Highlighted Product"
+      }
+    },
+    "section_images_link": {
+      "name": "Images-Link Section",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        }
+      },
+      "blocks": {
+        "image": {
+          "name": "Image",
+          "settings": {
+            "link": {
+              "label": "Destination link"
+            },
+            "image": {
+              "label": "Image"
+            },
+            "label": {
+              "label": "Display text"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Images-Link Section"
+      }
+    },
     "trust_badges": {
       "name": "Trust Badges",
       "settings": {

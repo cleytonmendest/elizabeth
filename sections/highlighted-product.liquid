@@ -31,9 +31,6 @@
                 {%- render 'quantity-selector' -%}
               {% endif %}
 
-            {%- when 'sku' -%}
-              <div>SKU não implementado</div>
-
             {%- when 'title' -%}
               <div class="product__title" {{ block.shopify_attributes }}>
                 <h1 class="text-3xl">{{ product.title | escape }}</h1>
@@ -43,9 +40,6 @@
               <div role="status" {{ block.shopify_attributes }}>
                 {%- render 'price-v2', product: product, use_variant: true, pdp: true -%}
               </div>
-
-            {%- when 'inventory' -%}
-              <p>inventory (Falta implementar)</p>
 
             {%- when 'variant_picker' -%}
               {% render 'product-variant-picker', product: product, block: block %}
@@ -92,7 +86,7 @@
 
 {% schema %}
 {
-  "name": "Produto Destaque",
+  "name": "t:sections.highlighted_product.name",
   "tag": "section",
   "disabled_on": {
     "groups": ["header", "footer"]
@@ -100,42 +94,42 @@
   "blocks": [
     {
       "type": "text",
-      "name": "Texto",
+      "name": "t:sections.highlighted_product.blocks.text.name",
       "settings": [
         {
           "type": "inline_richtext",
           "id": "text",
-          "label": "Texto"
+          "label": "t:sections.highlighted_product.blocks.text.settings.text.label"
         }
       ]
     },
     {
       "type": "title",
-      "name": "Nome do Produto",
+      "name": "t:sections.highlighted_product.blocks.title.name",
       "limit": 1
     },
     {
       "type": "price",
-      "name": "Preço do Produto",
+      "name": "t:sections.highlighted_product.blocks.price.name",
       "limit": 1
     },
     {
       "type": "quantity_selector",
-      "name": "Seletor de quantidade",
+      "name": "t:sections.highlighted_product.blocks.quantity_selector.name",
       "limit": 1,
       "settings": [
         {
           "type": "checkbox",
           "id": "sideToBuyButton",
-          "label": "Seletor de Quantidade ao lado do Botão Comprar?",
-          "info": "Caso ativado, incluirá o Seletor de Quantidade ao lado do Botão Comprar e sua localização dentro dos blocos não afetará sua localização na página.",
+          "label": "t:sections.highlighted_product.blocks.quantity_selector.settings.sideToBuyButton.label",
+          "info": "t:sections.highlighted_product.blocks.quantity_selector.settings.sideToBuyButton.info",
           "default": true
         }
       ]
     },
     {
       "type": "variant_picker",
-      "name": "Seletor de variante",
+      "name": "t:sections.highlighted_product.blocks.variant_picker.name",
       "limit": 1,
       "settings": [
         {
@@ -144,32 +138,32 @@
           "options": [
             {
               "value": "dropdown",
-              "label": "Menu suspenso"
+              "label": "t:sections.highlighted_product.blocks.variant_picker.settings.picker_type.options.dropdown"
             },
             {
               "value": "button",
-              "label": "Pílulas (Botões)"
+              "label": "t:sections.highlighted_product.blocks.variant_picker.settings.picker_type.options.button"
             }
           ],
           "default": "button",
-          "label": "Estilo"
+          "label": "t:sections.highlighted_product.blocks.variant_picker.settings.picker_type.label"
         },
         {
           "id": "swatch_shape",
-          "label": "Amostra",
+          "label": "t:sections.highlighted_product.blocks.variant_picker.settings.swatch_shape.label",
           "type": "select",
           "options": [
             {
               "value": "circle",
-              "label": "Círculo"
+              "label": "t:sections.highlighted_product.blocks.variant_picker.settings.swatch_shape.options.circle"
             },
             {
               "value": "square",
-              "label": "Quadrado"
+              "label": "t:sections.highlighted_product.blocks.variant_picker.settings.swatch_shape.options.square"
             },
             {
               "value": "none",
-              "label": "Nenhum"
+              "label": "t:sections.highlighted_product.blocks.variant_picker.settings.swatch_shape.options.none"
             }
           ],
           "default": "circle"
@@ -178,39 +172,39 @@
     },
     {
       "type": "buy_button",
-      "name": "Botão Comprar",
+      "name": "t:sections.highlighted_product.blocks.buy_button.name",
       "limit": 1,
       "settings": [
         {
           "type": "header",
-          "content": "Configurações de botão"
+          "content": "t:sections.highlighted_product.blocks.buy_button.settings.settings_header.content"
         },
         {
           "type": "text",
-          "label": "Texto do botão",
+          "label": "t:sections.highlighted_product.blocks.buy_button.settings.button_text.label",
           "id": "button_text",
           "default": "ADICIONAR AO CARRINHO"
         },
         {
           "type": "header",
-          "content": "Configurações de botão flutuante"
+          "content": "t:sections.highlighted_product.blocks.buy_button.settings.floating_header.content"
         },
         {
           "type": "checkbox",
-          "label": "Ativa botão de comprar flutuante?",
-          "info": "Somente quando mobile",
+          "label": "t:sections.highlighted_product.blocks.buy_button.settings.floating_button.label",
+          "info": "t:sections.highlighted_product.blocks.buy_button.settings.floating_button.info",
           "id": "floating_button",
           "default": true
         },
         {
           "type": "checkbox",
-          "label": "Exibe Nome do produto?",
+          "label": "t:sections.highlighted_product.blocks.buy_button.settings.show_product_name.label",
           "id": "show_product_name",
           "default": true
         },
         {
           "type": "checkbox",
-          "label": "Exibe Preço do produto?",
+          "label": "t:sections.highlighted_product.blocks.buy_button.settings.show_product_price.label",
           "id": "show_product_price",
           "default": true
         }
@@ -218,42 +212,42 @@
     },
     {
       "type": "description",
-      "name": "Descrição do produto",
+      "name": "t:sections.highlighted_product.blocks.description.name",
       "limit": 1,
       "settings": [
         {
           "type": "checkbox",
           "id": "show_title",
-          "label": "Mostrar título?",
+          "label": "t:sections.highlighted_product.blocks.description.settings.show_title.label",
           "default": true
         },
         {
           "type": "text",
           "id": "title_text",
-          "label": "Título",
+          "label": "t:sections.highlighted_product.blocks.description.settings.title_text.label",
           "default": "Descrição"
         }
       ]
     },
     {
       "type": "collapsible_tab",
-      "name": "Linha recolhível",
+      "name": "t:sections.highlighted_product.blocks.collapsible_tab.name",
       "settings": [
         {
           "type": "text",
           "id": "heading",
           "default": "Linha recolhível",
-          "label": "Título"
+          "label": "t:sections.highlighted_product.blocks.collapsible_tab.settings.heading.label"
         },
         {
           "type": "richtext",
           "id": "content",
-          "label": "Texto"
+          "label": "t:sections.highlighted_product.blocks.collapsible_tab.settings.content.label"
         },
         {
           "type": "page",
           "id": "page",
-          "label": "Conteúdo de página"
+          "label": "t:sections.highlighted_product.blocks.collapsible_tab.settings.page.label"
         }
       ]
     }
@@ -262,7 +256,7 @@
     {
       "type": "product",
       "id": "product",
-      "label": "Produto"
+      "label": "t:sections.highlighted_product.settings.product.label"
     },
     {
       "type": "select",
@@ -270,21 +264,21 @@
       "options": [
         {
           "value": "left",
-          "label": "Esquerda"
+          "label": "t:sections.highlighted_product.settings.media_position.options.left"
         },
         {
           "value": "right",
-          "label": "Direita"
+          "label": "t:sections.highlighted_product.settings.media_position.options.right"
         }
       ],
       "default": "left",
-      "label": "Posição da mídia no desktop",
-      "info": "A posição é otimizada automaticamente para dispositivos móveis."
+      "label": "t:sections.highlighted_product.settings.media_position.label",
+      "info": "t:sections.highlighted_product.settings.media_position.info"
     }
   ],
   "presets": [
     {
-      "name": "Produto Destaque",
+      "name": "t:sections.highlighted_product.presets.name",
       "blocks": []
     }
   ]
