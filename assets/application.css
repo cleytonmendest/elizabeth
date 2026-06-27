@@ -1881,6 +1881,11 @@ label.not-swatch.is-unavailable {
   padding-bottom: 2.5rem !important;
 }
 
+.\!py-20 {
+  padding-top: 5rem !important;
+  padding-bottom: 5rem !important;
+}
+
 .\!py-3 {
   padding-top: 0.75rem !important;
   padding-bottom: 0.75rem !important;
@@ -2103,6 +2108,11 @@ label.not-swatch.is-unavailable {
 .text-4xl {
   font-size: 2.25rem;
   line-height: 2.5rem;
+}
+
+.text-6xl {
+  font-size: 3.75rem;
+  line-height: 1;
 }
 
 .text-\[11px\] {
@@ -3061,6 +3071,11 @@ label.not-swatch.is-unavailable {
 
   .md\:text-5xl {
     font-size: 3rem;
+    line-height: 1;
+  }
+
+  .md\:text-7xl {
+    font-size: 4.5rem;
     line-height: 1;
   }
 

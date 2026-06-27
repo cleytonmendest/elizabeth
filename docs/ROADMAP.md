@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.9.0 | **Atualizado:** 2026-06-27
+**Versão:** 2.10.0 | **Atualizado:** 2026-06-27
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -115,15 +115,14 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 
 ## 🟡 MELHORIAS PLANEJADAS (Médio/Longo Prazo)
 
-### Página 404 (`templates/404.liquid`)
-**Esforço:** 1-2h — Template **cru**, sem registro editorial nem color scheme. Redesenhar (mensagem + CTA + busca opcional) no padrão minimalista de luxo, com tokens.
-
 ### Migração de tokens (legado)
 **Esforço:** contínuo — Substituir `rounded-lg`→`rounded-theme` e hex/cinzas → tokens ao tocar cada arquivo. Sections com `color_scheme` devem **pintar o fundo** (`color-background color-text`), não só setar variáveis — senão schemes escuros ficam ilegíveis (corrigido em footer/blog/artigo).
 
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.10.0 - Página 404 + color schemes** (2026-06-27) — 404 convertida de `.liquid` cru para template JSON + section `main-404` (editorial: 404 grande, título `font-light`, busca opcional, CTA; color scheme + tokens, editável no editor). Color scheme adicionado a Blog e Artigo; **fix** footer/blog/artigo pintavam só as variáveis sem o fundo (`color-background color-text`) → ilegível em schemes escuros.
 
 **v2.9.0 - Revisão Blog + Artigo (editorial)** (2026-06-27) — Blog (header `font-light`, filtros/categorias como chips outline uppercase, sidebar com bordas tokenizadas, estado vazio), card de artigo (eyebrow de tag, `rounded-theme`, "Ler mais" uppercase) e artigo (título `font-light`, tags/share/bio/prev-next/comentários tokenizados). **Fix:** corpo do artigo (`.article-content`) usava `@apply` em `<style>` .liquid (ignorado pelo navegador) + `prose` sem plugin → movido para `assets/article.css` (CSS real co-locado). Safelist `grid-cols` até 6 (blog), `ImgWidthAndHeight` corrigido nos arquivos tocados.
 

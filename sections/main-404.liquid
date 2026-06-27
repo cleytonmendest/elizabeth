@@ -1,0 +1,63 @@
+<div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  <div class="page-width min-h-[60vh] flex flex-col items-center justify-center text-center !py-20">
+    <p class="text-6xl md:text-7xl font-light tracking-tight text-foreground/25 mb-6 leading-none">404</p>
+    <h1 class="text-2xl md:text-3xl font-light tracking-tight text-foreground mb-3">{{ 'general.404.title' | t }}</h1>
+    <p class="text-sm text-foreground/55 max-w-md mb-8">{{ 'general.404.subtext_html' | t }}</p>
+
+    {%- if section.settings.show_search -%}
+      <form action="{{ routes.search_url }}" method="get" role="search" class="w-full max-w-md mb-8">
+        <div class="relative">
+          <input
+            type="search"
+            name="q"
+            placeholder="{{ 'general.search.placeholder' | t }}"
+            class="w-full px-4 py-3 pr-12 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground/40 text-base"
+            required
+          >
+          <button
+            type="submit"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
+            aria-label="{{ 'general.search.submit' | t }}"
+          >
+            {% render 'icon-search', size: 22 %}
+          </button>
+        </div>
+      </form>
+    {%- endif -%}
+
+    <a
+      href="{{ routes.root_url }}"
+      class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 rounded-theme hover:opacity-90 transition-opacity"
+    >
+      {{ section.settings.button_label | default: 'Voltar à página inicial' }}
+    </a>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Página 404",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Esquema de cores",
+      "default": "scheme-1",
+      "info": "Esquema de cores da página 404"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Mostrar campo de busca",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texto do botão",
+      "default": "Voltar à página inicial"
+    }
+  ]
+}
+{% endschema %}
