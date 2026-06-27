@@ -144,6 +144,70 @@
         "name": "Blog Principal"
       }
     },
+    "main_article": {
+      "name": "Artigo do Blog",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores",
+          "info": "Esquema de cores da página do artigo"
+        },
+        "featured_image_header": {
+          "content": "Imagem Destacada"
+        },
+        "show_featured_image": {
+          "label": "Mostrar imagem destacada"
+        },
+        "hero_fullwidth": {
+          "label": "Imagem em largura total"
+        },
+        "elements_header": {
+          "content": "Elementos do Artigo"
+        },
+        "show_author": {
+          "label": "Mostrar autor"
+        },
+        "show_tags": {
+          "label": "Mostrar tags"
+        },
+        "show_share": {
+          "label": "Mostrar botões de compartilhamento"
+        },
+        "author_bio_header": {
+          "content": "Bio do Autor"
+        },
+        "show_author_bio": {
+          "label": "Mostrar bio do autor"
+        },
+        "author_bio_text": {
+          "label": "Texto da bio"
+        },
+        "related_header": {
+          "content": "Artigos Relacionados"
+        },
+        "show_related": {
+          "label": "Mostrar artigos relacionados"
+        },
+        "show_navigation": {
+          "label": "Mostrar navegação prev/next"
+        },
+        "comments_header": {
+          "content": "Comentários"
+        },
+        "show_comments": {
+          "label": "Mostrar seção de comentários",
+          "info": "Recurso nativo da Shopify. Ative os comentários em Admin → Blog → Gerenciar blog → Comentários. Os visitantes enviam pelo formulário e você aprova no admin."
+        },
+        "sidebar_header": {
+          "content": "Sidebar"
+        },
+        "show_sidebar": {
+          "label": "Mostrar sidebar"
+        }
+      },
+      "presets": {
+        "name": "Artigo do Blog"
+      }
+    },
     "header": {
       "name": "Header",
       "settings": {

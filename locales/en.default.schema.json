@@ -144,6 +144,70 @@
         "name": "Main Blog"
       }
     },
+    "main_article": {
+      "name": "Blog Article",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Color scheme for the article page"
+        },
+        "featured_image_header": {
+          "content": "Featured Image"
+        },
+        "show_featured_image": {
+          "label": "Show featured image"
+        },
+        "hero_fullwidth": {
+          "label": "Full-width image"
+        },
+        "elements_header": {
+          "content": "Article Elements"
+        },
+        "show_author": {
+          "label": "Show author"
+        },
+        "show_tags": {
+          "label": "Show tags"
+        },
+        "show_share": {
+          "label": "Show share buttons"
+        },
+        "author_bio_header": {
+          "content": "Author Bio"
+        },
+        "show_author_bio": {
+          "label": "Show author bio"
+        },
+        "author_bio_text": {
+          "label": "Bio text"
+        },
+        "related_header": {
+          "content": "Related Articles"
+        },
+        "show_related": {
+          "label": "Show related articles"
+        },
+        "show_navigation": {
+          "label": "Show prev/next navigation"
+        },
+        "comments_header": {
+          "content": "Comments"
+        },
+        "show_comments": {
+          "label": "Show comments section",
+          "info": "Native Shopify feature. Enable comments in Admin → Blog → Manage blog → Comments. Visitors submit through the form and you approve in the admin."
+        },
+        "sidebar_header": {
+          "content": "Sidebar"
+        },
+        "show_sidebar": {
+          "label": "Show sidebar"
+        }
+      },
+      "presets": {
+        "name": "Blog Article"
+      }
+    },
     "header": {
       "name": "Header",
       "settings": {

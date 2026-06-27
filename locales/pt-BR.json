@@ -241,17 +241,27 @@
       "previous": "Anterior",
       "next": "Próximo",
       "back_to_blog": "Voltar ao blog",
-      "share": "Compartilhar este artigo"
+      "share": "Compartilhar este artigo",
+      "tags": "Tags",
+      "related": "Artigos Relacionados",
+      "link_copied": "Link copiado!"
     },
     "comments": {
       "title": "Deixe um comentário",
       "name": "Nome",
       "email": "E-mail",
       "message": "Mensagem",
+      "comment": "Comentário",
       "submit": "Publicar comentário",
       "moderated": "Os comentários são moderados antes de serem publicados",
       "success": "Seu comentário foi enviado com sucesso!",
-      "error": "Ocorreu um erro ao enviar seu comentário"
+      "success_moderated": "Comentário enviado com sucesso! Ele será publicado após moderação.",
+      "errors": "Ocorreram erros:",
+      "error": "Ocorreu um erro ao enviar seu comentário",
+      "count": {
+        "one": "{{ count }} Comentário",
+        "other": "{{ count }} Comentários"
+      }
     }
   },
   "customer": {

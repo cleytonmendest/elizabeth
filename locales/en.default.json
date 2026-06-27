@@ -241,17 +241,27 @@
       "previous": "Previous",
       "next": "Next",
       "back_to_blog": "Back to blog",
-      "share": "Share this article"
+      "share": "Share this article",
+      "tags": "Tags",
+      "related": "Related Articles",
+      "link_copied": "Link copied!"
     },
     "comments": {
       "title": "Leave a comment",
       "name": "Name",
       "email": "Email",
       "message": "Message",
+      "comment": "Comment",
       "submit": "Post comment",
       "moderated": "Comments are moderated before being published",
       "success": "Your comment was posted successfully!",
-      "error": "An error occurred while posting your comment"
+      "success_moderated": "Comment submitted successfully! It will be published after moderation.",
+      "errors": "Some errors occurred:",
+      "error": "An error occurred while posting your comment",
+      "count": {
+        "one": "{{ count }} Comment",
+        "other": "{{ count }} Comments"
+      }
     }
   },
   "customer": {
