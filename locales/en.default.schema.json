@@ -15,6 +15,55 @@
         }
       }
     },
+    "main_collection": {
+      "name": "Collection Page",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Color scheme for the collection page"
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "products_per_page": {
+          "label": "Products per page"
+        },
+        "products_per_row": {
+          "label": "Products per row (desktop)"
+        },
+        "show_second_image": {
+          "label": "Show second image on hover"
+        },
+        "collection_header": {
+          "content": "Collection"
+        },
+        "show_collection_image": {
+          "label": "Show collection image"
+        },
+        "show_collection_description": {
+          "label": "Show collection description"
+        },
+        "filters_header": {
+          "content": "Filters and Sorting"
+        },
+        "enable_filtering": {
+          "label": "Enable filters"
+        },
+        "enable_price_filter": {
+          "label": "Enable price filter"
+        },
+        "enable_sorting": {
+          "label": "Enable sorting"
+        },
+        "product_header": {
+          "content": "Product"
+        },
+        "show_installments": {
+          "label": "Show installment option",
+          "info": "Shows 3x interest-free for products over R$ 100"
+        }
+      }
+    },
     "header": {
       "name": "Header",
       "settings": {

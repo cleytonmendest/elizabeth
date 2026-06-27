@@ -117,7 +117,9 @@
       "save": "Save",
       "vendor": "Vendor",
       "type": "Type",
-      "sku": "SKU"
+      "sku": "SKU",
+      "percent_off": "{{ percent }}% OFF",
+      "more_colors": "More colors available"
     },
     "inventory": {
       "in_stock": "In stock",
@@ -147,7 +149,8 @@
       "in": "in",
       "up_to": "Up to",
       "of": "of",
-      "times": "{{ count }}x"
+      "times": "{{ count }}x",
+      "card": "in {{ count }}x of {{ price }}"
     }
   },
   "collection": {
@@ -156,7 +159,14 @@
       "label": "Collection",
       "no_products": "No products found",
       "items": "items",
-      "view_all": "View all"
+      "view_all": "View all",
+      "empty_text": "This collection is currently empty.",
+      "view_all_collections": "View all collections",
+      "sort_reloaded": "Sorting has changed. The page will reload.",
+      "results_showing": {
+        "one": "{{ first }}-{{ last }} of {{ count }} product",
+        "other": "{{ first }}-{{ last }} of {{ count }} products"
+      }
     },
     "sorting": {
       "title": "Sort by:",
@@ -181,7 +191,12 @@
       "availability": "Availability",
       "in_stock": "In stock",
       "out_of_stock": "Out of stock",
-      "price": "Price"
+      "price": "Price",
+      "close": "Close filters",
+      "price_0_50": "Up to R$ 50",
+      "price_50_100": "R$ 50 - R$ 100",
+      "price_100_200": "R$ 100 - R$ 200",
+      "price_200_plus": "Over R$ 200"
     }
   },
   "blog": {

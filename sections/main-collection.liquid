@@ -49,16 +49,16 @@
         <aside
           class="filters-panel fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] -translate-x-full overflow-y-auto bg-background p-6 transition-transform duration-300 lg:static lg:z-auto lg:w-64 lg:max-w-none lg:translate-x-0 lg:overflow-visible lg:bg-transparent lg:p-0 lg:transition-none flex-shrink-0"
           data-filters-panel
-          aria-label="Filtros"
+          aria-label="{{ 'collection.filters.title' | t }}"
         >
           <div class="lg:sticky lg:top-20">
             {%- comment -%} Cabeçalho do drawer (somente mobile) {%- endcomment -%}
             <div class="flex items-center justify-between mb-6 lg:hidden">
-              <h2 class="text-xs uppercase tracking-[0.18em] text-foreground/60">Filtrar</h2>
+              <h2 class="text-xs uppercase tracking-[0.18em] text-foreground/60">{{ 'collection.filters.title' | t }}</h2>
               <button
                 type="button"
                 data-filters-close
-                aria-label="Fechar filtros"
+                aria-label="{{ 'collection.filters.close' | t }}"
                 class="text-foreground/60 hover:text-foreground transition-colors"
               >
                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,12 +69,12 @@
 
             {%- if section.settings.enable_filtering -%}
               <div class="mb-8">
-                <h2 class="hidden lg:block text-xs uppercase tracking-[0.18em] text-foreground/60 mb-5">Filtrar</h2>
+                <h2 class="hidden lg:block text-xs uppercase tracking-[0.18em] text-foreground/60 mb-5">{{ 'collection.filters.title' | t }}</h2>
 
                 {%- comment -%} Filtro de disponibilidade {%- endcomment -%}
                 <details class="mb-4 border-b border-border pb-4" open>
                   <summary class="cursor-pointer text-sm font-medium mb-2 flex justify-between items-center">
-                    Disponibilidade
+                    {{ 'collection.filters.availability' | t }}
                     <svg class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
@@ -82,11 +82,11 @@
                   <div class="mt-2 space-y-2">
                     <label class="flex items-center">
                       <input type="checkbox" class="filter-checkbox mr-2" data-filter="in-stock">
-                      <span class="text-sm">Em estoque ({{ collection.products | where: "available" | size }})</span>
+                      <span class="text-sm">{{ 'collection.filters.in_stock' | t }} ({{ collection.products | where: "available" | size }})</span>
                     </label>
                     <label class="flex items-center">
                       <input type="checkbox" class="filter-checkbox mr-2" data-filter="out-of-stock">
-                      <span class="text-sm">Esgotado</span>
+                      <span class="text-sm">{{ 'collection.filters.out_of_stock' | t }}</span>
                     </label>
                   </div>
                 </details>
@@ -95,7 +95,7 @@
                 {%- if section.settings.enable_price_filter -%}
                   <details class="mb-4 border-b border-border pb-4">
                     <summary class="cursor-pointer text-sm font-medium mb-2 flex justify-between items-center">
-                      Preço
+                      {{ 'collection.filters.price' | t }}
                       <svg class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                       </svg>
@@ -103,19 +103,19 @@
                     <div class="mt-2 space-y-2">
                       <label class="flex items-center">
                         <input type="radio" name="price-filter" class="mr-2" value="0-50">
-                        <span class="text-sm">Até R$ 50</span>
+                        <span class="text-sm">{{ 'collection.filters.price_0_50' | t }}</span>
                       </label>
                       <label class="flex items-center">
                         <input type="radio" name="price-filter" class="mr-2" value="50-100">
-                        <span class="text-sm">R$ 50 - R$ 100</span>
+                        <span class="text-sm">{{ 'collection.filters.price_50_100' | t }}</span>
                       </label>
                       <label class="flex items-center">
                         <input type="radio" name="price-filter" class="mr-2" value="100-200">
-                        <span class="text-sm">R$ 100 - R$ 200</span>
+                        <span class="text-sm">{{ 'collection.filters.price_100_200' | t }}</span>
                       </label>
                       <label class="flex items-center">
                         <input type="radio" name="price-filter" class="mr-2" value="200+">
-                        <span class="text-sm">Acima de R$ 200</span>
+                        <span class="text-sm">{{ 'collection.filters.price_200_plus' | t }}</span>
                       </label>
                     </div>
                   </details>
@@ -142,36 +142,36 @@
                 <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M6 12h12M10 20h4" />
                 </svg>
-                Filtrar
+                {{ 'collection.filters.title' | t }}
               </button>
             {%- endif -%}
           </div>
 
           {%- comment -%} Centro: contagem de produtos {%- endcomment -%}
           <p class="justify-self-center text-center text-sm text-foreground/55">
-            {{ paginate.current_offset | plus: 1 }}-{{ paginate.current_offset | plus: paginate.page_size | at_most: collection.products_count }}
-            de {{ collection.products_count }}
-            {% if collection.products_count == 1 %}produto{% else %}produtos{% endif %}
+            {%- assign showing_first = paginate.current_offset | plus: 1 -%}
+            {%- assign showing_last = paginate.current_offset | plus: paginate.page_size | at_most: collection.products_count -%}
+            {{ 'collection.general.results_showing' | t: count: collection.products_count, first: showing_first, last: showing_last }}
           </p>
 
           {%- comment -%} Direita: ordenação {%- endcomment -%}
           <div class="justify-self-end flex items-center gap-2">
             {%- if section.settings.enable_sorting -%}
-              <label for="SortBy" class="text-sm font-medium hidden sm:inline">Ordenar por:</label>
+              <label for="SortBy" class="text-sm font-medium hidden sm:inline">{{ 'collection.sorting.title' | t }}</label>
               <select
                 id="SortBy"
                 name="sort_by"
                 class="border border-border rounded-theme px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/40"
                 aria-describedby="a11y-refresh-page-message"
               >
-                <option value="manual" {% if sort_by == 'manual' %}selected{% endif %}>Em destaque</option>
-                <option value="best-selling" {% if sort_by == 'best-selling' %}selected{% endif %}>Mais vendidos</option>
-                <option value="title-ascending" {% if sort_by == 'title-ascending' %}selected{% endif %}>A-Z</option>
-                <option value="title-descending" {% if sort_by == 'title-descending' %}selected{% endif %}>Z-A</option>
-                <option value="price-ascending" {% if sort_by == 'price-ascending' %}selected{% endif %}>Menor preço</option>
-                <option value="price-descending" {% if sort_by == 'price-descending' %}selected{% endif %}>Maior preço</option>
-                <option value="created-descending" {% if sort_by == 'created-descending' %}selected{% endif %}>Mais recente</option>
-                <option value="created-ascending" {% if sort_by == 'created-ascending' %}selected{% endif %}>Mais antigo</option>
+                <option value="manual" {% if sort_by == 'manual' %}selected{% endif %}>{{ 'collection.sorting.featured' | t }}</option>
+                <option value="best-selling" {% if sort_by == 'best-selling' %}selected{% endif %}>{{ 'collection.sorting.best_selling' | t }}</option>
+                <option value="title-ascending" {% if sort_by == 'title-ascending' %}selected{% endif %}>{{ 'collection.sorting.az' | t }}</option>
+                <option value="title-descending" {% if sort_by == 'title-descending' %}selected{% endif %}>{{ 'collection.sorting.za' | t }}</option>
+                <option value="price-ascending" {% if sort_by == 'price-ascending' %}selected{% endif %}>{{ 'collection.sorting.price_ascending' | t }}</option>
+                <option value="price-descending" {% if sort_by == 'price-descending' %}selected{% endif %}>{{ 'collection.sorting.price_descending' | t }}</option>
+                <option value="created-descending" {% if sort_by == 'created-descending' %}selected{% endif %}>{{ 'collection.sorting.date_descending' | t }}</option>
+                <option value="created-ascending" {% if sort_by == 'created-ascending' %}selected{% endif %}>{{ 'collection.sorting.date_ascending' | t }}</option>
               </select>
             {%- endif -%}
           </div>
@@ -201,10 +201,10 @@
             <svg class="w-16 h-16 mx-auto text-foreground/25 mb-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
             </svg>
-            <h2 class="text-2xl font-light tracking-tight mb-2">Nenhum produto encontrado</h2>
-            <p class="text-sm text-foreground/55 mb-8">Esta coleção está vazia no momento.</p>
+            <h2 class="text-2xl font-light tracking-tight mb-2">{{ 'collection.general.no_products' | t }}</h2>
+            <p class="text-sm text-foreground/55 mb-8">{{ 'collection.general.empty_text' | t }}</p>
             <a href="{{ routes.collections_url }}" class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity">
-              Ver todas as coleções
+              {{ 'collection.general.view_all_collections' | t }}
             </a>
           </div>
         {%- endif -%}
@@ -259,7 +259,7 @@
   a11yRefreshMessage.className = 'sr-only';
   a11yRefreshMessage.setAttribute('role', 'status');
   a11yRefreshMessage.setAttribute('aria-live', 'polite');
-  a11yRefreshMessage.textContent = 'A ordenação foi alterada. A página será recarregada.';
+  a11yRefreshMessage.textContent = {{ 'collection.general.sort_reloaded' | t | json }};
   document.body.appendChild(a11yRefreshMessage);
 </script>
 
@@ -268,19 +268,19 @@
 
 {% schema %}
 {
-  "name": "Página de Coleção",
+  "name": "t:sections.main_collection.name",
   "class": "section-collection",
   "settings": [
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Esquema de cores",
+      "label": "t:sections.main_collection.settings.color_scheme.label",
       "default": "scheme-1",
-      "info": "Esquema de cores para a página de coleção"
+      "info": "t:sections.main_collection.settings.color_scheme.info"
     },
     {
       "type": "header",
-      "content": "Layout"
+      "content": "t:sections.main_collection.settings.layout_header.content"
     },
     {
       "type": "range",
@@ -289,7 +289,7 @@
       "max": 48,
       "step": 4,
       "default": 12,
-      "label": "Produtos por página"
+      "label": "t:sections.main_collection.settings.products_per_page.label"
     },
     {
       "type": "range",
@@ -298,62 +298,62 @@
       "max": 5,
       "step": 1,
       "default": 4,
-      "label": "Produtos por linha (desktop)"
+      "label": "t:sections.main_collection.settings.products_per_row.label"
     },
     {
       "type": "checkbox",
       "id": "show_second_image",
-      "label": "Mostrar segunda imagem ao passar o mouse",
+      "label": "t:sections.main_collection.settings.show_second_image.label",
       "default": true
     },
     {
       "type": "header",
-      "content": "Coleção"
+      "content": "t:sections.main_collection.settings.collection_header.content"
     },
     {
       "type": "checkbox",
       "id": "show_collection_image",
-      "label": "Mostrar imagem da coleção",
+      "label": "t:sections.main_collection.settings.show_collection_image.label",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "show_collection_description",
-      "label": "Mostrar descrição da coleção",
+      "label": "t:sections.main_collection.settings.show_collection_description.label",
       "default": true
     },
     {
       "type": "header",
-      "content": "Filtros e Ordenação"
+      "content": "t:sections.main_collection.settings.filters_header.content"
     },
     {
       "type": "checkbox",
       "id": "enable_filtering",
-      "label": "Ativar filtros",
+      "label": "t:sections.main_collection.settings.enable_filtering.label",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "enable_price_filter",
-      "label": "Ativar filtro de preço",
+      "label": "t:sections.main_collection.settings.enable_price_filter.label",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "enable_sorting",
-      "label": "Ativar ordenação",
+      "label": "t:sections.main_collection.settings.enable_sorting.label",
       "default": true
     },
     {
       "type": "header",
-      "content": "Produto"
+      "content": "t:sections.main_collection.settings.product_header.content"
     },
     {
       "type": "checkbox",
       "id": "show_installments",
-      "label": "Mostrar opção de parcelamento",
+      "label": "t:sections.main_collection.settings.show_installments.label",
       "default": true,
-      "info": "Mostra 3x sem juros para produtos acima de R$ 100"
+      "info": "t:sections.main_collection.settings.show_installments.info"
     }
   ]
 }

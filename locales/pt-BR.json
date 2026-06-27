@@ -117,7 +117,9 @@
       "save": "Economize",
       "vendor": "Fornecedor",
       "type": "Tipo",
-      "sku": "SKU"
+      "sku": "SKU",
+      "percent_off": "{{ percent }}% OFF",
+      "more_colors": "Mais cores disponíveis"
     },
     "inventory": {
       "in_stock": "Em estoque",
@@ -147,7 +149,8 @@
       "in": "em",
       "up_to": "Em até",
       "of": "de",
-      "times": "{{ count }}x"
+      "times": "{{ count }}x",
+      "card": "em {{ count }}x de {{ price }}"
     }
   },
   "collection": {
@@ -156,7 +159,14 @@
       "label": "Coleção",
       "no_products": "Nenhum produto encontrado",
       "items": "itens",
-      "view_all": "Ver todos"
+      "view_all": "Ver todos",
+      "empty_text": "Esta coleção está vazia no momento.",
+      "view_all_collections": "Ver todas as coleções",
+      "sort_reloaded": "A ordenação foi alterada. A página será recarregada.",
+      "results_showing": {
+        "one": "{{ first }}-{{ last }} de {{ count }} produto",
+        "other": "{{ first }}-{{ last }} de {{ count }} produtos"
+      }
     },
     "sorting": {
       "title": "Ordenar por:",
@@ -181,7 +191,12 @@
       "availability": "Disponibilidade",
       "in_stock": "Em estoque",
       "out_of_stock": "Fora de estoque",
-      "price": "Preço"
+      "price": "Preço",
+      "close": "Fechar filtros",
+      "price_0_50": "Até R$ 50",
+      "price_50_100": "R$ 50 - R$ 100",
+      "price_100_200": "R$ 100 - R$ 200",
+      "price_200_plus": "Acima de R$ 200"
     }
   },
   "blog": {

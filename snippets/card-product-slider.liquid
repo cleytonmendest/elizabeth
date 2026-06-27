@@ -107,12 +107,12 @@
     {%- if show_badges -%}
       {%- unless card_product.available -%}
         <div class="absolute top-2 right-2 color-error-bg color-error text-xs px-2 py-1 rounded-theme border color-border z-10">
-          Esgotado
+          {{ 'product.general.sold_out' | t }}
         </div>
       {%- endunless -%}
       {%- if has_discount -%}
         <div class="absolute top-2 left-2 color-badge text-xs px-2 py-1 rounded-theme font-medium z-10">
-          {{ discount_percent }}% OFF
+          {{ 'product.general.percent_off' | t: percent: discount_percent }}
         </div>
       {%- endif -%}
     {%- endif -%}
@@ -142,8 +142,8 @@
         {%- if swatch_count > 4 -%}
           <span
             class="flex items-center justify-center w-3.5 h-3.5 rounded-full border border-white/70 bg-black/30 text-[8px] leading-none text-white/90"
-            title="Mais cores disponíveis"
-            aria-label="Mais cores disponíveis"
+            title="{{ 'product.general.more_colors' | t }}"
+            aria-label="{{ 'product.general.more_colors' | t }}"
           >+{{ swatch_count | minus: 4 }}</span>
         {%- endif -%}
       {%- endcapture -%}
@@ -189,8 +189,9 @@
       {%- endif -%}
     </div>
     {%- if show_installments and show_inst_global and actual_installments > 1 -%}
+      {%- assign installment_price = final_installment_value | money -%}
       <p class="text-xs text-foreground/50 mt-0.5">
-        em {{ actual_installments }}x de {{ final_installment_value | money }}
+        {{ 'product.installments.card' | t: count: actual_installments, price: installment_price }}
       </p>
     {%- endif -%}
   </div>

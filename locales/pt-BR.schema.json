@@ -15,6 +15,55 @@
         }
       }
     },
+    "main_collection": {
+      "name": "Página de Coleção",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores",
+          "info": "Esquema de cores para a página de coleção"
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "products_per_page": {
+          "label": "Produtos por página"
+        },
+        "products_per_row": {
+          "label": "Produtos por linha (desktop)"
+        },
+        "show_second_image": {
+          "label": "Mostrar segunda imagem ao passar o mouse"
+        },
+        "collection_header": {
+          "content": "Coleção"
+        },
+        "show_collection_image": {
+          "label": "Mostrar imagem da coleção"
+        },
+        "show_collection_description": {
+          "label": "Mostrar descrição da coleção"
+        },
+        "filters_header": {
+          "content": "Filtros e Ordenação"
+        },
+        "enable_filtering": {
+          "label": "Ativar filtros"
+        },
+        "enable_price_filter": {
+          "label": "Ativar filtro de preço"
+        },
+        "enable_sorting": {
+          "label": "Ativar ordenação"
+        },
+        "product_header": {
+          "content": "Produto"
+        },
+        "show_installments": {
+          "label": "Mostrar opção de parcelamento",
+          "info": "Mostra 3x sem juros para produtos acima de R$ 100"
+        }
+      }
+    },
     "header": {
       "name": "Header",
       "settings": {
