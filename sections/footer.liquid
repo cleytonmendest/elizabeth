@@ -98,169 +98,169 @@
 
 {% schema %}
 {
-  "name": "Footer",
+  "name": "t:sections.footer.name",
   "class": "footer",
   "settings": [
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Esquema de cores",
+      "label": "t:sections.footer.settings.color_scheme.label",
       "default": "scheme-1",
-      "info": "Esquema de cores para o footer"
+      "info": "t:sections.footer.settings.color_scheme.info"
     },
     {
       "type": "header",
-      "content": "Newsletter",
-      "info": "Informações sobre Newsletter"
+      "content": "t:sections.footer.settings.newsletter.content",
+      "info": "t:sections.footer.settings.newsletter.info"
     },
     {
       "type": "checkbox",
       "id": "active_newsletter",
-      "label": "Exibe Newsletter?",
+      "label": "t:sections.footer.settings.active_newsletter.label",
       "default": true,
-      "info": "Exibe ou não a Newsletter"
+      "info": "t:sections.footer.settings.active_newsletter.info"
     },
     {
       "type": "richtext",
       "id": "newsletter_text",
-      "label": "Texto da Newsletter",
+      "label": "t:sections.footer.settings.newsletter_text.label",
       "default": "<h2>INSCREVA-SE EM NOSSA NEWSLETTER</h2><p>Fique por dentro das novidades, promoções e muito mais.</p>"
     },
     {
       "type": "color_scheme",
       "id": "newsletter_color_scheme",
-      "label": "Esquema de cores da Newsletter",
+      "label": "t:sections.footer.settings.newsletter_color_scheme.label",
       "default": "scheme-2",
-      "info": "Faixa da newsletter, independente do footer"
+      "info": "t:sections.footer.settings.newsletter_color_scheme.info"
     }
   ],
   "blocks": [
     {
-      "name": "Sub-links",
+      "name": "t:sections.footer.blocks.links.name",
       "type": "links",
       "limit": 3,
       "settings": [
         {
           "type": "text",
           "id": "sublink_title",
-          "label": "Título dos Links",
-          "placeholder": "ex: Institucionais"
+          "label": "t:sections.footer.blocks.links.settings.sublink_title.label",
+          "placeholder": "t:sections.footer.blocks.links.settings.sublink_title.placeholder"
         },
         {
           "type": "link_list",
           "id": "linklist",
-          "label": "Lista de Links"
+          "label": "t:sections.footer.blocks.links.settings.linklist.label"
         }
       ]
     },
     {
-      "name": "Pagamentos e Social",
+      "name": "t:sections.footer.blocks.extra.name",
       "type": "extra",
       "limit": 1,
       "settings": [
         {
           "type": "header",
-          "content": "Redes Sociais"
+          "content": "t:sections.footer.blocks.extra.settings.social_media.content"
         },
         {
           "type": "checkbox",
           "id": "active_social_media",
-          "label": "Exibe Redes Sociais?",
+          "label": "t:sections.footer.blocks.extra.settings.active_social_media.label",
           "default": true
         },
         {
           "type": "text",
           "id": "title_social_media",
-          "label": "Título do bloco das Rede Sociais",
+          "label": "t:sections.footer.blocks.extra.settings.title_social_media.label",
           "default": "SIGA-NOS"
         },
         {
           "type": "header",
-          "content": "Formas de Pagamento",
-          "info": "Selecione as bandeiras aceitas"
+          "content": "t:sections.footer.blocks.extra.settings.payment_methods.content",
+          "info": "t:sections.footer.blocks.extra.settings.payment_methods.info"
         },
         {
           "type": "text",
           "id": "title_payments",
-          "label": "Título do bloco de Formas de Pagamento",
+          "label": "t:sections.footer.blocks.extra.settings.title_payments.label",
           "default": "FORMAS DE PAGAMENTO"
         },
         {
           "type": "checkbox",
           "id": "pay_mastercard",
-          "label": "Exibe bandeira Mastercard?",
+          "label": "t:sections.footer.blocks.extra.settings.pay_mastercard.label",
           "default": true
         },
         {
           "type": "checkbox",
           "id": "pay_visa",
-          "label": "Exibe bandeira Visa?",
+          "label": "t:sections.footer.blocks.extra.settings.pay_visa.label",
           "default": true
         },
         {
           "type": "checkbox",
           "id": "pay_elo",
-          "label": "Exibe bandeira Elo?",
+          "label": "t:sections.footer.blocks.extra.settings.pay_elo.label",
           "default": true
         },
         {
           "type": "checkbox",
           "id": "pay_dinners",
-          "label": "Exibe bandeira Dinners?",
+          "label": "t:sections.footer.blocks.extra.settings.pay_dinners.label",
           "default": true
         },
         {
           "type": "checkbox",
           "id": "pay_american",
-          "label": "Exibe bandeira American Express?",
+          "label": "t:sections.footer.blocks.extra.settings.pay_american.label",
           "default": true
         },
         {
           "type": "checkbox",
           "id": "pay_jcb",
-          "label": "Exibe bandeira JCB?",
+          "label": "t:sections.footer.blocks.extra.settings.pay_jcb.label",
           "default": true
         },
         {
           "type": "checkbox",
           "id": "pay_aura",
-          "label": "Exibe bandeira Aura?",
+          "label": "t:sections.footer.blocks.extra.settings.pay_aura.label",
           "default": true
         },
         {
           "type": "checkbox",
           "id": "pay_hiper",
-          "label": "Exibe bandeira Hipercard?",
+          "label": "t:sections.footer.blocks.extra.settings.pay_hiper.label",
           "default": true
         },
         {
           "type": "checkbox",
           "id": "pay_sodexo",
-          "label": "Exibe bandeira Sodexo?",
+          "label": "t:sections.footer.blocks.extra.settings.pay_sodexo.label",
           "default": true
         },
         {
           "type": "checkbox",
           "id": "pay_boleto",
-          "label": "Exibe Boleto?",
+          "label": "t:sections.footer.blocks.extra.settings.pay_boleto.label",
           "default": true
         },
         {
           "type": "checkbox",
           "id": "pay_pix",
-          "label": "Exibe Pix?",
+          "label": "t:sections.footer.blocks.extra.settings.pay_pix.label",
           "default": true
         },
         {
           "type": "checkbox",
           "id": "pay_gpay",
-          "label": "Exibe bandeira GPay?",
+          "label": "t:sections.footer.blocks.extra.settings.pay_gpay.label",
           "default": true
         },
         {
           "type": "checkbox",
           "id": "pay_yapay",
-          "label": "Exibe bandeira Yapay?",
+          "label": "t:sections.footer.blocks.extra.settings.pay_yapay.label",
           "default": true
         }
       ]

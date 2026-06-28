@@ -436,7 +436,7 @@
       "settings": {
         "color_scheme": {
           "label": "Esquema de cores",
-          "info": "Esquema de cores base para o header"
+          "info": "Define fundo, texto e ícones do header"
         },
         "menu": {
           "label": "Menu Principal"
@@ -451,22 +451,8 @@
           }
         },
         "fixed_header": {
-          "label": "Header acompanha scroll?",
-          "info": "Se ativado, o header sempre acompanhará o scroll"
-        },
-        "transparent_header": {
-          "label": "Header transparente?",
-          "info": "Se ativado, o header será transparente e ficará por cima da primeira seção."
-        },
-        "header_bg": {
-          "label": "Cor background do Header",
-          "info": "Caso seja header transparente e acompanhar scroll, essa cor exibirá quando o usuário 'scrollar' a página"
-        },
-        "icons_color": {
-          "label": "Cor dos ícones header (Primário)"
-        },
-        "icons_color_secondary": {
-          "label": "Cor dos Ícones header (Secundário)"
+          "label": "Header fixo (sticky)",
+          "info": "Se ativado, o header acompanha o scroll fixo no topo"
         }
       }
     },
@@ -487,6 +473,10 @@
         },
         "newsletter_text": {
           "label": "Texto da Newsletter"
+        },
+        "newsletter_color_scheme": {
+          "label": "Esquema de cores da Newsletter",
+          "info": "Faixa da newsletter, independente do footer"
         }
       },
       "blocks": {
@@ -520,6 +510,45 @@
             },
             "title_payments": {
               "label": "Título do bloco de Formas de Pagamento"
+            },
+            "pay_mastercard": {
+              "label": "Exibe bandeira Mastercard?"
+            },
+            "pay_visa": {
+              "label": "Exibe bandeira Visa?"
+            },
+            "pay_elo": {
+              "label": "Exibe bandeira Elo?"
+            },
+            "pay_dinners": {
+              "label": "Exibe bandeira Dinners?"
+            },
+            "pay_american": {
+              "label": "Exibe bandeira American Express?"
+            },
+            "pay_jcb": {
+              "label": "Exibe bandeira JCB?"
+            },
+            "pay_aura": {
+              "label": "Exibe bandeira Aura?"
+            },
+            "pay_hiper": {
+              "label": "Exibe bandeira Hipercard?"
+            },
+            "pay_sodexo": {
+              "label": "Exibe bandeira Sodexo?"
+            },
+            "pay_boleto": {
+              "label": "Exibe Boleto?"
+            },
+            "pay_pix": {
+              "label": "Exibe Pix?"
+            },
+            "pay_gpay": {
+              "label": "Exibe bandeira GPay?"
+            },
+            "pay_yapay": {
+              "label": "Exibe bandeira Yapay?"
             }
           }
         }

@@ -436,7 +436,7 @@
       "settings": {
         "color_scheme": {
           "label": "Color scheme",
-          "info": "Base color scheme for header"
+          "info": "Defines background, text and header icons"
         },
         "menu": {
           "label": "Main menu"
@@ -451,22 +451,8 @@
           }
         },
         "fixed_header": {
-          "label": "Fixed header on scroll?",
-          "info": "If enabled, the header will follow the scroll"
-        },
-        "transparent_header": {
-          "label": "Transparent header?",
-          "info": "If enabled, the header will be transparent and overlay the first section"
-        },
-        "header_bg": {
-          "label": "Header background color",
-          "info": "If transparent and fixed header, this color will show when user scrolls"
-        },
-        "icons_color": {
-          "label": "Header icons color (Primary)"
-        },
-        "icons_color_secondary": {
-          "label": "Header icons color (Secondary)"
+          "label": "Fixed header (sticky)",
+          "info": "If enabled, the header follows the scroll fixed at the top"
         }
       }
     },
@@ -487,6 +473,10 @@
         },
         "newsletter_text": {
           "label": "Newsletter text"
+        },
+        "newsletter_color_scheme": {
+          "label": "Newsletter color scheme",
+          "info": "Newsletter band, independent from the footer"
         }
       },
       "blocks": {
@@ -520,6 +510,45 @@
             },
             "title_payments": {
               "label": "Payment methods block title"
+            },
+            "pay_mastercard": {
+              "label": "Show Mastercard?"
+            },
+            "pay_visa": {
+              "label": "Show Visa?"
+            },
+            "pay_elo": {
+              "label": "Show Elo?"
+            },
+            "pay_dinners": {
+              "label": "Show Diners?"
+            },
+            "pay_american": {
+              "label": "Show American Express?"
+            },
+            "pay_jcb": {
+              "label": "Show JCB?"
+            },
+            "pay_aura": {
+              "label": "Show Aura?"
+            },
+            "pay_hiper": {
+              "label": "Show Hipercard?"
+            },
+            "pay_sodexo": {
+              "label": "Show Sodexo?"
+            },
+            "pay_boleto": {
+              "label": "Show Boleto?"
+            },
+            "pay_pix": {
+              "label": "Show Pix?"
+            },
+            "pay_gpay": {
+              "label": "Show GPay?"
+            },
+            "pay_yapay": {
+              "label": "Show Yapay?"
             }
           }
         }

@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.16.0 | **Atualizado:** 2026-06-28
+**Versão:** 2.17.0 | **Atualizado:** 2026-06-28
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -16,8 +16,8 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 **Abordagem:** Section 100% completa = i18n storefront + i18n schema + color schemes
 
 **Sections 100% completas:**
-- ⚠️ `header.liquid` (color schemes ok; **i18n schema reaberto** — `.liquid` ainda hardcoded)
-- ⚠️ `footer.liquid` (color schemes ok; **i18n schema reaberto** — `.liquid` ainda hardcoded)
+- ✅ `header.liquid` (i18n schema + color schemes)
+- ✅ `footer.liquid` (i18n schema + color schemes)
 - ✅ `announcement-bar.liquid` (i18n schema + color schemes)
 - ✅ `testimonials.liquid` (i18n front + schema + dual color schemes: section + card)
 - ✅ `trust-badges.liquid` (i18n schema + color schemes)
@@ -38,7 +38,7 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 
 Snippets compartilhados migrados junto: `card-product-slider`, `card-article`, `search-component`. PDP storefront já usava chaves (`product.*`) em price/inventory/quantity/add-to-cart.
 
-**Pendente:** todas as sections de página/Home migradas. **⚠️ Restam só `header` e `footer`:** auditoria mostrou schema ainda hardcoded no `.liquid` (entradas existem nos `*.schema.json` mas não são referenciadas) — apesar de marcados como concluídos antes. Depois, migrar os snippets restantes.
+**Pendente:** **todas as sections migradas** (página + Home + header/footer). Resta migrar os **snippets compartilhados** restantes (ver lista abaixo) + auditar strings de storefront em snippets.
 
 **Locales:** `pt-BR.json` (~225 strings), `en.default.json`, `pt-BR.schema.json`, `en.default.schema.json`
 
@@ -137,6 +137,8 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.17.0 - i18n de header + footer (fecha as sections)** (2026-06-28) — `header.liquid` e `footer.liquid` migrados para `t:sections.header.*`/`t:sections.footer.*`. Locale do header limpo (removidas chaves órfãs `transparent_header`/`header_bg`/`icons_color*` de versão antiga, textos alinhados ao liquid atual); footer estendido com `newsletter_color_scheme` + 14 flags `pay_*` que faltavam. **Todas as sections do tema agora 100% i18n.** Theme Check limpo, ValidSchemaTranslations 0.
 
 **v2.16.0 - i18n do Modal Newsletter (Home)** (2026-06-28) — `newsletter-modal.liquid` 100% i18n: schema PT/EN (`t:sections.newsletter_modal.*`) + storefront (aria-label via `general.accessibility.close_modal`, placeholder via `newsletter.placeholder`, nova chave `newsletter.modal.dont_show_again`). Corrigido `ImgWidthAndHeight` pré-existente (theme-wide 11→10 errors). **Fecha 100% das sections de página/Home** — restam só header/footer (reabertos) e snippets.
 

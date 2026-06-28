@@ -93,42 +93,42 @@
 
 {% schema %}
 {
-  "name": "Header",
+  "name": "t:sections.header.name",
   "tag": "header",
   "class": "header",
   "settings": [
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Esquema de cores",
+      "label": "t:sections.header.settings.color_scheme.label",
       "default": "scheme-1",
-      "info": "Define fundo, texto e ícones do header"
+      "info": "t:sections.header.settings.color_scheme.info"
     },
     {
       "type": "link_list",
       "id": "menu",
-      "label": "Menu Principal"
+      "label": "t:sections.header.settings.menu.label"
     },
     {
       "type": "select",
       "id": "menu-type",
-      "label": "Tipo de header desktop",
+      "label": "t:sections.header.settings.menu_type.label",
       "options": [
         {
           "value": "centered-logo-menu-under",
-          "label": "Logo centralizada, menu abaixo, busca a esquerda"
+          "label": "t:sections.header.settings.menu_type.options.centered_logo_menu_under"
         },
         {
           "value": "logo-left-centered-menu",
-          "label": "Logo a esquerda, menu central, busca minimizada"
+          "label": "t:sections.header.settings.menu_type.options.logo_left_centered_menu"
         },
         {
           "value": "logo-left-centered-menu-search-hidden",
-          "label": "Logo a esquerda, menu central, busca escondida"
+          "label": "t:sections.header.settings.menu_type.options.logo_left_centered_menu_search_hidden"
         },
         {
           "value": "logo-left-menu-under-centered-search",
-          "label": "Logo a esquerda, menu abaixo, busca centralizada"
+          "label": "t:sections.header.settings.menu_type.options.logo_left_menu_under_centered_search"
         }
       ],
       "default": "logo-left-menu-under-centered-search"
@@ -137,8 +137,8 @@
       "type": "checkbox",
       "default": true,
       "id": "fixed_header",
-      "label": "Header fixo (sticky)",
-      "info": "Se ativado, o header acompanha o scroll fixo no topo"
+      "label": "t:sections.header.settings.fixed_header.label",
+      "info": "t:sections.header.settings.fixed_header.info"
     }
   ]
 }
