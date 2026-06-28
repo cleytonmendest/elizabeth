@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.18.0 | **Atualizado:** 2026-06-28
+**Versão:** 2.20.0 | **Atualizado:** 2026-06-28
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -35,6 +35,7 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 - ✅ `blog-posts.liquid` (i18n schema + storefront reusando `blog.general.view_all`/`no_posts`; `rounded-lg`→`rounded-theme`)
 - ✅ `newsletter-modal.liquid` (i18n schema + storefront; nova chave `newsletter.modal.dont_show_again`; fix `ImgWidthAndHeight`)
 - ✅ Carrinho (`templates/cart.liquid` + `cart-drawer*` snippets) — storefront via `cart.general.*` (sem schema)
+- ✅ Páginas de cliente (`templates/customers/*.liquid` — account, login, register, addresses, order, activate_account, reset_password) — storefront 100% via `customer.*` (sem schema; templates legados não-editáveis). Strings de JS injetadas via `| t | json`; links de termos via `capture` + params; pluralização nativa em `orders.items_count`. Fix `ImgWidthAndHeight` em `order.liquid`.
 
 Snippets compartilhados migrados junto: `card-product-slider`, `card-article`, `search-component`. PDP storefront já usava chaves (`product.*`) em price/inventory/quantity/add-to-cart.
 
@@ -83,9 +84,9 @@ README para lojistas (não desenvolvedores).
 ---
 
 ### 5. Code Quality (Theme Check)
-**Status:** Parcial — 6 errors, 27 warnings (2026-06-28) | **Esforço:** 3-5h | **Prioridade:** 🟡 ALTA
+**Status:** ✅ **Completo — 0 offenses** (120 arquivos, 2026-06-28) | **Prioridade:** 🟡 ALTA
 
-Theme Check zerado para a Theme Store. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. Arquivos já revisados (Home/PDP/Coleção/Busca/Carrinho/Blog/Artigo) sem offenses próprios. `ValidSchemaTranslations` **zerado**. Pendentes — 🔴 (6): `ImgWidthAndHeight` (5× → add `width`/`height`) em customers/order, testimonial-card, gift_card, e 1 inerente no lightbox do `product-gallery` (img `src=""` populado por JS); `UnknownFilter` (1×, gift_card). 🟡 (28): `UnusedAssign` (11×), `UndefinedObject` (9×), `OrphanedSnippet` (7×), `RemoteAsset` (1×, inerente).
+Theme Check **zerado**. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. `ValidSchemaTranslations` **zerado**. Supressões documentadas (casos legítimos, via `{% # theme-check-disable %}`): lightbox do `product-gallery` (`ImgWidthAndHeight`+`RemoteAsset` — `<img src="">` populado por JS) e objetos de estado do template de login (`UndefinedObject` — `recover_success`/`reset_success`/`form`). Manter em 0 ao implementar.
 
 ---
 
@@ -137,6 +138,10 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.20.0 - Code Quality: Theme Check zerado** (2026-06-28) — De 5 errors + 27 warnings → **0 offenses** (120 arquivos). **Errors:** `ImgWidthAndHeight` add `width`/`height` em testimonial-card (avatar) e gift_card (card.svg); removido `<img>` de QR quebrado em `gift_card.liquid` (usava filtro inexistente `qr_code_url` → resolveu `UnknownFilter` + 1 img). **Warnings:** 7 `OrphanedSnippet` deletados (icon-* mortos, `homepage-text` resíduo, `discount-flag`/`installments` superseded por lógica inline); 9 `UnusedAssign` removidos (schema-product/-breadcrumb, inventory-status, variant-options/-picker); `scheme_classes` morto removido de theme.liquid+gift_card layout (2 `UndefinedObject`); bloco `<style>` morto de paginação (com hex hardcoded) removido de `account.liquid` (`paginate` fora de escopo). **Supressões scoped documentadas:** lightbox `product-gallery` (img JS) + objetos de form em `login.liquid`.
+
+**v2.19.0 - i18n das páginas de cliente** (2026-06-28) — 7 templates `templates/customers/*.liquid` (account, login, register, addresses, order, activate_account, reset_password) 100% i18n storefront via namespace `customer.*` estendido (PT/EN). Strings de JS (força de senha, validação, alerts) injetadas via `{{ '...' | t | json }}`; links de Termos/Privacidade via `capture` + params; pluralização nativa em `customer.orders.items_count`. São templates legados (sem schema) → não editáveis no theme editor; herdam só `settings.customer_color_scheme`. **Quality:** corrigido `ImgWidthAndHeight` em `order.liquid` (theme-wide 6→5 errors); demais offenses nos arquivos são falsos positivos `UndefinedObject` (objetos de form/template). Theme Check sem offenses novos.
 
 **v2.18.0 - i18n dos snippets + a11y/quality** (2026-06-28) — Auditoria dos 77 snippets: maioria já i18n. Corrigidos `card-quick-add` ("Adicionar"→`product.general.add_to_cart_short`), `pagination` (4 aria-labels→`general.pagination.*`, +chave `label`), `breadcrumb` (aria→`general.breadcrumbs.aria_label`). A11y: aria-labels nos botões do lightbox do `product-gallery`. **Quality:** corrigidos 4 `ImgWidthAndHeight` no product-gallery (theme-wide 10→6 errors). Casos-limite (fallbacks de setting em cart-free-shipping/payment-icons) mantidos por serem conteúdo do lojista.
 

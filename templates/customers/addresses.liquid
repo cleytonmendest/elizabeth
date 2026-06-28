@@ -7,10 +7,10 @@
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
       <div class="mb-4 sm:mb-0">
         <h1 class="text-3xl font-bold text-foreground mb-2">
-          Meus Endereços
+          {{ 'customer.addresses.heading' | t }}
         </h1>
         <p class="text-sm text-foreground/60">
-          Gerencie seus endereços de entrega
+          {{ 'customer.addresses.subtext' | t }}
         </p>
       </div>
       <button
@@ -21,7 +21,7 @@
         <svg class="mr-2 -ml-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
         </svg>
-        Novo Endereço
+        {{ 'customer.addresses.new_address' | t }}
       </button>
     </div>
 
@@ -34,7 +34,7 @@
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
-        Voltar para Minha Conta
+        {{ 'customer.shared.back_to_account' | t }}
       </a>
     </div>
 
@@ -48,7 +48,7 @@
             {%- if address == customer.default_address -%}
               <div class="absolute top-0 right-0 mt-4 mr-4">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium color-button">
-                  Padrão
+                  {{ 'customer.addresses.default' | t }}
                 </span>
               </div>
             {%- endif -%}
@@ -74,7 +74,7 @@
                   <p>
                     {{ address.city }}{%- if address.province_code -%}, {{ address.province_code }}{%- endif -%}
                   </p>
-                  <p>CEP: {{ address.zip }}</p>
+                  <p>{{ 'customer.addresses.zip' | t }}: {{ address.zip }}</p>
                   <p>{{ address.country }}</p>
                 </div>
               </div>
@@ -99,7 +99,7 @@
                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
-                Editar
+                {{ 'customer.addresses.edit' | t }}
               </button>
 
               {%- if address != customer.default_address -%}
@@ -107,7 +107,7 @@
                   type="button"
                   onclick="confirmDeleteAddress({{ address.id }})"
                   class="inline-flex items-center justify-center px-3 py-2 border border-error rounded-lg text-sm font-medium color-error bg-background hover:color-error-bg transition-colors"
-                  aria-label="Excluir endereço"
+                  aria-label="{{ 'customer.addresses.delete_aria' | t }}"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -125,7 +125,7 @@
                   type="submit"
                   class="w-full text-xs text-foreground/60 hover:text-foreground font-medium transition-colors py-2"
                 >
-                  Definir como padrão
+                  {{ 'customer.addresses.set_default_button' | t }}
                 </button>
               </form>
             {%- endif -%}
@@ -140,9 +140,9 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-foreground">Nenhum endereço cadastrado</h3>
+        <h3 class="mt-2 text-sm font-medium text-foreground">{{ 'customer.addresses.empty_title' | t }}</h3>
         <p class="mt-1 text-sm text-foreground/50">
-          Adicione seu primeiro endereço para facilitar suas compras.
+          {{ 'customer.addresses.empty_text' | t }}
         </p>
         <div class="mt-6">
           <button
@@ -153,7 +153,7 @@
             <svg class="mr-2 -ml-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
             </svg>
-            Adicionar Endereço
+            {{ 'customer.addresses.add_button' | t }}
           </button>
         </div>
       </div>
@@ -171,7 +171,7 @@
     <div class="inline-block align-bottom bg-background rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
       <div class="absolute top-0 right-0 pt-4 pr-4">
         <button type="button" onclick="closeAddressModal('new')" class="bg-background rounded-md text-foreground/40 hover:text-foreground/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground">
-          <span class="sr-only">Fechar</span>
+          <span class="sr-only">{{ 'customer.shared.close' | t }}</span>
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -181,7 +181,7 @@
       <div class="sm:flex sm:items-start mb-6">
         <div class="mt-3 text-center sm:mt-0 sm:text-left">
           <h3 class="text-lg leading-6 font-bold text-foreground" id="modal-title">
-            Novo Endereço
+            {{ 'customer.addresses.new_address' | t }}
           </h3>
         </div>
       </div>
@@ -191,7 +191,7 @@
 
           <div>
             <label for="address_first_name_new" class="block text-sm font-medium text-foreground/70 mb-1">
-              Nome *
+              {{ 'customer.addresses.first_name' | t }} *
             </label>
             <input
               type="text"
@@ -204,7 +204,7 @@
 
           <div>
             <label for="address_last_name_new" class="block text-sm font-medium text-foreground/70 mb-1">
-              Sobrenome *
+              {{ 'customer.addresses.last_name' | t }} *
             </label>
             <input
               type="text"
@@ -217,7 +217,7 @@
 
           <div class="sm:col-span-2">
             <label for="address_company_new" class="block text-sm font-medium text-foreground/70 mb-1">
-              Empresa (opcional)
+              {{ 'customer.addresses.company_optional' | t }}
             </label>
             <input
               type="text"
@@ -229,7 +229,7 @@
 
           <div>
             <label for="address_zip_new" class="block text-sm font-medium text-foreground/70 mb-1">
-              CEP *
+              {{ 'customer.addresses.zip' | t }} *
             </label>
             <input
               type="text"
@@ -241,12 +241,12 @@
               class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
               onblur="searchCEP('new')"
             >
-            <p class="mt-1 text-xs text-foreground/50">Buscaremos o endereço automaticamente</p>
+            <p class="mt-1 text-xs text-foreground/50">{{ 'customer.addresses.cep_hint' | t }}</p>
           </div>
 
           <div>
             <label for="address_phone_new" class="block text-sm font-medium text-foreground/70 mb-1">
-              Telefone
+              {{ 'customer.addresses.phone' | t }}
             </label>
             <input
               type="tel"
@@ -259,34 +259,34 @@
 
           <div class="sm:col-span-2">
             <label for="address_address1_new" class="block text-sm font-medium text-foreground/70 mb-1">
-              Endereço *
+              {{ 'customer.addresses.address1' | t }} *
             </label>
             <input
               type="text"
               id="address_address1_new"
               name="address[address1]"
               required
-              placeholder="Rua, Avenida, etc."
+              placeholder="{{ 'customer.addresses.address1_placeholder' | t }}"
               class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
           <div class="sm:col-span-2">
             <label for="address_address2_new" class="block text-sm font-medium text-foreground/70 mb-1">
-              Complemento (opcional)
+              {{ 'customer.addresses.address2_optional' | t }}
             </label>
             <input
               type="text"
               id="address_address2_new"
               name="address[address2]"
-              placeholder="Apartamento, bloco, etc."
+              placeholder="{{ 'customer.addresses.address2_placeholder' | t }}"
               class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
           <div>
             <label for="address_city_new" class="block text-sm font-medium text-foreground/70 mb-1">
-              Cidade *
+              {{ 'customer.addresses.city' | t }} *
             </label>
             <input
               type="text"
@@ -299,7 +299,7 @@
 
           <div>
             <label for="address_province_new" class="block text-sm font-medium text-foreground/70 mb-1">
-              Estado *
+              {{ 'customer.addresses.province' | t }} *
             </label>
             <select
               id="address_province_new"
@@ -307,7 +307,7 @@
               required
               class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
-              <option value="">Selecione...</option>
+              <option value="">{{ 'customer.addresses.select_placeholder' | t }}</option>
               <option value="AC">Acre</option>
               <option value="AL">Alagoas</option>
               <option value="AP">Amapá</option>
@@ -340,7 +340,7 @@
 
           <div class="sm:col-span-2">
             <label for="address_country_new" class="block text-sm font-medium text-foreground/70 mb-1">
-              País *
+              {{ 'customer.addresses.country' | t }} *
             </label>
             <select
               id="address_country_new"
@@ -360,13 +360,13 @@
             onclick="closeAddressModal('new')"
             class="px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
           >
-            Cancelar
+            {{ 'customer.shared.cancel' | t }}
           </button>
           <button
             type="submit"
             class="px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-background bg-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors"
           >
-            Salvar Endereço
+            {{ 'customer.addresses.save_address' | t }}
           </button>
         </div>
 
@@ -385,7 +385,7 @@
     <div class="inline-block align-bottom bg-background rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
       <div class="absolute top-0 right-0 pt-4 pr-4">
         <button type="button" onclick="closeAddressModal('edit-{{ address.id }}')" class="bg-background rounded-md text-foreground/40 hover:text-foreground/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground">
-          <span class="sr-only">Fechar</span>
+          <span class="sr-only">{{ 'customer.shared.close' | t }}</span>
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -395,7 +395,7 @@
       <div class="sm:flex sm:items-start mb-6">
         <div class="mt-3 text-center sm:mt-0 sm:text-left">
           <h3 class="text-lg leading-6 font-bold text-foreground" id="modal-title-{{ address.id }}">
-            Editar Endereço
+            {{ 'customer.addresses.edit_address' | t }}
           </h3>
         </div>
       </div>
@@ -405,7 +405,7 @@
 
           <div>
             <label for="address_first_name_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
-              Nome *
+              {{ 'customer.addresses.first_name' | t }} *
             </label>
             <input
               type="text"
@@ -419,7 +419,7 @@
 
           <div>
             <label for="address_last_name_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
-              Sobrenome *
+              {{ 'customer.addresses.last_name' | t }} *
             </label>
             <input
               type="text"
@@ -433,7 +433,7 @@
 
           <div class="sm:col-span-2">
             <label for="address_company_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
-              Empresa (opcional)
+              {{ 'customer.addresses.company_optional' | t }}
             </label>
             <input
               type="text"
@@ -446,7 +446,7 @@
 
           <div>
             <label for="address_zip_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
-              CEP *
+              {{ 'customer.addresses.zip' | t }} *
             </label>
             <input
               type="text"
@@ -463,7 +463,7 @@
 
           <div>
             <label for="address_phone_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
-              Telefone
+              {{ 'customer.addresses.phone' | t }}
             </label>
             <input
               type="tel"
@@ -477,7 +477,7 @@
 
           <div class="sm:col-span-2">
             <label for="address_address1_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
-              Endereço *
+              {{ 'customer.addresses.address1' | t }} *
             </label>
             <input
               type="text"
@@ -485,28 +485,28 @@
               name="address[address1]"
               value="{{ address.address1 }}"
               required
-              placeholder="Rua, Avenida, etc."
+              placeholder="{{ 'customer.addresses.address1_placeholder' | t }}"
               class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
           <div class="sm:col-span-2">
             <label for="address_address2_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
-              Complemento (opcional)
+              {{ 'customer.addresses.address2_optional' | t }}
             </label>
             <input
               type="text"
               id="address_address2_{{ address.id }}"
               name="address[address2]"
               value="{{ address.address2 }}"
-              placeholder="Apartamento, bloco, etc."
+              placeholder="{{ 'customer.addresses.address2_placeholder' | t }}"
               class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
           <div>
             <label for="address_city_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
-              Cidade *
+              {{ 'customer.addresses.city' | t }} *
             </label>
             <input
               type="text"
@@ -520,7 +520,7 @@
 
           <div>
             <label for="address_province_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
-              Estado *
+              {{ 'customer.addresses.province' | t }} *
             </label>
             <select
               id="address_province_{{ address.id }}"
@@ -528,7 +528,7 @@
               required
               class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
-              <option value="">Selecione...</option>
+              <option value="">{{ 'customer.addresses.select_placeholder' | t }}</option>
               <option value="AC" {% if address.province_code == 'AC' %}selected{% endif %}>Acre</option>
               <option value="AL" {% if address.province_code == 'AL' %}selected{% endif %}>Alagoas</option>
               <option value="AP" {% if address.province_code == 'AP' %}selected{% endif %}>Amapá</option>
@@ -561,7 +561,7 @@
 
           <div class="sm:col-span-2">
             <label for="address_country_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
-              País *
+              {{ 'customer.addresses.country' | t }} *
             </label>
             <select
               id="address_country_{{ address.id }}"
@@ -581,13 +581,13 @@
             onclick="closeAddressModal('edit-{{ address.id }}')"
             class="px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
           >
-            Cancelar
+            {{ 'customer.shared.cancel' | t }}
           </button>
           <button
             type="submit"
             class="px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-background bg-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors"
           >
-            Salvar Alterações
+            {{ 'customer.addresses.save_changes' | t }}
           </button>
         </div>
 
@@ -608,9 +608,9 @@
           </svg>
         </div>
       </div>
-      <h3 class="text-lg font-bold text-foreground mb-2 text-center">Confirmar Exclusão</h3>
+      <h3 class="text-lg font-bold text-foreground mb-2 text-center">{{ 'customer.addresses.delete_title' | t }}</h3>
       <p class="text-sm text-foreground/60 mb-6 text-center">
-        Tem certeza que deseja excluir este endereço? Esta ação não pode ser desfeita.
+        {{ 'customer.addresses.delete_confirm_text' | t }}
       </p>
       <div class="flex space-x-3">
         <button
@@ -618,7 +618,7 @@
           onclick="closeDeleteModal()"
           class="flex-1 px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
         >
-          Cancelar
+          {{ 'customer.shared.cancel' | t }}
         </button>
         <form id="delete-form" method="post" action="" class="flex-1">
           <input type="hidden" name="_method" value="delete">
@@ -626,7 +626,7 @@
             type="submit"
             class="w-full px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-background bg-error hover:opacity-90 transition-colors"
           >
-            Excluir
+            {{ 'customer.addresses.delete' | t }}
           </button>
         </form>
       </div>

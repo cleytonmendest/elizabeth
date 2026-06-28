@@ -8,13 +8,6 @@
 
 {%- liquid
   assign selected_variant = product.selected_or_first_available_variant
-  assign product_image = product.featured_image | image_url: width: 1200
-
-  comment
-    Calcula o rating médio (placeholder - será substituído por app de reviews)
-  endcomment
-  assign review_count = 0
-  assign rating_value = 0
 -%}
 
 <script type="application/ld+json">

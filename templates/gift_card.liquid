@@ -72,22 +72,16 @@
       {%- comment -%} Gift Card Container {%- endcomment -%}
       <div class="gift-card-container color-card color-shadow-lg rounded-lg p-6 md:p-8 mb-6">
 
-        {%- comment -%} QR Code {%- endcomment -%}
+        {%- comment -%} Gift Card Illustration {%- endcomment -%}
         <div class="gift-card-qr mb-6">
           <img
             src="{{ 'gift-card/card.svg' | shopify_asset_url }}"
             alt="{{ 'gift_card.issued.subtext' | t }}"
+            width="600"
+            height="378"
+            class="w-full h-auto"
             loading="eager"
           />
-          {%- if gift_card.pass_url -%}
-            <img
-              id="gift-card-qr"
-              src="{{ gift_card.qr_identifier | qr_code_url }}"
-              alt="{{ 'gift_card.issued.subtext' | t }}"
-              class="w-full mt-4"
-              loading="eager"
-            />
-          {%- endif -%}
         </div>
 
         {%- comment -%} Gift Card Code {%- endcomment -%}

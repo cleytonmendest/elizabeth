@@ -8,10 +8,11 @@
       <div class="flex items-center justify-between mb-4">
         <div>
           <h1 class="text-3xl font-bold text-foreground mb-2">
-            Pedido #{{ order.name }}
+            {{ 'customer.orders.order_label' | t }} #{{ order.name }}
           </h1>
           <p class="text-sm text-foreground/60">
-            Realizado em {{ order.created_at | date: "%d de %B de %Y às %H:%M" }}
+            {%- capture order_date -%}{{ order.created_at | date: "%d de %B de %Y às %H:%M" }}{%- endcapture -%}
+            {{ 'customer.orders.placed_on' | t: date: order_date }}
           </p>
         </div>
 
@@ -23,7 +24,7 @@
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
           </svg>
-          Imprimir Pedido
+          {{ 'customer.orders.print' | t }}
         </button>
       </div>
 
@@ -35,13 +36,13 @@
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
-        Voltar para Minha Conta
+        {{ 'customer.shared.back_to_account' | t }}
       </a>
     </div>
 
     {%- comment -%} Status Timeline {%- endcomment -%}
     <div class="bg-background rounded-lg shadow-lg p-6 mb-6">
-      <h2 class="text-lg font-bold text-foreground mb-6">Status do Pedido</h2>
+      <h2 class="text-lg font-bold text-foreground mb-6">{{ 'customer.orders.status_title' | t }}</h2>
 
       <div class="relative">
         {%- comment -%} Timeline Line {%- endcomment -%}
@@ -58,7 +59,7 @@
               </div>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-bold text-foreground">Pedido Realizado</p>
+              <p class="text-sm font-bold text-foreground">{{ 'customer.orders.timeline_placed' | t }}</p>
               <p class="text-xs text-foreground/60 mt-1">{{ order.created_at | date: "%d/%m/%Y às %H:%M" }}</p>
             </div>
           </div>
@@ -86,14 +87,14 @@
               {%- endcase -%}
             </div>
             <div class="ml-4">
-              <p class="text-sm font-bold text-foreground">Pagamento</p>
+              <p class="text-sm font-bold text-foreground">{{ 'customer.orders.timeline_payment' | t }}</p>
               <p class="text-xs text-foreground/60 mt-1">
                 {%- case order.financial_status -%}
-                  {%- when 'paid' -%}Confirmado
-                  {%- when 'authorized' -%}Autorizado
-                  {%- when 'pending' -%}Pendente
-                  {%- when 'refunded' -%}Reembolsado
-                  {%- when 'voided' -%}Cancelado
+                  {%- when 'paid' -%}{{ 'customer.orders.payment_confirmed' | t }}
+                  {%- when 'authorized' -%}{{ 'customer.orders.payment_authorized' | t }}
+                  {%- when 'pending' -%}{{ 'customer.orders.payment_pending' | t }}
+                  {%- when 'refunded' -%}{{ 'customer.orders.payment_refunded' | t }}
+                  {%- when 'voided' -%}{{ 'customer.orders.payment_voided' | t }}
                   {%- else -%}{{ order.financial_status }}
                 {%- endcase -%}
               </p>
@@ -123,12 +124,12 @@
               {%- endcase -%}
             </div>
             <div class="ml-4">
-              <p class="text-sm font-bold text-foreground">Envio</p>
+              <p class="text-sm font-bold text-foreground">{{ 'customer.orders.timeline_shipping' | t }}</p>
               <p class="text-xs text-foreground/60 mt-1">
                 {%- case order.fulfillment_status -%}
-                  {%- when 'fulfilled' -%}Enviado
-                  {%- when 'partial' -%}Parcialmente Enviado
-                  {%- when 'unfulfilled' or null -%}Aguardando Envio
+                  {%- when 'fulfilled' -%}{{ 'customer.orders.fulfillment_fulfilled' | t }}
+                  {%- when 'partial' -%}{{ 'customer.orders.fulfillment_partial' | t }}
+                  {%- when 'unfulfilled' or null -%}{{ 'customer.orders.fulfillment_awaiting' | t }}
                   {%- else -%}{{ order.fulfillment_status }}
                 {%- endcase -%}
               </p>
@@ -143,8 +144,8 @@
               </div>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-bold text-foreground">Entregue</p>
-              <p class="text-xs text-foreground/60 mt-1">Aguardando confirmação</p>
+              <p class="text-sm font-bold text-foreground">{{ 'customer.orders.timeline_delivered' | t }}</p>
+              <p class="text-xs text-foreground/60 mt-1">{{ 'customer.orders.awaiting_confirmation' | t }}</p>
             </div>
           </div>
         </div>
@@ -165,13 +166,14 @@
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                Rastrear Pedido
+                {{ 'customer.orders.track' | t }}
                 <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                 </svg>
               </a>
               {%- if fulfillment.tracking_number -%}
-                <p class="text-xs text-foreground/60 mt-2">Código de rastreio: <span class="font-mono">{{ fulfillment.tracking_number }}</span></p>
+                {%- capture tracking_number_html -%}<span class="font-mono">{{ fulfillment.tracking_number }}</span>{%- endcapture -%}
+                <p class="text-xs text-foreground/60 mt-2">{{ 'customer.orders.tracking_number_html' | t: number: tracking_number_html }}</p>
               {%- endif -%}
             </div>
           {%- endif -%}
@@ -184,7 +186,7 @@
       {%- comment -%} Order Items {%- endcomment -%}
       <div class="lg:col-span-2">
         <div class="bg-background rounded-lg shadow-lg p-6">
-          <h2 class="text-lg font-bold text-foreground mb-6">Itens do Pedido</h2>
+          <h2 class="text-lg font-bold text-foreground mb-6">{{ 'customer.orders.items_title' | t }}</h2>
 
           <div class="space-y-4">
             {%- for line_item in order.line_items -%}
@@ -195,6 +197,8 @@
                     <img
                       src="{{ line_item.image | image_url: width: 160 }}"
                       alt="{{ line_item.title }}"
+                      width="{{ line_item.image.width }}"
+                      height="{{ line_item.image.height }}"
                       class="w-full h-full object-cover"
                       loading="lazy"
                       decoding="async"
@@ -225,12 +229,12 @@
                   {%- endif -%}
 
                   {%- if line_item.sku != blank -%}
-                    <p class="text-xs text-foreground/50 mt-1">SKU: {{ line_item.sku }}</p>
+                    <p class="text-xs text-foreground/50 mt-1">{{ 'customer.orders.sku' | t }}: {{ line_item.sku }}</p>
                   {%- endif -%}
 
                   <div class="mt-2 flex items-center justify-between">
                     <p class="text-sm text-foreground/60">
-                      Quantidade: <span class="font-medium text-foreground">{{ line_item.quantity }}</span>
+                      {{ 'customer.orders.quantity' | t }}: <span class="font-medium text-foreground">{{ line_item.quantity }}</span>
                     </p>
                     <div class="text-right">
                       {%- if line_item.original_price != line_item.final_price -%}
@@ -245,7 +249,7 @@
                   {%- comment -%} Line Total {%- endcomment -%}
                   <div class="mt-2 pt-2 border-t border-border">
                     <div class="flex items-center justify-between">
-                      <p class="text-xs text-foreground/60">Subtotal:</p>
+                      <p class="text-xs text-foreground/60">{{ 'customer.orders.subtotal' | t }}:</p>
                       <p class="text-sm font-bold text-foreground">{{ line_item.final_line_price | money }}</p>
                     </div>
                   </div>
@@ -263,7 +267,7 @@
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
-              Comprar Novamente
+              {{ 'customer.orders.buy_again' | t }}
             </a>
           </div>
         </div>
@@ -274,38 +278,38 @@
 
         {%- comment -%} Order Summary {%- endcomment -%}
         <div class="bg-background rounded-lg shadow-lg p-6">
-          <h2 class="text-lg font-bold text-foreground mb-4">Resumo do Pedido</h2>
+          <h2 class="text-lg font-bold text-foreground mb-4">{{ 'customer.orders.summary_title' | t }}</h2>
 
           <div class="space-y-3">
             <div class="flex items-center justify-between text-sm">
-              <span class="text-foreground/60">Subtotal</span>
+              <span class="text-foreground/60">{{ 'customer.orders.subtotal' | t }}</span>
               <span class="font-medium text-foreground">{{ order.line_items_subtotal_price | money }}</span>
             </div>
 
             {%- if order.total_discounts > 0 -%}
               <div class="flex items-center justify-between text-sm">
-                <span class="text-foreground/60">Descontos</span>
+                <span class="text-foreground/60">{{ 'customer.orders.discounts' | t }}</span>
                 <span class="font-medium color-success">-{{ order.total_discounts | money }}</span>
               </div>
             {%- endif -%}
 
             {%- if order.shipping_price > 0 -%}
               <div class="flex items-center justify-between text-sm">
-                <span class="text-foreground/60">Frete</span>
+                <span class="text-foreground/60">{{ 'customer.orders.shipping_cost' | t }}</span>
                 <span class="font-medium text-foreground">{{ order.shipping_price | money }}</span>
               </div>
             {%- endif -%}
 
             {%- if order.tax_price > 0 -%}
               <div class="flex items-center justify-between text-sm">
-                <span class="text-foreground/60">Impostos</span>
+                <span class="text-foreground/60">{{ 'customer.orders.taxes' | t }}</span>
                 <span class="font-medium text-foreground">{{ order.tax_price | money }}</span>
               </div>
             {%- endif -%}
 
             <div class="pt-3 border-t border-border">
               <div class="flex items-center justify-between">
-                <span class="text-base font-bold text-foreground">Total</span>
+                <span class="text-base font-bold text-foreground">{{ 'customer.orders.total' | t }}</span>
                 <span class="text-lg font-bold text-foreground">{{ order.total_price | money }}</span>
               </div>
             </div>
@@ -315,7 +319,7 @@
         {%- comment -%} Shipping Address {%- endcomment -%}
         {%- if order.shipping_address -%}
           <div class="bg-background rounded-lg shadow-lg p-6">
-            <h3 class="text-lg font-bold text-foreground mb-4">Endereço de Entrega</h3>
+            <h3 class="text-lg font-bold text-foreground mb-4">{{ 'customer.orders.shipping_address' | t }}</h3>
             <div class="text-sm text-foreground/70 space-y-1">
               <p class="font-medium text-foreground">{{ order.shipping_address.name }}</p>
               {%- if order.shipping_address.company != blank -%}
@@ -337,9 +341,9 @@
         {%- comment -%} Billing Address {%- endcomment -%}
         {%- if order.billing_address -%}
           <div class="bg-background rounded-lg shadow-lg p-6">
-            <h3 class="text-lg font-bold text-foreground mb-4">Endereço de Cobrança</h3>
+            <h3 class="text-lg font-bold text-foreground mb-4">{{ 'customer.orders.billing_address' | t }}</h3>
             {%- if order.billing_address == order.shipping_address -%}
-              <p class="text-sm text-foreground/60">Mesmo endereço de entrega</p>
+              <p class="text-sm text-foreground/60">{{ 'customer.orders.same_as_shipping' | t }}</p>
             {%- else -%}
               <div class="text-sm text-foreground/70 space-y-1">
                 <p class="font-medium text-foreground">{{ order.billing_address.name }}</p>
@@ -362,15 +366,15 @@
 
         {%- comment -%} Need Help? {%- endcomment -%}
         <div class="bg-foreground/5 rounded-lg p-6 print:hidden">
-          <h3 class="text-sm font-bold text-foreground mb-2">Precisa de Ajuda?</h3>
+          <h3 class="text-sm font-bold text-foreground mb-2">{{ 'customer.orders.need_help' | t }}</h3>
           <p class="text-xs text-foreground/60 mb-4">
-            Entre em contato conosco se tiver dúvidas sobre seu pedido.
+            {{ 'customer.orders.need_help_text' | t }}
           </p>
           <a
             href="{{ routes.root_url }}/pages/contato"
             class="inline-flex items-center text-xs font-medium text-foreground hover:text-foreground/70 transition-colors"
           >
-            Falar com Suporte
+            {{ 'customer.orders.contact_support' | t }}
             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>

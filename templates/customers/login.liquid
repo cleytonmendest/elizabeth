@@ -1,4 +1,6 @@
 <!-- /templates/customers/login.liquid -->
+{% # theme-check-disable UndefinedObject %}
+{%- comment -%} `recover_success`, `reset_success` e `form` são objetos de estado do template de login do Shopify que o Theme Check não modela estaticamente. {%- endcomment -%}
 
 <div class="color-{{ settings.customer_color_scheme }} color-background color-text min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
   <div class="max-w-md w-full space-y-8">
@@ -20,17 +22,17 @@
 
       <h1 class="text-3xl font-bold text-foreground mb-2">
         {%- if recover_success == true -%}
-          Verifique seu email
+          {{ 'customer.login.recover_success_title' | t }}
         {%- else -%}
-          Bem-vindo de volta
+          {{ 'customer.login.welcome_title' | t }}
         {%- endif -%}
       </h1>
 
       <p class="text-sm text-foreground/60">
         {%- if recover_success == true -%}
-          Enviamos um link de recuperação para seu email
+          {{ 'customer.login.recover_success_subtext' | t }}
         {%- else -%}
-          Entre com sua conta para continuar
+          {{ 'customer.login.subtext' | t }}
         {%- endif -%}
       </p>
     </div>
@@ -43,7 +45,7 @@
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
           </svg>
           <p class="text-sm color-success">
-            Senha redefinida com sucesso! Faça login com sua nova senha.
+            {{ 'customer.login.reset_success' | t }}
           </p>
         </div>
       </div>
@@ -62,7 +64,7 @@
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
               </svg>
               <div class="text-sm color-error">
-                <p class="font-medium mb-1">Erro ao fazer login:</p>
+                <p class="font-medium mb-1">{{ 'customer.login.error_title' | t }}</p>
                 {{ form.errors | default_errors }}
               </div>
             </div>
@@ -72,7 +74,7 @@
         {%- comment -%} Email Field {%- endcomment -%}
         <div>
           <label for="customer_email" class="block text-sm font-medium text-foreground/70 mb-2">
-            Email
+            {{ 'customer.login.email' | t }}
           </label>
           <input
             type="email"
@@ -82,7 +84,7 @@
             required
             aria-required="true"
             class="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-foreground focus:border-transparent transition-all outline-none"
-            placeholder="seu@email.com"
+            placeholder="{{ 'customer.shared.email_placeholder' | t }}"
             {%- if form.email -%}
               value="{{ form.email }}"
             {%- endif -%}
@@ -92,7 +94,7 @@
         {%- comment -%} Password Field {%- endcomment -%}
         <div>
           <label for="customer_password" class="block text-sm font-medium text-foreground/70 mb-2">
-            Senha
+            {{ 'customer.login.password' | t }}
           </label>
           <input
             type="password"
@@ -113,7 +115,7 @@
             id="recover-password-link"
             class="text-sm font-medium text-foreground hover:text-foreground/70 transition-colors"
           >
-            Esqueceu sua senha?
+            {{ 'customer.login.forgot_password' | t }}
           </button>
         </div>
 
@@ -122,7 +124,7 @@
           type="submit"
           class="w-full color-button py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground"
         >
-          Entrar
+          {{ 'customer.login.submit' | t }}
         </button>
 
       {%- endform -%}
@@ -130,12 +132,12 @@
       {%- comment -%} Register Link {%- endcomment -%}
       <div class="text-center pt-4 border-t border-border">
         <p class="text-sm text-foreground/60">
-          Não tem uma conta?
+          {{ 'customer.login.no_account' | t }}
           <a
             href="{{ routes.account_register_url }}"
             class="font-medium text-foreground hover:text-foreground/70 transition-colors ml-1"
           >
-            Criar conta
+            {{ 'customer.login.create_account' | t }}
           </a>
         </p>
       </div>
@@ -149,10 +151,10 @@
         {%- comment -%} Instructions {%- endcomment -%}
         <div class="text-center">
           <h2 class="text-2xl font-bold text-foreground mb-2">
-            Recuperar senha
+            {{ 'customer.login.recover_title' | t }}
           </h2>
           <p class="text-sm text-foreground/60">
-            Digite seu email e enviaremos um link para redefinir sua senha
+            {{ 'customer.login.recover_subtext' | t }}
           </p>
         </div>
 
@@ -173,7 +175,7 @@
         {%- comment -%} Email Field {%- endcomment -%}
         <div>
           <label for="recover_email" class="block text-sm font-medium text-foreground/70 mb-2">
-            Email
+            {{ 'customer.login.email' | t }}
           </label>
           <input
             type="email"
@@ -183,7 +185,7 @@
             required
             aria-required="true"
             class="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-foreground focus:border-transparent transition-all outline-none"
-            placeholder="seu@email.com"
+            placeholder="{{ 'customer.shared.email_placeholder' | t }}"
           >
         </div>
 
@@ -192,7 +194,7 @@
           type="submit"
           class="w-full color-button py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground"
         >
-          Enviar link de recuperação
+          {{ 'customer.login.recover_submit' | t }}
         </button>
 
         {%- comment -%} Back to Login {%- endcomment -%}
@@ -201,7 +203,7 @@
           id="back-to-login-link"
           class="w-full text-sm font-medium text-foreground/60 hover:text-foreground transition-colors"
         >
-          ← Voltar para login
+          ← {{ 'customer.shared.back_to_login' | t }}
         </button>
 
       {%- endform -%}
@@ -216,7 +218,7 @@
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
-        Voltar para a loja
+        {{ 'customer.shared.back_to_store' | t }}
       </a>
     </div>
 

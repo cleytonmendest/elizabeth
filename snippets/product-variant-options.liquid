@@ -1,7 +1,4 @@
 {%- liquid
-  assign variants_available = product.variants | map: 'available'
-  assign variants_id = product.variants | map: 'id'
-
   assign product_form_id = 'product-form-' | append: section.id
 
   assign shape = block.settings.swatch_shape
@@ -9,8 +6,6 @@
 <div class="flex flex-wrap gap-3">
   {%- for value in option.values -%}
     {%- liquid
-      assign option_disabled = true
-
       assign checked = false
       if option.selected_value == value
         assign checked = true

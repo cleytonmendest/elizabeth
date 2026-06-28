@@ -6,10 +6,10 @@
     {%- comment -%} Header {%- endcomment -%}
     <div class="text-center">
       <h1 class="text-3xl font-bold text-foreground mb-2">
-        Ative sua Conta
+        {{ 'customer.activate_account.heading' | t }}
       </h1>
       <p class="text-sm text-foreground/60">
-        Crie uma senha para começar a usar sua conta
+        {{ 'customer.activate_account.create_subtext' | t }}
       </p>
     </div>
 
@@ -23,10 +23,10 @@
         </div>
         <div class="ml-3">
           <h3 class="text-sm font-medium text-blue-800">
-            Bem-vindo!
+            {{ 'customer.activate_account.welcome' | t }}
           </h3>
           <div class="mt-1 text-xs text-blue-700">
-            <p>Você foi convidado a criar uma conta. Defina uma senha segura para continuar.</p>
+            <p>{{ 'customer.activate_account.welcome_text' | t }}</p>
           </div>
         </div>
       </div>
@@ -47,7 +47,7 @@
               </div>
               <div class="ml-3">
                 <h3 class="text-sm font-medium color-error">
-                  Erro ao ativar conta
+                  {{ 'customer.activate_account.error_title' | t }}
                 </h3>
                 <div class="mt-2 text-xs color-error">
                   {{ form.errors | default_errors }}
@@ -60,7 +60,7 @@
         {%- comment -%} Password Field {%- endcomment -%}
         <div class="mb-6">
           <label for="customer_password" class="block text-sm font-medium text-foreground/70 mb-2">
-            Senha *
+            {{ 'customer.activate_account.password' | t }} *
           </label>
           <div class="relative">
             <input
@@ -76,7 +76,7 @@
               type="button"
               onclick="togglePassword('customer_password', 'toggle-icon-1')"
               class="absolute inset-y-0 right-0 pr-3 flex items-center"
-              aria-label="Mostrar senha"
+              aria-label="{{ 'customer.shared.show_password' | t }}"
             >
               <svg id="toggle-icon-1" class="h-5 w-5 text-foreground/40 hover:text-foreground/60" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -88,7 +88,7 @@
           {%- comment -%} Password Strength Indicator {%- endcomment -%}
           <div id="password-strength" class="mt-2 hidden">
             <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-medium text-foreground/70">Força da senha:</span>
+              <span class="text-xs font-medium text-foreground/70">{{ 'customer.password_strength.label' | t }}</span>
               <span id="strength-text" class="text-xs font-medium"></span>
             </div>
             <div class="h-1.5 bg-foreground/10 rounded-full overflow-hidden">
@@ -100,7 +100,7 @@
         {%- comment -%} Password Confirmation Field {%- endcomment -%}
         <div class="mb-6">
           <label for="customer_password_confirmation" class="block text-sm font-medium text-foreground/70 mb-2">
-            Confirmar Senha *
+            {{ 'customer.activate_account.password_confirm' | t }} *
           </label>
           <div class="relative">
             <input
@@ -115,7 +115,7 @@
               type="button"
               onclick="togglePassword('customer_password_confirmation', 'toggle-icon-2')"
               class="absolute inset-y-0 right-0 pr-3 flex items-center"
-              aria-label="Mostrar confirmação de senha"
+              aria-label="{{ 'customer.shared.show_password_confirm' | t }}"
             >
               <svg id="toggle-icon-2" class="h-5 w-5 text-foreground/40 hover:text-foreground/60" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -133,25 +133,25 @@
 
         {%- comment -%} Password Requirements {%- endcomment -%}
         <div class="mb-6 bg-foreground/5 rounded-lg p-4">
-          <p class="text-xs font-medium text-foreground/70 mb-2" id="password-requirements">Sua senha deve conter:</p>
+          <p class="text-xs font-medium text-foreground/70 mb-2" id="password-requirements">{{ 'customer.activate_account.requirements_title' | t }}</p>
           <ul class="text-xs text-foreground/60 space-y-1">
             <li class="flex items-start">
               <svg class="w-4 h-4 text-foreground/40 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
               </svg>
-              Mínimo de 8 caracteres
+              {{ 'customer.activate_account.req_length' | t }}
             </li>
             <li class="flex items-start">
               <svg class="w-4 h-4 text-foreground/40 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
               </svg>
-              Pelo menos uma letra maiúscula
+              {{ 'customer.activate_account.req_uppercase' | t }}
             </li>
             <li class="flex items-start">
               <svg class="w-4 h-4 text-foreground/40 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
               </svg>
-              Pelo menos um número ou caractere especial
+              {{ 'customer.activate_account.req_number' | t }}
             </li>
           </ul>
         </div>
@@ -163,7 +163,7 @@
             id="activate-button"
             class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-background bg-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Ativar Minha Conta
+            {{ 'customer.activate_account.submit_button' | t }}
           </button>
 
           <button
@@ -172,7 +172,7 @@
             value="decline"
             class="w-full flex justify-center py-3 px-4 border border-border rounded-lg shadow-sm text-sm font-medium text-foreground bg-background hover:bg-foreground/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors"
           >
-            Recusar Convite
+            {{ 'customer.activate_account.decline' | t }}
           </button>
         </div>
 
@@ -182,7 +182,7 @@
     {%- comment -%} Back to Login {%- endcomment -%}
     <div class="text-center">
       <a href="{{ routes.account_login_url }}" class="text-sm text-foreground/60 hover:text-foreground transition-colors">
-        Já tem uma conta? Faça login
+        {{ 'customer.activate_account.have_account_login' | t }}
       </a>
     </div>
 
@@ -226,24 +226,24 @@ function checkPasswordStrength(password) {
   if (checks.number) strength += 20;
   if (checks.special) strength += 20;
 
-  let level = 'Muito Fraca';
+  let level = {{ 'customer.activate_account.strength.very_weak' | t | json }};
   let color = 'color-error-bg0';
   let textColor = 'color-error';
 
   if (strength >= 80) {
-    level = 'Muito Forte';
+    level = {{ 'customer.activate_account.strength.very_strong' | t | json }};
     color = 'bg-green-500';
     textColor = 'color-success';
   } else if (strength >= 60) {
-    level = 'Forte';
+    level = {{ 'customer.activate_account.strength.strong' | t | json }};
     color = 'bg-blue-500';
     textColor = 'text-blue-600';
   } else if (strength >= 40) {
-    level = 'Média';
+    level = {{ 'customer.activate_account.strength.medium' | t | json }};
     color = 'bg-yellow-500';
     textColor = 'color-warning';
   } else if (strength >= 20) {
-    level = 'Fraca';
+    level = {{ 'customer.activate_account.strength.weak' | t | json }};
     color = 'bg-orange-500';
     textColor = 'text-orange-600';
   }
@@ -271,7 +271,7 @@ function validatePasswordMatch() {
   if (password === confirmation) {
     matchIcon.classList.remove('hidden', 'color-error');
     matchIcon.classList.add('color-success');
-    matchMessage.textContent = '✓ As senhas coincidem';
+    matchMessage.textContent = {{ 'customer.activate_account.passwords_match' | t | json }};
     matchMessage.className = 'mt-1 text-xs color-success';
     confirmInput.classList.remove('border-border', 'border-error');
     confirmInput.classList.add('border-success');
@@ -282,7 +282,7 @@ function validatePasswordMatch() {
     matchIcon.querySelector('svg').innerHTML = `
       <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
     `;
-    matchMessage.textContent = '✗ As senhas não coincidem';
+    matchMessage.textContent = {{ 'customer.activate_account.passwords_no_match' | t | json }};
     matchMessage.className = 'mt-1 text-xs color-error';
     confirmInput.classList.remove('border-border', 'border-success');
     confirmInput.classList.add('border-error');
@@ -334,14 +334,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!e.submitter || e.submitter.name !== 'decline') {
       if (password !== confirmation) {
         e.preventDefault();
-        alert('As senhas não coincidem. Por favor, verifique e tente novamente.');
+        alert({{ 'customer.activate_account.alert_no_match' | t | json }});
         confirmationInput.focus();
         return false;
       }
 
       if (password.length < 8) {
         e.preventDefault();
-        alert('A senha deve ter no mínimo 8 caracteres.');
+        alert({{ 'customer.activate_account.alert_min_length' | t | json }});
         passwordInput.focus();
         return false;
       }

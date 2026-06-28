@@ -19,11 +19,11 @@
       {%- endif -%}
 
       <h1 class="text-3xl font-bold text-foreground mb-2">
-        Criar uma conta
+        {{ 'customer.register.heading' | t }}
       </h1>
 
       <p class="text-sm text-foreground/60">
-        Preencha os campos abaixo para começar
+        {{ 'customer.register.subtext' | t }}
       </p>
     </div>
 
@@ -40,7 +40,7 @@
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
               </svg>
               <div class="text-sm color-error">
-                <p class="font-medium mb-1">Por favor, corrija os seguintes erros:</p>
+                <p class="font-medium mb-1">{{ 'customer.shared.form_errors_title' | t }}</p>
                 {{ form.errors | default_errors }}
               </div>
             </div>
@@ -51,7 +51,7 @@
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div>
             <label for="first_name" class="block text-sm font-medium text-foreground/70 mb-2">
-              Nome <span class="color-error">*</span>
+              {{ 'customer.register.first_name' | t }} <span class="color-error">*</span>
             </label>
             <input
               type="text"
@@ -61,7 +61,7 @@
               required
               aria-required="true"
               class="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-foreground focus:border-transparent transition-all outline-none"
-              placeholder="João"
+              placeholder="{{ 'customer.register.first_name_placeholder' | t }}"
               {%- if form.first_name -%}
                 value="{{ form.first_name }}"
               {%- endif -%}
@@ -70,7 +70,7 @@
 
           <div>
             <label for="last_name" class="block text-sm font-medium text-foreground/70 mb-2">
-              Sobrenome <span class="color-error">*</span>
+              {{ 'customer.register.last_name' | t }} <span class="color-error">*</span>
             </label>
             <input
               type="text"
@@ -80,7 +80,7 @@
               required
               aria-required="true"
               class="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-foreground focus:border-transparent transition-all outline-none"
-              placeholder="Silva"
+              placeholder="{{ 'customer.register.last_name_placeholder' | t }}"
               {%- if form.last_name -%}
                 value="{{ form.last_name }}"
               {%- endif -%}
@@ -91,7 +91,7 @@
         {%- comment -%} Email Field {%- endcomment -%}
         <div>
           <label for="email" class="block text-sm font-medium text-foreground/70 mb-2">
-            Email <span class="color-error">*</span>
+            {{ 'customer.register.email' | t }} <span class="color-error">*</span>
           </label>
           <input
             type="email"
@@ -101,20 +101,20 @@
             required
             aria-required="true"
             class="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-foreground focus:border-transparent transition-all outline-none"
-            placeholder="seu@email.com"
+            placeholder="{{ 'customer.shared.email_placeholder' | t }}"
             {%- if form.email -%}
               value="{{ form.email }}"
             {%- endif -%}
           >
           <p class="mt-1 text-xs text-foreground/50">
-            Usaremos este email para suas comunicações
+            {{ 'customer.register.email_hint' | t }}
           </p>
         </div>
 
         {%- comment -%} Password Field {%- endcomment -%}
         <div>
           <label for="password" class="block text-sm font-medium text-foreground/70 mb-2">
-            Senha <span class="color-error">*</span>
+            {{ 'customer.register.password' | t }} <span class="color-error">*</span>
           </label>
           <div class="relative">
             <input
@@ -132,7 +132,7 @@
               type="button"
               id="toggle-password"
               class="absolute inset-y-0 right-0 pr-3 flex items-center text-foreground/40 hover:text-foreground/60 transition-colors"
-              aria-label="Mostrar/ocultar senha"
+              aria-label="{{ 'customer.shared.toggle_password' | t }}"
             >
               <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -156,7 +156,7 @@
           </div>
 
           <p class="mt-1 text-xs text-foreground/50">
-            Mínimo de 5 caracteres
+            {{ 'customer.register.password_hint' | t }}
           </p>
         </div>
 
@@ -172,7 +172,7 @@
           </div>
           <div class="ml-3">
             <label for="accepts_marketing" class="text-sm text-foreground/70">
-              Quero receber novidades, ofertas exclusivas e promoções por email
+              {{ 'customer.register.accepts_marketing' | t }}
             </label>
           </div>
         </div>
@@ -189,15 +189,10 @@
             >
           </div>
           <div class="ml-3">
+            {%- capture terms_link -%}<a href="{{ pages.termos-de-uso.url | default: '/pages/terms' }}" target="_blank" class="font-medium text-foreground hover:text-foreground/70 underline">{{ 'customer.register.terms_of_use' | t }}</a>{%- endcapture -%}
+            {%- capture privacy_link -%}<a href="{{ pages.politica-de-privacidade.url | default: '/pages/privacy' }}" target="_blank" class="font-medium text-foreground hover:text-foreground/70 underline">{{ 'customer.register.privacy_policy' | t }}</a>{%- endcapture -%}
             <label for="terms_acceptance" class="text-sm text-foreground/70">
-              Concordo com os
-              <a href="{{ pages.termos-de-uso.url | default: '/pages/terms' }}" target="_blank" class="font-medium text-foreground hover:text-foreground/70 underline">
-                Termos de Uso
-              </a>
-              e
-              <a href="{{ pages.politica-de-privacidade.url | default: '/pages/privacy' }}" target="_blank" class="font-medium text-foreground hover:text-foreground/70 underline">
-                Política de Privacidade
-              </a>
+              {{ 'customer.register.terms_agreement_html' | t: terms_link: terms_link, privacy_link: privacy_link }}
               <span class="color-error">*</span>
             </label>
           </div>
@@ -208,7 +203,7 @@
           type="submit"
           class="w-full color-button py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Criar minha conta
+          {{ 'customer.register.submit_button' | t }}
         </button>
 
       {%- endform -%}
@@ -216,12 +211,12 @@
       {%- comment -%} Login Link {%- endcomment -%}
       <div class="text-center pt-6 mt-6 border-t border-border">
         <p class="text-sm text-foreground/60">
-          Já tem uma conta?
+          {{ 'customer.register.already_have_account' | t }}
           <a
             href="{{ routes.account_login_url }}"
             class="font-medium text-foreground hover:text-foreground/70 transition-colors ml-1"
           >
-            Fazer login
+            {{ 'customer.register.login_link' | t }}
           </a>
         </p>
       </div>
@@ -236,7 +231,7 @@
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
-        Voltar para a loja
+        {{ 'customer.shared.back_to_store' | t }}
       </a>
     </div>
 
@@ -291,27 +286,33 @@
 
         // Length check
         if (password.length >= 8) strength++;
-        else hints.push('mínimo 8 caracteres');
+        else hints.push({{ 'customer.register.strength_hints.length' | t | json }});
 
         // Lowercase check
         if (/[a-z]/.test(password)) strength++;
-        else hints.push('letras minúsculas');
+        else hints.push({{ 'customer.register.strength_hints.lowercase' | t | json }});
 
         // Uppercase check
         if (/[A-Z]/.test(password)) strength++;
-        else hints.push('letras maiúsculas');
+        else hints.push({{ 'customer.register.strength_hints.uppercase' | t | json }});
 
         // Number check
         if (/\d/.test(password)) strength++;
-        else hints.push('números');
+        else hints.push({{ 'customer.register.strength_hints.number' | t | json }});
 
         // Special character check
         if (/[^A-Za-z0-9]/.test(password)) strength++;
-        else hints.push('caracteres especiais');
+        else hints.push({{ 'customer.register.strength_hints.special' | t | json }});
 
         // Update strength bar and text
         const colors = ['color-error-bg0', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-green-600'];
-        const labels = ['Muito fraca', 'Fraca', 'Média', 'Boa', 'Muito boa'];
+        const labels = [
+          {{ 'customer.password_strength.very_weak' | t | json }},
+          {{ 'customer.password_strength.weak' | t | json }},
+          {{ 'customer.password_strength.medium' | t | json }},
+          {{ 'customer.password_strength.good' | t | json }},
+          {{ 'customer.password_strength.very_good' | t | json }}
+        ];
         const textColors = ['color-error', 'text-orange-600', 'color-warning', 'color-success', 'color-success'];
 
         strengthBar.className = 'h-full transition-all duration-300 rounded-full ' + colors[strength - 1];
@@ -320,9 +321,9 @@
         strengthText.textContent = labels[strength - 1];
 
         if (hints.length > 0 && strength < 4) {
-          strengthHint.textContent = 'Adicione: ' + hints.join(', ');
+          strengthHint.textContent = {{ 'customer.password_strength.add_prefix' | t | json }} + ' ' + hints.join(', ');
         } else {
-          strengthHint.textContent = 'Senha forte!';
+          strengthHint.textContent = {{ 'customer.password_strength.strong' | t | json }};
         }
       });
     }
@@ -345,7 +346,7 @@
               errorMsg.className = 'error-message text-xs color-error ml-1';
               label.appendChild(errorMsg);
             }
-            errorMsg.textContent = '- Campo obrigatório';
+            errorMsg.textContent = {{ 'customer.register.required_field_error' | t | json }};
           }
         });
 
@@ -379,7 +380,7 @@
             if (!errorDiv) {
               errorDiv = document.createElement('div');
               errorDiv.className = 'terms-error text-xs color-error mt-1 ml-7';
-              errorDiv.textContent = 'Você deve aceitar os termos para continuar';
+              errorDiv.textContent = {{ 'customer.register.terms_required' | t | json }};
               container.appendChild(errorDiv);
             }
           }
