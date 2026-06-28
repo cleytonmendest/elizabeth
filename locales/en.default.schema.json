@@ -1100,6 +1100,61 @@
         "name": "Images-Link Section"
       }
     },
+    "blog_posts": {
+      "name": "Blog Posts",
+      "settings": {
+        "content_header": {
+          "content": "Content"
+        },
+        "heading": {
+          "label": "Section title"
+        },
+        "subheading": {
+          "label": "Subtitle"
+        },
+        "blog": {
+          "label": "Blog",
+          "info": "Select the blog the posts will be shown from"
+        },
+        "posts_to_show": {
+          "label": "Number of posts",
+          "info": "Number of posts to display"
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "columns_desktop": {
+          "label": "Columns (Desktop)"
+        },
+        "background_color": {
+          "label": "Background color"
+        },
+        "cards_header": {
+          "content": "Card settings"
+        },
+        "show_excerpt": {
+          "label": "Show excerpt"
+        },
+        "show_author": {
+          "label": "Show author"
+        },
+        "show_tags": {
+          "label": "Show tags"
+        },
+        "button_header": {
+          "content": "Button"
+        },
+        "show_button": {
+          "label": "Show 'View all' button"
+        },
+        "button_text": {
+          "label": "Button text"
+        }
+      },
+      "presets": {
+        "name": "Blog Posts"
+      }
+    },
     "trust_badges": {
       "name": "Trust Badges",
       "settings": {

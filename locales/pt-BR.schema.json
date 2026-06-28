@@ -1100,6 +1100,61 @@
         "name": "Seção Imagens-Link"
       }
     },
+    "blog_posts": {
+      "name": "Posts do Blog",
+      "settings": {
+        "content_header": {
+          "content": "Conteúdo"
+        },
+        "heading": {
+          "label": "Título da Seção"
+        },
+        "subheading": {
+          "label": "Subtítulo"
+        },
+        "blog": {
+          "label": "Blog",
+          "info": "Selecione o blog de onde os posts serão exibidos"
+        },
+        "posts_to_show": {
+          "label": "Número de Posts",
+          "info": "Quantidade de posts a exibir"
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "columns_desktop": {
+          "label": "Colunas (Desktop)"
+        },
+        "background_color": {
+          "label": "Cor de Fundo"
+        },
+        "cards_header": {
+          "content": "Configurações dos Cards"
+        },
+        "show_excerpt": {
+          "label": "Mostrar Resumo"
+        },
+        "show_author": {
+          "label": "Mostrar Autor"
+        },
+        "show_tags": {
+          "label": "Mostrar Tags"
+        },
+        "button_header": {
+          "content": "Botão"
+        },
+        "show_button": {
+          "label": "Mostrar Botão 'Ver Todos'"
+        },
+        "button_text": {
+          "label": "Texto do Botão"
+        }
+      },
+      "presets": {
+        "name": "Posts do Blog"
+      }
+    },
     "trust_badges": {
       "name": "Trust Badges",
       "settings": {

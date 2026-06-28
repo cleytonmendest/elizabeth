@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.14.0 | **Atualizado:** 2026-06-27
+**Versão:** 2.15.0 | **Atualizado:** 2026-06-28
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -32,11 +32,12 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 - ✅ `slider-product.liquid` + `slider-cards.liquid` (i18n schema + aria-labels via `sections.slider.previous/next`)
 - ✅ `highlighted-product.liquid` (i18n schema; removidos placeholders mortos `SKU`/`inventory`)
 - ✅ `section-images-link.liquid` (i18n schema)
+- ✅ `blog-posts.liquid` (i18n schema + storefront reusando `blog.general.view_all`/`no_posts`; `rounded-lg`→`rounded-theme`)
 - ✅ Carrinho (`templates/cart.liquid` + `cart-drawer*` snippets) — storefront via `cart.general.*` (sem schema)
 
 Snippets compartilhados migrados junto: `card-product-slider`, `card-article`, `search-component`. PDP storefront já usava chaves (`product.*`) em price/inventory/quantity/add-to-cart.
 
-**Pendente:** `blog-posts` e `newsletter-modal` (schema cru). **⚠️ Reabrir `header` e `footer`:** auditoria mostrou schema ainda hardcoded no `.liquid` (entradas existem nos `*.schema.json` mas não são referenciadas) — apesar de marcados como concluídos antes. Depois, migrar os snippets restantes.
+**Pendente:** `newsletter-modal` (schema cru). **⚠️ Reabrir `header` e `footer`:** auditoria mostrou schema ainda hardcoded no `.liquid` (entradas existem nos `*.schema.json` mas não são referenciadas) — apesar de marcados como concluídos antes. Depois, migrar os snippets restantes.
 
 **Locales:** `pt-BR.json` (~225 strings), `en.default.json`, `pt-BR.schema.json`, `en.default.schema.json`
 
@@ -135,6 +136,8 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.15.0 - i18n do Posts do Blog (Home)** (2026-06-28) — `blog-posts.liquid` 100% i18n: schema PT/EN (`t:sections.blog_posts.*`) + storefront reusando chaves existentes (`blog.general.view_all` no botão, `blog.general.no_posts` no estado vazio). `rounded-lg`→`rounded-theme` no botão. Theme Check limpo, ValidSchemaTranslations 0.
 
 **v2.14.0 - i18n das sections de Home (sliders + destaque)** (2026-06-27) — `slider-product`, `slider-cards`, `highlighted-product` e `section-images-link` 100% i18n (schema PT/EN + aria-labels dos sliders via `sections.slider.previous/next`). Removidos placeholders mortos `SKU`/`inventory` do `highlighted-product`. **Auditoria** revelou que `header`/`footer` ainda têm schema hardcoded no `.liquid` (reabertos no requisito i18n). Theme Check limpo, ValidSchemaTranslations 0.
 
