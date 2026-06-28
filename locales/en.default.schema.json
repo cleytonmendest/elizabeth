@@ -1155,6 +1155,78 @@
         "name": "Blog Posts"
       }
     },
+    "newsletter_modal": {
+      "name": "Newsletter Modal",
+      "settings": {
+        "general_header": {
+          "content": "General settings"
+        },
+        "enable_modal": {
+          "label": "Enable modal",
+          "info": "Enable or disable the newsletter modal globally"
+        },
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Choose the color scheme for the modal"
+        },
+        "modalWidth": {
+          "label": "Max modal width (px)"
+        },
+        "content_header": {
+          "content": "Content"
+        },
+        "modal_image": {
+          "label": "Modal image",
+          "info": "Optional. If empty, an email icon is shown"
+        },
+        "modal_title": {
+          "label": "Modal title"
+        },
+        "modal_text": {
+          "label": "Modal text"
+        },
+        "button_text": {
+          "label": "Button text"
+        },
+        "triggers_header": {
+          "content": "Triggers (When to show)"
+        },
+        "delay_seconds": {
+          "label": "Delay before showing",
+          "info": "Time in seconds after the page loads. 0 = disabled"
+        },
+        "scroll_percentage": {
+          "label": "Show on scroll",
+          "info": "Percentage of the page scrolled. 0 = disabled"
+        },
+        "enable_exit_intent": {
+          "label": "Enable Exit Intent",
+          "info": "Shows when the user moves the mouse to leave the page"
+        },
+        "cookies_header": {
+          "content": "Cookies and Frequency"
+        },
+        "cookie_days": {
+          "label": "Don't show again for",
+          "info": "After closing or subscribing, how many days to not show?"
+        },
+        "show_dont_show_again": {
+          "label": "Show 'Don't show again' checkbox"
+        },
+        "feedback_header": {
+          "content": "Feedback messages"
+        },
+        "success_message": {
+          "label": "Success message"
+        },
+        "error_message": {
+          "label": "Error message"
+        }
+      },
+      "presets": {
+        "name": "Newsletter Modal"
+      }
+    },
     "trust_badges": {
       "name": "Trust Badges",
       "settings": {

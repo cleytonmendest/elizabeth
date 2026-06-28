@@ -378,7 +378,8 @@
     "description": "Receba novidades e ofertas exclusivas",
     "modal": {
       "title": "Não perca nossas novidades!",
-      "subtitle": "Assine nossa newsletter e receba ofertas exclusivas"
+      "subtitle": "Assine nossa newsletter e receba ofertas exclusivas",
+      "dont_show_again": "Não mostrar novamente"
     }
   },
   "testimonials": {

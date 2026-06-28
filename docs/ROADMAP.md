@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.15.0 | **Atualizado:** 2026-06-28
+**Versão:** 2.16.0 | **Atualizado:** 2026-06-28
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -33,11 +33,12 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 - ✅ `highlighted-product.liquid` (i18n schema; removidos placeholders mortos `SKU`/`inventory`)
 - ✅ `section-images-link.liquid` (i18n schema)
 - ✅ `blog-posts.liquid` (i18n schema + storefront reusando `blog.general.view_all`/`no_posts`; `rounded-lg`→`rounded-theme`)
+- ✅ `newsletter-modal.liquid` (i18n schema + storefront; nova chave `newsletter.modal.dont_show_again`; fix `ImgWidthAndHeight`)
 - ✅ Carrinho (`templates/cart.liquid` + `cart-drawer*` snippets) — storefront via `cart.general.*` (sem schema)
 
 Snippets compartilhados migrados junto: `card-product-slider`, `card-article`, `search-component`. PDP storefront já usava chaves (`product.*`) em price/inventory/quantity/add-to-cart.
 
-**Pendente:** `newsletter-modal` (schema cru). **⚠️ Reabrir `header` e `footer`:** auditoria mostrou schema ainda hardcoded no `.liquid` (entradas existem nos `*.schema.json` mas não são referenciadas) — apesar de marcados como concluídos antes. Depois, migrar os snippets restantes.
+**Pendente:** todas as sections de página/Home migradas. **⚠️ Restam só `header` e `footer`:** auditoria mostrou schema ainda hardcoded no `.liquid` (entradas existem nos `*.schema.json` mas não são referenciadas) — apesar de marcados como concluídos antes. Depois, migrar os snippets restantes.
 
 **Locales:** `pt-BR.json` (~225 strings), `en.default.json`, `pt-BR.schema.json`, `en.default.schema.json`
 
@@ -82,9 +83,9 @@ README para lojistas (não desenvolvedores).
 ---
 
 ### 5. Code Quality (Theme Check)
-**Status:** Parcial — 11 errors, 27 warnings (2026-06-27) | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
+**Status:** Parcial — 10 errors, 27 warnings (2026-06-28) | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
 
-Theme Check zerado para a Theme Store. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. Arquivos já revisados (Home/PDP/Coleção/Busca/Carrinho/Blog/Artigo) sem offenses próprios. `ValidSchemaTranslations` **zerado** (testimonials corrigido). Pendentes — 🔴 (11): `ImgWidthAndHeight` (10× → add `width`/`height`) em customers/order, newsletter-modal, product-gallery, testimonial-card, gift_card; `UnknownFilter` (1×, gift_card). 🟡 (28): `UnusedAssign` (11×), `UndefinedObject` (9×), `OrphanedSnippet` (7×), `RemoteAsset` (1×, inerente).
+Theme Check zerado para a Theme Store. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. Arquivos já revisados (Home/PDP/Coleção/Busca/Carrinho/Blog/Artigo) sem offenses próprios. `ValidSchemaTranslations` **zerado** (testimonials corrigido). Pendentes — 🔴 (10): `ImgWidthAndHeight` (9× → add `width`/`height`) em customers/order, product-gallery, testimonial-card, gift_card; `UnknownFilter` (1×, gift_card). 🟡 (28): `UnusedAssign` (11×), `UndefinedObject` (9×), `OrphanedSnippet` (7×), `RemoteAsset` (1×, inerente).
 
 ---
 
@@ -136,6 +137,8 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.16.0 - i18n do Modal Newsletter (Home)** (2026-06-28) — `newsletter-modal.liquid` 100% i18n: schema PT/EN (`t:sections.newsletter_modal.*`) + storefront (aria-label via `general.accessibility.close_modal`, placeholder via `newsletter.placeholder`, nova chave `newsletter.modal.dont_show_again`). Corrigido `ImgWidthAndHeight` pré-existente (theme-wide 11→10 errors). **Fecha 100% das sections de página/Home** — restam só header/footer (reabertos) e snippets.
 
 **v2.15.0 - i18n do Posts do Blog (Home)** (2026-06-28) — `blog-posts.liquid` 100% i18n: schema PT/EN (`t:sections.blog_posts.*`) + storefront reusando chaves existentes (`blog.general.view_all` no botão, `blog.general.no_posts` no estado vazio). `rounded-lg`→`rounded-theme` no botão. Theme Check limpo, ValidSchemaTranslations 0.
 

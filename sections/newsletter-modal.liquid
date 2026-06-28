@@ -24,7 +24,7 @@
     <button
       type="button"
       class="close-modal absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full hover:bg-foreground/5 hover:bg-opacity-10 transition-colors z-10"
-      aria-label="Fechar modal"
+      aria-label="{{ 'general.accessibility.close_modal' | t }}"
     >
       <svg class="w-5 h-5 color-icon-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -38,6 +38,8 @@
           <img
             src="{{ section.settings.modal_image | image_url: width: 200 }}"
             alt="{{ section.settings.modal_title }}"
+            width="{{ section.settings.modal_image.width }}"
+            height="{{ section.settings.modal_image.height }}"
             class="w-32 h-32 object-contain"
             loading="lazy"
             decoding="async"
@@ -75,7 +77,7 @@
             type="email"
             name="email"
             id="newsletter-email"
-            placeholder="Seu melhor e-mail"
+            placeholder="{{ 'newsletter.placeholder' | t }}"
             required
             class="color-input w-full px-4 py-3 rounded-theme focus:outline-none focus:ring-2 transition-all"
           >
@@ -106,7 +108,7 @@
         <div class="mt-6 text-center">
           <label class="inline-flex items-center cursor-pointer text-sm color-text-muted hover:opacity-80">
             <input type="checkbox" class="dont-show-again mr-2 rounded-theme-sm color-border">
-            Não mostrar novamente
+            {{ 'newsletter.modal.dont_show_again' | t }}
           </label>
         </div>
       {%- endif -%}
@@ -119,7 +121,7 @@
 
 {% schema %}
 {
-  "name": "Modal Newsletter",
+  "name": "t:sections.newsletter_modal.name",
   "tag": "section",
   "class": "section",
   "limit": 1,
@@ -129,59 +131,59 @@
   "settings": [
     {
       "type": "header",
-      "content": "Configurações Gerais"
+      "content": "t:sections.newsletter_modal.settings.general_header.content"
     },
     {
       "type": "checkbox",
       "id": "enable_modal",
-      "label": "Ativar modal",
+      "label": "t:sections.newsletter_modal.settings.enable_modal.label",
       "default": true,
-      "info": "Ative ou desative o modal de newsletter globalmente"
+      "info": "t:sections.newsletter_modal.settings.enable_modal.info"
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Esquema de cores",
+      "label": "t:sections.newsletter_modal.settings.color_scheme.label",
       "default": "scheme-1",
-      "info": "Escolha o esquema de cores para o modal"
+      "info": "t:sections.newsletter_modal.settings.color_scheme.info"
     },
     {
       "type": "number",
       "id": "modalWidth",
-      "label": "Largura máxima do Modal (px)",
+      "label": "t:sections.newsletter_modal.settings.modalWidth.label",
       "default": 500
     },
     {
       "type": "header",
-      "content": "Conteúdo"
+      "content": "t:sections.newsletter_modal.settings.content_header.content"
     },
     {
       "type": "image_picker",
       "id": "modal_image",
-      "label": "Imagem do modal",
-      "info": "Opcional. Se vazio, mostra ícone de email"
+      "label": "t:sections.newsletter_modal.settings.modal_image.label",
+      "info": "t:sections.newsletter_modal.settings.modal_image.info"
     },
     {
       "type": "inline_richtext",
-      "label": "Título do Modal",
+      "label": "t:sections.newsletter_modal.settings.modal_title.label",
       "id": "modal_title",
       "default": "Receba ofertas exclusivas!"
     },
     {
       "type": "richtext",
       "id": "modal_text",
-      "label": "Texto do Modal",
+      "label": "t:sections.newsletter_modal.settings.modal_text.label",
       "default": "<p>Cadastre-se e receba em primeira mão nossas promoções e lançamentos.</p>"
     },
     {
       "type": "text",
       "id": "button_text",
-      "label": "Texto do botão",
+      "label": "t:sections.newsletter_modal.settings.button_text.label",
       "default": "Quero receber ofertas"
     },
     {
       "type": "header",
-      "content": "Triggers (Quando mostrar)"
+      "content": "t:sections.newsletter_modal.settings.triggers_header.content"
     },
     {
       "type": "range",
@@ -190,9 +192,9 @@
       "max": 60,
       "step": 1,
       "unit": "s",
-      "label": "Delay para aparecer",
+      "label": "t:sections.newsletter_modal.settings.delay_seconds.label",
       "default": 5,
-      "info": "Tempo em segundos após carregar a página. 0 = desativado"
+      "info": "t:sections.newsletter_modal.settings.delay_seconds.info"
     },
     {
       "type": "range",
@@ -201,20 +203,20 @@
       "max": 100,
       "step": 5,
       "unit": "%",
-      "label": "Mostrar ao rolar",
+      "label": "t:sections.newsletter_modal.settings.scroll_percentage.label",
       "default": 0,
-      "info": "Percentual da página rolado. 0 = desativado"
+      "info": "t:sections.newsletter_modal.settings.scroll_percentage.info"
     },
     {
       "type": "checkbox",
       "id": "enable_exit_intent",
-      "label": "Ativar Exit Intent",
+      "label": "t:sections.newsletter_modal.settings.enable_exit_intent.label",
       "default": true,
-      "info": "Mostra quando usuário move mouse para sair da página"
+      "info": "t:sections.newsletter_modal.settings.enable_exit_intent.info"
     },
     {
       "type": "header",
-      "content": "Cookies e Frequência"
+      "content": "t:sections.newsletter_modal.settings.cookies_header.content"
     },
     {
       "type": "range",
@@ -223,36 +225,36 @@
       "max": 370,
       "step": 10,
       "unit": "dia",
-      "label": "Não mostrar novamente por",
+      "label": "t:sections.newsletter_modal.settings.cookie_days.label",
       "default": 30,
-      "info": "Após fechar ou se cadastrar, quantos dias não mostrar?"
+      "info": "t:sections.newsletter_modal.settings.cookie_days.info"
     },
     {
       "type": "checkbox",
       "id": "show_dont_show_again",
-      "label": "Mostrar checkbox 'Não mostrar novamente'",
+      "label": "t:sections.newsletter_modal.settings.show_dont_show_again.label",
       "default": true
     },
     {
       "type": "header",
-      "content": "Mensagens de Feedback"
+      "content": "t:sections.newsletter_modal.settings.feedback_header.content"
     },
     {
       "type": "text",
       "id": "success_message",
-      "label": "Mensagem de sucesso",
+      "label": "t:sections.newsletter_modal.settings.success_message.label",
       "default": "Obrigado! Você receberá nossas novidades em breve."
     },
     {
       "type": "text",
       "id": "error_message",
-      "label": "Mensagem de erro",
+      "label": "t:sections.newsletter_modal.settings.error_message.label",
       "default": "Ops! Algo deu errado. Tente novamente."
     }
   ],
   "presets": [
     {
-      "name": "Modal Newsletter"
+      "name": "t:sections.newsletter_modal.presets.name"
     }
   ]
 }

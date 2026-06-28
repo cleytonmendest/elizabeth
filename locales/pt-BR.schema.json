@@ -1155,6 +1155,78 @@
         "name": "Posts do Blog"
       }
     },
+    "newsletter_modal": {
+      "name": "Modal Newsletter",
+      "settings": {
+        "general_header": {
+          "content": "Configurações Gerais"
+        },
+        "enable_modal": {
+          "label": "Ativar modal",
+          "info": "Ative ou desative o modal de newsletter globalmente"
+        },
+        "color_scheme": {
+          "label": "Esquema de cores",
+          "info": "Escolha o esquema de cores para o modal"
+        },
+        "modalWidth": {
+          "label": "Largura máxima do Modal (px)"
+        },
+        "content_header": {
+          "content": "Conteúdo"
+        },
+        "modal_image": {
+          "label": "Imagem do modal",
+          "info": "Opcional. Se vazio, mostra ícone de email"
+        },
+        "modal_title": {
+          "label": "Título do Modal"
+        },
+        "modal_text": {
+          "label": "Texto do Modal"
+        },
+        "button_text": {
+          "label": "Texto do botão"
+        },
+        "triggers_header": {
+          "content": "Triggers (Quando mostrar)"
+        },
+        "delay_seconds": {
+          "label": "Delay para aparecer",
+          "info": "Tempo em segundos após carregar a página. 0 = desativado"
+        },
+        "scroll_percentage": {
+          "label": "Mostrar ao rolar",
+          "info": "Percentual da página rolado. 0 = desativado"
+        },
+        "enable_exit_intent": {
+          "label": "Ativar Exit Intent",
+          "info": "Mostra quando usuário move mouse para sair da página"
+        },
+        "cookies_header": {
+          "content": "Cookies e Frequência"
+        },
+        "cookie_days": {
+          "label": "Não mostrar novamente por",
+          "info": "Após fechar ou se cadastrar, quantos dias não mostrar?"
+        },
+        "show_dont_show_again": {
+          "label": "Mostrar checkbox 'Não mostrar novamente'"
+        },
+        "feedback_header": {
+          "content": "Mensagens de Feedback"
+        },
+        "success_message": {
+          "label": "Mensagem de sucesso"
+        },
+        "error_message": {
+          "label": "Mensagem de erro"
+        }
+      },
+      "presets": {
+        "name": "Modal Newsletter"
+      }
+    },
     "trust_badges": {
       "name": "Trust Badges",
       "settings": {

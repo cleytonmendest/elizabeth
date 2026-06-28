@@ -378,7 +378,8 @@
     "description": "Get news and exclusive offers",
     "modal": {
       "title": "Don't miss our news!",
-      "subtitle": "Subscribe to our newsletter and get exclusive offers"
+      "subtitle": "Subscribe to our newsletter and get exclusive offers",
+      "dont_show_again": "Don't show again"
     }
   },
   "testimonials": {
