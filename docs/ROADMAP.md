@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.17.0 | **Atualizado:** 2026-06-28
+**Versão:** 2.18.0 | **Atualizado:** 2026-06-28
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -38,7 +38,7 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 
 Snippets compartilhados migrados junto: `card-product-slider`, `card-article`, `search-component`. PDP storefront já usava chaves (`product.*`) em price/inventory/quantity/add-to-cart.
 
-**Pendente:** **todas as sections migradas** (página + Home + header/footer). Resta migrar os **snippets compartilhados** restantes (ver lista abaixo) + auditar strings de storefront em snippets.
+**Pendente:** **todas as sections migradas** (página + Home + header/footer) **e snippets auditados/migrados** (card-quick-add, pagination, breadcrumb, product-gallery a11y). Restantes são casos-limite aceitáveis (fallbacks de setting do lojista em cart-free-shipping/payment-icons). i18n essencialmente **completo**.
 
 **Locales:** `pt-BR.json` (~225 strings), `en.default.json`, `pt-BR.schema.json`, `en.default.schema.json`
 
@@ -83,9 +83,9 @@ README para lojistas (não desenvolvedores).
 ---
 
 ### 5. Code Quality (Theme Check)
-**Status:** Parcial — 10 errors, 27 warnings (2026-06-28) | **Esforço:** 4-6h | **Prioridade:** 🟡 ALTA
+**Status:** Parcial — 6 errors, 27 warnings (2026-06-28) | **Esforço:** 3-5h | **Prioridade:** 🟡 ALTA
 
-Theme Check zerado para a Theme Store. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. Arquivos já revisados (Home/PDP/Coleção/Busca/Carrinho/Blog/Artigo) sem offenses próprios. `ValidSchemaTranslations` **zerado** (testimonials corrigido). Pendentes — 🔴 (10): `ImgWidthAndHeight` (9× → add `width`/`height`) em customers/order, product-gallery, testimonial-card, gift_card; `UnknownFilter` (1×, gift_card). 🟡 (28): `UnusedAssign` (11×), `UndefinedObject` (9×), `OrphanedSnippet` (7×), `RemoteAsset` (1×, inerente).
+Theme Check zerado para a Theme Store. Quality gate por implementação: ver regra 4 em `CLAUDE.md`. Arquivos já revisados (Home/PDP/Coleção/Busca/Carrinho/Blog/Artigo) sem offenses próprios. `ValidSchemaTranslations` **zerado**. Pendentes — 🔴 (6): `ImgWidthAndHeight` (5× → add `width`/`height`) em customers/order, testimonial-card, gift_card, e 1 inerente no lightbox do `product-gallery` (img `src=""` populado por JS); `UnknownFilter` (1×, gift_card). 🟡 (28): `UnusedAssign` (11×), `UndefinedObject` (9×), `OrphanedSnippet` (7×), `RemoteAsset` (1×, inerente).
 
 ---
 
@@ -137,6 +137,8 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.18.0 - i18n dos snippets + a11y/quality** (2026-06-28) — Auditoria dos 77 snippets: maioria já i18n. Corrigidos `card-quick-add` ("Adicionar"→`product.general.add_to_cart_short`), `pagination` (4 aria-labels→`general.pagination.*`, +chave `label`), `breadcrumb` (aria→`general.breadcrumbs.aria_label`). A11y: aria-labels nos botões do lightbox do `product-gallery`. **Quality:** corrigidos 4 `ImgWidthAndHeight` no product-gallery (theme-wide 10→6 errors). Casos-limite (fallbacks de setting em cart-free-shipping/payment-icons) mantidos por serem conteúdo do lojista.
 
 **v2.17.0 - i18n de header + footer (fecha as sections)** (2026-06-28) — `header.liquid` e `footer.liquid` migrados para `t:sections.header.*`/`t:sections.footer.*`. Locale do header limpo (removidas chaves órfãs `transparent_header`/`header_bg`/`icons_color*` de versão antiga, textos alinhados ao liquid atual); footer estendido com `newsletter_color_scheme` + 14 flags `pay_*` que faltavam. **Todas as sections do tema agora 100% i18n.** Theme Check limpo, ValidSchemaTranslations 0.
 

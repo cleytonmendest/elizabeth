@@ -88,6 +88,8 @@
                   <img
                     src="{{ media.preview_image | image_url: width: 120 }}"
                     alt="{{ media.alt | escape }}"
+                    width="{{ media.preview_image.width }}"
+                    height="{{ media.preview_image.height }}"
                     class="w-full h-full object-cover"
                     loading="lazy"
                     decoding="async"
@@ -97,6 +99,8 @@
                     <img
                       src="{{ media.preview_image | image_url: width: 120 }}"
                       alt="{{ media.alt | escape }}"
+                      width="{{ media.preview_image.width }}"
+                      height="{{ media.preview_image.height }}"
                       class="w-full h-full object-cover"
                       loading="lazy"
                       decoding="async"
@@ -122,6 +126,8 @@
                   <img
                     src="{{ media | image_url: width: 1000 }}"
                     alt="{{ media.alt | escape }}"
+                    width="{{ media.width }}"
+                    height="{{ media.height }}"
                     class="w-full rounded-theme cursor-zoom-in"
                     data-zoom-image="{{ media | image_url: width: 2000 }}"
                     loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
@@ -174,6 +180,8 @@
                     <img
                       src="{{ media | image_url: width: 800 }}"
                       alt="{{ media.alt | escape }}"
+                      width="{{ media.width }}"
+                      height="{{ media.height }}"
                       class="w-full"
                       loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                       {% if forloop.first %}fetchpriority="high"{% endif %}
@@ -210,9 +218,9 @@
 
         {%- comment -%} Lightbox Modal {%- endcomment -%}
         <div id="product-lightbox" class="product-lightbox hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-          <button class="absolute top-4 right-4 text-white text-4xl" data-lightbox-close>&times;</button>
-          <button class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl" data-lightbox-prev>‹</button>
-          <button class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl" data-lightbox-next>›</button>
+          <button type="button" class="absolute top-4 right-4 text-white text-4xl" data-lightbox-close aria-label="{{ 'general.accessibility.close' | t }}">&times;</button>
+          <button type="button" class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl" data-lightbox-prev aria-label="{{ 'general.accessibility.previous' | t }}">‹</button>
+          <button type="button" class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl" data-lightbox-next aria-label="{{ 'general.accessibility.next' | t }}">›</button>
           <img id="lightbox-image" src="" alt="" class="max-w-full max-h-full object-contain">
         </div>
       </div>

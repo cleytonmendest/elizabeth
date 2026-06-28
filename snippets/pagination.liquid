@@ -1,10 +1,10 @@
 {%- if paginate.pages > 1 -%}
-  <nav class="pagination flex items-center justify-center gap-2" role="navigation" aria-label="Paginação">
+  <nav class="pagination flex items-center justify-center gap-2" role="navigation" aria-label="{{ 'general.pagination.label' | t }}">
     {%- if paginate.previous -%}
       <a
         href="{{ paginate.previous.url }}"
         class="pagination__item pagination__item--prev inline-flex items-center justify-center w-10 h-10 border border-border rounded-theme hover:bg-foreground/5 transition-colors"
-        aria-label="Página anterior"
+        aria-label="{{ 'general.pagination.previous' | t }}"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -23,7 +23,7 @@
         <a
           href="{{ part.url }}"
           class="pagination__item inline-flex items-center justify-center w-10 h-10 border border-border rounded-theme hover:bg-foreground/5 transition-colors"
-          aria-label="Página {{ part.title }}"
+          aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
         >
           {{ part.title }}
         </a>
@@ -32,7 +32,7 @@
           <span
             class="pagination__item pagination__item--current inline-flex items-center justify-center w-10 h-10 border-2 border-foreground bg-foreground text-background rounded-theme font-semibold"
             aria-current="page"
-            aria-label="Página {{ part.title }}"
+            aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
           >
             {{ part.title }}
           </span>
@@ -48,7 +48,7 @@
       <a
         href="{{ paginate.next.url }}"
         class="pagination__item pagination__item--next inline-flex items-center justify-center w-10 h-10 border border-border rounded-theme hover:bg-foreground/5 transition-colors"
-        aria-label="Próxima página"
+        aria-label="{{ 'general.pagination.next' | t }}"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

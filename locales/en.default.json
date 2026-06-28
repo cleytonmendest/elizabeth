@@ -22,6 +22,7 @@
       "page": "Page {{ page }}"
     },
     "breadcrumbs": {
+      "aria_label": "Breadcrumb",
       "home": "Home",
       "all_collections": "All Collections",
       "products": "Products",
@@ -59,6 +60,7 @@
       "popular_searches": "Popular searches"
     },
     "pagination": {
+      "label": "Pagination",
       "previous": "Previous",
       "next": "Next",
       "page": "Page {{ number }}"

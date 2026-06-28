@@ -2,7 +2,7 @@
   snippets/breadcrumb.liquid
 {%- endcomment -%}
 {%- if template.name != 'index' -%}
-  <nav aria-label="Breadcrumb" class="breadcrumb-nav sm:text-sm text-xs w-full my-2">
+  <nav aria-label="{{ 'general.breadcrumbs.aria_label' | t }}" class="breadcrumb-nav sm:text-sm text-xs w-full my-2">
     <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
       <li>
         <a href="{{ routes.root_url }}" class="text-foreground/50 hover:underline hover:text-foreground">{{ 'general.breadcrumbs.home' | t }}</a>

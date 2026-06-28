@@ -14,13 +14,13 @@
       <input type="hidden" name="quantity" value="1">
       <button type="submit" name="add" aria-haspopup="dialog" class="{{ button_class }}">
         {% render 'icon-cart', size: 15 %}
-        Adicionar
+        {{ 'product.general.add_to_cart_short' | t }}
       </button>
     {%- endform -%}
   </add-to-cart>
 {%- else -%}
   <a href="{{ product.url }}" class="{{ button_class }}">
     {% render 'icon-cart', size: 15 %}
-    Adicionar
+    {{ 'product.general.add_to_cart_short' | t }}
   </a>
 {%- endif -%}
