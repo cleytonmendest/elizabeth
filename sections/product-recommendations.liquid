@@ -1,0 +1,94 @@
+{%- comment -%}
+  Recomendações de produto — "Você também pode gostar".
+  Usa a API nativa de recommendations do Shopify (sem setup do lojista). O conteúdo
+  é carregado sob demanda via <product-recommendations> (fetch quando entra na tela).
+{%- endcomment -%}
+
+{%- liquid
+  assign heading = section.settings.heading
+  if heading == blank
+    assign heading = 'product.recommendations.title' | t
+  endif
+  assign limit = section.settings.products_to_show | default: 4
+  assign cols = limit | at_most: 5 | at_least: 2
+-%}
+
+<product-recommendations
+  class="block"
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ limit }}&intent=related"
+>
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <div class="color-{{ section.settings.color_scheme }} color-background color-text">
+      <div class="page-width !py-12 lg:!py-16">
+        {%- if heading != blank -%}
+          <h2 class="text-2xl md:text-3xl font-light tracking-tight text-center mb-8 lg:mb-10">{{ heading }}</h2>
+        {%- endif -%}
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-{{ cols }} gap-4 md:gap-6">
+          {%- for recommendation in recommendations.products limit: limit -%}
+            {%- render 'card-product-slider',
+              card_product: recommendation,
+              show_second_image: section.settings.show_second_image,
+              show_badges: true,
+              show_installments: section.settings.show_installments,
+              lazy_load: true,
+              remove_padding: true
+            -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+</product-recommendations>
+
+<script src="{{ 'product-recommendations.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "t:sections.product_recommendations.name",
+  "tag": "section",
+  "class": "section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.product_recommendations.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.product_recommendations.settings.heading.label",
+      "info": "t:sections.product_recommendations.settings.heading.info"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.product_recommendations.settings.products_to_show.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_second_image",
+      "label": "t:sections.product_recommendations.settings.show_second_image.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_installments",
+      "label": "t:sections.product_recommendations.settings.show_installments.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.product_recommendations.presets.name"
+    }
+  ]
+}
+{% endschema %}

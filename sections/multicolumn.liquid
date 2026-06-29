@@ -1,0 +1,211 @@
+{%- comment -%}
+  Multicolunas — colunas repetíveis com imagem OU ícone + título + texto + link opcional.
+  Versão flexível e baseada em imagem (distinta da trust-badges, que é a barra de
+  benefícios compacta). Útil para "Como funciona", categorias, trios editoriais.
+  UM link por coluna (link de texto), seguindo o padrão do tema.
+{%- endcomment -%}
+
+{%- liquid
+  assign cols = section.settings.columns_desktop | default: 3
+  assign align_cls = 'items-start text-left'
+  if section.settings.alignment == 'center'
+    assign align_cls = 'items-center text-center'
+  endif
+-%}
+
+<section class="color-{{ section.settings.color_scheme }} color-background color-text">
+  <div class="page-width !py-12 lg:!py-16">
+    {%- if section.settings.heading != blank or section.settings.eyebrow != blank -%}
+      <div class="text-center mb-8 lg:mb-12">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="text-xs uppercase tracking-[0.18em] opacity-60 mb-3">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="text-2xl lg:text-4xl font-light tracking-tight">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-{{ cols }} gap-8 lg:gap-10">
+      {%- for block in section.blocks -%}
+        {%- assign col_alt = block.settings.heading | default: shop.name -%}
+        <div class="flex flex-col {{ align_cls }}" {{ block.shopify_attributes }}>
+          {%- if block.settings.image != blank -%}
+            <div class="w-full mb-5">
+              {{
+                block.settings.image
+                | image_url: width: 800
+                | image_tag:
+                  class: 'w-full h-auto rounded-theme',
+                  widths: '300, 500, 700, 800',
+                  sizes: '(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw',
+                  alt: col_alt,
+                  loading: 'lazy'
+              }}
+            </div>
+          {%- elsif block.settings.icon != 'none' -%}
+            <div class="mb-4 color-text">
+              {% render 'trust-badge-icon', icon: block.settings.icon, size: 32 %}
+            </div>
+          {%- endif -%}
+
+          {%- if block.settings.heading != blank -%}
+            <h3 class="text-base lg:text-lg font-normal mb-2">{{ block.settings.heading }}</h3>
+          {%- endif -%}
+          {%- if block.settings.text != blank -%}
+            <div class="text-sm leading-relaxed opacity-70 {% if block.settings.link != blank and block.settings.link_label != blank %}mb-4{% endif %}">
+              {{ block.settings.text }}
+            </div>
+          {%- endif -%}
+          {%- if block.settings.link != blank and block.settings.link_label != blank -%}
+            <a
+              href="{{ block.settings.link }}"
+              class="group inline-flex items-center gap-2 mt-auto text-xs uppercase tracking-[0.18em] color-text hover:opacity-70 transition-opacity"
+            >
+              {{ block.settings.link_label }}
+              <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">
+                {% render 'icon-arrow-right', size: 15 %}
+              </span>
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.multicolumn.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.multicolumn.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.multicolumn.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.multicolumn.settings.heading.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.multicolumn.settings.layout_header.content"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:sections.multicolumn.settings.columns_desktop.label",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:sections.multicolumn.settings.alignment.label",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "t:sections.multicolumn.settings.alignment.options.left" },
+        { "value": "center", "label": "t:sections.multicolumn.settings.alignment.options.center" }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "column",
+      "name": "t:sections.multicolumn.blocks.column.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.multicolumn.blocks.column.settings.image.label",
+          "info": "t:sections.multicolumn.blocks.column.settings.image.info"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:sections.multicolumn.blocks.column.settings.icon.label",
+          "info": "t:sections.multicolumn.blocks.column.settings.icon.info",
+          "default": "none",
+          "options": [
+            { "value": "none", "label": "t:sections.multicolumn.blocks.column.settings.icon.options.none" },
+            { "value": "truck", "label": "t:sections.multicolumn.blocks.column.settings.icon.options.truck" },
+            { "value": "shield", "label": "t:sections.multicolumn.blocks.column.settings.icon.options.shield" },
+            { "value": "refresh", "label": "t:sections.multicolumn.blocks.column.settings.icon.options.refresh" },
+            { "value": "credit-card", "label": "t:sections.multicolumn.blocks.column.settings.icon.options.credit_card" },
+            { "value": "star", "label": "t:sections.multicolumn.blocks.column.settings.icon.options.star" },
+            { "value": "check-circle", "label": "t:sections.multicolumn.blocks.column.settings.icon.options.check_circle" },
+            { "value": "lock", "label": "t:sections.multicolumn.blocks.column.settings.icon.options.lock" },
+            { "value": "clock", "label": "t:sections.multicolumn.blocks.column.settings.icon.options.clock" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.multicolumn.blocks.column.settings.heading.label"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:sections.multicolumn.blocks.column.settings.text.label"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "t:sections.multicolumn.blocks.column.settings.link_label.label",
+          "info": "t:sections.multicolumn.blocks.column.settings.link_label.info"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.multicolumn.blocks.column.settings.link.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.multicolumn.presets.name",
+      "blocks": [
+        {
+          "type": "column",
+          "settings": {
+            "icon": "truck",
+            "heading": "Entrega para todo o Brasil",
+            "text": "<p>Enviamos com rastreio para todas as regiões.</p>"
+          }
+        },
+        {
+          "type": "column",
+          "settings": {
+            "icon": "refresh",
+            "heading": "Troca facilitada",
+            "text": "<p>Até 30 dias para trocar suas peças.</p>"
+          }
+        },
+        {
+          "type": "column",
+          "settings": {
+            "icon": "lock",
+            "heading": "Compra 100% segura",
+            "text": "<p>Seus dados protegidos do início ao fim.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

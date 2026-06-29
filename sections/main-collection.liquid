@@ -1,6 +1,28 @@
 {% assign sort_by = collection.sort_by | default: collection.default_sort_by %}
 {%- assign products_per_page = section.settings.products_per_page | default: 12 -%}
 
+{%- comment -%}
+  Detecção de moeda com vírgula decimal (ex: BRL, EUR) para os inputs do filtro de
+  preço — o param do Shopify espera ponto decimal e sem separador de milhar.
+{%- endcomment -%}
+{%- assign comma_currencies = 'ANG,ARS,BRL,BYN,CLF,CLP,COP,CRC,CZK,DKK,EUR,HRK,HUF,IDR,ISK,MZN,NOK,PLN,RON,RUB,SEK,TRY,UYU,VND' | split: ',' -%}
+{%- assign uses_comma_decimals = false -%}
+{%- if comma_currencies contains cart.currency.iso_code -%}
+  {%- assign uses_comma_decimals = true -%}
+{%- endif -%}
+
+{%- comment -%} Conta filtros ativos (para "limpar" e estados) {%- endcomment -%}
+{%- assign active_filter_count = 0 -%}
+{%- for filter in collection.filters -%}
+  {%- if filter.type == 'price_range' -%}
+    {%- if filter.min_value.value != blank or filter.max_value.value != blank -%}
+      {%- assign active_filter_count = active_filter_count | plus: 1 -%}
+    {%- endif -%}
+  {%- else -%}
+    {%- assign active_filter_count = active_filter_count | plus: filter.active_values.size -%}
+  {%- endif -%}
+{%- endfor -%}
+
 <div class="page-width !py-8 color-{{ section.settings.color_scheme }}">
   {%- if collection.image and section.settings.show_collection_image -%}
     <div class="collection-hero mb-10 md:mb-12 relative h-64 md:h-[26rem] rounded-theme overflow-hidden">
@@ -38,10 +60,15 @@
     </div>
   {%- endif -%}
 
+  {%- assign show_filters = false -%}
+  {%- if section.settings.enable_filtering and collection.filters.size > 0 -%}
+    {%- assign show_filters = true -%}
+  {%- endif -%}
+
   {%- paginate collection.products by products_per_page -%}
-    <div class="flex flex-col lg:flex-row gap-8">
-      {%- if section.settings.enable_filtering -%}
-        {%- comment -%} Filtros: sidebar inline no desktop, drawer off-canvas no mobile {%- endcomment -%}
+    <form data-filter-form method="get" class="flex flex-col lg:flex-row gap-8">
+      {%- if show_filters -%}
+        {%- comment -%} Filtros nativos: sidebar inline no desktop, drawer off-canvas no mobile {%- endcomment -%}
         <div
           class="fixed inset-0 z-40 bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"
           data-filters-overlay
@@ -61,67 +88,127 @@
                 aria-label="{{ 'collection.filters.close' | t }}"
                 class="text-foreground/60 hover:text-foreground transition-colors"
               >
-                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                {% render 'icon-close', size: 20 %}
               </button>
             </div>
 
-            {%- if section.settings.enable_filtering -%}
-              <div class="mb-8">
-                <h2 class="hidden lg:block text-xs uppercase tracking-[0.18em] text-foreground/60 mb-5">{{ 'collection.filters.title' | t }}</h2>
+            <div class="flex items-center justify-between mb-5">
+              <h2 class="hidden lg:block text-xs uppercase tracking-[0.18em] text-foreground/60">{{ 'collection.filters.title' | t }}</h2>
+              {%- if active_filter_count > 0 -%}
+                <a
+                  href="{{ collection.url }}{% if sort_by != blank %}?sort_by={{ sort_by }}{% endif %}"
+                  class="text-xs uppercase tracking-[0.12em] text-foreground/55 hover:text-foreground underline underline-offset-4 transition-colors"
+                >
+                  {{ 'collection.filters.clear_all' | t }}
+                </a>
+              {%- endif -%}
+            </div>
 
-                {%- comment -%} Filtro de disponibilidade {%- endcomment -%}
-                <details class="mb-4 border-b border-border pb-4" open>
-                  <summary class="cursor-pointer text-sm font-medium mb-2 flex justify-between items-center">
-                    {{ 'collection.filters.availability' | t }}
-                    <svg class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </summary>
-                  <div class="mt-2 space-y-2">
-                    <label class="flex items-center">
-                      <input type="checkbox" class="filter-checkbox mr-2" data-filter="in-stock">
-                      <span class="text-sm">{{ 'collection.filters.in_stock' | t }} ({{ collection.products | where: "available" | size }})</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="checkbox" class="filter-checkbox mr-2" data-filter="out-of-stock">
-                      <span class="text-sm">{{ 'collection.filters.out_of_stock' | t }}</span>
-                    </label>
-                  </div>
-                </details>
+            {%- comment -%} Preserva a ordenação ao aplicar filtros {%- endcomment -%}
+            <input type="hidden" name="sort_by" value="{{ sort_by }}">
 
-                {%- comment -%} Filtro de preço {%- endcomment -%}
-                {%- if section.settings.enable_price_filter -%}
-                  <details class="mb-4 border-b border-border pb-4">
-                    <summary class="cursor-pointer text-sm font-medium mb-2 flex justify-between items-center">
-                      {{ 'collection.filters.price' | t }}
-                      <svg class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </summary>
-                    <div class="mt-2 space-y-2">
-                      <label class="flex items-center">
-                        <input type="radio" name="price-filter" class="mr-2" value="0-50">
-                        <span class="text-sm">{{ 'collection.filters.price_0_50' | t }}</span>
-                      </label>
-                      <label class="flex items-center">
-                        <input type="radio" name="price-filter" class="mr-2" value="50-100">
-                        <span class="text-sm">{{ 'collection.filters.price_50_100' | t }}</span>
-                      </label>
-                      <label class="flex items-center">
-                        <input type="radio" name="price-filter" class="mr-2" value="100-200">
-                        <span class="text-sm">{{ 'collection.filters.price_100_200' | t }}</span>
-                      </label>
-                      <label class="flex items-center">
-                        <input type="radio" name="price-filter" class="mr-2" value="200+">
-                        <span class="text-sm">{{ 'collection.filters.price_200_plus' | t }}</span>
-                      </label>
+            {%- for filter in collection.filters -%}
+              <details class="mb-4 border-b border-border pb-4" open>
+                <summary class="cursor-pointer list-none text-sm font-medium flex justify-between items-center gap-2">
+                  <span>{{ filter.label | escape }}</span>
+                  <span class="filter-chevron shrink-0 transition-transform opacity-60">
+                    {% render 'icon-angle-down', size: 16 %}
+                  </span>
+                </summary>
+
+                {%- case filter.type -%}
+                  {%- when 'price_range' -%}
+                    {%- liquid
+                      assign min_input = ''
+                      assign max_input = ''
+                      if filter.min_value.value != blank
+                        if uses_comma_decimals
+                          assign min_input = filter.min_value.value | money_without_currency | replace: '.', '' | replace: ',', '.'
+                        else
+                          assign min_input = filter.min_value.value | money_without_currency | replace: ',', ''
+                        endif
+                      endif
+                      if filter.max_value.value != blank
+                        if uses_comma_decimals
+                          assign max_input = filter.max_value.value | money_without_currency | replace: '.', '' | replace: ',', '.'
+                        else
+                          assign max_input = filter.max_value.value | money_without_currency | replace: ',', ''
+                        endif
+                      endif
+                      if uses_comma_decimals
+                        assign range_max = filter.range_max | money_without_currency | replace: '.', '' | replace: ',', '.'
+                      else
+                        assign range_max = filter.range_max | money_without_currency | replace: ',', ''
+                      endif
+                    -%}
+                    <div class="mt-3 flex items-center gap-2">
+                      <div class="flex items-center gap-1 flex-1">
+                        <span class="text-xs text-foreground/55">{{ cart.currency.symbol }}</span>
+                        <input
+                          type="number"
+                          inputmode="decimal"
+                          name="{{ filter.min_value.param_name }}"
+                          value="{{ min_input }}"
+                          placeholder="0"
+                          min="0"
+                          max="{{ range_max }}"
+                          aria-label="{{ 'collection.filters.from' | t }}"
+                          class="w-full border border-border rounded-theme-sm px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/40"
+                        >
+                      </div>
+                      <span class="text-foreground/40">—</span>
+                      <div class="flex items-center gap-1 flex-1">
+                        <span class="text-xs text-foreground/55">{{ cart.currency.symbol }}</span>
+                        <input
+                          type="number"
+                          inputmode="decimal"
+                          name="{{ filter.max_value.param_name }}"
+                          value="{{ max_input }}"
+                          placeholder="{{ range_max }}"
+                          min="0"
+                          max="{{ range_max }}"
+                          aria-label="{{ 'collection.filters.to' | t }}"
+                          class="w-full border border-border rounded-theme-sm px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/40"
+                        >
+                      </div>
                     </div>
-                  </details>
-                {%- endif -%}
-              </div>
-            {%- endif -%}
+
+                  {%- else -%}
+                    <div class="mt-3 space-y-2 max-h-64 overflow-y-auto">
+                      {%- for value in filter.values -%}
+                        {%- liquid
+                          assign disabled = false
+                          if value.count == 0 and value.active == false
+                            assign disabled = true
+                          endif
+                        -%}
+                        <label class="flex items-center gap-2 text-sm cursor-pointer {% if disabled %}opacity-40 cursor-not-allowed{% endif %}">
+                          <input
+                            type="checkbox"
+                            class="filter-checkbox rounded-theme-sm border-border text-foreground focus:ring-foreground/40"
+                            name="{{ value.param_name }}"
+                            value="{{ value.value }}"
+                            {% if value.active %}checked{% endif %}
+                            {% if disabled %}disabled{% endif %}
+                          >
+                          <span>{{ value.label | escape }}</span>
+                          <span class="text-foreground/40 text-xs">({{ value.count }})</span>
+                        </label>
+                      {%- endfor -%}
+                    </div>
+                {%- endcase -%}
+              </details>
+            {%- endfor -%}
+
+            {%- comment -%} Botão de aplicar (mobile / fallback sem JS) {%- endcomment -%}
+            <div class="mt-6 lg:hidden">
+              <button
+                type="submit"
+                class="w-full color-button text-xs uppercase tracking-[0.18em] py-3 hover:opacity-90 transition-opacity"
+              >
+                {{ 'collection.filters.apply' | t }}
+              </button>
+            </div>
           </div>
         </aside>
       {%- endif -%}
@@ -133,7 +220,7 @@
         <div class="grid grid-cols-[1fr_auto_1fr] items-center mb-6 gap-3">
           {%- comment -%} Esquerda: gatilho de filtros (mobile) {%- endcomment -%}
           <div class="justify-self-start">
-            {%- if section.settings.enable_filtering -%}
+            {%- if show_filters -%}
               <button
                 type="button"
                 data-filters-open
@@ -143,6 +230,9 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M6 12h12M10 20h4" />
                 </svg>
                 {{ 'collection.filters.title' | t }}
+                {%- if active_filter_count > 0 -%}
+                  <span class="color-badge inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-xs px-1">{{ active_filter_count }}</span>
+                {%- endif -%}
               </button>
             {%- endif -%}
           </div>
@@ -150,8 +240,8 @@
           {%- comment -%} Centro: contagem de produtos {%- endcomment -%}
           <p class="justify-self-center text-center text-sm text-foreground/55">
             {%- assign showing_first = paginate.current_offset | plus: 1 -%}
-            {%- assign showing_last = paginate.current_offset | plus: paginate.page_size | at_most: collection.products_count -%}
-            {{ 'collection.general.results_showing' | t: count: collection.products_count, first: showing_first, last: showing_last }}
+            {%- assign showing_last = paginate.current_offset | plus: paginate.page_size | at_most: paginate.items -%}
+            {{ 'collection.general.results_showing' | t: count: paginate.items, first: showing_first, last: showing_last }}
           </p>
 
           {%- comment -%} Direita: ordenação {%- endcomment -%}
@@ -201,28 +291,41 @@
             <svg class="w-16 h-16 mx-auto text-foreground/25 mb-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
             </svg>
-            <h2 class="text-2xl font-light tracking-tight mb-2">{{ 'collection.general.no_products' | t }}</h2>
-            <p class="text-sm text-foreground/55 mb-8">{{ 'collection.general.empty_text' | t }}</p>
-            <a href="{{ routes.collections_url }}" class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity">
-              {{ 'collection.general.view_all_collections' | t }}
-            </a>
+            {%- if active_filter_count > 0 -%}
+              <h2 class="text-2xl font-light tracking-tight mb-2">{{ 'collection.general.no_results' | t }}</h2>
+              <p class="text-sm text-foreground/55 mb-8">{{ 'collection.general.no_results_text' | t }}</p>
+              <a href="{{ collection.url }}" class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity">
+                {{ 'collection.filters.clear_all' | t }}
+              </a>
+            {%- else -%}
+              <h2 class="text-2xl font-light tracking-tight mb-2">{{ 'collection.general.no_products' | t }}</h2>
+              <p class="text-sm text-foreground/55 mb-8">{{ 'collection.general.empty_text' | t }}</p>
+              <a href="{{ routes.collections_url }}" class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity">
+                {{ 'collection.general.view_all_collections' | t }}
+              </a>
+            {%- endif -%}
           </div>
         {%- endif -%}
       </div>
-    </div>
+    </form>
   {%- endpaginate -%}
 </div>
 
 <style>
-  .filters-panel.is-open { transform: translateX(0); }
-  [data-filters-overlay].is-open { opacity: 1; pointer-events: auto; }
+  #shopify-section-{{ section.id }} .filters-panel.is-open { transform: translateX(0); }
+  #shopify-section-{{ section.id }} [data-filters-overlay].is-open { opacity: 1; pointer-events: auto; }
+  #shopify-section-{{ section.id }} details > summary::-webkit-details-marker { display: none; }
+  #shopify-section-{{ section.id }} details[open] .filter-chevron { transform: rotate(180deg); }
 </style>
 
 <script>
-  // Drawer de filtros (mobile)
   (function () {
-    const panel = document.querySelector('[data-filters-panel]');
-    const overlay = document.querySelector('[data-filters-overlay]');
+    const root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root) return;
+
+    // Drawer de filtros (mobile)
+    const panel = root.querySelector('[data-filters-panel]');
+    const overlay = root.querySelector('[data-filters-overlay]');
     if (panel && overlay) {
       const open = () => {
         panel.classList.add('is-open');
@@ -234,33 +337,35 @@
         overlay.classList.remove('is-open');
         document.body.classList.remove('overflow-hidden');
       };
-      document.querySelectorAll('[data-filters-open]').forEach((b) => b.addEventListener('click', open));
-      document.querySelectorAll('[data-filters-close]').forEach((b) => b.addEventListener('click', close));
+      root.querySelectorAll('[data-filters-open]').forEach((b) => b.addEventListener('click', open));
+      root.querySelectorAll('[data-filters-close]').forEach((b) => b.addEventListener('click', close));
       overlay.addEventListener('click', close);
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-      // Garante estado limpo ao cruzar para desktop
       window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => { if (e.matches) close(); });
     }
+
+    // Aplica filtros/ordenação. No desktop, auto-submete ao mudar; no mobile,
+    // o usuário usa o botão "Aplicar" (submit nativo). Ordenação sempre submete.
+    const form = root.querySelector('[data-filter-form]');
+    if (form) {
+      const isDesktop = () => window.matchMedia('(min-width: 1024px)').matches;
+      form.addEventListener('change', (e) => {
+        if (e.target.name === 'sort_by') { form.submit(); return; }
+        if (isDesktop()) form.submit();
+      });
+    }
+
+    // Nota de acessibilidade para leitores de tela
+    if (!document.getElementById('a11y-refresh-page-message')) {
+      const a11yRefreshMessage = document.createElement('span');
+      a11yRefreshMessage.id = 'a11y-refresh-page-message';
+      a11yRefreshMessage.className = 'sr-only';
+      a11yRefreshMessage.setAttribute('role', 'status');
+      a11yRefreshMessage.setAttribute('aria-live', 'polite');
+      a11yRefreshMessage.textContent = {{ 'collection.general.sort_reloaded' | t | json }};
+      document.body.appendChild(a11yRefreshMessage);
+    }
   })();
-
-  // Ordenação
-  const sortSelect = document.getElementById('SortBy');
-  if (sortSelect) {
-    sortSelect.addEventListener('change', function() {
-      const url = new URL(window.location.href);
-      url.searchParams.set('sort_by', this.value);
-      window.location.href = url.toString();
-    });
-  }
-
-  // Nota de acessibilidade para leitores de tela
-  const a11yRefreshMessage = document.createElement('span');
-  a11yRefreshMessage.id = 'a11y-refresh-page-message';
-  a11yRefreshMessage.className = 'sr-only';
-  a11yRefreshMessage.setAttribute('role', 'status');
-  a11yRefreshMessage.setAttribute('aria-live', 'polite');
-  a11yRefreshMessage.textContent = {{ 'collection.general.sort_reloaded' | t | json }};
-  document.body.appendChild(a11yRefreshMessage);
 </script>
 
 {%- comment -%} SEO: Breadcrumb Schema {%- endcomment -%}
@@ -327,15 +432,14 @@
       "content": "t:sections.main_collection.settings.filters_header.content"
     },
     {
-      "type": "checkbox",
-      "id": "enable_filtering",
-      "label": "t:sections.main_collection.settings.enable_filtering.label",
-      "default": true
+      "type": "paragraph",
+      "content": "t:sections.main_collection.settings.filters_paragraph.content"
     },
     {
       "type": "checkbox",
-      "id": "enable_price_filter",
-      "label": "t:sections.main_collection.settings.enable_price_filter.label",
+      "id": "enable_filtering",
+      "label": "t:sections.main_collection.settings.enable_filtering.label",
+      "info": "t:sections.main_collection.settings.enable_filtering.info",
       "default": true
     },
     {

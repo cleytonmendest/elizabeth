@@ -1,0 +1,129 @@
+{%- comment -%}
+  FAQ / Conteúdo Recolhível — acordeão de perguntas e respostas.
+  Usa <details>/<summary> nativos: acessível por teclado e leitor de tela sem JS.
+  Cada item é um bloco (pergunta + resposta em rich text).
+{%- endcomment -%}
+
+<section class="color-{{ section.settings.color_scheme }} color-background color-text">
+  <div class="page-width !py-12 lg:!py-16">
+    {%- if section.settings.heading != blank or section.settings.eyebrow != blank -%}
+      <div class="text-center mb-8 lg:mb-10">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="text-xs uppercase tracking-[0.18em] opacity-60 mb-3">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="text-2xl lg:text-4xl font-light tracking-tight">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="max-w-3xl mx-auto">
+      {%- for block in section.blocks -%}
+        <details
+          class="faq-item border-b border-border"
+          {% if section.settings.open_first and forloop.first %}open{% endif %}
+          {{ block.shopify_attributes }}
+        >
+          <summary class="faq-summary flex items-center justify-between gap-4 cursor-pointer list-none py-5 text-base lg:text-lg font-normal">
+            <span>{{ block.settings.heading }}</span>
+            <span class="faq-icon shrink-0 transition-transform duration-300 opacity-70">
+              {% render 'icon-angle-down', size: 18 %}
+            </span>
+          </summary>
+          {%- if block.settings.content != blank -%}
+            <div class="faq-content text-sm lg:text-base leading-relaxed opacity-80 pb-5 -mt-1">
+              {{ block.settings.content }}
+            </div>
+          {%- endif -%}
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  #shopify-section-{{ section.id }} .faq-summary::-webkit-details-marker { display: none; }
+  #shopify-section-{{ section.id }} details[open] .faq-icon { transform: rotate(180deg); }
+</style>
+
+{% schema %}
+{
+  "name": "t:sections.collapsible_content.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.collapsible_content.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.collapsible_content.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.collapsible_content.settings.heading.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_first",
+      "label": "t:sections.collapsible_content.settings.open_first.label",
+      "info": "t:sections.collapsible_content.settings.open_first.info",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "t:sections.collapsible_content.blocks.item.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.collapsible_content.blocks.item.settings.heading.label"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:sections.collapsible_content.blocks.item.settings.content.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.collapsible_content.presets.name",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": {
+            "heading": "Qual é o prazo de entrega?",
+            "content": "<p>Os prazos variam conforme a região. Você verá a estimativa no checkout antes de finalizar o pedido.</p>"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "heading": "Como funcionam as trocas e devoluções?",
+            "content": "<p>Você tem até 30 dias para solicitar a troca ou devolução das peças sem uso e com etiqueta.</p>"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "heading": "Quais formas de pagamento são aceitas?",
+            "content": "<p>Aceitamos cartões de crédito (em até 12x), Pix e boleto bancário.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

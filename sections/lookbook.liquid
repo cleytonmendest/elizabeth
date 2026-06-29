@@ -1,0 +1,229 @@
+{%- comment -%}
+  Shop the Look / Lookbook — imagem editorial com hotspots de produto.
+  Cada bloco "hotspot" tem um produto + posição (x/y em %). O pino abre um mini-card
+  com imagem, título e preço (link para a PDP). Usa <details> nativo (acessível por
+  teclado/leitor de tela); um JS leve fecha os outros pinos ao abrir um.
+{%- endcomment -%}
+
+{%- liquid
+  assign img_alt = section.settings.alt_text
+  if img_alt == blank
+    assign img_alt = 'sections.slider.image_alt' | t
+  endif
+-%}
+
+<section class="color-{{ section.settings.color_scheme }} color-background color-text">
+  <div class="page-width !py-12 lg:!py-16">
+    {%- if section.settings.heading != blank or section.settings.text != blank -%}
+      <div class="text-center max-w-2xl mx-auto mb-8 lg:mb-10">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="text-2xl lg:text-4xl font-light tracking-tight">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <div class="text-sm lg:text-base leading-relaxed opacity-80 mt-3">{{ section.settings.text }}</div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="lookbook relative overflow-visible rounded-theme">
+      {%- if section.settings.image != blank -%}
+        {{
+          section.settings.image
+          | image_url: width: 2000
+          | image_tag:
+            class: 'w-full h-auto rounded-theme',
+            widths: '600, 900, 1200, 1600, 2000',
+            sizes: '100vw',
+            alt: img_alt,
+            loading: 'lazy'
+        }}
+      {%- else -%}
+        <div class="w-full aspect-[4/3] bg-foreground/5 rounded-theme">
+          {{ 'lifestyle-1' | placeholder_svg_tag: 'w-full h-full object-cover rounded-theme' }}
+        </div>
+      {%- endif -%}
+
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign hp = block.settings.product
+          assign h = block.settings.horizontal
+          assign v = block.settings.vertical
+
+          if h <= 20
+            assign cx = 'left-0'
+          elsif h >= 80
+            assign cx = 'right-0'
+          else
+            assign cx = 'left-1/2 -translate-x-1/2'
+          endif
+
+          if v <= 25
+            assign cy = 'top-full mt-3'
+          else
+            assign cy = 'bottom-full mb-3'
+          endif
+
+          assign hp_alt = hp.featured_image.alt | default: hp.title | escape
+        -%}
+        <details
+          class="lookbook-hotspot absolute z-[2]"
+          style="left: {{ h }}%; top: {{ v }}%;"
+          {{ block.shopify_attributes }}
+        >
+          <summary
+            class="hotspot-dot list-none cursor-pointer w-7 h-7 -ml-3.5 -mt-3.5 rounded-full bg-background text-foreground border border-foreground/15 shadow flex items-center justify-center transition-transform hover:scale-110"
+            aria-label="{{ hp.title | default: 'general.see_more' | t | escape }}"
+          >
+            {% render 'icon-plus', size: 14 %}
+          </summary>
+          <div class="hotspot-card absolute {{ cx }} {{ cy }} w-44 bg-background color-text rounded-theme shadow border border-border p-2.5">
+            <a href="{{ hp.url }}" class="block group" aria-label="{{ hp.title | escape }}">
+              <div class="w-full aspect-[3/4] overflow-hidden rounded-theme-sm bg-foreground/5 mb-2">
+                {%- if hp.featured_image != blank -%}
+                  {{
+                    hp.featured_image
+                    | image_url: width: 300
+                    | image_tag:
+                      class: 'w-full h-full object-cover transition-transform duration-500 group-hover:scale-105',
+                      widths: '150, 300',
+                      sizes: '176px',
+                      alt: hp_alt,
+                      loading: 'lazy'
+                  }}
+                {%- endif -%}
+              </div>
+              <p class="text-xs leading-snug line-clamp-2 mb-1">{{ hp.title }}</p>
+              <p class="text-xs font-medium">
+                {%- if hp.price_varies -%}{{ 'general.see_more' | t }}{%- else -%}{{ hp.price | money }}{%- endif -%}
+              </p>
+            </a>
+          </div>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  #shopify-section-{{ section.id }} .hotspot-dot::-webkit-details-marker { display: none; }
+  #shopify-section-{{ section.id }} .lookbook-hotspot .hotspot-card { display: none; }
+  #shopify-section-{{ section.id }} .lookbook-hotspot[open] .hotspot-card { display: block; }
+  #shopify-section-{{ section.id }} .lookbook-hotspot[open] .hotspot-dot { background: rgb(var(--color-foreground)); color: rgb(var(--color-background)); }
+  @media (prefers-reduced-motion: no-preference) {
+    #shopify-section-{{ section.id }} .lookbook-hotspot:not([open]) .hotspot-dot::after {
+      content: ''; position: absolute; inset: -4px; border-radius: 9999px;
+      border: 1px solid rgb(var(--color-foreground) / 0.4); animation: lookbook-pulse 2s ease-out infinite;
+    }
+  }
+  @keyframes lookbook-pulse {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+</style>
+
+<script>
+  (function () {
+    const root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root) return;
+    const spots = root.querySelectorAll('details.lookbook-hotspot');
+    spots.forEach((d) => {
+      d.addEventListener('toggle', () => {
+        if (!d.open) return;
+        spots.forEach((o) => { if (o !== d) o.open = false; });
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#shopify-section-{{ section.id }} .lookbook-hotspot')) {
+        spots.forEach((o) => { o.open = false; });
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') spots.forEach((o) => { o.open = false; });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.lookbook.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.lookbook.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.lookbook.settings.image.label",
+      "info": "t:sections.lookbook.settings.image.info"
+    },
+    {
+      "type": "text",
+      "id": "alt_text",
+      "label": "t:sections.lookbook.settings.alt_text.label",
+      "info": "t:sections.lookbook.settings.alt_text.info"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.lookbook.settings.heading.label"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:sections.lookbook.settings.text.label"
+    }
+  ],
+  "max_blocks": 8,
+  "blocks": [
+    {
+      "type": "hotspot",
+      "name": "t:sections.lookbook.blocks.hotspot.name",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:sections.lookbook.blocks.hotspot.settings.product.label"
+        },
+        {
+          "type": "range",
+          "id": "horizontal",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50,
+          "label": "t:sections.lookbook.blocks.hotspot.settings.horizontal.label",
+          "info": "t:sections.lookbook.blocks.hotspot.settings.horizontal.info"
+        },
+        {
+          "type": "range",
+          "id": "vertical",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50,
+          "label": "t:sections.lookbook.blocks.hotspot.settings.vertical.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.lookbook.presets.name",
+      "blocks": [
+        { "type": "hotspot", "settings": { "horizontal": 35, "vertical": 45 } },
+        { "type": "hotspot", "settings": { "horizontal": 65, "vertical": 70 } }
+      ]
+    }
+  ]
+}
+{% endschema %}

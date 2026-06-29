@@ -46,11 +46,12 @@
         "filters_header": {
           "content": "Filters and Sorting"
         },
-        "enable_filtering": {
-          "label": "Enable filters"
+        "filters_paragraph": {
+          "content": "Filters (size, color, price…) come from Shopify's free Search & Discovery app. Install it and configure filters in the admin — they appear here automatically."
         },
-        "enable_price_filter": {
-          "label": "Enable price filter"
+        "enable_filtering": {
+          "label": "Enable filters",
+          "info": "Shows the filters configured in the Search & Discovery app"
         },
         "enable_sorting": {
           "label": "Enable sorting"
@@ -1305,6 +1306,331 @@
       },
       "presets": {
         "name": "Trust Badges"
+      }
+    },
+    "image_banner": {
+      "name": "Image banner",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme",
+          "info": "Sets the text and scrim color over the image"
+        },
+        "fullwidth": {
+          "label": "Full width",
+          "info": "Spans the full screen width (no margins)"
+        },
+        "image": {
+          "label": "Image",
+          "info": "Use a high-resolution, well-composed image"
+        },
+        "alt_text": {
+          "label": "Alt text",
+          "info": "Describe the image for accessibility and SEO"
+        },
+        "height": {
+          "label": "Height",
+          "options": {
+            "small": "Small",
+            "medium": "Medium",
+            "large": "Large"
+          }
+        },
+        "content_header": {
+          "content": "Content"
+        },
+        "eyebrow": {
+          "label": "Eyebrow text"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "content_position": {
+          "label": "Content position",
+          "options": {
+            "left": "Left",
+            "center": "Center",
+            "right": "Right"
+          }
+        },
+        "scrim": {
+          "label": "Scrim (text backdrop)",
+          "info": "Tints the text area to keep contrast over the photo",
+          "options": {
+            "none": "None",
+            "side": "Side",
+            "bottom": "Bottom",
+            "full": "Full"
+          }
+        },
+        "scrim_opacity": {
+          "label": "Scrim opacity"
+        },
+        "button_header": {
+          "content": "Button"
+        },
+        "button_label": {
+          "label": "Button label",
+          "info": "With label + link it becomes a button; without, the whole image is the link"
+        },
+        "link": {
+          "label": "Link",
+          "info": "Where the banner goes when clicked"
+        }
+      },
+      "presets": {
+        "name": "Image banner"
+      }
+    },
+    "rich_text": {
+      "name": "Rich text",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "content_alignment": {
+          "label": "Content alignment",
+          "options": {
+            "left": "Left",
+            "center": "Center",
+            "right": "Right"
+          }
+        },
+        "width": {
+          "label": "Content width",
+          "options": {
+            "narrow": "Narrow",
+            "normal": "Normal",
+            "wide": "Wide"
+          }
+        },
+        "content_header": {
+          "content": "Content"
+        },
+        "eyebrow": {
+          "label": "Eyebrow text"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "button_header": {
+          "content": "Button"
+        },
+        "button_style": {
+          "label": "Button style",
+          "options": {
+            "primary": "Primary button",
+            "link": "Text link"
+          }
+        },
+        "button_label": {
+          "label": "Button label",
+          "info": "Leave blank to use the default"
+        },
+        "link": {
+          "label": "Link"
+        }
+      },
+      "presets": {
+        "name": "Rich text"
+      }
+    },
+    "collapsible_content": {
+      "name": "FAQ / Collapsible content",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "eyebrow": {
+          "label": "Eyebrow text"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "open_first": {
+          "label": "Open first item",
+          "info": "Shows the first answer expanded"
+        }
+      },
+      "blocks": {
+        "item": {
+          "name": "Question",
+          "settings": {
+            "heading": {
+              "label": "Question"
+            },
+            "content": {
+              "label": "Answer"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "FAQ / Collapsible content"
+      }
+    },
+    "multicolumn": {
+      "name": "Multicolumn",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "eyebrow": {
+          "label": "Eyebrow text"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "columns_desktop": {
+          "label": "Columns on desktop"
+        },
+        "alignment": {
+          "label": "Alignment",
+          "options": {
+            "left": "Left",
+            "center": "Center"
+          }
+        }
+      },
+      "blocks": {
+        "column": {
+          "name": "Column",
+          "settings": {
+            "image": {
+              "label": "Image",
+              "info": "If set, replaces the icon"
+            },
+            "icon": {
+              "label": "Icon",
+              "info": "Used when there is no image",
+              "options": {
+                "none": "None",
+                "truck": "🚚 Truck (Shipping)",
+                "shield": "🛡️ Shield (Security)",
+                "refresh": "🔄 Refresh (Returns/Exchange)",
+                "credit_card": "💳 Card (Payment)",
+                "star": "⭐ Star (Quality)",
+                "check_circle": "✓ Check (Guarantee)",
+                "lock": "🔒 Lock (Privacy)",
+                "clock": "⏰ Clock (Delivery Time)"
+              }
+            },
+            "heading": {
+              "label": "Heading"
+            },
+            "text": {
+              "label": "Text"
+            },
+            "link_label": {
+              "label": "Link label",
+              "info": "Fill in along with the link to show the button"
+            },
+            "link": {
+              "label": "Link"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Multicolumn"
+      }
+    },
+    "product_recommendations": {
+      "name": "Product recommendations",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "heading": {
+          "label": "Heading",
+          "info": "Leave blank to use the default (\"You may also like\")"
+        },
+        "products_to_show": {
+          "label": "Maximum products"
+        },
+        "show_second_image": {
+          "label": "Show second image on hover"
+        },
+        "show_installments": {
+          "label": "Show installment option"
+        }
+      },
+      "presets": {
+        "name": "Product recommendations"
+      }
+    },
+    "recently_viewed": {
+      "name": "Recently viewed",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "heading": {
+          "label": "Heading",
+          "info": "Leave blank to use the default (\"Recently viewed\")"
+        },
+        "products_to_show": {
+          "label": "Maximum products"
+        },
+        "show_second_image": {
+          "label": "Show second image on hover"
+        },
+        "show_installments": {
+          "label": "Show installment option"
+        }
+      },
+      "presets": {
+        "name": "Recently viewed"
+      }
+    },
+    "lookbook": {
+      "name": "Shop the Look",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "image": {
+          "label": "Image",
+          "info": "Use a lifestyle photo with the products visible"
+        },
+        "alt_text": {
+          "label": "Alt text",
+          "info": "Describe the image for accessibility and SEO"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        }
+      },
+      "blocks": {
+        "hotspot": {
+          "name": "Product hotspot",
+          "settings": {
+            "product": {
+              "label": "Product"
+            },
+            "horizontal": {
+              "label": "Horizontal position",
+              "info": "0% = left, 100% = right"
+            },
+            "vertical": {
+              "label": "Vertical position"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Shop the Look"
       }
     }
   }

@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.21.0 | **Atualizado:** 2026-06-28
+**Versão:** 2.23.0 | **Atualizado:** 2026-06-29
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -34,6 +34,8 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 - ✅ `section-images-link.liquid` (i18n schema)
 - ✅ `blog-posts.liquid` (i18n schema + storefront reusando `blog.general.view_all`/`no_posts`; `rounded-lg`→`rounded-theme`)
 - ✅ `newsletter-modal.liquid` (i18n schema + storefront; nova chave `newsletter.modal.dont_show_again`; fix `ImgWidthAndHeight`)
+- ✅ `image-banner.liquid` · `rich-text.liquid` · `collapsible-content.liquid` (FAQ) · `multicolumn.liquid` — **novas sections reutilizáveis**, já nascidas 100% i18n (schema PT/EN) + color scheme + tokens
+- ✅ `product-recommendations.liquid` · `recently-viewed.liquid` · `lookbook.liquid` (Shop the Look) + `main-collection.liquid` (filtros nativos) — features inspiradas no Impression, nascidas 100% i18n
 - ✅ Carrinho (`templates/cart.liquid` + `cart-drawer*` snippets) — storefront via `cart.general.*` (sem schema)
 - ✅ Páginas de cliente (`templates/customers/*.liquid` — account, login, register, addresses, order, activate_account, reset_password) — storefront 100% via `customer.*` (sem schema; templates legados não-editáveis). Strings de JS injetadas via `| t | json`; links de termos via `capture` + params; pluralização nativa em `orders.items_count`. Fix `ImgWidthAndHeight` em `order.liquid`.
 
@@ -140,6 +142,10 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.23.0 - Features inspiradas no Impression** (2026-06-29) — 4 melhorias de merchandising/conversão, todas sem setup técnico do lojista e 100% i18n (PT/EN): **(1) Filtros nativos** — `main-collection` reescrita para `collection.filters` do Shopify (tamanho/cor/preço/tipo via app Search & Discovery), substituindo filtros hardcoded/não-funcionais; form GET com auto-submit no desktop + botão "Aplicar" no mobile, contadores, limpar, preço com decimal por moeda (BRL), estado "sem resultados". **(2) Recomendações na PDP** (`product-recommendations`) — API nativa de recommendations via custom element (fetch on-view), reusa o card. **(3) Vistos recentemente** (`recently-viewed`) — localStorage + Section Rendering API (busca `q=id:…`) reusando o card, registra na PDP. **(4) Shop the Look** (`lookbook`) — imagem editorial com hotspots de produto (blocos com product picker + posição x/y), mini-card via `<details>` acessível. Recs + Vistos adicionados ao `templates/product.json`. Theme Check 0 offenses. **Pendente:** decidir redundância do slider manual "Você pode gostar" na PDP (agora há 3 trilhas de produto).
+
+**v2.22.0 - Novas sections reutilizáveis** (2026-06-28) — 4 sections de conteúdo, todas dirigidas pelo lojista (sem setup técnico), nascidas 100% i18n (schema PT/EN), color scheme e tokens: **Banner de Imagem** (`image-banner` — imagem full-width com texto sobreposto + scrim/posição, reusa o padrão do hero; UM link/CTA), **Texto Rico** (`rich-text` — eyebrow/título/rich text + botão com dropdown de estilo), **FAQ/Recolhível** (`collapsible-content` — acordeão `<details>` nativo, acessível por teclado/leitor sem JS), **Multicolunas** (`multicolumn` — colunas com imagem OU ícone + título/texto/link, 2-4 colunas via safelist). Tailwind rebuildado, Theme Check 0 offenses, ValidSchemaTranslations 0.
 
 **v2.21.0 - Acessibilidade: correções da auditoria Lighthouse** (2026-06-28) — Auditoria Lighthouse (mobile A11y 82 / desktop 79) corrigida nos audits reais do tema: `html-has-lang` (`<html lang/dir>` em theme.liquid), `link-name` (aria-label no logo + 3 redes sociais do footer), `color-contrast` (subtítulo slider e parcelamento do card `→ /70`), `target-size` (bullets de depoimentos com área de toque 24px via `::before`; links do footer com `py-1`), `label-content-name-mismatch` (badge `#qtd-bubble` com `aria-hidden`), `aria-hidden-focus` (slides off-screen do Swiper recebem `inert` via `carousel-manager`), `errors-in-console` (`icon-close` sem `size` gerava `width=""` → `default: 24`). Revalidado: **A11y 82/79 → 93/93** (mobile/desktop), gate >90 atingido. 2ª rodada fechou `aria-hidden-focus` do `#mobile-menu` (inert no fechado) e `color-contrast` do compare-at (`/40→/60`). Performance mobile 73→76 (passa o gate >50). Resíduo (`frame-title`/`third-party-cookies`/`inspector-issues`) é da preview-bar/Shop Pay, não do tema. Theme Check 0 offenses.
 

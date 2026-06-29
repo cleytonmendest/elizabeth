@@ -1,0 +1,250 @@
+{%- comment -%}
+  Banner de Imagem — imagem grande com texto SOBREPOSTO (eyebrow/título/texto/CTA).
+  O scrim usa a COR DE FUNDO do color scheme (semi-transparente), então o texto
+  (cor de TEXTO do scheme) sempre contrasta sobre qualquer foto. UM link por banner
+  (com "Texto do botão" -> vira CTA; sem -> a imagem inteira é o link).
+{%- endcomment -%}
+
+{%- liquid
+  assign content_position = section.settings.content_position | default: 'left'
+
+  assign cta_text = section.settings.button_label
+  if cta_text == blank
+    assign cta_text = 'general.see_more' | t
+  endif
+  assign show_cta = false
+  if section.settings.button_label != blank and section.settings.link != blank
+    assign show_cta = true
+  endif
+  assign wrap_link = false
+  if section.settings.link != blank and show_cta == false
+    assign wrap_link = true
+  endif
+
+  assign pos_cls = 'items-start text-left'
+  if content_position == 'center'
+    assign pos_cls = 'items-center text-center'
+  elsif content_position == 'right'
+    assign pos_cls = 'items-end text-right'
+  endif
+
+  case section.settings.height
+    when 'small'
+      assign min_h = '360px'
+    when 'large'
+      assign min_h = '640px'
+    else
+      assign min_h = '500px'
+  endcase
+
+  assign op = section.settings.scrim_opacity | default: 30 | divided_by: 100.0
+  assign scrim_color = 'rgb(var(--color-background) / ' | append: op | append: ')'
+  assign scrim_bg = 'none'
+  case section.settings.scrim
+    when 'side'
+      if content_position == 'right'
+        assign scrim_bg = 'linear-gradient(270deg, ' | append: scrim_color | append: ' 0%, transparent 65%)'
+      elsif content_position == 'center'
+        assign scrim_bg = scrim_color
+      else
+        assign scrim_bg = 'linear-gradient(90deg, ' | append: scrim_color | append: ' 0%, transparent 65%)'
+      endif
+    when 'bottom'
+      assign scrim_bg = 'linear-gradient(0deg, ' | append: scrim_color | append: ' 0%, transparent 60%)'
+    when 'full'
+      assign scrim_bg = scrim_color
+  endcase
+
+  assign img_alt = section.settings.alt_text
+  if img_alt == blank
+    assign img_alt = 'sections.slider.image_alt' | t
+  endif
+-%}
+
+<section class="color-{{ section.settings.color_scheme }} bg-background">
+  <div class="{% unless section.settings.fullwidth %}page-width{% endunless %}">
+    {%- capture banner_inner -%}
+      <div
+        class="relative w-full overflow-hidden {% unless section.settings.fullwidth %}rounded-theme{% endunless %}"
+        style="min-height: {{ min_h }};"
+      >
+        {%- if section.settings.image != blank -%}
+          {{
+            section.settings.image
+            | image_url: width: 2200
+            | image_tag:
+              class: 'absolute inset-0 w-full h-full object-cover',
+              widths: '600, 900, 1200, 1600, 2000, 2200',
+              sizes: '100vw',
+              alt: img_alt,
+              loading: 'lazy'
+          }}
+        {%- else -%}
+          <div class="absolute inset-0 w-full h-full bg-foreground/5">
+            {{ 'image' | placeholder_svg_tag: 'w-full h-full object-cover' }}
+          </div>
+        {%- endif -%}
+
+        {%- if scrim_bg != 'none' -%}
+          <div class="absolute inset-0 pointer-events-none" style="background: {{ scrim_bg }};"></div>
+        {%- endif -%}
+
+        <div class="absolute inset-0 flex flex-col justify-center {{ pos_cls }} text-foreground px-6 md:px-14 lg:px-20 py-10">
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="text-[11px] md:text-xs uppercase tracking-[0.3em] opacity-90 mb-3 md:mb-4">{{ section.settings.eyebrow }}</p>
+          {%- endif -%}
+          {%- if section.settings.heading != blank -%}
+            <h2 class="font-light text-3xl md:text-5xl leading-tight max-w-xl mb-5 md:mb-6">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+          {%- if section.settings.text != blank -%}
+            <div class="text-sm md:text-base leading-relaxed opacity-90 max-w-md mb-6">{{ section.settings.text }}</div>
+          {%- endif -%}
+          {%- if show_cta -%}
+            <a
+              href="{{ section.settings.link }}"
+              class="inline-flex items-center gap-2 bg-button text-button-text text-xs uppercase tracking-[0.16em] px-6 py-3.5 transition-opacity hover:opacity-90"
+            >
+              {{ cta_text }}
+              {% render 'icon-arrow-right', size: 16 %}
+            </a>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endcapture -%}
+
+    {%- if wrap_link -%}
+      <a href="{{ section.settings.link }}" class="block">{{ banner_inner }}</a>
+    {%- else -%}
+      {{ banner_inner }}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.image_banner.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.image_banner.settings.color_scheme.label",
+      "info": "t:sections.image_banner.settings.color_scheme.info",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "t:sections.image_banner.settings.fullwidth.label",
+      "info": "t:sections.image_banner.settings.fullwidth.info",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.image_banner.settings.image.label",
+      "info": "t:sections.image_banner.settings.image.info"
+    },
+    {
+      "type": "text",
+      "id": "alt_text",
+      "label": "t:sections.image_banner.settings.alt_text.label",
+      "info": "t:sections.image_banner.settings.alt_text.info"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:sections.image_banner.settings.height.label",
+      "default": "medium",
+      "options": [
+        { "value": "small", "label": "t:sections.image_banner.settings.height.options.small" },
+        { "value": "medium", "label": "t:sections.image_banner.settings.height.options.medium" },
+        { "value": "large", "label": "t:sections.image_banner.settings.height.options.large" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.image_banner.settings.content_header.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.image_banner.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.image_banner.settings.heading.label"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:sections.image_banner.settings.text.label"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "t:sections.image_banner.settings.content_position.label",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "t:sections.image_banner.settings.content_position.options.left" },
+        { "value": "center", "label": "t:sections.image_banner.settings.content_position.options.center" },
+        { "value": "right", "label": "t:sections.image_banner.settings.content_position.options.right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "scrim",
+      "label": "t:sections.image_banner.settings.scrim.label",
+      "info": "t:sections.image_banner.settings.scrim.info",
+      "default": "side",
+      "options": [
+        { "value": "none", "label": "t:sections.image_banner.settings.scrim.options.none" },
+        { "value": "side", "label": "t:sections.image_banner.settings.scrim.options.side" },
+        { "value": "bottom", "label": "t:sections.image_banner.settings.scrim.options.bottom" },
+        { "value": "full", "label": "t:sections.image_banner.settings.scrim.options.full" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "scrim_opacity",
+      "label": "t:sections.image_banner.settings.scrim_opacity.label",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "t:sections.image_banner.settings.button_header.content"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.image_banner.settings.button_label.label",
+      "info": "t:sections.image_banner.settings.button_label.info"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:sections.image_banner.settings.link.label",
+      "info": "t:sections.image_banner.settings.link.info"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.image_banner.presets.name",
+      "settings": {
+        "eyebrow": "Nova coleção",
+        "heading": "Elegância em cada detalhe",
+        "button_label": "Comprar agora"
+      }
+    }
+  ]
+}
+{% endschema %}

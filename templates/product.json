@@ -100,22 +100,20 @@
         "mobile_thumbnails": "hide"
       }
     },
-    "slider_product_FViMFk": {
-      "type": "slider-product",
-      "name": "Você pode gostar (Slider de Produtos)",
+    "product_recommendations_T9kPmn": {
+      "type": "product-recommendations",
       "settings": {
-        "collection": "new-in",
-        "title": "Você pode gostar",
-        "subtitle": "",
-        "loop": true,
-        "nav": true,
-        "dot": true,
-        "qty-desk": 4,
-        "qty-tablet": 3,
-        "qty-mob": 1,
-        "autoplay": true,
-        "play-time": 5,
-        "pause-hover": true
+        "products_to_show": 4,
+        "show_second_image": true,
+        "show_installments": true
+      }
+    },
+    "recently_viewed_Rv8kQ2": {
+      "type": "recently-viewed",
+      "settings": {
+        "products_to_show": 4,
+        "show_second_image": true,
+        "show_installments": true
       }
     },
     "177177795783edd889": {
@@ -139,6 +137,7 @@
   "order": [
     "177177795783edd889",
     "main",
-    "slider_product_FViMFk"
+    "product_recommendations_T9kPmn",
+    "recently_viewed_Rv8kQ2"
   ]
 }

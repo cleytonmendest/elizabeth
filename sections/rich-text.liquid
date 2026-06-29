@@ -1,0 +1,161 @@
+{%- comment -%}
+  Texto Rico — eyebrow + título + corpo (rich text) + botão opcional.
+  Bloco de conteúdo versátil para qualquer página. UM link com dropdown de estilo
+  (botão primário ou link de texto), seguindo o padrão do tema.
+{%- endcomment -%}
+
+{%- liquid
+  assign align = section.settings.content_alignment | default: 'center'
+  assign align_cls = 'items-center text-center mx-auto'
+  if align == 'left'
+    assign align_cls = 'items-start text-left'
+  elsif align == 'right'
+    assign align_cls = 'items-end text-right ml-auto'
+  endif
+
+  case section.settings.width
+    when 'narrow'
+      assign max_w = 'max-w-2xl'
+    when 'wide'
+      assign max_w = 'max-w-5xl'
+    else
+      assign max_w = 'max-w-3xl'
+  endcase
+
+  assign cta_text = section.settings.button_label
+  if cta_text == blank
+    assign cta_text = 'general.see_more' | t
+  endif
+-%}
+
+<section class="color-{{ section.settings.color_scheme }} color-background color-text">
+  <div class="page-width !py-12 lg:!py-16">
+    <div class="flex flex-col {{ align_cls }} {{ max_w }}">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="text-xs uppercase tracking-[0.18em] opacity-60 mb-4">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="text-2xl lg:text-4xl font-light tracking-tight leading-tight mb-5">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.text != blank -%}
+        <div class="text-sm lg:text-base leading-relaxed opacity-80">{{ section.settings.text }}</div>
+      {%- endif -%}
+      {%- if section.settings.link != blank -%}
+        {% if section.settings.button_style == 'link' %}
+          <a
+            href="{{ section.settings.link }}"
+            class="group inline-flex items-center gap-2 mt-7 text-xs uppercase tracking-[0.18em] color-text hover:opacity-70 transition-opacity"
+          >
+            {{ cta_text }}
+            <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">
+              {% render 'icon-arrow-right', size: 16 %}
+            </span>
+          </a>
+        {% else %}
+          <a
+            href="{{ section.settings.link }}"
+            class="inline-flex items-center gap-2 mt-7 px-6 py-3.5 color-button text-xs uppercase tracking-[0.18em] hover:opacity-90 transition-opacity"
+          >
+            {{ cta_text }}
+            {% render 'icon-arrow-right', size: 15 %}
+          </a>
+        {% endif %}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.rich_text.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.rich_text.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "t:sections.rich_text.settings.content_alignment.label",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "t:sections.rich_text.settings.content_alignment.options.left" },
+        { "value": "center", "label": "t:sections.rich_text.settings.content_alignment.options.center" },
+        { "value": "right", "label": "t:sections.rich_text.settings.content_alignment.options.right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:sections.rich_text.settings.width.label",
+      "default": "normal",
+      "options": [
+        { "value": "narrow", "label": "t:sections.rich_text.settings.width.options.narrow" },
+        { "value": "normal", "label": "t:sections.rich_text.settings.width.options.normal" },
+        { "value": "wide", "label": "t:sections.rich_text.settings.width.options.wide" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.rich_text.settings.content_header.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.rich_text.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.rich_text.settings.heading.label"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:sections.rich_text.settings.text.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.rich_text.settings.button_header.content"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:sections.rich_text.settings.button_style.label",
+      "default": "primary",
+      "options": [
+        { "value": "primary", "label": "t:sections.rich_text.settings.button_style.options.primary" },
+        { "value": "link", "label": "t:sections.rich_text.settings.button_style.options.link" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.rich_text.settings.button_label.label",
+      "info": "t:sections.rich_text.settings.button_label.info"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:sections.rich_text.settings.link.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.rich_text.presets.name",
+      "settings": {
+        "eyebrow": "Sobre a Elizabeth",
+        "heading": "Peças pensadas para momentos especiais",
+        "text": "<p>Conte a história da sua marca e conecte-se com suas clientes através de um texto que transmita seus valores e o cuidado por trás de cada peça.</p>"
+      }
+    }
+  ]
+}
+{% endschema %}

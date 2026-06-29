@@ -1,0 +1,105 @@
+{%- comment -%}
+  Produtos vistos recentemente — via localStorage (sem setup do lojista).
+  Na PDP registra o produto atual; para exibir, o <recently-viewed> busca os cards
+  pela Section Rendering API (busca nativa q=id:…), reutilizando o card Liquid.
+{%- endcomment -%}
+
+{%- liquid
+  assign heading = section.settings.heading
+  if heading == blank
+    assign heading = 'product.recently_viewed.title' | t
+  endif
+  assign limit = section.settings.products_to_show | default: 4
+  assign cols = limit | at_most: 5 | at_least: 2
+
+  assign rv_count = 0
+  if search.performed
+    for item in search.results
+      if item.object_type == 'product'
+        assign rv_count = rv_count | plus: 1
+      endif
+    endfor
+  endif
+-%}
+
+<recently-viewed
+  class="block"
+  data-section-id="{{ section.id }}"
+  data-search-url="{{ routes.search_url }}"
+  data-limit="{{ limit }}"
+  {% if product %}data-product-id="{{ product.id }}"{% endif %}
+>
+  {%- if search.performed and rv_count > 0 -%}
+    <div class="color-{{ section.settings.color_scheme }} color-background color-text">
+      <div class="page-width !py-12 lg:!py-16">
+        {%- if heading != blank -%}
+          <h2 class="text-2xl md:text-3xl font-light tracking-tight text-center mb-8 lg:mb-10">{{ heading }}</h2>
+        {%- endif -%}
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-{{ cols }} gap-4 md:gap-6">
+          {%- for item in search.results -%}
+            {%- if item.object_type == 'product' -%}
+              {%- render 'card-product-slider',
+                card_product: item,
+                show_second_image: section.settings.show_second_image,
+                show_badges: true,
+                show_installments: section.settings.show_installments,
+                lazy_load: true,
+                remove_padding: true
+              -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+</recently-viewed>
+
+<script src="{{ 'recently-viewed.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "t:sections.recently_viewed.name",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.recently_viewed.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.recently_viewed.settings.heading.label",
+      "info": "t:sections.recently_viewed.settings.heading.info"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.recently_viewed.settings.products_to_show.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_second_image",
+      "label": "t:sections.recently_viewed.settings.show_second_image.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_installments",
+      "label": "t:sections.recently_viewed.settings.show_installments.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.recently_viewed.presets.name"
+    }
+  ]
+}
+{% endschema %}
