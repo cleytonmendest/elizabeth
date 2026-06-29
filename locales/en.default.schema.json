@@ -1705,6 +1705,125 @@
       "presets": {
         "name": "Shop the Look"
       }
+    },
+    "countdown_timer": {
+      "name": "Countdown Timer",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "countdown_type": {
+          "label": "Countdown type",
+          "info": "Fixed date: counts to a specific moment. Daily: resets every day at the chosen time.",
+          "options": {
+            "fixed": "Fixed date and time",
+            "daily": "Daily (recurring)"
+          }
+        },
+        "datetime_header": {
+          "content": "End date and time",
+          "info": "Uses your store's timezone. In daily mode, only the time is used. To end at midnight, pick 00:00 of the next day."
+        },
+        "year": {
+          "label": "Year",
+          "info": "4-digit year (e.g. 2026)."
+        },
+        "month": {
+          "label": "Month",
+          "options": {
+            "january": "January",
+            "february": "February",
+            "march": "March",
+            "april": "April",
+            "may": "May",
+            "june": "June",
+            "july": "July",
+            "august": "August",
+            "september": "September",
+            "october": "October",
+            "november": "November",
+            "december": "December"
+          }
+        },
+        "day": {
+          "label": "Day"
+        },
+        "hour": {
+          "label": "Hour"
+        },
+        "minute": {
+          "label": "Minute",
+          "info": "15-minute increments."
+        },
+        "display_header": {
+          "content": "Display"
+        },
+        "show_days": {
+          "label": "Show days",
+          "info": "Turn off for short countdowns (shows only hours, minutes and seconds)."
+        },
+        "digit_style": {
+          "label": "Number style",
+          "options": {
+            "cards": "Boxes",
+            "plain": "Plain"
+          }
+        },
+        "content_alignment": {
+          "label": "Alignment",
+          "options": {
+            "left": "Left",
+            "center": "Center",
+            "right": "Right"
+          }
+        },
+        "fullwidth": {
+          "label": "Full width"
+        },
+        "content_header": {
+          "content": "Content"
+        },
+        "eyebrow": {
+          "label": "Eyebrow text"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "image_header": {
+          "content": "Background image",
+          "info": "Optional. Without an image, the color scheme background is used."
+        },
+        "background_image": {
+          "label": "Image"
+        },
+        "scrim_opacity": {
+          "label": "Darken image (scrim)",
+          "info": "Increase so the text contrasts better over the photo."
+        },
+        "button_header": {
+          "content": "Button"
+        },
+        "button_style": {
+          "label": "Button style",
+          "options": {
+            "primary": "Primary button",
+            "link": "Text link"
+          }
+        },
+        "button_label": {
+          "label": "Button text",
+          "info": "Leave blank to use the default."
+        },
+        "link": {
+          "label": "Link"
+        }
+      },
+      "presets": {
+        "name": "Countdown Timer"
+      }
     }
   }
 }

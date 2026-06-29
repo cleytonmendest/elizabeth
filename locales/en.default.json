@@ -594,6 +594,14 @@
     "easy_returns": "Easy Returns",
     "support": "24/7 Support"
   },
+  "countdown": {
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "aria_label": "Time remaining",
+    "editor_invalid_year": "Warning: the year is in the past or incorrect. Update the date so the countdown shows on your store. (This notice only appears in the editor.)"
+  },
   "sections": {
     "slider": {
       "previous": "Previous",

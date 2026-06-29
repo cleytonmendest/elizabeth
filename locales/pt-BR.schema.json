@@ -1705,6 +1705,125 @@
       "presets": {
         "name": "Shop the Look"
       }
+    },
+    "countdown_timer": {
+      "name": "Contagem Regressiva",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
+        "countdown_type": {
+          "label": "Tipo de contagem",
+          "info": "Data fixa: conta até um momento específico. Diária: reseta todos os dias no horário escolhido.",
+          "options": {
+            "fixed": "Data e hora fixa",
+            "daily": "Diária (recorrente)"
+          }
+        },
+        "datetime_header": {
+          "content": "Data e hora final",
+          "info": "Use o fuso horário da sua loja. No modo diário, apenas o horário é considerado. Para terminar à meia-noite, escolha 00:00 do dia seguinte."
+        },
+        "year": {
+          "label": "Ano",
+          "info": "Ano com 4 dígitos (ex.: 2026)."
+        },
+        "month": {
+          "label": "Mês",
+          "options": {
+            "january": "Janeiro",
+            "february": "Fevereiro",
+            "march": "Março",
+            "april": "Abril",
+            "may": "Maio",
+            "june": "Junho",
+            "july": "Julho",
+            "august": "Agosto",
+            "september": "Setembro",
+            "october": "Outubro",
+            "november": "Novembro",
+            "december": "Dezembro"
+          }
+        },
+        "day": {
+          "label": "Dia"
+        },
+        "hour": {
+          "label": "Hora"
+        },
+        "minute": {
+          "label": "Minuto",
+          "info": "Incrementos de 15 minutos."
+        },
+        "display_header": {
+          "content": "Exibição"
+        },
+        "show_days": {
+          "label": "Mostrar dias",
+          "info": "Desative em contagens curtas (mostra apenas horas, minutos e segundos)."
+        },
+        "digit_style": {
+          "label": "Estilo dos números",
+          "options": {
+            "cards": "Caixas",
+            "plain": "Simples"
+          }
+        },
+        "content_alignment": {
+          "label": "Alinhamento",
+          "options": {
+            "left": "Esquerda",
+            "center": "Centro",
+            "right": "Direita"
+          }
+        },
+        "fullwidth": {
+          "label": "Largura total"
+        },
+        "content_header": {
+          "content": "Conteúdo"
+        },
+        "eyebrow": {
+          "label": "Texto superior (eyebrow)"
+        },
+        "heading": {
+          "label": "Título"
+        },
+        "text": {
+          "label": "Texto"
+        },
+        "image_header": {
+          "content": "Imagem de fundo",
+          "info": "Opcional. Sem imagem, usa o fundo do esquema de cores."
+        },
+        "background_image": {
+          "label": "Imagem"
+        },
+        "scrim_opacity": {
+          "label": "Escurecer imagem (scrim)",
+          "info": "Aumente para o texto contrastar melhor sobre a foto."
+        },
+        "button_header": {
+          "content": "Botão"
+        },
+        "button_style": {
+          "label": "Estilo do botão",
+          "options": {
+            "primary": "Botão primário",
+            "link": "Link de texto"
+          }
+        },
+        "button_label": {
+          "label": "Texto do botão",
+          "info": "Deixe em branco para usar o padrão."
+        },
+        "link": {
+          "label": "Link"
+        }
+      },
+      "presets": {
+        "name": "Contagem Regressiva"
+      }
     }
   }
 }

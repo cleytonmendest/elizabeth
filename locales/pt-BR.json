@@ -594,6 +594,14 @@
     "easy_returns": "Devoluções Fáceis",
     "support": "Suporte 24/7"
   },
+  "countdown": {
+    "days": "Dias",
+    "hours": "Horas",
+    "minutes": "Minutos",
+    "seconds": "Segundos",
+    "aria_label": "Tempo restante",
+    "editor_invalid_year": "Atenção: o ano informado está no passado ou incorreto. Ajuste a data para que a contagem regressiva apareça na loja. (Este aviso só aparece no editor.)"
+  },
   "sections": {
     "slider": {
       "previous": "Anterior",

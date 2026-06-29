@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.25.0 | **Atualizado:** 2026-06-29
+**Versão:** 2.26.0 | **Atualizado:** 2026-06-29
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -34,7 +34,7 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 - ✅ `section-images-link.liquid` (i18n schema)
 - ✅ `blog-posts.liquid` (i18n schema + storefront reusando `blog.general.view_all`/`no_posts`; `rounded-lg`→`rounded-theme`)
 - ✅ `newsletter-modal.liquid` (i18n schema + storefront; nova chave `newsletter.modal.dont_show_again`; fix `ImgWidthAndHeight`)
-- ✅ `image-banner.liquid` · `rich-text.liquid` · `collapsible-content.liquid` (FAQ) · `multicolumn.liquid` — **novas sections reutilizáveis**, já nascidas 100% i18n (schema PT/EN) + color scheme + tokens
+- ✅ `image-banner.liquid` · `rich-text.liquid` · `collapsible-content.liquid` (FAQ) · `multicolumn.liquid` · `countdown-timer.liquid` — **novas sections reutilizáveis**, já nascidas 100% i18n (schema PT/EN) + color scheme + tokens
 - ✅ `product-recommendations.liquid` · `recently-viewed.liquid` · `lookbook.liquid` (Shop the Look) + `main-collection.liquid` (filtros nativos) — features inspiradas no Impression, nascidas 100% i18n
 - ✅ Carrinho (`templates/cart.liquid` + `cart-drawer*` snippets) — storefront via `cart.general.*` (sem schema)
 - ✅ Páginas de cliente (`templates/customers/*.liquid` — account, login, register, addresses, order, activate_account, reset_password) — storefront 100% via `customer.*` (sem schema; templates legados não-editáveis). Strings de JS injetadas via `| t | json`; links de termos via `capture` + params; pluralização nativa em `orders.items_count`. Fix `ImgWidthAndHeight` em `order.liquid`.
@@ -142,6 +142,8 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.26.0 - Section Countdown Timer** (2026-06-29) — Nova section `countdown-timer` (contagem regressiva para urgência/escassez), nascida 100% i18n (PT/EN), color scheme e tokens. **2 modos:** data/hora fixa (mês/dia/hora/minuto via selects + ano em campo numérico, sem teto) e **diária recorrente** (reseta no horário escolhido). Alvo ancorado no **fuso da loja** via `{{ 'now' | date: '%z' }}` → epoch em `data-*`, tick client-side no Web Component `<countdown-timer>` (`assets/countdown-timer.js`, co-locado com `defer`). **Ao zerar (modo fixo) esconde a seção** (server-side via `request.design_mode` p/ evitar flash + JS; nunca esconde no editor). Customização: `show_days` (contagens curtas), `digit_style` (caixas/simples), alinhamento, largura total, eyebrow/título/texto, **imagem de fundo opcional** com scrim (padrão do `image-banner`) e **CTA único** com dropdown de estilo. A11y: `role="timer"` + `aria-live="off"`. Edge cases tratados (data passada/inválida/incompleta, diário sem horário). Tailwind rebuildado, Theme Check **0 offenses** (130 arquivos).
 
 **v2.24.0 - Componente de produtos adaptável (grid⇄slider)** (2026-06-29) — Snippets `product-showcase` + `product-showcase-header`: exibição de produtos como **grade OU slider** à escolha do lojista, **sempre deslizável no mobile** (Swiper no slider; scroll com snap no grid, via `.no-scrollbar`). Aplicado a `product-recommendations` e `recently-viewed`, que ganharam **título + subtítulo + alinhamento** (esquerda/centro, como os sliders da Home), **colunas no desktop (máx. 4)** e quantidade em **múltiplos de 4 (4/8/12)** para a grade não quebrar. Slider manual redundante removido da PDP. Theme Check 0 offenses.
 

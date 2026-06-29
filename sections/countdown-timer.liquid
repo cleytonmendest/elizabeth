@@ -1,0 +1,449 @@
+{%- comment -%}
+  Countdown Timer — contagem regressiva para urgência/escassez.
+  Dois modos: "fixed" (data/hora específica) e "daily" (reseta todo dia num horário).
+  O alvo é ancorado no fuso da loja (offset via {{ 'now' | date: '%z' }}) e o tick é
+  client-side (<countdown-timer>). Ao zerar (modo fixed) a seção some; no editor do
+  tema permanece visível. Visual: fundo do color scheme + imagem de fundo opcional
+  (scrim no padrão do banner) + CTA único (dropdown de estilo).
+{%- endcomment -%}
+
+{%- liquid
+  assign st = section.settings
+
+  assign align = st.content_alignment | default: 'center'
+  assign col_cls = 'items-center text-center'
+  assign row_cls = 'justify-center'
+  if align == 'left'
+    assign col_cls = 'items-start text-left'
+    assign row_cls = 'justify-start'
+  elsif align == 'right'
+    assign col_cls = 'items-end text-right'
+    assign row_cls = 'justify-end'
+  endif
+
+  assign has_image = false
+  if st.background_image != blank
+    assign has_image = true
+  endif
+
+  assign offset = 'now' | date: '%z'
+
+  comment
+    Esconde server-side quando a data fixa já passou (evita "flash"), exceto no editor.
+  endcomment
+  assign is_expired = false
+  if st.countdown_type == 'fixed'
+    assign m2 = st.month | prepend: '00' | slice: -2, 2
+    assign d2 = st.day | prepend: '00' | slice: -2, 2
+    assign h2 = st.hour | prepend: '00' | slice: -2, 2
+    assign mi2 = st.minute | prepend: '00' | slice: -2, 2
+    assign target_str = st.year | append: '-' | append: m2 | append: '-' | append: d2 | append: ' ' | append: h2 | append: ':' | append: mi2
+    assign target_epoch = target_str | date: '%s' | times: 1
+    assign now_epoch = 'now' | date: '%s' | times: 1
+    if target_epoch > 0 and target_epoch <= now_epoch
+      assign is_expired = true
+    endif
+  endif
+
+  comment
+    Aviso (apenas no editor): ano no passado ou digitado errado (ex.: "26").
+  endcomment
+  assign year_invalid = false
+  if st.countdown_type == 'fixed'
+    assign current_year = 'now' | date: '%Y' | times: 1
+    if st.year < current_year
+      assign year_invalid = true
+    endif
+  endif
+
+  assign cta_text = st.button_label
+  if cta_text == blank
+    assign cta_text = 'general.see_more' | t
+  endif
+
+  comment
+    Scrim: usa a COR DE FUNDO do scheme (semi-transparente) sobre a foto, então o
+    texto (cor de TEXTO do scheme) sempre contrasta.
+  endcomment
+  assign op = st.scrim_opacity | default: 35 | divided_by: 100.0
+  assign scrim_color = 'rgb(var(--color-background) / ' | append: op | append: ')'
+
+  if st.digit_style == 'plain'
+    assign box_cls = 'px-1'
+  else
+    assign box_cls = 'bg-foreground/10 rounded-theme px-3 py-2 md:px-4 md:py-3 min-w-[60px] md:min-w-[76px]'
+  endif
+-%}
+
+<section
+  class="color-{{ st.color_scheme }} bg-background"
+  {% if is_expired and request.design_mode != true %}hidden{% endif %}
+>
+  {%- if request.design_mode and year_invalid -%}
+    <div class="page-width">
+      <p class="my-4 rounded-theme border border-warning/40 bg-warning/10 text-warning text-sm px-4 py-3">
+        {{ 'countdown.editor_invalid_year' | t }}
+      </p>
+    </div>
+  {%- endif -%}
+
+  <div class="{% unless st.fullwidth %}page-width{% endunless %}">
+    <div
+      class="relative overflow-hidden {% unless st.fullwidth %}rounded-theme{% endunless %}{% if has_image %} flex items-center{% endif %}"
+      {% if has_image %}style="min-height: 420px;"{% endif %}
+    >
+      {%- if has_image -%}
+        {{
+          st.background_image
+          | image_url: width: 2200
+          | image_tag:
+            class: 'absolute inset-0 w-full h-full object-cover',
+            widths: '600, 900, 1200, 1600, 2000, 2200',
+            sizes: '100vw',
+            alt: '',
+            loading: 'lazy'
+        }}
+        {%- if st.scrim_opacity > 0 -%}
+          <div class="absolute inset-0 pointer-events-none" style="background: {{ scrim_color }};"></div>
+        {%- endif -%}
+      {%- endif -%}
+
+      <div class="relative w-full flex flex-col {{ col_cls }} text-foreground px-6 py-12 md:py-16 gap-6 md:gap-8">
+        {%- if st.eyebrow != blank or st.heading != blank or st.text != blank -%}
+          <div class="flex flex-col {{ col_cls }} gap-3 max-w-2xl">
+            {%- if st.eyebrow != blank -%}
+              <p class="text-[11px] md:text-xs uppercase tracking-[0.3em] opacity-70">{{ st.eyebrow }}</p>
+            {%- endif -%}
+            {%- if st.heading != blank -%}
+              <h2 class="font-light text-2xl md:text-4xl leading-tight tracking-tight">{{ st.heading }}</h2>
+            {%- endif -%}
+            {%- if st.text != blank -%}
+              <div class="text-sm md:text-base leading-relaxed opacity-80">{{ st.text }}</div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        <countdown-timer
+          class="block w-full"
+          data-mode="{{ st.countdown_type }}"
+          data-year="{{ st.year }}"
+          data-month="{{ st.month }}"
+          data-day="{{ st.day }}"
+          data-hour="{{ st.hour }}"
+          data-minute="{{ st.minute }}"
+          data-utc-offset="{{ offset }}"
+          data-show-days="{{ st.show_days }}"
+        >
+          <div
+            role="timer"
+            aria-label="{{ 'countdown.aria_label' | t }}"
+            aria-live="off"
+            class="flex items-start {{ row_cls }} gap-3 md:gap-5"
+          >
+            {%- if st.show_days -%}
+              <div data-unit="days" class="flex flex-col items-center gap-2">
+                <span data-value class="{{ box_cls }} block text-center font-light tabular-nums text-3xl md:text-5xl leading-none">00</span>
+                <span class="text-[10px] md:text-xs uppercase tracking-[0.18em] opacity-70">{{ 'countdown.days' | t }}</span>
+              </div>
+            {%- endif -%}
+            <div data-unit="hours" class="flex flex-col items-center gap-2">
+              <span data-value class="{{ box_cls }} block text-center font-light tabular-nums text-3xl md:text-5xl leading-none">00</span>
+              <span class="text-[10px] md:text-xs uppercase tracking-[0.18em] opacity-70">{{ 'countdown.hours' | t }}</span>
+            </div>
+            <div data-unit="minutes" class="flex flex-col items-center gap-2">
+              <span data-value class="{{ box_cls }} block text-center font-light tabular-nums text-3xl md:text-5xl leading-none">00</span>
+              <span class="text-[10px] md:text-xs uppercase tracking-[0.18em] opacity-70">{{ 'countdown.minutes' | t }}</span>
+            </div>
+            <div data-unit="seconds" class="flex flex-col items-center gap-2">
+              <span data-value class="{{ box_cls }} block text-center font-light tabular-nums text-3xl md:text-5xl leading-none">00</span>
+              <span class="text-[10px] md:text-xs uppercase tracking-[0.18em] opacity-70">{{ 'countdown.seconds' | t }}</span>
+            </div>
+          </div>
+        </countdown-timer>
+
+        {%- if st.link != blank -%}
+          {%- if st.button_style == 'link' -%}
+            <a
+              href="{{ st.link }}"
+              class="group inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-foreground hover:opacity-70 transition-opacity"
+            >
+              {{ cta_text }}
+              <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">
+                {% render 'icon-arrow-right', size: 16 %}
+              </span>
+            </a>
+          {%- else -%}
+            <a
+              href="{{ st.link }}"
+              class="inline-flex items-center gap-2 px-6 py-3.5 bg-button text-button-text text-xs uppercase tracking-[0.16em] hover:opacity-90 transition-opacity"
+            >
+              {{ cta_text }}
+              {% render 'icon-arrow-right', size: 15 %}
+            </a>
+          {%- endif -%}
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{{ 'countdown-timer.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "t:sections.countdown_timer.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.countdown_timer.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "countdown_type",
+      "label": "t:sections.countdown_timer.settings.countdown_type.label",
+      "info": "t:sections.countdown_timer.settings.countdown_type.info",
+      "default": "fixed",
+      "options": [
+        { "value": "fixed", "label": "t:sections.countdown_timer.settings.countdown_type.options.fixed" },
+        { "value": "daily", "label": "t:sections.countdown_timer.settings.countdown_type.options.daily" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.countdown_timer.settings.datetime_header.content",
+      "info": "t:sections.countdown_timer.settings.datetime_header.info"
+    },
+    {
+      "type": "number",
+      "id": "year",
+      "label": "t:sections.countdown_timer.settings.year.label",
+      "info": "t:sections.countdown_timer.settings.year.info",
+      "default": 2026
+    },
+    {
+      "type": "select",
+      "id": "month",
+      "label": "t:sections.countdown_timer.settings.month.label",
+      "default": "12",
+      "options": [
+        { "value": "1", "label": "t:sections.countdown_timer.settings.month.options.january" },
+        { "value": "2", "label": "t:sections.countdown_timer.settings.month.options.february" },
+        { "value": "3", "label": "t:sections.countdown_timer.settings.month.options.march" },
+        { "value": "4", "label": "t:sections.countdown_timer.settings.month.options.april" },
+        { "value": "5", "label": "t:sections.countdown_timer.settings.month.options.may" },
+        { "value": "6", "label": "t:sections.countdown_timer.settings.month.options.june" },
+        { "value": "7", "label": "t:sections.countdown_timer.settings.month.options.july" },
+        { "value": "8", "label": "t:sections.countdown_timer.settings.month.options.august" },
+        { "value": "9", "label": "t:sections.countdown_timer.settings.month.options.september" },
+        { "value": "10", "label": "t:sections.countdown_timer.settings.month.options.october" },
+        { "value": "11", "label": "t:sections.countdown_timer.settings.month.options.november" },
+        { "value": "12", "label": "t:sections.countdown_timer.settings.month.options.december" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "day",
+      "label": "t:sections.countdown_timer.settings.day.label",
+      "default": "31",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" },
+        { "value": "6", "label": "6" },
+        { "value": "7", "label": "7" },
+        { "value": "8", "label": "8" },
+        { "value": "9", "label": "9" },
+        { "value": "10", "label": "10" },
+        { "value": "11", "label": "11" },
+        { "value": "12", "label": "12" },
+        { "value": "13", "label": "13" },
+        { "value": "14", "label": "14" },
+        { "value": "15", "label": "15" },
+        { "value": "16", "label": "16" },
+        { "value": "17", "label": "17" },
+        { "value": "18", "label": "18" },
+        { "value": "19", "label": "19" },
+        { "value": "20", "label": "20" },
+        { "value": "21", "label": "21" },
+        { "value": "22", "label": "22" },
+        { "value": "23", "label": "23" },
+        { "value": "24", "label": "24" },
+        { "value": "25", "label": "25" },
+        { "value": "26", "label": "26" },
+        { "value": "27", "label": "27" },
+        { "value": "28", "label": "28" },
+        { "value": "29", "label": "29" },
+        { "value": "30", "label": "30" },
+        { "value": "31", "label": "31" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hour",
+      "label": "t:sections.countdown_timer.settings.hour.label",
+      "default": "0",
+      "options": [
+        { "value": "0", "label": "00" },
+        { "value": "1", "label": "01" },
+        { "value": "2", "label": "02" },
+        { "value": "3", "label": "03" },
+        { "value": "4", "label": "04" },
+        { "value": "5", "label": "05" },
+        { "value": "6", "label": "06" },
+        { "value": "7", "label": "07" },
+        { "value": "8", "label": "08" },
+        { "value": "9", "label": "09" },
+        { "value": "10", "label": "10" },
+        { "value": "11", "label": "11" },
+        { "value": "12", "label": "12" },
+        { "value": "13", "label": "13" },
+        { "value": "14", "label": "14" },
+        { "value": "15", "label": "15" },
+        { "value": "16", "label": "16" },
+        { "value": "17", "label": "17" },
+        { "value": "18", "label": "18" },
+        { "value": "19", "label": "19" },
+        { "value": "20", "label": "20" },
+        { "value": "21", "label": "21" },
+        { "value": "22", "label": "22" },
+        { "value": "23", "label": "23" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "minute",
+      "label": "t:sections.countdown_timer.settings.minute.label",
+      "info": "t:sections.countdown_timer.settings.minute.info",
+      "default": "0",
+      "options": [
+        { "value": "0", "label": "00" },
+        { "value": "15", "label": "15" },
+        { "value": "30", "label": "30" },
+        { "value": "45", "label": "45" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.countdown_timer.settings.display_header.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_days",
+      "label": "t:sections.countdown_timer.settings.show_days.label",
+      "info": "t:sections.countdown_timer.settings.show_days.info",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "digit_style",
+      "label": "t:sections.countdown_timer.settings.digit_style.label",
+      "default": "cards",
+      "options": [
+        { "value": "cards", "label": "t:sections.countdown_timer.settings.digit_style.options.cards" },
+        { "value": "plain", "label": "t:sections.countdown_timer.settings.digit_style.options.plain" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "t:sections.countdown_timer.settings.content_alignment.label",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "t:sections.countdown_timer.settings.content_alignment.options.left" },
+        { "value": "center", "label": "t:sections.countdown_timer.settings.content_alignment.options.center" },
+        { "value": "right", "label": "t:sections.countdown_timer.settings.content_alignment.options.right" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "t:sections.countdown_timer.settings.fullwidth.label",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.countdown_timer.settings.content_header.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.countdown_timer.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.countdown_timer.settings.heading.label"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:sections.countdown_timer.settings.text.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.countdown_timer.settings.image_header.content",
+      "info": "t:sections.countdown_timer.settings.image_header.info"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:sections.countdown_timer.settings.background_image.label"
+    },
+    {
+      "type": "range",
+      "id": "scrim_opacity",
+      "label": "t:sections.countdown_timer.settings.scrim_opacity.label",
+      "info": "t:sections.countdown_timer.settings.scrim_opacity.info",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 35
+    },
+    {
+      "type": "header",
+      "content": "t:sections.countdown_timer.settings.button_header.content"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:sections.countdown_timer.settings.button_style.label",
+      "default": "primary",
+      "options": [
+        { "value": "primary", "label": "t:sections.countdown_timer.settings.button_style.options.primary" },
+        { "value": "link", "label": "t:sections.countdown_timer.settings.button_style.options.link" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.countdown_timer.settings.button_label.label",
+      "info": "t:sections.countdown_timer.settings.button_label.info"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:sections.countdown_timer.settings.link.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.countdown_timer.presets.name",
+      "settings": {
+        "eyebrow": "Oferta por tempo limitado",
+        "heading": "A coleção acaba em breve",
+        "button_label": "Comprar agora"
+      }
+    }
+  ]
+}
+{% endschema %}
