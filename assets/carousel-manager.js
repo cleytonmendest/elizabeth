@@ -66,16 +66,35 @@ class MySlider extends HTMLElement {
     }
 
     const spanActive = this.querySelector('.index-active');
-    if (spanActive) {
-      config.on = {
-        slideChange: (swiper) => {
+    const syncA11y = (swiper) => this._syncSlideA11y(swiper);
+    config.on = {
+      // Slides fora de tela recebem aria-hidden="true" (Swiper a11y) mas seus
+      // links continuam focáveis -> falha "aria-hidden-focus". Espelhamos com
+      // `inert` para tirá-los da ordem de foco enquanto ocultos.
+      afterInit: syncA11y,
+      slideChangeTransitionEnd: syncA11y,
+      breakpoint: syncA11y,
+      update: syncA11y,
+      slideChange: (swiper) => {
+        if (spanActive) {
           // módulo pelos slides originais (caso tenham sido duplicados para o loop)
           spanActive.textContent = (swiper.realIndex % items) + 1;
-        },
-      };
-    }
+        }
+      },
+    };
 
     this.swiper = new Swiper(this.container, config);
+  }
+
+  /** Mantém `inert` em sincronia com aria-hidden nos slides (acessibilidade). */
+  _syncSlideA11y(swiper) {
+    (swiper.slides || []).forEach((slide) => {
+      if (slide.getAttribute('aria-hidden') === 'true') {
+        slide.setAttribute('inert', '');
+      } else {
+        slide.removeAttribute('inert');
+      }
+    });
   }
 
   /**

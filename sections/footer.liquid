@@ -16,7 +16,7 @@
             <ul>
               {% for link in block.settings.linklist.links %}
                 <li>
-                  <a class="text-sm color-text-muted hover:opacity-80" href="{{ link.url }}">{{ link.title }}</a>
+                  <a class="inline-block py-1 text-sm color-text-muted hover:opacity-80" href="{{ link.url }}">{{ link.title }}</a>
                 </li>
               {% endfor %}
             </ul>
@@ -74,17 +74,17 @@
             <h3 class="text-sm color-text font-normal">{{ block.settings.title_social_media }}</h3>
             <div class="social-links flex gap-2">
               {% if settings.social_instagram_link != blank %}
-                <a href="{{ settings.social_instagram_link }}" target="_blank">
+                <a href="{{ settings.social_instagram_link }}" target="_blank" rel="noopener" aria-label="Instagram">
                   {% render 'icon-social-instagram' %}
                 </a>
               {% endif %}
               {% if settings.social_facebook_link != blank %}
-                <a href="{{ settings.social_facebook_link }}" target="_blank">
+                <a href="{{ settings.social_facebook_link }}" target="_blank" rel="noopener" aria-label="Facebook">
                   {% render 'icon-social-facebook' %}
                 </a>
               {% endif %}
               {% if settings.social_youtube_link != blank %}
-                <a href="{{ settings.social_youtube_link }}" target="_blank">
+                <a href="{{ settings.social_youtube_link }}" target="_blank" rel="noopener" aria-label="YouTube">
                   {% render 'icon-social-youtube' %}
                 </a>
               {% endif %}

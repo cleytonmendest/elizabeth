@@ -185,12 +185,12 @@
     <div class="flex items-baseline gap-2 flex-wrap">
       <span class="text-sm font-medium text-foreground">{{ card_product.price | money }}</span>
       {%- if has_discount -%}
-        <span class="text-xs text-foreground/40 line-through">{{ card_product.compare_at_price | money }}</span>
+        <span class="text-xs text-foreground/60 line-through">{{ card_product.compare_at_price | money }}</span>
       {%- endif -%}
     </div>
     {%- if show_installments and show_inst_global and actual_installments > 1 -%}
       {%- assign installment_price = final_installment_value | money -%}
-      <p class="text-xs text-foreground/50 mt-0.5">
+      <p class="text-xs text-foreground/70 mt-0.5">
         {{ 'product.installments.card' | t: count: actual_installments, price: installment_price }}
       </p>
     {%- endif -%}

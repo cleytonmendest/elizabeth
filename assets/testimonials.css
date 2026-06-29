@@ -59,22 +59,39 @@
   margin-top: 2rem;
 }
 
+/* Área de toque de 24x24 (WCAG target-size): o <span> fica transparente e
+   maior, e o "ponto" visível é desenhado num ::before centrado — assim o visual
+   continua 6px mas o alvo clicável atende ao mínimo de acessibilidade. */
 .testimonials-slider .my-slider__container .swiper-pagination-bullet {
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  background: transparent;
+  border: none;
+  opacity: 1;
+  border-radius: 0;
+  position: relative;
+}
+
+.testimonials-slider .my-slider__container .swiper-pagination-bullet::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
   width: 6px;
   height: 6px;
-  margin: 0 4px;
+  transform: translate(-50%, -50%);
   background: currentColor;
-  border: none;
   opacity: 0.3;
   border-radius: 9999px;
   transition: all 0.25s;
 }
 
-.testimonials-slider .my-slider__container .swiper-pagination-bullet:hover {
+.testimonials-slider .my-slider__container .swiper-pagination-bullet:hover::before {
   opacity: 0.6;
 }
 
-.testimonials-slider .my-slider__container .swiper-pagination-bullet-active {
+.testimonials-slider .my-slider__container .swiper-pagination-bullet-active::before {
   width: 18px;
   border-radius: 3px;
   opacity: 1;

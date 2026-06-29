@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.20.0 | **Atualizado:** 2026-06-28
+**Versão:** 2.21.0 | **Atualizado:** 2026-06-28
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -48,14 +48,16 @@ Snippets compartilhados migrados junto: `card-product-slider`, `card-article`, `
 ---
 
 ### 2. Acessibilidade WCAG 2.1 AA
-**Status:** Parcial | **Esforço:** 13-17h | **Prioridade:** 🔴 CRÍTICA
+**Status:** ✅ **Gate atingido — A11y 93/93** (mobile/desktop, 2026-06-28) | **Prioridade:** 🔴 CRÍTICA
 
-Lighthouse Accessibility Score > 90 (requisito Theme Store).
-- ⏳ Contraste 4.5:1 validado
-- ⏳ ARIA labels completos
-- ⏳ Navegação por teclado testada
-- ⏳ Alt texts em todas imagens
-- ⏳ Screen reader compatible
+Lighthouse Accessibility Score > 90 (requisito Theme Store). De 82/79 → **93/93** corrigindo todos os audits reais do tema:
+- ✅ `html-has-lang`, `link-name` (logo + redes sociais), `label-content-name-mismatch` (badge minicart)
+- ✅ `color-contrast` (subtítulo slider `/55→/70`, parcelamento `/50→/70`, compare-at `/40→/60`)
+- ✅ `target-size` (bullets com área de toque 24px via `::before`; links do footer `py-1`)
+- ✅ `aria-hidden-focus` (slides off-screen do Swiper + `#mobile-menu` fechado recebem `inert`)
+- ✅ `errors-in-console` (`icon-close` sem `size` → `width=""`; agora `default: 24`)
+
+**Resíduo = não é do tema** (some em produção): `frame-title`, `third-party-cookies`, `inspector-issues` vêm da **preview-bar do Shopify + Shop Pay**. Recomendado: re-rodar Lighthouse na loja publicada para confirmar A11y 95+/Best Practices ~90.
 
 ---
 
@@ -138,6 +140,8 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.21.0 - Acessibilidade: correções da auditoria Lighthouse** (2026-06-28) — Auditoria Lighthouse (mobile A11y 82 / desktop 79) corrigida nos audits reais do tema: `html-has-lang` (`<html lang/dir>` em theme.liquid), `link-name` (aria-label no logo + 3 redes sociais do footer), `color-contrast` (subtítulo slider e parcelamento do card `→ /70`), `target-size` (bullets de depoimentos com área de toque 24px via `::before`; links do footer com `py-1`), `label-content-name-mismatch` (badge `#qtd-bubble` com `aria-hidden`), `aria-hidden-focus` (slides off-screen do Swiper recebem `inert` via `carousel-manager`), `errors-in-console` (`icon-close` sem `size` gerava `width=""` → `default: 24`). Revalidado: **A11y 82/79 → 93/93** (mobile/desktop), gate >90 atingido. 2ª rodada fechou `aria-hidden-focus` do `#mobile-menu` (inert no fechado) e `color-contrast` do compare-at (`/40→/60`). Performance mobile 73→76 (passa o gate >50). Resíduo (`frame-title`/`third-party-cookies`/`inspector-issues`) é da preview-bar/Shop Pay, não do tema. Theme Check 0 offenses.
 
 **v2.20.0 - Code Quality: Theme Check zerado** (2026-06-28) — De 5 errors + 27 warnings → **0 offenses** (120 arquivos). **Errors:** `ImgWidthAndHeight` add `width`/`height` em testimonial-card (avatar) e gift_card (card.svg); removido `<img>` de QR quebrado em `gift_card.liquid` (usava filtro inexistente `qr_code_url` → resolveu `UnknownFilter` + 1 img). **Warnings:** 7 `OrphanedSnippet` deletados (icon-* mortos, `homepage-text` resíduo, `discount-flag`/`installments` superseded por lógica inline); 9 `UnusedAssign` removidos (schema-product/-breadcrumb, inventory-status, variant-options/-picker); `scheme_classes` morto removido de theme.liquid+gift_card layout (2 `UndefinedObject`); bloco `<style>` morto de paginação (com hex hardcoded) removido de `account.liquid` (`paginate` fora de escopo). **Supressões scoped documentadas:** lightbox `product-gallery` (img JS) + objetos de form em `login.liquid`.
 

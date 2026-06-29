@@ -1,6 +1,6 @@
 <div class="flex-[1] justify-center items-center flex max-lg:order-2">
   <h1 class="w-fit">
-    <a href="{{ routes.root_url }}" class="color-text transition-colors">
+    <a href="{{ routes.root_url }}" class="color-text transition-colors" aria-label="{{ shop.name | escape }}">
       {% if settings['logo_svg'] != blank %}
         <div style="max-width: {{ settings.logo_width }}px;" class="w-full">
           {{ settings['logo_svg'] }}

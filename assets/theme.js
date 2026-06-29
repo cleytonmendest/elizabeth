@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function openMobileMenu() {
         mobileMenu.classList.remove('-translate-x-full');
         mobileMenu.setAttribute('aria-hidden', 'false');
+        mobileMenu.removeAttribute('inert');
         openBtn.setAttribute('aria-expanded', 'true');
         document.body.classList.add('overflow-hidden');
         overlay.classList.remove('hidden');
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function closeMobileMenu() {
         mobileMenu.classList.add('-translate-x-full');
         mobileMenu.setAttribute('aria-hidden', 'true');
+        mobileMenu.setAttribute('inert', '');
         openBtn.setAttribute('aria-expanded', 'false');
         document.body.classList.remove('overflow-hidden');
         overlay.classList.add('hidden');

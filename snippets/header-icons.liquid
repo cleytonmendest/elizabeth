@@ -23,6 +23,7 @@
     {% render 'icon-cart', size: 24 %}
     <div
       id="qtd-bubble"
+      aria-hidden="true"
       class="color-badge {% if cart.item_count > 0 %}flex{% else %}hidden{% endif %}
       w-[18px] h-[18px] rounded-full text-xs font-medium items-center justify-center absolute top-[-3px] left-[14px]"
     >

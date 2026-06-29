@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="{{ request.locale.iso_code }}" dir="{% if request.locale.iso_code == 'ar' or request.locale.iso_code == 'he' %}rtl{% else %}ltr{% endif %}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
