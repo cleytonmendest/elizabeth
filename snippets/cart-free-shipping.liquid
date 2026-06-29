@@ -17,6 +17,8 @@
   {%- if fs_pct > 100 -%}{%- assign fs_pct = 100 -%}{%- endif -%}
   {%- assign fs_msg_success = settings.cart_free_shipping_success | default: 'Você ganhou frete grátis!' -%}
   {%- assign fs_msg_progress = settings.cart_free_shipping_message | default: 'Faltam {valor} para o frete grátis' -%}
+  {%- comment -%} Token em variável: chave literal dentro de {{ }} quebra o parser do Shopify {%- endcomment -%}
+  {%- assign fs_token = '{valor}' -%}
   <div
     class="cart-free-shipping"
     data-free-shipping-bar
@@ -29,7 +31,7 @@
         {{ fs_msg_success }}
       {%- else -%}
         {%- capture fs_amount -%}<strong>{{ fs_remaining | money }}</strong>{%- endcapture -%}
-        {{ fs_msg_progress | replace: '{valor}', fs_amount }}
+        {{ fs_msg_progress | replace: fs_token, fs_amount }}
       {%- endif -%}
     </p>
     <div class="h-1 w-full rounded-full bg-foreground/10 overflow-hidden">

@@ -2385,10 +2385,6 @@ label.not-swatch.is-unavailable {
   color: rgb(var(--color-foreground) / var(--tw-text-opacity));
 }
 
-.text-foreground\/20 {
-  color: rgb(var(--color-foreground) / 0.2);
-}
-
 .text-foreground\/25 {
   color: rgb(var(--color-foreground) / 0.25);
 }
@@ -2447,6 +2443,10 @@ label.not-swatch.is-unavailable {
 
 .text-white\/90 {
   color: rgb(255 255 255 / 0.9);
+}
+
+.text-foreground\/20 {
+  color: rgb(var(--color-foreground) / 0.2);
 }
 
 .underline {
@@ -3156,12 +3156,12 @@ label.not-swatch.is-unavailable {
     justify-content: center;
   }
 
-  .md\:gap-5 {
-    gap: 1.25rem;
-  }
-
   .md\:gap-6 {
     gap: 1.5rem;
+  }
+
+  .md\:gap-5 {
+    gap: 1.25rem;
   }
 
   .md\:border-l {
@@ -3301,12 +3301,12 @@ label.not-swatch.is-unavailable {
     margin-bottom: 1.5rem;
   }
 
-  .lg\:mb-8 {
-    margin-bottom: 2rem;
-  }
-
   .lg\:mt-8 {
     margin-top: 2rem;
+  }
+
+  .lg\:mb-8 {
+    margin-bottom: 2rem;
   }
 
   .lg\:block {
@@ -3426,12 +3426,12 @@ label.not-swatch.is-unavailable {
     gap: 1rem;
   }
 
-  .lg\:gap-6 {
-    gap: 1.5rem;
-  }
-
   .lg\:gap-8 {
     gap: 2rem;
+  }
+
+  .lg\:gap-6 {
+    gap: 1.5rem;
   }
 
   .lg\:overflow-visible {
@@ -3495,12 +3495,12 @@ label.not-swatch.is-unavailable {
     padding-bottom: 0.5rem;
   }
 
-  .lg\:pb-0 {
-    padding-bottom: 0px;
-  }
-
   .lg\:pl-16 {
     padding-left: 4rem;
+  }
+
+  .lg\:pb-0 {
+    padding-bottom: 0px;
   }
 
   .lg\:text-4xl {
