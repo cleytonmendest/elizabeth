@@ -1,0 +1,156 @@
+{%- comment -%}
+  Coleção em destaque — exibe os produtos de uma coleção escolhida pelo lojista,
+  como grade OU slider (sempre deslizável no mobile). A fonte dos produtos é manual
+  (coleção do editor); a EXIBIÇÃO é o componente reutilizável product-showcase — o
+  mesmo usado pelas seções automáticas (recomendações, vistos recentemente).
+{%- endcomment -%}
+
+{%- liquid
+  assign coll = section.settings.collection
+  assign columns = section.settings.columns | default: 4
+  assign limit = section.settings.products_to_show | default: 8
+  assign show_nav = false
+  if section.settings.desktop_layout == 'slider' and coll.products_count > 0
+    assign show_nav = true
+  endif
+-%}
+
+<div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  <div class="page-width !py-12 lg:!py-16">
+    {% render 'product-showcase-header',
+      heading: section.settings.heading,
+      subtitle: section.settings.subtitle,
+      alignment: section.settings.text_alignment,
+      show_nav: show_nav,
+      section_id: section.id
+    %}
+
+    {%- if coll != blank and coll.products_count > 0 -%}
+      {% render 'product-showcase',
+        products: coll.products,
+        products_count: coll.products_count,
+        layout: section.settings.desktop_layout,
+        columns: columns,
+        section_id: section.id,
+        limit: limit,
+        show_second_image: section.settings.show_second_image,
+        show_installments: section.settings.show_installments,
+        show_quick_add: section.settings.show_quick_add
+      %}
+    {%- else -%}
+      {%- comment -%} Placeholder no editor quando nenhuma coleção foi escolhida {%- endcomment -%}
+      <div class="grid grid-cols-2 lg:grid-cols-{{ columns }} gap-4 md:gap-6">
+        {%- for i in (1..columns) -%}
+          <div class="bg-foreground/5 rounded-theme aspect-[3/4]">
+            {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'w-full h-full object-cover rounded-theme text-foreground/20' }}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.featured_collection.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.featured_collection.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.featured_collection.settings.collection.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.featured_collection.settings.heading.label"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "t:sections.featured_collection.settings.subtitle.label"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:sections.featured_collection.settings.text_alignment.label",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "t:sections.featured_collection.settings.text_alignment.options.left" },
+        { "value": "center", "label": "t:sections.featured_collection.settings.text_alignment.options.center" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.featured_collection.settings.layout_header.content"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "t:sections.featured_collection.settings.desktop_layout.label",
+      "info": "t:sections.featured_collection.settings.desktop_layout.info",
+      "default": "slider",
+      "options": [
+        { "value": "slider", "label": "t:sections.featured_collection.settings.desktop_layout.options.slider" },
+        { "value": "grid", "label": "t:sections.featured_collection.settings.desktop_layout.options.grid" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.featured_collection.settings.columns.label"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 12,
+      "step": 4,
+      "default": 8,
+      "label": "t:sections.featured_collection.settings.products_to_show.label",
+      "info": "t:sections.featured_collection.settings.products_to_show.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.featured_collection.settings.card_header.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_second_image",
+      "label": "t:sections.featured_collection.settings.show_second_image.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_add",
+      "label": "t:sections.featured_collection.settings.show_quick_add.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_installments",
+      "label": "t:sections.featured_collection.settings.show_installments.label",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.featured_collection.presets.name"
+    }
+  ]
+}
+{% endschema %}

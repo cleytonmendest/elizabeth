@@ -870,59 +870,61 @@
         "name": "Slider de Imagens"
       }
     },
-    "slider_product": {
-      "name": "Slider de Produtos",
+    "featured_collection": {
+      "name": "Coleção em destaque",
       "settings": {
         "color_scheme": {
           "label": "Esquema de cores"
         },
         "collection": {
-          "label": "Coleção de Produtos"
+          "label": "Coleção"
         },
-        "show_quick_add": {
-          "label": "Botão \"Adicionar\" no hover (desktop)",
-          "info": "Produtos de 1 variante adicionam direto; com várias variantes, leva à página do produto."
-        },
-        "title": {
-          "label": "Título da prateleira"
+        "heading": {
+          "label": "Título"
         },
         "subtitle": {
-          "label": "Subtítulo da prateleira"
+          "label": "Subtítulo"
         },
-        "loop": {
-          "label": "Ativa loop infinito?",
-          "info": "Quando chega no ultimo slider volta para o inicio automaticamente"
+        "text_alignment": {
+          "label": "Alinhamento do texto",
+          "options": {
+            "left": "Esquerda",
+            "center": "Centro"
+          }
         },
-        "nav": {
-          "label": "Exibe Flechas de Navegação",
-          "info": "Exibe botões de proximo e anterior"
+        "layout_header": {
+          "content": "Layout"
         },
-        "dot": {
-          "label": "Exibe Pontos de Navegação",
-          "info": "Exibe botões"
+        "desktop_layout": {
+          "label": "Exibição no desktop",
+          "info": "No celular é sempre deslizável",
+          "options": {
+            "slider": "Slider",
+            "grid": "Grade"
+          }
         },
-        "qty_desk": {
-          "label": "Quantidade de Produtos quando desktop"
+        "columns": {
+          "label": "Colunas no desktop (máx. 4)"
         },
-        "qty_tablet": {
-          "label": "Quantidade de Produtos quando Tablet"
+        "products_to_show": {
+          "label": "Máximo de produtos",
+          "info": "Múltiplos de 4 (4, 8 ou 12) para a grade não quebrar"
         },
-        "qty_mob": {
-          "label": "Quantidade de Produtos quando mobile"
+        "card_header": {
+          "content": "Card de produto"
         },
-        "autoplay": {
-          "label": "Ativa Autoplay",
-          "info": "Autoplay mantém o slider ativo, sempre passando as produtos automaticamente"
+        "show_second_image": {
+          "label": "Mostrar segunda imagem ao passar o mouse"
         },
-        "play_time": {
-          "label": "Tempo entre os sliders (autoplay ativo)"
+        "show_quick_add": {
+          "label": "Mostrar botão de compra rápida"
         },
-        "pause_hover": {
-          "label": "Pausa autoplay quando o mouse estiver no Produto"
+        "show_installments": {
+          "label": "Mostrar opção de parcelamento"
         }
       },
       "presets": {
-        "name": "Slider de Produtos"
+        "name": "Coleção em destaque"
       }
     },
     "slider_cards": {

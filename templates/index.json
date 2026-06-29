@@ -108,21 +108,19 @@
         "mobile_layout": "grid-2"
       }
     },
-    "slider_product_iqrCEN": {
-      "type": "slider-product",
+    "featured_collection_iqrCEN": {
+      "type": "featured-collection",
       "settings": {
         "collection": "new-in",
-        "title": "Camisas",
-        "subtitle": "<p>Experience Luxury in Every Stitch: Premium Quality Shirts</p>",
-        "loop": true,
-        "nav": true,
-        "dot": false,
-        "qty-desk": 4,
-        "qty-tablet": 3,
-        "qty-mob": 1,
-        "autoplay": false,
-        "play-time": 20,
-        "pause-hover": true
+        "heading": "Camisas",
+        "subtitle": "Experience Luxury in Every Stitch: Premium Quality Shirts",
+        "text_alignment": "left",
+        "desktop_layout": "slider",
+        "columns": 4,
+        "products_to_show": 8,
+        "show_second_image": true,
+        "show_quick_add": true,
+        "show_installments": true
       }
     },
     "highlighted_section_8DTzni": {
@@ -358,7 +356,7 @@
   "order": [
     "slider_image_9WNq4K",
     "trust_badges_KPYh8n",
-    "slider_product_iqrCEN",
+    "featured_collection_iqrCEN",
     "highlighted_section_8DTzni",
     "slider_cards_6ciA3G",
     "section_images_link_hGgn7V",

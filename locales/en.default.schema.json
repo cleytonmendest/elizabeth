@@ -870,59 +870,61 @@
         "name": "Image Slider"
       }
     },
-    "slider_product": {
-      "name": "Product Slider",
+    "featured_collection": {
+      "name": "Featured collection",
       "settings": {
         "color_scheme": {
           "label": "Color scheme"
         },
         "collection": {
-          "label": "Product collection"
+          "label": "Collection"
         },
-        "show_quick_add": {
-          "label": "\"Add\" button on hover (desktop)",
-          "info": "Single-variant products add directly; with multiple variants, it goes to the product page."
-        },
-        "title": {
-          "label": "Shelf title"
+        "heading": {
+          "label": "Heading"
         },
         "subtitle": {
-          "label": "Shelf subtitle"
+          "label": "Subheading"
         },
-        "loop": {
-          "label": "Enable infinite loop?",
-          "info": "When it reaches the last slide it returns to the beginning automatically"
+        "text_alignment": {
+          "label": "Text alignment",
+          "options": {
+            "left": "Left",
+            "center": "Center"
+          }
         },
-        "nav": {
-          "label": "Show navigation arrows",
-          "info": "Shows next and previous buttons"
+        "layout_header": {
+          "content": "Layout"
         },
-        "dot": {
-          "label": "Show navigation dots",
-          "info": "Shows buttons"
+        "desktop_layout": {
+          "label": "Desktop display",
+          "info": "Always swipeable on mobile",
+          "options": {
+            "slider": "Slider",
+            "grid": "Grid"
+          }
         },
-        "qty_desk": {
-          "label": "Number of products on desktop"
+        "columns": {
+          "label": "Columns on desktop (max. 4)"
         },
-        "qty_tablet": {
-          "label": "Number of products on tablet"
+        "products_to_show": {
+          "label": "Maximum products",
+          "info": "Multiples of 4 (4, 8 or 12) so the grid stays even"
         },
-        "qty_mob": {
-          "label": "Number of products on mobile"
+        "card_header": {
+          "content": "Product card"
         },
-        "autoplay": {
-          "label": "Enable autoplay",
-          "info": "Autoplay keeps the slider active, always advancing the products automatically"
+        "show_second_image": {
+          "label": "Show second image on hover"
         },
-        "play_time": {
-          "label": "Time between slides (autoplay on)"
+        "show_quick_add": {
+          "label": "Show quick add button"
         },
-        "pause_hover": {
-          "label": "Pause autoplay when the mouse is over the product"
+        "show_installments": {
+          "label": "Show installment option"
         }
       },
       "presets": {
-        "name": "Product Slider"
+        "name": "Featured collection"
       }
     },
     "slider_cards": {

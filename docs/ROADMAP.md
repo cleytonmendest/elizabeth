@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.24.0 | **Atualizado:** 2026-06-29
+**Versão:** 2.25.0 | **Atualizado:** 2026-06-29
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -29,7 +29,7 @@ Sistema completo de tradução PT-BR ↔ EN + Color Schemes para aprovação na 
 - ✅ `main-product.liquid` (PDP — i18n storefront + schema; 89 chaves de schema; snippets `sticky-add-to-cart`, `main-product-right` migrados)
 - ✅ `highlighted-section.liquid` (i18n schema + storefront; chave reutilizável `general.see_more`)
 - ✅ `slider-image.liquid` (hero — i18n schema 53 chaves + storefront; fallbacks via `general.see_more` e `sections.slider.image_alt`)
-- ✅ `slider-product.liquid` + `slider-cards.liquid` (i18n schema + aria-labels via `sections.slider.previous/next`)
+- ✅ `featured-collection.liquid` (ex-`slider-product`, agora grade⇄slider via `product-showcase`) + `slider-cards.liquid` (i18n schema + aria-labels via `sections.slider.previous/next`)
 - ✅ `highlighted-product.liquid` (i18n schema; removidos placeholders mortos `SKU`/`inventory`)
 - ✅ `section-images-link.liquid` (i18n schema)
 - ✅ `blog-posts.liquid` (i18n schema + storefront reusando `blog.general.view_all`/`no_posts`; `rounded-lg`→`rounded-theme`)
@@ -143,7 +143,9 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 
 ## ✅ CONCLUÍDO (Resumo)
 
-**v2.24.0 - Componente de produtos adaptável (grid⇄slider)** (2026-06-29) — Snippets `product-showcase` + `product-showcase-header`: exibição de produtos como **grade OU slider** à escolha do lojista, **sempre deslizável no mobile** (Swiper no slider; scroll com snap no grid, via `.no-scrollbar`). Aplicado a `product-recommendations` e `recently-viewed`, que ganharam **título + subtítulo + alinhamento** (esquerda/centro, como os sliders da Home), **colunas no desktop (máx. 4)** e quantidade em **múltiplos de 4 (4/8/12)** para a grade não quebrar. Slider manual redundante removido da PDP. Theme Check 0 offenses. **Possível evolução:** aplicar o mesmo componente ao `slider-product` (Home) e à grade de `main-collection`.
+**v2.24.0 - Componente de produtos adaptável (grid⇄slider)** (2026-06-29) — Snippets `product-showcase` + `product-showcase-header`: exibição de produtos como **grade OU slider** à escolha do lojista, **sempre deslizável no mobile** (Swiper no slider; scroll com snap no grid, via `.no-scrollbar`). Aplicado a `product-recommendations` e `recently-viewed`, que ganharam **título + subtítulo + alinhamento** (esquerda/centro, como os sliders da Home), **colunas no desktop (máx. 4)** e quantidade em **múltiplos de 4 (4/8/12)** para a grade não quebrar. Slider manual redundante removido da PDP. Theme Check 0 offenses.
+
+**v2.25.0 - `slider-product` → `featured-collection` (componente unificado)** (2026-06-29) — A section manual da Home (`slider-product`) foi **renomeada para `featured-collection`** e passou a usar os mesmos snippets `product-showcase`/`product-showcase-header` das seções automáticas — agora com grade⇄slider, alinhamento, colunas (máx. 4) e quantidade 4/8/12. Mesma exibição reutilizável; cada section só resolve **a fonte dos produtos** (manual = coleção do editor; auto = API do Shopify). `templates/index.json` e locales migrados; chaves `slider_product` removidas. `main-collection` permanece sempre grade (por design). Theme Check 0 offenses.
 
 **v2.23.0 - Features inspiradas no Impression** (2026-06-29) — 4 melhorias de merchandising/conversão, todas sem setup técnico do lojista e 100% i18n (PT/EN): **(1) Filtros nativos** — `main-collection` reescrita para `collection.filters` do Shopify (tamanho/cor/preço/tipo via app Search & Discovery), substituindo filtros hardcoded/não-funcionais; form GET com auto-submit no desktop + botão "Aplicar" no mobile, contadores, limpar, preço com decimal por moeda (BRL), estado "sem resultados". **(2) Recomendações na PDP** (`product-recommendations`) — API nativa de recommendations via custom element (fetch on-view), reusa o card. **(3) Vistos recentemente** (`recently-viewed`) — localStorage + Section Rendering API (busca `q=id:…`) reusando o card, registra na PDP. **(4) Shop the Look** (`lookbook`) — imagem editorial com hotspots de produto (blocos com product picker + posição x/y), mini-card via `<details>` acessível. Recs + Vistos adicionados ao `templates/product.json`. Theme Check 0 offenses.
 

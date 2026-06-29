@@ -2385,6 +2385,10 @@ label.not-swatch.is-unavailable {
   color: rgb(var(--color-foreground) / var(--tw-text-opacity));
 }
 
+.text-foreground\/20 {
+  color: rgb(var(--color-foreground) / 0.2);
+}
+
 .text-foreground\/25 {
   color: rgb(var(--color-foreground) / 0.25);
 }
