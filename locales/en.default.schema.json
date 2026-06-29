@@ -1553,11 +1553,42 @@
           "label": "Heading",
           "info": "Leave blank to use the default (\"You may also like\")"
         },
+        "subtitle": {
+          "label": "Subheading"
+        },
+        "text_alignment": {
+          "label": "Text alignment",
+          "options": {
+            "left": "Left",
+            "center": "Center"
+          }
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "desktop_layout": {
+          "label": "Desktop display",
+          "info": "Always swipeable on mobile",
+          "options": {
+            "slider": "Slider",
+            "grid": "Grid"
+          }
+        },
+        "columns": {
+          "label": "Columns on desktop (max. 4)"
+        },
         "products_to_show": {
-          "label": "Maximum products"
+          "label": "Maximum products",
+          "info": "Multiples of 4 (4, 8 or 12) so the grid stays even"
+        },
+        "card_header": {
+          "content": "Product card"
         },
         "show_second_image": {
           "label": "Show second image on hover"
+        },
+        "show_quick_add": {
+          "label": "Show quick add button"
         },
         "show_installments": {
           "label": "Show installment option"
@@ -1577,11 +1608,42 @@
           "label": "Heading",
           "info": "Leave blank to use the default (\"Recently viewed\")"
         },
+        "subtitle": {
+          "label": "Subheading"
+        },
+        "text_alignment": {
+          "label": "Text alignment",
+          "options": {
+            "left": "Left",
+            "center": "Center"
+          }
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "desktop_layout": {
+          "label": "Desktop display",
+          "info": "Always swipeable on mobile",
+          "options": {
+            "slider": "Slider",
+            "grid": "Grid"
+          }
+        },
+        "columns": {
+          "label": "Columns on desktop (max. 4)"
+        },
         "products_to_show": {
-          "label": "Maximum products"
+          "label": "Maximum products",
+          "info": "Multiples of 4 (4, 8 or 12) so the grid stays even"
+        },
+        "card_header": {
+          "content": "Product card"
         },
         "show_second_image": {
           "label": "Show second image on hover"
+        },
+        "show_quick_add": {
+          "label": "Show quick add button"
         },
         "show_installments": {
           "label": "Show installment option"

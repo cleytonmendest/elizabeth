@@ -2,6 +2,7 @@
   Produtos vistos recentemente — via localStorage (sem setup do lojista).
   Na PDP registra o produto atual; para exibir, o <recently-viewed> busca os cards
   pela Section Rendering API (busca nativa q=id:…), reutilizando o card Liquid.
+  Exibição adaptável (grid ou slider) via snippet product-showcase.
 {%- endcomment -%}
 
 {%- liquid
@@ -9,8 +10,11 @@
   if heading == blank
     assign heading = 'product.recently_viewed.title' | t
   endif
-  assign limit = section.settings.products_to_show | default: 4
-  assign cols = limit | at_most: 5 | at_least: 2
+  assign limit = section.settings.products_to_show | default: 8
+  assign show_nav = false
+  if section.settings.desktop_layout == 'slider'
+    assign show_nav = true
+  endif
 
   assign rv_count = 0
   if search.performed
@@ -32,23 +36,25 @@
   {%- if search.performed and rv_count > 0 -%}
     <div class="color-{{ section.settings.color_scheme }} color-background color-text">
       <div class="page-width !py-12 lg:!py-16">
-        {%- if heading != blank -%}
-          <h2 class="text-2xl md:text-3xl font-light tracking-tight text-center mb-8 lg:mb-10">{{ heading }}</h2>
-        {%- endif -%}
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-{{ cols }} gap-4 md:gap-6">
-          {%- for item in search.results -%}
-            {%- if item.object_type == 'product' -%}
-              {%- render 'card-product-slider',
-                card_product: item,
-                show_second_image: section.settings.show_second_image,
-                show_badges: true,
-                show_installments: section.settings.show_installments,
-                lazy_load: true,
-                remove_padding: true
-              -%}
-            {%- endif -%}
-          {%- endfor -%}
-        </div>
+        {% render 'product-showcase-header',
+          heading: heading,
+          subtitle: section.settings.subtitle,
+          alignment: section.settings.text_alignment,
+          show_nav: show_nav,
+          section_id: section.id
+        %}
+        {%- assign rv_products = search.results | where: 'object_type', 'product' -%}
+        {% render 'product-showcase',
+          products: rv_products,
+          products_count: rv_count,
+          layout: section.settings.desktop_layout,
+          columns: section.settings.columns,
+          section_id: section.id,
+          limit: limit,
+          show_second_image: section.settings.show_second_image,
+          show_installments: section.settings.show_installments,
+          show_quick_add: section.settings.show_quick_add
+        %}
       </div>
     </div>
   {%- endif -%}
@@ -75,18 +81,68 @@
       "info": "t:sections.recently_viewed.settings.heading.info"
     },
     {
+      "type": "text",
+      "id": "subtitle",
+      "label": "t:sections.recently_viewed.settings.subtitle.label"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:sections.recently_viewed.settings.text_alignment.label",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "t:sections.recently_viewed.settings.text_alignment.options.left" },
+        { "value": "center", "label": "t:sections.recently_viewed.settings.text_alignment.options.center" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.recently_viewed.settings.layout_header.content"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "t:sections.recently_viewed.settings.desktop_layout.label",
+      "info": "t:sections.recently_viewed.settings.desktop_layout.info",
+      "default": "slider",
+      "options": [
+        { "value": "slider", "label": "t:sections.recently_viewed.settings.desktop_layout.options.slider" },
+        { "value": "grid", "label": "t:sections.recently_viewed.settings.desktop_layout.options.grid" }
+      ]
+    },
+    {
       "type": "range",
-      "id": "products_to_show",
+      "id": "columns",
       "min": 2,
-      "max": 10,
+      "max": 4,
       "step": 1,
       "default": 4,
-      "label": "t:sections.recently_viewed.settings.products_to_show.label"
+      "label": "t:sections.recently_viewed.settings.columns.label"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 12,
+      "step": 4,
+      "default": 8,
+      "label": "t:sections.recently_viewed.settings.products_to_show.label",
+      "info": "t:sections.recently_viewed.settings.products_to_show.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.recently_viewed.settings.card_header.content"
     },
     {
       "type": "checkbox",
       "id": "show_second_image",
       "label": "t:sections.recently_viewed.settings.show_second_image.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_add",
+      "label": "t:sections.recently_viewed.settings.show_quick_add.label",
       "default": true
     },
     {

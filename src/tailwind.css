@@ -33,3 +33,14 @@
         text-decoration: line-through;
     }
 }
+
+@layer utilities {
+    /* Esconde a barra de rolagem (usado no modo "grid" deslizável no mobile) */
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+}

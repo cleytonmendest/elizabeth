@@ -1,0 +1,71 @@
+{%- comment -%}
+  product-showcase — renderiza uma lista de produtos como GRID ou SLIDER, à escolha
+  do lojista. No mobile é SEMPRE deslizável (Swiper no modo slider; scroll com snap
+  no modo grid), para não obrigar o usuário a um scroll vertical longo.
+
+  Componente adaptável reaproveitado por recomendações, vistos recentemente, etc.
+
+  Params:
+    products         (array de produtos)   — obrigatório
+    products_count   (int)                 — total p/ o slider (data-items)
+    layout           ('grid' | 'slider')   — comportamento no desktop (default 'slider')
+    columns          (int 2–4)             — colunas no desktop / itens por tela no slider
+    section_id       (string)              — para a navegação do slider
+    limit            (int)                 — opcional, limita a quantidade
+    show_second_image, show_installments, show_quick_add (bool)
+{%- endcomment -%}
+
+{%- liquid
+  assign layout = layout | default: 'slider'
+  assign columns = columns | default: 4
+  if columns > 4
+    assign columns = 4
+  endif
+  assign cols_tab = columns | at_most: 3
+-%}
+
+{%- if layout == 'grid' -%}
+  <div class="ps-grid flex gap-4 md:gap-5 overflow-x-auto snap-x snap-mandatory pb-3 no-scrollbar lg:grid lg:grid-cols-{{ columns }} lg:gap-6 lg:overflow-visible lg:pb-0 lg:snap-none">
+    {%- for product in products limit: limit -%}
+      <div class="snap-start shrink-0 basis-[72%] sm:basis-[42%] lg:basis-auto">
+        {% render 'card-product-slider',
+          card_product: product,
+          show_second_image: show_second_image,
+          show_badges: true,
+          show_installments: show_installments,
+          show_quick_add: show_quick_add,
+          lazy_load: true,
+          remove_padding: true
+        %}
+      </div>
+    {%- endfor -%}
+  </div>
+{%- else -%}
+  <my-slider
+    class="block w-full relative"
+    data-section-id="{{ section_id }}"
+    data-loop="true"
+    data-items="{{ products_count }}"
+    data-qty-desk="{{ columns }}"
+    data-qty-tab="{{ cols_tab }}"
+    data-qty-mob="1"
+    data-peek="true"
+    data-dot="false"
+  >
+    <div class="my-slider__container overflow-hidden">
+      {%- for product in products limit: limit -%}
+        <div class="carousel-item">
+          {% render 'card-product-slider',
+            card_product: product,
+            show_second_image: show_second_image,
+            show_badges: true,
+            show_installments: show_installments,
+            show_quick_add: show_quick_add,
+            lazy_load: true,
+            remove_padding: true
+          %}
+        </div>
+      {%- endfor -%}
+    </div>
+  </my-slider>
+{%- endif -%}

@@ -1553,11 +1553,42 @@
           "label": "Título",
           "info": "Deixe em branco para usar o padrão (\"Você também pode gostar\")"
         },
+        "subtitle": {
+          "label": "Subtítulo"
+        },
+        "text_alignment": {
+          "label": "Alinhamento do texto",
+          "options": {
+            "left": "Esquerda",
+            "center": "Centro"
+          }
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "desktop_layout": {
+          "label": "Exibição no desktop",
+          "info": "No celular é sempre deslizável",
+          "options": {
+            "slider": "Slider",
+            "grid": "Grade"
+          }
+        },
+        "columns": {
+          "label": "Colunas no desktop (máx. 4)"
+        },
         "products_to_show": {
-          "label": "Máximo de produtos"
+          "label": "Máximo de produtos",
+          "info": "Múltiplos de 4 (4, 8 ou 12) para a grade não quebrar"
+        },
+        "card_header": {
+          "content": "Card de produto"
         },
         "show_second_image": {
           "label": "Mostrar segunda imagem ao passar o mouse"
+        },
+        "show_quick_add": {
+          "label": "Mostrar botão de compra rápida"
         },
         "show_installments": {
           "label": "Mostrar opção de parcelamento"
@@ -1577,11 +1608,42 @@
           "label": "Título",
           "info": "Deixe em branco para usar o padrão (\"Vistos recentemente\")"
         },
+        "subtitle": {
+          "label": "Subtítulo"
+        },
+        "text_alignment": {
+          "label": "Alinhamento do texto",
+          "options": {
+            "left": "Esquerda",
+            "center": "Centro"
+          }
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "desktop_layout": {
+          "label": "Exibição no desktop",
+          "info": "No celular é sempre deslizável",
+          "options": {
+            "slider": "Slider",
+            "grid": "Grade"
+          }
+        },
+        "columns": {
+          "label": "Colunas no desktop (máx. 4)"
+        },
         "products_to_show": {
-          "label": "Máximo de produtos"
+          "label": "Máximo de produtos",
+          "info": "Múltiplos de 4 (4, 8 ou 12) para a grade não quebrar"
+        },
+        "card_header": {
+          "content": "Card de produto"
         },
         "show_second_image": {
           "label": "Mostrar segunda imagem ao passar o mouse"
+        },
+        "show_quick_add": {
+          "label": "Mostrar botão de compra rápida"
         },
         "show_installments": {
           "label": "Mostrar opção de parcelamento"
