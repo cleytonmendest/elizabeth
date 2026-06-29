@@ -21,6 +21,7 @@
     "social_facebook_link": "https://facebook.com.br",
     "social_instagram_link": "https://instagram.com.br",
     "social_youtube_link": "https://www.youtube.com.br",
+    "cart_free_shipping_threshold": 600,
     "content_for_index": [],
     "color_schemes": {
       "scheme-1": {

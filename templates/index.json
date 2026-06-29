@@ -145,9 +145,7 @@
         "text_PhyGYF",
         "image_z4KWVE"
       ],
-      "settings": {
-        "url": "shopify://collections"
-      }
+      "settings": {}
     },
     "slider_cards_6ciA3G": {
       "type": "slider-cards",
@@ -279,9 +277,7 @@
         "image_yC3UPt",
         "text_PwNqGA"
       ],
-      "settings": {
-        "url": "shopify://pages/contact"
-      }
+      "settings": {}
     },
     "testimonials_PRGmmP": {
       "type": "testimonials",
