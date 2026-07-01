@@ -22,6 +22,7 @@
       "previous": "Anterior",
       "next": "Próximo",
       "loading": "Carregando",
+      "back_to_top": "Voltar ao topo",
       "link_messages": {
         "new_window": "Abre em uma nova janela"
       }

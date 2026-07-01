@@ -214,6 +214,13 @@
         "unit": "px",
         "label": "Espaçamento entre Seções",
         "default": 0
+      },
+      {
+        "type": "checkbox",
+        "id": "show_back_to_top",
+        "label": "Botão \"Voltar ao topo\"",
+        "info": "Exibe um botão flutuante que retorna ao topo da página ao rolar.",
+        "default": true
       }
     ]
   },

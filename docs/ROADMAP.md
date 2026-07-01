@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.26.0 | **Atualizado:** 2026-06-29
+**Versão:** 2.27.0 | **Atualizado:** 2026-06-30
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -142,6 +142,8 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.27.0 - Back-to-top + Swatch filters** (2026-06-30) — Duas lacunas do Impression fechadas. **(1) Back-to-top:** snippet co-locado `back-to-top.liquid` (+ ícone `icon-angle-up`) renderizado global em `theme.liquid`, gated pelo novo setting `settings.show_back_to_top` (grupo Layout, default on). Botão flutuante circular (`color-button`), aparece após 400px de scroll, `scrollTo` smooth com respeito a `prefers-reduced-motion`; aria-label i18n (`general.accessibility.back_to_top`, PT/EN). **(2) Swatch filters:** `main-collection` agora detecta `filter.presentation == 'swatch'` e renderiza os valores como bolinhas de cor/imagem (via `value.swatch.color`/`.image` do Search & Discovery) com estado checked/focus por `peer` + ring tokenizado; fallback para checkboxes quando não é swatch. A11y: label com `title` + `sr-only`. Tailwind rebuildado, Theme Check **0 offenses**.
 
 **v2.26.0 - Section Countdown Timer** (2026-06-29) — Nova section `countdown-timer` (contagem regressiva para urgência/escassez), nascida 100% i18n (PT/EN), color scheme e tokens. **2 modos:** data/hora fixa (mês/dia/hora/minuto via selects + ano em campo numérico, sem teto) e **diária recorrente** (reseta no horário escolhido). Alvo ancorado no **fuso da loja** via `{{ 'now' | date: '%z' }}` → epoch em `data-*`, tick client-side no Web Component `<countdown-timer>` (`assets/countdown-timer.js`, co-locado com `defer`). **Ao zerar (modo fixo) esconde a seção** (server-side via `request.design_mode` p/ evitar flash + JS; nunca esconde no editor). Customização: `show_days` (contagens curtas), `digit_style` (caixas/simples), alinhamento, largura total, eyebrow/título/texto, **imagem de fundo opcional** com scrim (padrão do `image-banner`) e **CTA único** com dropdown de estilo. A11y: `role="timer"` + `aria-live="off"`. Edge cases tratados (data passada/inválida/incompleta, diário sem horário). Tailwind rebuildado, Theme Check **0 offenses** (130 arquivos).
 

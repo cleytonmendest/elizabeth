@@ -186,6 +186,10 @@
 
     {% sections 'footer-group' %}
 
+    {%- if settings.show_back_to_top -%}
+      {% render 'back-to-top' %}
+    {%- endif -%}
+
     <!-- JS Imports -->
     <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
     <script src="{{ 'carousel-manager.js' | asset_url }}" defer></script>

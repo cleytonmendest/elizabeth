@@ -22,6 +22,7 @@
       "previous": "Previous",
       "next": "Next",
       "loading": "Loading",
+      "back_to_top": "Back to top",
       "link_messages": {
         "new_window": "Opens in a new window"
       }

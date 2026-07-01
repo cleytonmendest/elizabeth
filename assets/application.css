@@ -735,6 +735,10 @@ label.not-swatch.is-unavailable {
   right: 1rem;
 }
 
+.right-6 {
+  right: 1.5rem;
+}
+
 .top-0 {
   top: 0px;
 }
@@ -1935,6 +1939,14 @@ label.not-swatch.is-unavailable {
   --tw-bg-opacity: 0.9;
 }
 
+.bg-cover {
+  background-size: cover;
+}
+
+.bg-center {
+  background-position: center;
+}
+
 .object-contain {
   -o-object-fit: contain;
      object-fit: contain;
@@ -2866,6 +2878,24 @@ label.not-swatch.is-unavailable {
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
 }
 
+.focus-visible\:ring-2:focus-visible {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus-visible\:ring-foreground\/40:focus-visible {
+  --tw-ring-color: rgb(var(--color-foreground) / 0.4);
+}
+
+.focus-visible\:ring-offset-2:focus-visible {
+  --tw-ring-offset-width: 2px;
+}
+
+.focus-visible\:ring-offset-background:focus-visible {
+  --tw-ring-offset-color: rgb(var(--color-background) / 1);
+}
+
 .active\:scale-\[0\.97\]:active {
   --tw-scale-x: 0.97;
   --tw-scale-y: 0.97;
@@ -2973,6 +3003,12 @@ label.not-swatch.is-unavailable {
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
 }
 
+.peer:checked ~ .peer-checked\:ring-2 {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
 .peer:checked ~ .peer-checked\:ring-foreground {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(var(--color-foreground) / var(--tw-ring-opacity));
@@ -2980,6 +3016,32 @@ label.not-swatch.is-unavailable {
 
 .peer:checked ~ .peer-checked\:ring-offset-1 {
   --tw-ring-offset-width: 1px;
+}
+
+.peer:checked ~ .peer-checked\:ring-offset-2 {
+  --tw-ring-offset-width: 2px;
+}
+
+.peer:checked ~ .peer-checked\:ring-offset-background {
+  --tw-ring-offset-color: rgb(var(--color-background) / 1);
+}
+
+.peer:focus-visible ~ .peer-focus-visible\:ring-2 {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.peer:focus-visible ~ .peer-focus-visible\:ring-foreground\/40 {
+  --tw-ring-color: rgb(var(--color-foreground) / 0.4);
+}
+
+.peer:focus-visible ~ .peer-focus-visible\:ring-offset-2 {
+  --tw-ring-offset-width: 2px;
+}
+
+.peer:focus-visible ~ .peer-focus-visible\:ring-offset-background {
+  --tw-ring-offset-color: rgb(var(--color-background) / 1);
 }
 
 @media not all and (min-width: 1024px) {
