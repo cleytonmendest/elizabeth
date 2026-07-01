@@ -68,7 +68,7 @@ Lighthouse Accessibility Score > 90 (requisito Theme Store). De 82/79 → **93/9
 
 Lighthouse Performance > 50 mobile (requisito mínimo).
 - ⏳ Lazy loading completo
-- ⏳ CSS/JS minificados para produção
+- 🟡 CSS minificado via `npm run build` (`--minify`); JS ainda não minificado
 - ⏳ WebP + srcset otimizado
 - ⏳ TailwindCSS tree-shaking configurado
 - ⏳ Lighthouse audit completo
