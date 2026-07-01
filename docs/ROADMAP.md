@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.27.0 | **Atualizado:** 2026-06-30
+**Versão:** 2.28.0 | **Atualizado:** 2026-07-01
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -142,6 +142,8 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.28.0 - Cart notes (observações do pedido)** (2026-07-01) — Lacuna do Impression fechada. Campo de observações no carrinho (`templates/cart.liquid`) e no mini-carrinho (`cart-drawer`), gated pelo novo setting global `settings.cart_notes` (grupo Carrinho, default on). Na página, `<textarea name="note">` dentro do form de checkout → **funciona sem JS** (submit nativo). Persistência via AJAX (`/cart/update.js`) no `cart-extras.js` (**sem tocar no `cart.js`**): salva ao digitar (debounce 500ms) + no blur, sincroniza os dois textareas e faz **flush antes do checkout do drawer** (que é link, não form). i18n `cart.general.note`/`note_placeholder` (PT/EN). Theme Check **0 offenses** (132 arquivos).
 
 **v2.27.0 - Back-to-top + Swatch filters** (2026-06-30) — Duas lacunas do Impression fechadas. **(1) Back-to-top:** snippet co-locado `back-to-top.liquid` (+ ícone `icon-angle-up`) renderizado global em `theme.liquid`, gated pelo novo setting `settings.show_back_to_top` (grupo Layout, default on). Botão flutuante circular (`color-button`), aparece após 400px de scroll, `scrollTo` smooth com respeito a `prefers-reduced-motion`; aria-label i18n (`general.accessibility.back_to_top`, PT/EN). **(2) Swatch filters:** `main-collection` agora detecta `filter.presentation == 'swatch'` e renderiza os valores como bolinhas de cor/imagem (via `value.swatch.color`/`.image` do Search & Discovery) com estado checked/focus por `peer` + ring tokenizado; fallback para checkboxes quando não é swatch. A11y: label com `title` + `sr-only`. Tailwind rebuildado, Theme Check **0 offenses**.
 

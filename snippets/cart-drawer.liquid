@@ -65,6 +65,23 @@
               </div>
             </div>
           </div>
+          {%- if settings.cart_notes -%}
+            <details class="cart-note mb-4"{% if cart.note != blank %} open{% endif %}>
+              <summary class="flex cursor-pointer list-none items-center justify-between py-1 text-xs uppercase tracking-[0.18em] text-foreground/60 hover:text-foreground transition-colors">
+                <span>{{ 'cart.general.note' | t }}</span>
+                <span class="cart-note-chevron shrink-0 opacity-60 transition-transform">
+                  {% render 'icon-angle-down', size: 16 %}
+                </span>
+              </summary>
+              <textarea
+                id="CartDrawerNote"
+                data-cart-note
+                rows="2"
+                placeholder="{{ 'cart.general.note_placeholder' | t | escape }}"
+                class="mt-2 w-full border border-border rounded-theme px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-foreground/40 resize-none"
+              >{{ cart.note }}</textarea>
+            </details>
+          {%- endif -%}
           <button
             class="color-button-secondary w-full h-11 flex items-center justify-center text-xs uppercase tracking-[0.18em] transition-colors rounded-theme"
             type="button"
@@ -74,6 +91,7 @@
           </button>
           <a
             href="/checkout"
+            data-cart-checkout
             class="color-button flex cursor-pointer h-11 w-full items-center justify-center mt-3 text-xs uppercase tracking-[0.18em] transition-opacity rounded-theme hover:opacity-90"
             >{{ 'cart.general.checkout' | t }}</a
           >

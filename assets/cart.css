@@ -3,6 +3,10 @@ cart-drawer.cart-drawer{
     transition: all .3s ease-in-out;
 }
 
+/* Acordeão de observações do pedido */
+.cart-note > summary::-webkit-details-marker { display: none; }
+.cart-note[open] .cart-note-chevron { transform: rotate(180deg); }
+
 cart-drawer.cart-drawer.active{
     visibility: visible;
 }

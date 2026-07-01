@@ -124,7 +124,9 @@
       "quantity": "Quantidade",
       "item_added": "Item adicionado ao carrinho",
       "order_summary": "Resumo",
-      "taxes_shipping_checkout": "Impostos e frete calculados no checkout"
+      "taxes_shipping_checkout": "Impostos e frete calculados no checkout",
+      "note": "Observações do pedido",
+      "note_placeholder": "Alguma instrução especial para a entrega?"
     },
     "label": {
       "product": "Produto",

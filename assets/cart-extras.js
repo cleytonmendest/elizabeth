@@ -108,9 +108,63 @@
     drawer.setAttribute('aria-hidden', drawer.classList.contains('active') ? 'false' : 'true');
   }
 
+  // ---- Observações do pedido (cart notes) -----------------------------------
+  // Salva a nota via /cart/update.js. Na página do carrinho o <textarea name="note">
+  // também é enviado no submit nativo do form; aqui garantimos persistência ao
+  // digitar e antes do checkout do drawer (que é um link, sem form).
+  function initCartNotes() {
+    const notes = document.querySelectorAll('[data-cart-note]');
+    if (!notes.length || !window.routes || !window.routes.cart_update_url) return;
+
+    let lastSaved = notes[0].value;
+    let pending = null;
+
+    const save = (value) => {
+      lastSaved = value;
+      return fetch(`${window.routes.cart_update_url}.js`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ note: value }),
+      }).catch((e) => console.error('Erro ao salvar observações do pedido:', e));
+    };
+
+    const syncOthers = (source) => {
+      notes.forEach((n) => { if (n !== source) n.value = source.value; });
+    };
+
+    notes.forEach((note) => {
+      note.addEventListener('input', () => {
+        syncOthers(note);
+        clearTimeout(pending);
+        const value = note.value;
+        pending = setTimeout(() => save(value), 500);
+      });
+      note.addEventListener('blur', () => {
+        clearTimeout(pending);
+        if (note.value !== lastSaved) save(note.value);
+      });
+    });
+
+    // Drawer: garante a gravação antes de navegar ao checkout.
+    document.querySelectorAll('[data-cart-checkout]').forEach((link) => {
+      link.addEventListener('click', async (e) => {
+        const note = document.querySelector('[data-cart-note]');
+        if (!note || note.value === lastSaved) return;
+        e.preventDefault();
+        clearTimeout(pending);
+        await save(note.value);
+        window.location.href = link.getAttribute('href');
+      });
+    });
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', enhanceDrawerA11y);
+    document.addEventListener('DOMContentLoaded', () => {
+      enhanceDrawerA11y();
+      initCartNotes();
+    });
   } else {
     enhanceDrawerA11y();
+    initCartNotes();
   }
 })();

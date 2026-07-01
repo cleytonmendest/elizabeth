@@ -380,6 +380,17 @@
         "id": "cart_free_shipping_success",
         "label": "Mensagem ao atingir o frete grátis",
         "default": "Você ganhou frete grátis!"
+      },
+      {
+        "type": "header",
+        "content": "Observações do pedido"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_notes",
+        "label": "Permitir observações do cliente",
+        "info": "Exibe um campo de observações no carrinho e no mini-carrinho.",
+        "default": true
       }
     ]
   }
