@@ -300,7 +300,10 @@
         </div>
 
         {%- if collection.products.size > 0 -%}
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-{{ section.settings.products_per_row }} gap-4 md:gap-6">
+          <div
+            data-product-grid
+            class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-{{ section.settings.products_per_row }} gap-4 md:gap-6"
+          >
             {%- for product in collection.products -%}
               {%- render 'card-product-slider',
                 card_product: product,
@@ -315,7 +318,22 @@
 
           {%- if paginate.pages > 1 -%}
             <div class="mt-12">
-              {%- render 'pagination', paginate: paginate -%}
+              {%- if section.settings.enable_load_more and paginate.next -%}
+                {%- comment -%} Botão "Carregar mais" (JS o revela e esconde a paginação numerada abaixo) {%- endcomment -%}
+                <div data-load-more-wrap class="hidden text-center mb-8">
+                  <button
+                    type="button"
+                    data-load-more
+                    data-next-url="{{ paginate.next.url }}"
+                    class="inline-flex items-center justify-center border border-border rounded-theme px-8 py-3.5 text-xs uppercase tracking-[0.18em] text-foreground/80 hover:border-foreground/30 transition-colors disabled:opacity-50 disabled:cursor-wait"
+                  >
+                    {{ 'collection.general.load_more' | t }}
+                  </button>
+                </div>
+              {%- endif -%}
+              <div data-pagination>
+                {%- render 'pagination', paginate: paginate -%}
+              </div>
             </div>
           {%- endif -%}
         {%- else -%}
@@ -396,6 +414,50 @@
       a11yRefreshMessage.setAttribute('aria-live', 'polite');
       a11yRefreshMessage.textContent = {{ 'collection.general.sort_reloaded' | t | json }};
       document.body.appendChild(a11yRefreshMessage);
+    }
+
+    // "Carregar mais" via Section Rendering API. Progressive enhancement:
+    // sem JS, a paginação numerada (fallback) continua funcionando.
+    const loadMoreWrap = root.querySelector('[data-load-more-wrap]');
+    const grid = root.querySelector('[data-product-grid]');
+    if (loadMoreWrap && grid) {
+      const btn = loadMoreWrap.querySelector('[data-load-more]');
+      const paginationWrap = root.querySelector('[data-pagination]');
+      const defaultText = btn.textContent.trim();
+      const loadingText = {{ 'general.accessibility.loading' | t | json }};
+
+      loadMoreWrap.classList.remove('hidden');
+      if (paginationWrap) paginationWrap.classList.add('hidden');
+
+      btn.addEventListener('click', async () => {
+        const url = btn.dataset.nextUrl;
+        if (!url) return;
+        btn.disabled = true;
+        btn.textContent = loadingText;
+        try {
+          const sep = url.indexOf('?') === -1 ? '?' : '&';
+          const res = await fetch(url + sep + 'section_id={{ section.id }}');
+          const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+
+          const newGrid = doc.querySelector('[data-product-grid]');
+          if (newGrid) {
+            while (newGrid.firstElementChild) grid.appendChild(newGrid.firstElementChild);
+          }
+
+          const nextBtn = doc.querySelector('[data-load-more]');
+          if (nextBtn && nextBtn.dataset.nextUrl) {
+            btn.dataset.nextUrl = nextBtn.dataset.nextUrl;
+            btn.disabled = false;
+            btn.textContent = defaultText;
+          } else {
+            loadMoreWrap.remove(); // última página
+          }
+        } catch (e) {
+          console.error('Erro ao carregar mais produtos:', e);
+          btn.disabled = false;
+          btn.textContent = defaultText;
+        }
+      });
     }
   })();
 </script>
@@ -478,6 +540,13 @@
       "type": "checkbox",
       "id": "enable_sorting",
       "label": "t:sections.main_collection.settings.enable_sorting.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_load_more",
+      "label": "t:sections.main_collection.settings.enable_load_more.label",
+      "info": "t:sections.main_collection.settings.enable_load_more.info",
       "default": true
     },
     {

@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.28.0 | **Atualizado:** 2026-07-01
+**Versão:** 2.29.0 | **Atualizado:** 2026-07-01
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -144,6 +144,8 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.29.0 - "Carregar mais" na coleção** (2026-07-01) — Lacuna do Impression fechada. `main-collection` ganhou botão "Carregar mais" via **Section Rendering API** (`?section_id=`): busca a próxima página, faz append dos cards no grid (`[data-product-grid]`) e encadeia o próximo URL a partir do HTML retornado; some na última página. **Progressive enhancement** — o botão nasce `hidden` e o JS o revela escondendo a paginação numerada; **sem JS, a paginação numerada (fallback) continua funcionando**. Gated pelo novo setting `enable_load_more` (default on, i18n schema PT/EN). Estado de loading reusa `general.accessibility.loading`; nova chave `collection.general.load_more`. Preserva filtros/ordenação (o next URL já os carrega). Theme Check **0 offenses** (132 arquivos).
 
 **v2.28.0 - Cart notes (observações do pedido)** (2026-07-01) — Lacuna do Impression fechada. Campo de observações no carrinho (`templates/cart.liquid`) e no mini-carrinho (`cart-drawer`), gated pelo novo setting global `settings.cart_notes` (grupo Carrinho, default on). Na página, `<textarea name="note">` dentro do form de checkout → **funciona sem JS** (submit nativo). Persistência via AJAX (`/cart/update.js`) no `cart-extras.js` (**sem tocar no `cart.js`**): salva ao digitar (debounce 500ms) + no blur, sincroniza os dois textareas e faz **flush antes do checkout do drawer** (que é link, não form). i18n `cart.general.note`/`note_placeholder` (PT/EN). Theme Check **0 offenses** (132 arquivos).
 

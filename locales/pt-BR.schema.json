@@ -65,6 +65,10 @@
         "enable_sorting": {
           "label": "Ativar ordenação"
         },
+        "enable_load_more": {
+          "label": "Botão \"Carregar mais\"",
+          "info": "Substitui a paginação numerada por um botão que carrega mais produtos na mesma página. Sem JavaScript, a paginação numerada continua funcionando."
+        },
         "product_header": {
           "content": "Produto"
         },

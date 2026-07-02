@@ -205,6 +205,7 @@
       "no_results": "No results",
       "no_results_text": "No products match the selected filters.",
       "view_all_collections": "View all collections",
+      "load_more": "Load more",
       "sort_reloaded": "Sorting has changed. The page will reload.",
       "results_showing": {
         "one": "{{ first }}-{{ last }} of {{ count }} product",

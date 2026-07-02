@@ -205,6 +205,7 @@
       "no_results": "Nenhum resultado",
       "no_results_text": "Nenhum produto corresponde aos filtros selecionados.",
       "view_all_collections": "Ver todas as coleções",
+      "load_more": "Carregar mais",
       "sort_reloaded": "A ordenação foi alterada. A página será recarregada.",
       "results_showing": {
         "one": "{{ first }}-{{ last }} de {{ count }} produto",
