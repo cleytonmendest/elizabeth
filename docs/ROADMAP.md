@@ -85,6 +85,8 @@ README para lojistas (não desenvolvedores).
 - ⏳ Screenshots (5-7 high-res 1920x1080)
 - ⏳ Demo video opcional (2-3 min)
 
+> **Processo de submissão à Theme Store** (loja demo, imagens, presets, envio): checklist em `docs/THEME_STORE_SUBMISSION.md`.
+
 ---
 
 ### 5. Code Quality (Theme Check)
