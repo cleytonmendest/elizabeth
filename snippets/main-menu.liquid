@@ -3,23 +3,90 @@
   <div class="menu-desk hidden lg:flex lg:justify-around lg:w-full">
     {% for link in linklist.links %}
       {% if link.links.size > 0 %}
-        <div class="relative flex justify-center items-center h-full group/menu">
+        {%- comment -%} Procura um bloco de imagem promocional casado com o título deste item {%- endcomment -%}
+        {%- liquid
+          assign promo = null
+          assign link_title = link.title | strip | downcase
+          for block in promo_blocks
+            if block.type != 'menu_promo' or block.settings.image == blank
+              continue
+            endif
+            assign promo_target = block.settings.menu_item | strip | downcase
+            if promo_target == link_title
+              assign promo = block
+              break
+            endif
+          endfor
+        -%}
+        <div class="static flex justify-center items-center h-full group/menu">
           <a
             href="{{ link.url }}"
-            class="color-text transition-colors text-sm flex items-center"
+            class="color-text transition-colors text-sm flex items-center gap-1"
             aria-haspopup="true"
           >
             {{ link.title }}
+            <span class="transition-transform duration-300 group-hover/menu:rotate-180">
+              {% render 'icon-angle-down', size: 12 %}
+            </span>
           </a>
-          <ul class="color-background color-shadow rounded-lg transition-all duration-300 min-w-52 absolute p-3 -translate-y-full top-full pointer-events-none opacity-0 group-hover/menu:opacity-100 group-hover/menu:translate-y-0 group-hover/menu:pointer-events-auto group-focus-within/menu:opacity-100 group-focus-within/menu:translate-y-0 group-focus-within/menu:pointer-events-auto">
-            {% for sublink in link.links %}
-              <li class="py-1">
-                <a class="color-text text-sm" href="{{ sublink.url }}">
-                  {{ sublink.title }}
+
+          {%- comment -%} Painel mega menu: full-width, ancorado ao #main-header-container (relative) {%- endcomment -%}
+          <div class="mega-panel color-background border-t border-border absolute left-0 top-full w-full z-40 transition-all duration-300 opacity-0 -translate-y-2 pointer-events-none shadow-[0_10px_20px_-8px_rgb(var(--color-shadow)/0.15)] group-hover/menu:opacity-100 group-hover/menu:translate-y-0 group-hover/menu:pointer-events-auto group-focus-within/menu:opacity-100 group-focus-within/menu:translate-y-0 group-focus-within/menu:pointer-events-auto">
+            <div class="page-width py-8 flex gap-10 justify-between">
+              <div class="flex flex-wrap gap-x-12 gap-y-6 flex-1">
+                {% for sublink in link.links %}
+                  <div class="min-w-[150px]">
+                    <a
+                      href="{{ sublink.url }}"
+                      class="color-text block text-sm font-medium tracking-wide mb-3 hover:opacity-70 transition-opacity"
+                    >
+                      {{ sublink.title }}
+                    </a>
+                    {% if sublink.links.size > 0 %}
+                      <ul class="flex flex-col gap-2">
+                        {% for third in sublink.links %}
+                          <li>
+                            <a
+                              href="{{ third.url }}"
+                              class="text-foreground/60 hover:text-foreground text-sm transition-colors"
+                            >
+                              {{ third.title }}
+                            </a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+
+              {% if promo %}
+                <a
+                  href="{{ promo.settings.link | default: link.url }}"
+                  class="mega-promo shrink-0 w-64 group/promo"
+                  {{ promo.shopify_attributes }}
+                >
+                  <div class="rounded-theme overflow-hidden bg-foreground/5 aspect-[4/5]">
+                    {{
+                      promo.settings.image
+                      | image_url: width: 600
+                      | image_tag:
+                        loading: 'lazy',
+                        widths: '300, 600',
+                        class: 'w-full h-full object-cover transition-transform duration-500 group-hover/promo:scale-105',
+                        alt: promo.settings.heading
+                    }}
+                  </div>
+                  {% if promo.settings.heading != blank %}
+                    <span class="color-text block text-sm mt-3 tracking-wide uppercase">
+                      {{ promo.settings.heading }}
+                      <span aria-hidden="true">&rarr;</span>
+                    </span>
+                  {% endif %}
                 </a>
-              </li>
-            {% endfor %}
-          </ul>
+              {% endif %}
+            </div>
+          </div>
         </div>
       {% else %}
         <a
@@ -80,9 +147,20 @@
               <ul class="submenu overflow-hidden transition-all duration-300 ml-4" style="height: 0;" aria-hidden="true">
                 {% for sublink in link.links %}
                   <li class="py-1">
-                    <a href="{{ sublink.url }}" class="color-text text-sm block h-8">
+                    <a href="{{ sublink.url }}" class="color-text text-sm block h-8 flex items-center {% if sublink.links.size > 0 %}font-medium{% endif %}">
                       {{ sublink.title }}
                     </a>
+                    {% if sublink.links.size > 0 %}
+                      <ul class="ml-3 flex flex-col border-l border-border pl-3">
+                        {% for third in sublink.links %}
+                          <li>
+                            <a href="{{ third.url }}" class="text-foreground/60 text-sm block h-8 flex items-center">
+                              {{ third.title }}
+                            </a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
                   </li>
                 {% endfor %}
               </ul>

@@ -103,13 +103,15 @@
         </div>
       </form>
 
-      {%- comment -%} Checkbox "Não mostrar novamente" {%- endcomment -%}
+      {%- comment -%} Link "Não, obrigado" — fecha em um clique e não mostra por cookieDays {%- endcomment -%}
       {%- if section.settings.show_dont_show_again -%}
-        <div class="mt-6 text-center">
-          <label class="inline-flex items-center cursor-pointer text-sm color-text-muted hover:opacity-80">
-            <input type="checkbox" class="dont-show-again mr-2 rounded-theme-sm color-border">
-            {{ 'newsletter.modal.dont_show_again' | t }}
-          </label>
+        <div class="mt-5 text-center">
+          <button
+            type="button"
+            class="decline-modal text-sm color-text-muted underline underline-offset-2 hover:opacity-80 transition-opacity"
+          >
+            {{ 'newsletter.modal.no_thanks' | t }}
+          </button>
         </div>
       {%- endif -%}
     </div>
@@ -193,7 +195,7 @@
       "step": 1,
       "unit": "s",
       "label": "t:sections.newsletter_modal.settings.delay_seconds.label",
-      "default": 5,
+      "default": 10,
       "info": "t:sections.newsletter_modal.settings.delay_seconds.info"
     },
     {

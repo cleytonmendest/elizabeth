@@ -1,0 +1,96 @@
+{%- comment -%}
+  Seletor de idioma e país/moeda usando o form nativo `localization` do Shopify.
+  Requer idiomas/mercados configurados no admin (Configurações > Idiomas e Mercados).
+  Renderiza apenas os seletores que têm mais de uma opção disponível.
+  Params: show_language (bool), show_country (bool).
+  Progressive enhancement: sem JS, o botão de envio permite trocar; com JS,
+  a troca acontece ao selecionar (o custom element esconde o botão).
+{%- endcomment -%}
+{%- liquid
+  assign has_language = false
+  if show_language and localization.available_languages.size > 1
+    assign has_language = true
+  endif
+  assign has_country = false
+  if show_country and localization.available_countries.size > 1
+    assign has_country = true
+  endif
+-%}
+
+{%- if has_language or has_country -%}
+  <localization-form class="flex flex-wrap items-center gap-x-6 gap-y-3">
+    {%- if has_language -%}
+      {%- form 'localization', id: 'FooterLanguageForm', class: 'flex items-center gap-2' -%}
+        <label class="text-xs uppercase tracking-wider color-text opacity-70" for="FooterLanguage">
+          {{ 'localization.language_label' | t }}
+        </label>
+        <select
+          id="FooterLanguage"
+          name="locale_code"
+          data-ls-select
+          class="bg-transparent color-text border border-border rounded-theme-sm px-2 py-1 text-sm"
+        >
+          {%- for language in localization.available_languages -%}
+            <option
+              value="{{ language.iso_code }}"
+              lang="{{ language.iso_code }}"
+              {% if language.iso_code == localization.language.iso_code %}selected{% endif %}
+            >
+              {{ language.endonym_name | capitalize }}
+            </option>
+          {%- endfor -%}
+        </select>
+        <input type="hidden" name="return_to" value="{{ request.path | escape }}">
+        <button type="submit" data-ls-submit class="text-sm underline underline-offset-2 color-text">
+          {{ 'localization.update' | t }}
+        </button>
+      {%- endform -%}
+    {%- endif -%}
+
+    {%- if has_country -%}
+      {%- form 'localization', id: 'FooterCountryForm', class: 'flex items-center gap-2' -%}
+        <label class="text-xs uppercase tracking-wider color-text opacity-70" for="FooterCountry">
+          {{ 'localization.country_label' | t }}
+        </label>
+        <select
+          id="FooterCountry"
+          name="country_code"
+          data-ls-select
+          class="bg-transparent color-text border border-border rounded-theme-sm px-2 py-1 text-sm"
+        >
+          {%- for country in localization.available_countries -%}
+            <option
+              value="{{ country.iso_code }}"
+              {% if country.iso_code == localization.country.iso_code %}selected{% endif %}
+            >
+              {{ country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})
+            </option>
+          {%- endfor -%}
+        </select>
+        <input type="hidden" name="return_to" value="{{ request.path | escape }}">
+        <button type="submit" data-ls-submit class="text-sm underline underline-offset-2 color-text">
+          {{ 'localization.update' | t }}
+        </button>
+      {%- endform -%}
+    {%- endif -%}
+  </localization-form>
+
+  <script>
+    (function () {
+      if (customElements.get('localization-form')) return;
+      customElements.define(
+        'localization-form',
+        class LocalizationForm extends HTMLElement {
+          connectedCallback() {
+            this.querySelectorAll('[data-ls-submit]').forEach(function (b) { b.hidden = true; });
+            this.querySelectorAll('[data-ls-select]').forEach(function (sel) {
+              sel.addEventListener('change', function () {
+                if (sel.form) sel.form.submit();
+              });
+            });
+          }
+        }
+      );
+    })();
+  </script>
+{%- endif -%}

@@ -264,12 +264,12 @@
         "type": "textarea",
         "id": "custom_font_head",
         "label": "URL",
-        "default": "<link href='https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap' rel='stylesheet'>",
+        "default": "<link href='https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap' rel='stylesheet'>"
       },
       {
         "type": "header",
         "content": "Fonte Customizada Corpo",
-        "info": "Caso as fontes padrão não sejam suficiente, pode adicionar um link para uma fonte google por exemplo. Esse campo é prioridade, se estiver preenchido, sobrescreverá a fonte padrão. Caso não queira, remova todos os campos",
+        "info": "Caso as fontes padrão não sejam suficiente, pode adicionar um link para uma fonte google por exemplo. Esse campo é prioridade, se estiver preenchido, sobrescreverá a fonte padrão. Caso não queira, remova todos os campos"
       },
       {
         "type": "text",
@@ -281,8 +281,8 @@
         "type": "textarea",
         "id": "custom_font_body",
         "label": "URL",
-        "default": "<link href='https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap' rel='stylesheet'>",
-      },
+        "default": "<link href='https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap' rel='stylesheet'>"
+      }
     ]
   },
   {
@@ -391,6 +391,62 @@
         "label": "Permitir observações do cliente",
         "info": "Exibe um campo de observações no carrinho e no mini-carrinho.",
         "default": true
+      }
+    ]
+  },
+  {
+    "name": "Privacidade e Cookies (LGPD)",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Banner de consentimento de cookies. Integra-se automaticamente à API de Privacidade do Shopify quando disponível. Desative se você usa o banner nativo do Shopify ou um app de consentimento."
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_cookie_banner",
+        "label": "Exibir banner de cookies",
+        "default": true
+      },
+      {
+        "type": "color_scheme",
+        "id": "cookie_color_scheme",
+        "label": "Esquema de cores do banner",
+        "default": "scheme-2"
+      },
+      {
+        "type": "richtext",
+        "id": "cookie_message",
+        "label": "Mensagem",
+        "default": "<p>Usamos cookies para melhorar sua experiência, personalizar conteúdo e analisar o tráfego. Ao continuar navegando, você concorda com o uso de cookies.</p>"
+      },
+      {
+        "type": "text",
+        "id": "cookie_accept_label",
+        "label": "Texto do botão aceitar",
+        "default": "Aceitar"
+      },
+      {
+        "type": "checkbox",
+        "id": "cookie_show_decline",
+        "label": "Mostrar botão recusar",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "cookie_decline_label",
+        "label": "Texto do botão recusar",
+        "default": "Recusar"
+      },
+      {
+        "type": "url",
+        "id": "cookie_privacy_link",
+        "label": "Link da política de privacidade"
+      },
+      {
+        "type": "text",
+        "id": "cookie_privacy_label",
+        "label": "Texto do link da política",
+        "default": "Política de privacidade"
       }
     ]
   }

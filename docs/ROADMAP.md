@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.29.0 | **Atualizado:** 2026-07-01
+**Versão:** 2.30.0 | **Atualizado:** 2026-07-02
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -138,12 +138,40 @@ Tabela de medidas customizável. **Bloqueador:** medidas variam por categoria/pr
 
 ## 🟡 MELHORIAS PLANEJADAS (Médio/Longo Prazo)
 
+### Mega menu — finalizar configurações + validar
+**Status:** Base entregue (v2.30.0), **NÃO validado totalmente e NÃO finalizado** | **Prioridade:** 🟡 MÉDIA
+
+⚠️ Ainda **não foi validado** de ponta a ponta (falta QA com um menu real de mais itens). Hoje **todo** item com subitens vira mega menu full-width, o que nem sempre é desejável.
+
+Configurações que faltam antes de considerar pronto:
+- **Liga/desliga do mega menu** (global e/ou por item): o lojista pode querer um **dropdown simples** (submenu comum) quando o item tem poucas coleções/categorias, em vez de painel full-width.
+- **Escolha do tipo de submenu por item** (mega vs. dropdown simples).
+- Nº/largura de colunas; layout do painel (largura total vs. ancorado ao conteúdo).
+- Promo com CTA/estilo; destaque de item; comportamento com menus grandes.
+
+### Section de vídeo — testar e validar
+**Status:** Entregue (v2.30.0), **NÃO testada inteiramente** | **Prioridade:** 🟡 MÉDIA
+
+⚠️ A section `video` foi implementada mas **não foi testada/validada por completo**. Precisa de QA real de ponta a ponta antes de considerar pronta: modo Fundo (autoplay hospedado, mudo/loop), modo Clique-para-tocar (poster + play), fontes hospedada / YouTube / Vimeo, scrim + posições de conteúdo, responsividade e a11y do botão de play. Validar em loja/preview real.
+
+### Presets (variações de estilo / "roupagem")
+**Status:** Planejado, não iniciado | **Prioridade:** 🟡 MÉDIA
+
+4 presets em `config/settings_data.json` (chave `presets`): **Clássico** (atual), **Rosé**, **Noir**, **Botânico** — cada um = snapshot de color_schemes + fontes + toggles. Mesmo tema/sections, visual diferente, escolhível no editor. Detalhe de paletas/fontes na memória do projeto (`presets-plan`).
+
+### Newsletter modal — avaliar app
+**Status:** Nag corrigido (v2.30.0); avaliação de app pendente | **Prioridade:** 🟢 BAIXA
+
+Comportamento de reaparecer a cada navegação foi corrigido (fechar = dispensa por sessão; checkbox/cadastro = `cookieDays`). Pendente só a decisão estratégica: manter popup do tema vs. recomendar Shopify Forms (gestão de lista/segmentação) na doc do lojista.
+
 ### Migração de tokens (legado)
 **Esforço:** contínuo — Substituir `rounded-lg`→`rounded-theme` e hex/cinzas → tokens ao tocar cada arquivo. Sections com `color_scheme` devem **pintar o fundo** (`color-background color-text`), não só setar variáveis — senão schemes escuros ficam ilegíveis (corrigido em footer/blog/artigo).
 
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.30.0 - Features de benchmark vs. temas premium** (2026-07-02) — 4 lacunas fechadas vs. Prestige/Impression/Dawn, todas 100% i18n (PT/EN) e sem setup técnico do lojista. **(1) Mega menu** — `main-menu` reescrito: item com subitens abre painel full-width (ancorado ao `#main-header-container`) com o 2º nível como título de coluna + 3º nível como links (`flex-wrap`); **imagem promocional opcional** via novo bloco `menu_promo` do header (casado pelo título do item; máx. 6). Mobile: acordeão com 2º nível (subtítulo) + 3º nível indentado, sem tocar no `theme.js`. `rounded-lg`→`rounded-theme`, a11y preservada. **(2) Consentimento LGPD** — snippet co-locado `cookie-banner` (render global gated por `settings.enable_cookie_banner`, default on), integra com a Customer Privacy API do Shopify (`setTrackingConsent`/`shouldShowBanner`) + fallback localStorage; grupo de settings "Privacidade e Cookies (LGPD)" (color scheme próprio, mensagem richtext, aceitar/recusar, link da política). **(3) Section `video`** — vídeo com texto sobreposto no registro do `image-banner`; modos Fundo (autoplay hospedado, mudo/loop) e Clique-para-tocar (poster + play, hospedado OU YouTube/Vimeo via `<template>` que só carrega no clique); custom element `<video-section>`, novo `icon-play`. **(4) Seletor idioma/moeda** — snippet `localization-form` (form nativo `localization`, 2 selects independentes, botão submit fallback sem-JS escondido pelo custom element), gated por 2 settings no footer. **Nota:** i18n de `config/settings_schema.json` segue literal pt-BR (arquivo é 100% literal; migração de settings globais permanece pendente). Theme Check **0 offenses** (136 arquivos). ⚠️ **Mega menu e Section de vídeo NÃO foram validados/testados inteiramente** — ver itens abertos em *Melhorias Planejadas* (QA + configs pendentes).
 
 **v2.29.0 - "Carregar mais" na coleção** (2026-07-01) — Lacuna do Impression fechada. `main-collection` ganhou botão "Carregar mais" via **Section Rendering API** (`?section_id=`): busca a próxima página, faz append dos cards no grid (`[data-product-grid]`) e encadeia o próximo URL a partir do HTML retornado; some na última página. **Progressive enhancement** — o botão nasce `hidden` e o JS o revela escondendo a paginação numerada; **sem JS, a paginação numerada (fallback) continua funcionando**. Gated pelo novo setting `enable_load_more` (default on, i18n schema PT/EN). Estado de loading reusa `general.accessibility.loading`; nova chave `collection.general.load_more`. Preserva filtros/ordenação (o next URL já os carrega). Theme Check **0 offenses** (132 arquivos).
 

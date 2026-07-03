@@ -73,7 +73,7 @@
             {% render 'search-component', flex: 3, large:true %}
           {% endif %}
           {% if menu_under == false %}
-            {% render 'main-menu', linklist: section.settings.menu, flex: 5 %}
+            {% render 'main-menu', linklist: section.settings.menu, flex: 5, promo_blocks: section.blocks %}
           {% endif %}
           {% if search_position == 'right' and search_hidden == false %}
             {% render 'search-component', flex: 1.5, showMobile: false, large:false %}
@@ -82,7 +82,7 @@
           {% render 'header-icons', flex: 1 %}
         </div>
         {% if menu_under %}
-          {% render 'main-menu', linklist: section.settings.menu, flex: 1 %}
+          {% render 'main-menu', linklist: section.settings.menu, flex: 1, promo_blocks: section.blocks %}
         {% endif %}
       </div>
     </div>
@@ -140,6 +140,41 @@
       "label": "t:sections.header.settings.fixed_header.label",
       "info": "t:sections.header.settings.fixed_header.info"
     }
-  ]
+  ],
+  "blocks": [
+    {
+      "type": "menu_promo",
+      "name": "t:sections.header.blocks.menu_promo.name",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "t:sections.header.blocks.menu_promo.paragraph"
+        },
+        {
+          "type": "text",
+          "id": "menu_item",
+          "label": "t:sections.header.blocks.menu_promo.settings.menu_item.label",
+          "info": "t:sections.header.blocks.menu_promo.settings.menu_item.info"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.header.blocks.menu_promo.settings.image.label"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.header.blocks.menu_promo.settings.heading.label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.header.blocks.menu_promo.settings.link.label",
+          "info": "t:sections.header.blocks.menu_promo.settings.link.info"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6
 }
 {% endschema %}

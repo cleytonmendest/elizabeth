@@ -1,0 +1,369 @@
+{%- comment -%}
+  Vídeo — vídeo grande com texto SOBREPOSTO (eyebrow/título/texto/CTA), no mesmo
+  registro do Banner de Imagem. Dois modos:
+    • Fundo (autoplay): vídeo hospedado no Shopify, mudo, em loop, atrás do texto.
+    • Clique para tocar: poster + botão de play; suporta vídeo hospedado OU
+      YouTube/Vimeo. O player só carrega ao clicar (via <template>) — performance.
+  O scrim usa a COR DE FUNDO do color scheme, então o texto sempre contrasta.
+  UM link por seção (com "Texto do botão" -> CTA).
+{%- endcomment -%}
+
+{%- liquid
+  assign content_position = section.settings.content_position | default: 'left'
+
+  assign has_hosted = false
+  if section.settings.video != blank
+    assign has_hosted = true
+  endif
+  assign has_external = false
+  if section.settings.video_url != blank
+    assign has_external = true
+  endif
+
+  assign mode = section.settings.play_mode
+  if mode == 'background' and has_hosted == false
+    assign mode = 'click'
+  endif
+
+  assign show_cta = false
+  if section.settings.button_label != blank and section.settings.link != blank
+    assign show_cta = true
+  endif
+
+  assign pos_cls = 'items-start text-left'
+  if content_position == 'center'
+    assign pos_cls = 'items-center text-center'
+  elsif content_position == 'right'
+    assign pos_cls = 'items-end text-right'
+  endif
+
+  case section.settings.height
+    when 'small'
+      assign min_h = '360px'
+    when 'large'
+      assign min_h = '640px'
+    else
+      assign min_h = '500px'
+  endcase
+
+  assign op = section.settings.scrim_opacity | default: 30 | divided_by: 100.0
+  assign scrim_color = 'rgb(var(--color-background) / ' | append: op | append: ')'
+  assign scrim_bg = 'none'
+  case section.settings.scrim
+    when 'side'
+      if content_position == 'right'
+        assign scrim_bg = 'linear-gradient(270deg, ' | append: scrim_color | append: ' 0%, transparent 65%)'
+      elsif content_position == 'center'
+        assign scrim_bg = scrim_color
+      else
+        assign scrim_bg = 'linear-gradient(90deg, ' | append: scrim_color | append: ' 0%, transparent 65%)'
+      endif
+    when 'bottom'
+      assign scrim_bg = 'linear-gradient(0deg, ' | append: scrim_color | append: ' 0%, transparent 60%)'
+    when 'full'
+      assign scrim_bg = scrim_color
+  endcase
+
+  assign poster = section.settings.cover_image
+  if poster == blank and has_hosted
+    assign poster = section.settings.video.preview_image
+  endif
+
+  assign media_alt = section.settings.heading
+  if media_alt == blank
+    assign media_alt = 'sections.video.play' | t
+  endif
+
+  if has_external
+    assign ext = section.settings.video_url
+    if ext.type == 'youtube'
+      assign embed_url = 'https://www.youtube.com/embed/' | append: ext.id | append: '?autoplay=1&playsinline=1&rel=0'
+    elsif ext.type == 'vimeo'
+      assign embed_url = 'https://player.vimeo.com/video/' | append: ext.id | append: '?autoplay=1'
+    endif
+  endif
+-%}
+
+<section class="color-{{ section.settings.color_scheme }} bg-background">
+  <div class="{% unless section.settings.fullwidth %}page-width{% endunless %}">
+    <video-section
+      class="relative block w-full overflow-hidden {% unless section.settings.fullwidth %}rounded-theme{% endunless %}"
+      style="min-height: {{ min_h }};"
+    >
+      {%- if mode == 'background' -%}
+        {{
+          section.settings.video
+          | video_tag:
+            image_size: '1600x',
+            autoplay: true,
+            loop: true,
+            muted: true,
+            controls: false,
+            class: 'absolute inset-0 w-full h-full object-cover'
+        }}
+      {%- else -%}
+        <div class="video-poster absolute inset-0 w-full h-full bg-foreground/5">
+          {%- if poster != blank -%}
+            {{
+              poster
+              | image_url: width: 2200
+              | image_tag:
+                class: 'absolute inset-0 w-full h-full object-cover',
+                widths: '600, 900, 1200, 1600, 2000, 2200',
+                sizes: '100vw',
+                alt: media_alt,
+                loading: 'lazy'
+            }}
+          {%- else -%}
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'w-full h-full object-cover' }}
+          {%- endif -%}
+        </div>
+
+        {%- if has_hosted or has_external -%}
+          <button
+            type="button"
+            data-play-button
+            class="absolute inset-0 z-[2] flex items-center justify-center group/play"
+            aria-label="{{ 'sections.video.play' | t }}"
+          >
+            <span class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-background/90 text-foreground flex items-center justify-center shadow transition-transform duration-300 group-hover/play:scale-110">
+              {% render 'icon-play', size: 28 %}
+            </span>
+          </button>
+
+          <template data-video-template>
+            {%- if has_hosted -%}
+              {{
+                section.settings.video
+                | video_tag:
+                  image_size: '1600x',
+                  autoplay: true,
+                  loop: true,
+                  controls: true,
+                  class: 'absolute inset-0 w-full h-full object-cover'
+              }}
+            {%- else -%}
+              <iframe
+                src="{{ embed_url }}"
+                title="{{ media_alt }}"
+                class="absolute inset-0 w-full h-full"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowfullscreen
+                loading="lazy"
+              ></iframe>
+            {%- endif -%}
+          </template>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if scrim_bg != 'none' -%}
+        <div class="video-scrim absolute inset-0 z-[1] pointer-events-none" style="background: {{ scrim_bg }};"></div>
+      {%- endif -%}
+
+      {%- liquid
+        assign has_content = false
+        if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.text != blank or show_cta
+          assign has_content = true
+        endif
+      -%}
+      {%- if has_content -%}
+        <div
+          data-video-overlay
+          class="absolute inset-0 z-[1] flex flex-col justify-center {{ pos_cls }} text-foreground px-6 md:px-14 lg:px-20 py-10 pointer-events-none [&_a]:pointer-events-auto"
+        >
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="text-[11px] md:text-xs uppercase tracking-[0.3em] opacity-90 mb-3 md:mb-4">{{ section.settings.eyebrow }}</p>
+          {%- endif -%}
+          {%- if section.settings.heading != blank -%}
+            <h2 class="font-light text-3xl md:text-5xl leading-tight max-w-xl mb-5 md:mb-6">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+          {%- if section.settings.text != blank -%}
+            <div class="text-sm md:text-base leading-relaxed opacity-90 max-w-md mb-6">{{ section.settings.text }}</div>
+          {%- endif -%}
+          {%- if show_cta -%}
+            <a
+              href="{{ section.settings.link }}"
+              class="inline-flex items-center gap-2 bg-button text-button-text text-xs uppercase tracking-[0.16em] px-6 py-3.5 transition-opacity hover:opacity-90"
+            >
+              {{ section.settings.button_label }}
+              {% render 'icon-arrow-right', size: 16 %}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </video-section>
+  </div>
+</section>
+
+<script>
+  (function () {
+    if (customElements.get('video-section')) return;
+    customElements.define(
+      'video-section',
+      class VideoSection extends HTMLElement {
+        connectedCallback() {
+          this.btn = this.querySelector('[data-play-button]');
+          if (this.btn) this.btn.addEventListener('click', this.play.bind(this));
+        }
+        play() {
+          var tpl = this.querySelector('[data-video-template]');
+          if (!tpl) return;
+          this.appendChild(tpl.content.cloneNode(true));
+          ['[data-play-button]', '.video-poster', '[data-video-overlay]', '.video-scrim'].forEach(
+            function (sel) {
+              var el = this.querySelector(sel);
+              if (el) el.remove();
+            }.bind(this)
+          );
+          var video = this.querySelector('video');
+          if (video) {
+            try { video.play(); } catch (e) {}
+          }
+        }
+      }
+    );
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.video.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.video.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "fullwidth",
+      "label": "t:sections.video.settings.fullwidth.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "play_mode",
+      "label": "t:sections.video.settings.play_mode.label",
+      "info": "t:sections.video.settings.play_mode.info",
+      "default": "background",
+      "options": [
+        { "value": "background", "label": "t:sections.video.settings.play_mode.options.background" },
+        { "value": "click", "label": "t:sections.video.settings.play_mode.options.click" }
+      ]
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:sections.video.settings.video.label",
+      "info": "t:sections.video.settings.video.info"
+    },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "label": "t:sections.video.settings.video_url.label",
+      "info": "t:sections.video.settings.video_url.info",
+      "accept": ["youtube", "vimeo"]
+    },
+    {
+      "type": "image_picker",
+      "id": "cover_image",
+      "label": "t:sections.video.settings.cover_image.label",
+      "info": "t:sections.video.settings.cover_image.info"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:sections.video.settings.height.label",
+      "default": "medium",
+      "options": [
+        { "value": "small", "label": "t:sections.video.settings.height.options.small" },
+        { "value": "medium", "label": "t:sections.video.settings.height.options.medium" },
+        { "value": "large", "label": "t:sections.video.settings.height.options.large" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.video.settings.content_header.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.video.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.video.settings.heading.label"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:sections.video.settings.text.label"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "t:sections.video.settings.content_position.label",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "t:sections.video.settings.content_position.options.left" },
+        { "value": "center", "label": "t:sections.video.settings.content_position.options.center" },
+        { "value": "right", "label": "t:sections.video.settings.content_position.options.right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "scrim",
+      "label": "t:sections.video.settings.scrim.label",
+      "info": "t:sections.video.settings.scrim.info",
+      "default": "side",
+      "options": [
+        { "value": "none", "label": "t:sections.video.settings.scrim.options.none" },
+        { "value": "side", "label": "t:sections.video.settings.scrim.options.side" },
+        { "value": "bottom", "label": "t:sections.video.settings.scrim.options.bottom" },
+        { "value": "full", "label": "t:sections.video.settings.scrim.options.full" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "scrim_opacity",
+      "label": "t:sections.video.settings.scrim_opacity.label",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "t:sections.video.settings.button_header.content"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:sections.video.settings.button_label.label",
+      "info": "t:sections.video.settings.button_label.info"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:sections.video.settings.link.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.video.presets.name",
+      "settings": {
+        "eyebrow": "Bastidores",
+        "heading": "Assista à nova coleção"
+      }
+    }
+  ]
+}
+{% endschema %}

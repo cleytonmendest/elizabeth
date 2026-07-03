@@ -1,0 +1,90 @@
+{%- comment -%}
+  Banner de consentimento de cookies (LGPD/GDPR). Co-locado (markup + JS inline).
+  Controlado pelo setting global `settings.enable_cookie_banner`.
+  Integra com a Customer Privacy API do Shopify quando disponível
+  (Shopify.customerPrivacy) e cai para localStorage como fallback.
+  Nasce com `hidden`; o JS o revela apenas se o consentimento ainda não foi dado.
+{%- endcomment -%}
+<div
+  data-cookie-banner
+  hidden
+  role="dialog"
+  aria-live="polite"
+  aria-label="{{ 'general.accessibility.cookie_banner' | t }}"
+  class="color-{{ settings.cookie_color_scheme }} color-background color-text fixed z-50 bottom-4 left-4 right-4 md:right-auto md:max-w-md rounded-theme border border-border shadow-[0_16px_48px_-16px_rgb(var(--color-shadow)/0.45)]"
+>
+  <div class="p-5 md:p-6">
+    <div class="text-sm leading-relaxed [&_a]:underline [&_a]:underline-offset-2 [&_p]:m-0">
+      {{ settings.cookie_message }}
+      {%- if settings.cookie_privacy_link != blank -%}
+        <a href="{{ settings.cookie_privacy_link }}">{{ settings.cookie_privacy_label }}</a>
+      {%- endif -%}
+    </div>
+    <div class="flex flex-col sm:flex-row sm:justify-end gap-3 mt-5">
+      {%- if settings.cookie_show_decline -%}
+        <button
+          type="button"
+          data-cookie-decline
+          class="color-text border border-border rounded-theme px-5 py-2.5 text-xs uppercase tracking-[0.16em] transition-opacity hover:opacity-70"
+        >
+          {{ settings.cookie_decline_label }}
+        </button>
+      {%- endif -%}
+      <button
+        type="button"
+        data-cookie-accept
+        class="color-button rounded-theme px-5 py-2.5 text-xs uppercase tracking-[0.16em] transition-opacity hover:opacity-90"
+      >
+        {{ settings.cookie_accept_label }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var banner = document.querySelector('[data-cookie-banner]');
+    if (!banner) return;
+
+    var STORAGE_KEY = 'elizabeth:cookie-consent';
+
+    function hide() { banner.setAttribute('hidden', ''); }
+    function show() { banner.removeAttribute('hidden'); }
+
+    function persist(v) { try { localStorage.setItem(STORAGE_KEY, v); } catch (e) {} }
+    function stored() { try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; } }
+
+    function setConsent(granted) {
+      var api = window.Shopify && window.Shopify.customerPrivacy;
+      if (api && typeof api.setTrackingConsent === 'function') {
+        try {
+          api.setTrackingConsent(
+            { analytics: granted, marketing: granted, preferences: granted, sale_of_data: granted },
+            function () {}
+          );
+        } catch (e) {}
+      }
+      persist(granted ? 'granted' : 'denied');
+      hide();
+    }
+
+    var acceptBtn = banner.querySelector('[data-cookie-accept]');
+    if (acceptBtn) acceptBtn.addEventListener('click', function () { setConsent(true); });
+
+    var declineBtn = banner.querySelector('[data-cookie-decline]');
+    if (declineBtn) declineBtn.addEventListener('click', function () { setConsent(false); });
+
+    // A exibição depende só da escolha do visitante (localStorage), não do
+    // shouldShowBanner() do Shopify — este só retorna true quando o consentimento
+    // é obrigatório pela região/config da loja, o que esconderia o banner em dev/BR.
+    if (stored()) { hide(); } else { show(); }
+
+    // Carrega a Customer Privacy API em segundo plano para que aceitar/recusar
+    // consigam registrar o consentimento no Shopify quando disponível.
+    if (window.Shopify && typeof window.Shopify.loadFeatures === 'function') {
+      try {
+        window.Shopify.loadFeatures([{ name: 'consent-tracking-api', version: '0.1' }], function () {});
+      } catch (e) {}
+    }
+  })();
+</script>

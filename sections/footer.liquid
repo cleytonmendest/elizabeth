@@ -94,6 +94,17 @@
       {% endif %}
     {% endfor %}
   </div>
+
+  {%- if section.settings.enable_language_selector or section.settings.enable_country_selector -%}
+    <div class="border-t border-border">
+      <div class="page-width !py-6">
+        {% render 'localization-form',
+          show_language: section.settings.enable_language_selector,
+          show_country: section.settings.enable_country_selector
+        %}
+      </div>
+    </div>
+  {%- endif -%}
 </div>
 
 {% schema %}
@@ -132,6 +143,23 @@
       "label": "t:sections.footer.settings.newsletter_color_scheme.label",
       "default": "scheme-2",
       "info": "t:sections.footer.settings.newsletter_color_scheme.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.footer.settings.localization.content",
+      "info": "t:sections.footer.settings.localization.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_language_selector",
+      "label": "t:sections.footer.settings.enable_language_selector.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_country_selector",
+      "label": "t:sections.footer.settings.enable_country_selector.label",
+      "default": true
     }
   ],
   "blocks": [

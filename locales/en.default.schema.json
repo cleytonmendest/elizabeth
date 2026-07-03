@@ -468,6 +468,28 @@
           "label": "Fixed header (sticky)",
           "info": "If enabled, the header follows the scroll fixed at the top"
         }
+      },
+      "blocks": {
+        "menu_promo": {
+          "name": "Mega menu image",
+          "paragraph": "Shows a promotional image next to the mega menu columns of a main menu item.",
+          "settings": {
+            "menu_item": {
+              "label": "Menu item",
+              "info": "Type the exact name of the main menu item where the image should appear (e.g. Dresses). The item must have sub-items."
+            },
+            "image": {
+              "label": "Image"
+            },
+            "heading": {
+              "label": "Caption"
+            },
+            "link": {
+              "label": "Link",
+              "info": "Where the image links to when clicked. If empty, uses the menu item link."
+            }
+          }
+        }
       }
     },
     "footer": {
@@ -491,6 +513,16 @@
         "newsletter_color_scheme": {
           "label": "Newsletter color scheme",
           "info": "Newsletter band, independent from the footer"
+        },
+        "localization": {
+          "content": "Language and currency",
+          "info": "Requires languages/markets configured in Settings > Languages and Markets"
+        },
+        "enable_language_selector": {
+          "label": "Show language selector"
+        },
+        "enable_country_selector": {
+          "label": "Show country/currency selector"
         }
       },
       "blocks": {
@@ -1253,10 +1285,10 @@
         },
         "cookie_days": {
           "label": "Don't show again for",
-          "info": "After closing or subscribing, how many days to not show?"
+          "info": "After declining ('No thanks') or subscribing, how many days to not show? (Closing with X only hides for the session.)"
         },
         "show_dont_show_again": {
-          "label": "Show 'Don't show again' checkbox"
+          "label": "Show 'No thanks' link"
         },
         "feedback_header": {
           "content": "Feedback messages"
@@ -1397,6 +1429,91 @@
       },
       "presets": {
         "name": "Image banner"
+      }
+    },
+    "video": {
+      "name": "Video",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "fullwidth": {
+          "label": "Full width"
+        },
+        "play_mode": {
+          "label": "Display mode",
+          "info": "Background autoplay only works with a Shopify-hosted video (muted, looping).",
+          "options": {
+            "background": "Background (autoplay, muted)",
+            "click": "Click to play (with sound)"
+          }
+        },
+        "video": {
+          "label": "Video (Shopify)",
+          "info": "Shopify-hosted video. Required for Background mode."
+        },
+        "video_url": {
+          "label": "Video URL (YouTube/Vimeo)",
+          "info": "Alternative to a hosted video, for Click to play mode."
+        },
+        "cover_image": {
+          "label": "Cover image (poster)",
+          "info": "Shown before playing. If empty, uses the video preview."
+        },
+        "height": {
+          "label": "Height",
+          "options": {
+            "small": "Small",
+            "medium": "Medium",
+            "large": "Large"
+          }
+        },
+        "content_header": {
+          "content": "Content"
+        },
+        "eyebrow": {
+          "label": "Eyebrow"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "content_position": {
+          "label": "Content position",
+          "options": {
+            "left": "Left",
+            "center": "Center",
+            "right": "Right"
+          }
+        },
+        "scrim": {
+          "label": "Scrim (text backdrop)",
+          "info": "Tints the text area to ensure contrast over the video",
+          "options": {
+            "none": "None",
+            "side": "Side",
+            "bottom": "Bottom",
+            "full": "Full"
+          }
+        },
+        "scrim_opacity": {
+          "label": "Scrim opacity"
+        },
+        "button_header": {
+          "content": "Button"
+        },
+        "button_label": {
+          "label": "Button label",
+          "info": "With label + link, shows a button over the video"
+        },
+        "link": {
+          "label": "Link"
+        }
+      },
+      "presets": {
+        "name": "Video"
       }
     },
     "rich_text": {

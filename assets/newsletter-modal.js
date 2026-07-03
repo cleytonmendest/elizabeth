@@ -11,7 +11,7 @@ class NewsletterModal extends HTMLElement {
         this.submitText = this.querySelector('.submit-text');
         this.loadingSpinner = this.querySelector('.loading-spinner');
         this.feedbackMessage = this.querySelector('.feedback-message');
-        this.dontShowAgainCheckbox = this.querySelector('.dont-show-again');
+        this.declineButton = this.querySelector('.decline-modal');
 
         // Settings from data attributes
         this.delay = parseInt(this.dataset.delay) || 0;
@@ -23,13 +23,18 @@ class NewsletterModal extends HTMLElement {
         this.hasShown = false;
         this.isSubmitting = false;
 
-        // Cookie name
+        // Chaves de persistência
+        // cookieName: dispensa de longo prazo (checkbox "não mostrar" ou cadastro), dura cookieDays.
+        // sessionKey: dispensa por sessão (fechar no X/fora/ESC) — não reaparece a cada navegação,
+        // mas volta numa próxima visita.
         this.cookieName = 'newsletter_modal_closed';
+        this.sessionKey = 'newsletter_modal_session';
 
         // Bind methods
         this.boundOnScroll = this._onScroll.bind(this);
         this.boundOnMouseLeave = this._onMouseLeave.bind(this);
         this.boundOnClose = this._close.bind(this);
+        this.boundOnDecline = this._decline.bind(this);
         this.boundOnSubmit = this._onSubmit.bind(this);
         this.boundOnClickOutside = this._onClickOutside.bind(this);
     }
@@ -42,6 +47,7 @@ class NewsletterModal extends HTMLElement {
 
         // Setup event listeners
         this.closeButton?.addEventListener('click', this.boundOnClose);
+        this.declineButton?.addEventListener('click', this.boundOnDecline);
         this.addEventListener('click', this.boundOnClickOutside);
         this.form?.addEventListener('submit', this.boundOnSubmit);
 
@@ -54,6 +60,7 @@ class NewsletterModal extends HTMLElement {
 
     disconnectedCallback() {
         this.closeButton?.removeEventListener('click', this.boundOnClose);
+        this.declineButton?.removeEventListener('click', this.boundOnDecline);
         this.removeEventListener('click', this.boundOnClickOutside);
         this.form?.removeEventListener('submit', this.boundOnSubmit);
         window.removeEventListener('scroll', this.boundOnScroll);
@@ -114,14 +121,19 @@ class NewsletterModal extends HTMLElement {
     }
 
     _close() {
-        // Verifica se checkbox "não mostrar novamente" está marcado
-        const dontShowAgain = this.dontShowAgainCheckbox?.checked || false;
+        // Fechamento simples (X / clique-fora): suprime só nesta sessão,
+        // para não incomodar a cada navegação, mas volta numa próxima visita.
+        this._setSessionDismissed();
+        this._animateClose();
+    }
 
-        if (dontShowAgain) {
-            this._setModalCookie();
-        }
+    _decline() {
+        // "Não, obrigado": um clique fecha e não mostra por cookieDays.
+        this._setModalCookie();
+        this._animateClose();
+    }
 
-        // Animação de saída usando classes
+    _animateClose() {
         this.modalContent.classList.remove('opacity-100', 'scale-100');
         this.modalContent.classList.add('opacity-0', 'scale-95');
 
@@ -178,9 +190,9 @@ class NewsletterModal extends HTMLElement {
                 // Define cookie para não mostrar novamente
                 this._setModalCookie();
 
-                // Fecha modal após 3 segundos
+                // Fecha modal após 3 segundos (cookie já gravado acima)
                 setTimeout(() => {
-                    this._close();
+                    this._animateClose();
                 }, 3000);
             } else {
                 throw new Error('Erro na requisição');
@@ -231,7 +243,22 @@ class NewsletterModal extends HTMLElement {
     }
 
     _hasSeenModal() {
-        return this._getCookie(this.cookieName) !== null;
+        // Não mostra se houve dispensa de longo prazo (cookie) OU dispensa nesta sessão
+        return this._getCookie(this.cookieName) !== null || this._hasSessionDismissed();
+    }
+
+    _hasSessionDismissed() {
+        try {
+            return sessionStorage.getItem(this.sessionKey) === 'true';
+        } catch (e) {
+            return false;
+        }
+    }
+
+    _setSessionDismissed() {
+        try {
+            sessionStorage.setItem(this.sessionKey, 'true');
+        } catch (e) {}
     }
 
     _setModalCookie() {

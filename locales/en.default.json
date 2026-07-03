@@ -23,6 +23,7 @@
       "next": "Next",
       "loading": "Loading",
       "back_to_top": "Back to top",
+      "cookie_banner": "Cookie notice",
       "link_messages": {
         "new_window": "Opens in a new window"
       }
@@ -579,7 +580,7 @@
     "modal": {
       "title": "Don't miss our news!",
       "subtitle": "Subscribe to our newsletter and get exclusive offers",
-      "dont_show_again": "Don't show again"
+      "no_thanks": "No thanks"
     }
   },
   "testimonials": {
@@ -606,12 +607,20 @@
     "aria_label": "Time remaining",
     "editor_invalid_year": "Warning: the year is in the past or incorrect. Update the date so the countdown shows on your store. (This notice only appears in the editor.)"
   },
+  "localization": {
+    "language_label": "Language",
+    "country_label": "Country/region",
+    "update": "Update"
+  },
   "sections": {
     "slider": {
       "previous": "Previous",
       "next": "Next",
       "slide": "Slide {{ number }}",
       "image_alt": "Slider image"
+    },
+    "video": {
+      "play": "Play video"
     }
   }
 }

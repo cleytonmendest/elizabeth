@@ -468,6 +468,28 @@
           "label": "Header fixo (sticky)",
           "info": "Se ativado, o header acompanha o scroll fixo no topo"
         }
+      },
+      "blocks": {
+        "menu_promo": {
+          "name": "Imagem no mega menu",
+          "paragraph": "Exibe uma imagem promocional ao lado das colunas do mega menu de um item do menu principal.",
+          "settings": {
+            "menu_item": {
+              "label": "Item do menu",
+              "info": "Digite o nome exato do item do menu principal onde a imagem deve aparecer (ex.: Vestidos). O item precisa ter subitens."
+            },
+            "image": {
+              "label": "Imagem"
+            },
+            "heading": {
+              "label": "Legenda"
+            },
+            "link": {
+              "label": "Link",
+              "info": "Para onde a imagem leva ao ser clicada. Se vazio, usa o link do item do menu."
+            }
+          }
+        }
       }
     },
     "footer": {
@@ -491,6 +513,16 @@
         "newsletter_color_scheme": {
           "label": "Esquema de cores da Newsletter",
           "info": "Faixa da newsletter, independente do footer"
+        },
+        "localization": {
+          "content": "Idioma e moeda",
+          "info": "Requer idiomas/mercados configurados em Configurações > Idiomas e Mercados"
+        },
+        "enable_language_selector": {
+          "label": "Mostrar seletor de idioma"
+        },
+        "enable_country_selector": {
+          "label": "Mostrar seletor de país/moeda"
         }
       },
       "blocks": {
@@ -1253,10 +1285,10 @@
         },
         "cookie_days": {
           "label": "Não mostrar novamente por",
-          "info": "Após fechar ou se cadastrar, quantos dias não mostrar?"
+          "info": "Após recusar ('Não, obrigado') ou se cadastrar, quantos dias não mostrar? (Fechar no X apenas oculta durante a sessão.)"
         },
         "show_dont_show_again": {
-          "label": "Mostrar checkbox 'Não mostrar novamente'"
+          "label": "Mostrar link 'Não, obrigado'"
         },
         "feedback_header": {
           "content": "Mensagens de Feedback"
@@ -1397,6 +1429,91 @@
       },
       "presets": {
         "name": "Banner de imagem"
+      }
+    },
+    "video": {
+      "name": "Vídeo",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
+        "fullwidth": {
+          "label": "Largura total"
+        },
+        "play_mode": {
+          "label": "Modo de exibição",
+          "info": "Fundo autoplay funciona só com vídeo hospedado no Shopify (mudo, em loop).",
+          "options": {
+            "background": "Fundo (autoplay, mudo)",
+            "click": "Clique para tocar (com som)"
+          }
+        },
+        "video": {
+          "label": "Vídeo (Shopify)",
+          "info": "Vídeo hospedado no Shopify. Necessário para o modo Fundo."
+        },
+        "video_url": {
+          "label": "URL do vídeo (YouTube/Vimeo)",
+          "info": "Alternativa ao vídeo hospedado, para o modo Clique para tocar."
+        },
+        "cover_image": {
+          "label": "Imagem de capa (poster)",
+          "info": "Exibida antes de tocar. Se vazia, usa o preview do vídeo."
+        },
+        "height": {
+          "label": "Altura",
+          "options": {
+            "small": "Pequena",
+            "medium": "Média",
+            "large": "Grande"
+          }
+        },
+        "content_header": {
+          "content": "Conteúdo"
+        },
+        "eyebrow": {
+          "label": "Texto de apoio (eyebrow)"
+        },
+        "heading": {
+          "label": "Título"
+        },
+        "text": {
+          "label": "Texto"
+        },
+        "content_position": {
+          "label": "Posição do conteúdo",
+          "options": {
+            "left": "Esquerda",
+            "center": "Centro",
+            "right": "Direita"
+          }
+        },
+        "scrim": {
+          "label": "Scrim (fundo do texto)",
+          "info": "Tinge a área do texto para garantir contraste sobre o vídeo",
+          "options": {
+            "none": "Nenhum",
+            "side": "Lateral",
+            "bottom": "Inferior",
+            "full": "Total"
+          }
+        },
+        "scrim_opacity": {
+          "label": "Opacidade do scrim"
+        },
+        "button_header": {
+          "content": "Botão"
+        },
+        "button_label": {
+          "label": "Texto do botão",
+          "info": "Com texto + link, exibe um botão sobre o vídeo"
+        },
+        "link": {
+          "label": "Link"
+        }
+      },
+      "presets": {
+        "name": "Vídeo"
       }
     },
     "rich_text": {

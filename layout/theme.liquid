@@ -190,6 +190,10 @@
       {% render 'back-to-top' %}
     {%- endif -%}
 
+    {%- if settings.enable_cookie_banner -%}
+      {% render 'cookie-banner' %}
+    {%- endif -%}
+
     <!-- JS Imports -->
     <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
     <script src="{{ 'carousel-manager.js' | asset_url }}" defer></script>
