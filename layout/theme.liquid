@@ -52,7 +52,10 @@
       assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
     %}
 
-    {%- if settings.custom_font_body != blank -%}
+    {%- if settings.custom_font_head != blank -%}
+      {{ settings.custom_font_head }}
+    {% endif %}
+    {%- if settings.custom_font_body != blank and settings.custom_font_body != settings.custom_font_head -%}
       {{ settings.custom_font_body }}
     {% endif %}
 
@@ -73,7 +76,7 @@
           {%- if settings.custom_font_head == blank and settings.custom_font_head_name == blank -%}
             --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
           {% else %}
-            --font-body-family: {{ settings.custom_font_head_name }}, {{ settings.type_header_font.fallback_families }};
+            --font-heading-family: {{ settings.custom_font_head_name }}, {{ settings.type_header_font.fallback_families }};
           {%- endif -%}
 
           --page-width: {{ settings.page_width  }}px;

@@ -1,6 +1,6 @@
 # 🗺️ ROADMAP - Tema Elizabeth
 
-**Versão:** 2.30.0 | **Atualizado:** 2026-07-02
+**Versão:** 2.31.0 | **Atualizado:** 2026-07-03
 
 > **⚠️ REGRA DE OURO:** Sempre ler este ROADMAP antes de implementações. PRIORIDADE MÁXIMA = Requisitos Shopify Theme Store. Features secundárias aguardam conclusão dos bloqueadores críticos.
 
@@ -155,9 +155,13 @@ Configurações que faltam antes de considerar pronto:
 ⚠️ A section `video` foi implementada mas **não foi testada/validada por completo**. Precisa de QA real de ponta a ponta antes de considerar pronta: modo Fundo (autoplay hospedado, mudo/loop), modo Clique-para-tocar (poster + play), fontes hospedada / YouTube / Vimeo, scrim + posições de conteúdo, responsividade e a11y do botão de play. Validar em loja/preview real.
 
 ### Presets (variações de estilo / "roupagem")
-**Status:** Planejado, não iniciado | **Prioridade:** 🟡 MÉDIA
+**Status:** Camada 1 IMPLEMENTADA; Camada 2 na submissão | **Prioridade:** 🟡 MÉDIA
 
-4 presets em `config/settings_data.json` (chave `presets`): **Clássico** (atual), **Rosé**, **Noir**, **Botânico** — cada um = snapshot de color_schemes + fontes + toggles. Mesmo tema/sections, visual diferente, escolhível no editor. Detalhe de paletas/fontes na memória do projeto (`presets-plan`).
+Paletas + fontes das 4 personalidades aprovadas (Clássico/Rosé/Noir/Botânico — hexes e fontes na memória `presets-plan`).
+
+**Camada 1 — reskin (in-repo):** ✅ feito. 4 presets em `config/settings_data.json` (`presets`: Elizabeth/Rosé/Noir/Botânico) com color_schemes (scheme-1/2 + 3º id preservado) + `custom_font_*` (serifada no título via Cormorant/Playfair/Fraunces, Work Sans no corpo). **Fix de 2 bugs pré-existentes em `theme.liquid`** que impediam fontes de título customizadas: link da `custom_font_head` nunca era emitido; `--font-heading-family` era sobrescrito por `--font-body-family`. Logo por preset NÃO trocado (não há assets). Falta QA visual no editor.
+
+**Camada 2 — presets "de verdade" (fase de submissão):** conforme `THEME_STORE_SUBMISSION.md` §4, cada preset é um **conjunto de templates distinto** (layout + conteúdo diferentes, estrutura `/listings`) + **uma loja demo por preset**. ⚠️ O **nome diferente de cada loja** (ex. Impulse: Bunker/Apothecary/Terrain) vem da **loja demo** (nível de conta), **não** de setting do tema — `shop.name` não é editável pelo tema; o preset só troca o **logo**. Exige conteúdo/imagens/produtos reais por demo (grande esforço, depende de assets).
 
 ### Newsletter modal — avaliar app
 **Status:** Nag corrigido (v2.30.0); avaliação de app pendente | **Prioridade:** 🟢 BAIXA
@@ -170,6 +174,8 @@ Comportamento de reaparecer a cada navegação foi corrigido (fechar = dispensa 
 ---
 
 ## ✅ CONCLUÍDO (Resumo)
+
+**v2.31.0 - Presets (Camada 1: reskin) + fix de fontes** (2026-07-03) — 4 presets de estilo em `config/settings_data.json` (`presets`: **Elizabeth**/Rosé/Noir/Botânico), cada um clonando as settings atuais e trocando `color_schemes` (scheme-1/2 + 3º id preservado) + fontes `custom_font_*` — serifada de display no título (Cormorant/Playfair/Fraunces via Google Fonts) + Work Sans no corpo. `current` (loja ativa) preservado. Escrito via script Node (evita corromper o `logo_svg`). **Fix de 2 bugs pré-existentes em `layout/theme.liquid`** que impediam fonte de título customizada: (1) o `<link>` da `custom_font_head` nunca era emitido (só o do corpo); (2) `--font-heading-family` era sobrescrito por `--font-body-family`. Camada 2 (templates distintos + loja demo por preset) fica para a submissão. Theme Check **0 offenses** (136 arquivos).
 
 **v2.30.0 - Features de benchmark vs. temas premium** (2026-07-02) — 4 lacunas fechadas vs. Prestige/Impression/Dawn, todas 100% i18n (PT/EN) e sem setup técnico do lojista. **(1) Mega menu** — `main-menu` reescrito: item com subitens abre painel full-width (ancorado ao `#main-header-container`) com o 2º nível como título de coluna + 3º nível como links (`flex-wrap`); **imagem promocional opcional** via novo bloco `menu_promo` do header (casado pelo título do item; máx. 6). Mobile: acordeão com 2º nível (subtítulo) + 3º nível indentado, sem tocar no `theme.js`. `rounded-lg`→`rounded-theme`, a11y preservada. **(2) Consentimento LGPD** — snippet co-locado `cookie-banner` (render global gated por `settings.enable_cookie_banner`, default on), integra com a Customer Privacy API do Shopify (`setTrackingConsent`/`shouldShowBanner`) + fallback localStorage; grupo de settings "Privacidade e Cookies (LGPD)" (color scheme próprio, mensagem richtext, aceitar/recusar, link da política). **(3) Section `video`** — vídeo com texto sobreposto no registro do `image-banner`; modos Fundo (autoplay hospedado, mudo/loop) e Clique-para-tocar (poster + play, hospedado OU YouTube/Vimeo via `<template>` que só carrega no clique); custom element `<video-section>`, novo `icon-play`. **(4) Seletor idioma/moeda** — snippet `localization-form` (form nativo `localization`, 2 selects independentes, botão submit fallback sem-JS escondido pelo custom element), gated por 2 settings no footer. **Nota:** i18n de `config/settings_schema.json` segue literal pt-BR (arquivo é 100% literal; migração de settings globais permanece pendente). Theme Check **0 offenses** (136 arquivos). ⚠️ **Mega menu e Section de vídeo NÃO foram validados/testados inteiramente** — ver itens abertos em *Melhorias Planejadas* (QA + configs pendentes).
 
