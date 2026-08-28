@@ -1,0 +1,45 @@
+{
+  "$comment": "Fronteiras de capacidade: quem tem o direito de tocar em quê. Serve para impedir reimplementação — quem for escrever uma segunda função de adicionar ao carrinho é obrigado a tocar em /cart/add, e o linter aponta onde o código já existe. Só declare aqui fronteira que está LIMPA hoje: uma capacidade com três donos acidentais não é fronteira, é dívida (essa vai para uma issue). Todo campo 'reason' e 'guidance' é obrigatório — a mensagem de erro precisa ensinar, não só barrar.",
+  "boundaries": [
+    {
+      "capability": "cart-mutation",
+      "pattern": "routes\\.cart_(add|change|update)_url|['\"`]/cart/(add|change|update)",
+      "files": ["assets/*.js", "sections/*.liquid", "snippets/*.liquid", "layout/*.liquid", "templates/**"],
+      "owners": ["assets/cart.js", "assets/cart-extras.js", "layout/theme.liquid"],
+      "severity": "error",
+      "reason": "Toda mutação de carrinho passa pelo CartManager (assets/cart.js), que publica os eventos cart-update e quantity-update. O drawer e a página de carrinho escutam esses eventos para se redesenhar. Um fetch direto para /cart/add fora daí atualiza o carrinho no servidor mas não avisa ninguém — a interface fica desatualizada até a próxima navegação.",
+      "guidance": "Use CartManager.addToCart(form) / .updateQuantity(line, qty) / .getCart() de assets/cart.js. Para comportamento novo que não caiba ali, escute os eventos em assets/cart-extras.js (que é exatamente o arquivo criado para estender o carrinho sem tocar no cart.js)."
+    },
+    {
+      "capability": "storefront-routes",
+      "pattern": "['\"`]/(cart|search|collections|products|account|checkout)(/[a-z._-]+)?(\\?|['\"`])",
+      "files": ["assets/*.js"],
+      "owners": [],
+      "severity": "error",
+      "reason": "URL de storefront escrita literalmente quebra em loja com prefixo de idioma (/en/search/suggest.json) e em loja com rota customizada. O layout/theme.liquid expõe window.routes justamente para isso, e o CLAUDE.md registra a regra desde antes deste linter existir.",
+      "guidance": "Use window.routes.* (cart_url, cart_add_url, cart_change_url, cart_update_url, predictive_search_url). Se a rota que você precisa não está exposta, adicione-a ao bloco window.routes em layout/theme.liquid em vez de escrever o caminho no JS."
+    },
+    {
+      "capability": "pubsub",
+      "pattern": "(function|const|let|var)\\s+(publish|subscribe)\\s*[=(]",
+      "files": ["assets/*.js"],
+      "owners": ["assets/cart.js"],
+      "severity": "error",
+      "reason": "O barramento de eventos do tema é definido uma vez em assets/cart.js. Uma segunda implementação de publish/subscribe cria dois barramentos que não se enxergam: um componente publica num e outro escuta no outro, e o bug resultante é invisível em revisão de código.",
+      "guidance": "Chamar publish()/subscribe() de qualquer arquivo é livre e encorajado — o que não pode é DEFINIR outra versão. Se o barramento precisa de recurso novo, estenda o de cart.js."
+    },
+    {
+      "capability": "section-rendering",
+      "pattern": "section_id=",
+      "files": ["assets/*.js", "sections/*.liquid", "snippets/*.liquid"],
+      "owners": [
+        "assets/recently-viewed.js",
+        "sections/main-collection.liquid",
+        "sections/product-recommendations.liquid"
+      ],
+      "severity": "warn",
+      "reason": "Três features já buscam HTML pela Section Rendering API, cada uma com seu próprio fetch, parse e tratamento de erro. Ainda não é duplicação suficiente para justificar um helper, mas o quarto consumidor é o sinal de que virou.",
+      "guidance": "Se você é o quarto: extraia um helper compartilhado (buscar, fazer parse do HTML, tratar erro de rede) antes de escrever o quarto fetch, e mova os três existentes para ele."
+    }
+  ]
+}
