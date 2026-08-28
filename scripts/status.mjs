@@ -15,9 +15,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { measure } from './lint/rules/budget.mjs';
+import { loadRules } from './lint/lib.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const RULES = ['refs', 'i18n', 'tokens', 'editable', 'schemecontract', 'budget', 'themecheck'];
 
 const asMarkdown = process.argv.includes('--md');
 
@@ -27,12 +27,13 @@ const baseline = JSON.parse(
 const known = new Set(baseline.fingerprints ?? []);
 
 const rows = [];
-for (const name of RULES) {
-  const rule = await import(`./lint/rules/${name}.mjs`);
+// Regras descobertas do diretório: o painel nunca fica atrás do lint.
+for (const rule of await loadRules()) {
+  if (rule.meta.name === 'build') continue; // recompila o Tailwind; caro demais para um painel
   const offenses = await rule.run();
   const fresh = offenses.filter((o) => o.severity !== 'warn' && !(rule.meta.ratchet && known.has(o.fingerprint)));
   const debt = offenses.filter((o) => rule.meta.ratchet && known.has(o.fingerprint));
-  rows.push({ name, title: rule.meta.title, fresh: fresh.length, debt: debt.length });
+  rows.push({ name: rule.meta.name, title: rule.meta.title, fresh: fresh.length, debt: debt.length });
 }
 
 const budget = measure();

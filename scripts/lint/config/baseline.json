@@ -5,9 +5,10 @@
     "editable": 7,
     "i18n": 218,
     "schemecontract": 1,
+    "settings": 4,
     "tokens": 130
   },
-  "total": 356,
+  "total": 360,
   "fingerprints": [
     "editable|sections/blog-posts.liquid|no-color-scheme",
     "editable|sections/header.liquid|scheme-not-painted",
@@ -235,6 +236,10 @@
     "i18n|locales/pt-BR.schema.json|orphan:sections.testimonials.settings.color_scheme.info",
     "i18n|locales/pt-BR.schema.json|orphan:sections.testimonials.settings.content.content",
     "schemecontract|assets/color-scheme.css|undefined-var:--color-card-background",
+    "settings|config/settings_schema.json|unused:social_snapchat_link",
+    "settings|config/settings_schema.json|unused:social_tiktok_link",
+    "settings|config/settings_schema.json|unused:social_tumblr_link",
+    "settings|config/settings_schema.json|unused:social_vimeo_link",
     "tokens|sections/collapsible-content.liquid|arbitrary:tracking-[0.18em]",
     "tokens|sections/countdown-timer.liquid|arbitrary:min-w-[60px]",
     "tokens|sections/countdown-timer.liquid|arbitrary:min-w-[76px]",

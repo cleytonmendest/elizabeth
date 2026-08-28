@@ -32,7 +32,7 @@ npm run gate         # build + linters — rode antes de abrir PR
 npm run status       # painel de conformidade
 ```
 
-Os linters (`scripts/lint/`) verificam i18n, design tokens, integridade
+Os linters (`scripts/lint/`) verificam i18n, design tokens, settings globais, integridade
 referencial, contrato dos color schemes, orçamento de performance e Theme
 Check. Rodam a cada edição (hook), no `pre-commit` e no CI. Violação nova
 reprova; a dívida conhecida está em `scripts/lint/config/baseline.json` e só

@@ -149,3 +149,27 @@ export function offense({ rule, file, line = 1, code, message, severity = 'error
 }
 
 export const bytes = (relPath) => (exists(relPath) ? fs.statSync(abs(relPath)).size : 0);
+
+/**
+ * As regras existentes, descobertas lendo o diretório — nunca uma lista escrita
+ * à mão. Um arquivo novo em `rules/` já entra no `npm run lint`, no painel de
+ * status e no hook, sem ninguém precisar lembrar de registrá-lo em três lugares
+ * (que foi exatamente o que aconteceu quando a regra `settings` nasceu).
+ *
+ * Ordem: as rápidas primeiro, alfabéticas dentro de cada grupo, para que o
+ * retorno útil apareça antes das que levam segundos.
+ */
+export async function loadRules() {
+  const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'rules');
+  const modules = await Promise.all(
+    fs
+      .readdirSync(dir)
+      .filter((name) => name.endsWith('.mjs'))
+      .map(async (name) => import(`./rules/${name}`))
+  );
+  return modules.sort(
+    (a, b) =>
+      Number(a.meta.slow ?? false) - Number(b.meta.slow ?? false) ||
+      a.meta.name.localeCompare(b.meta.name)
+  );
+}

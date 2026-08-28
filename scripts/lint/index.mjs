@@ -18,11 +18,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadRules } from './lib.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const BASELINE = path.join(HERE, 'config', 'baseline.json');
 
-const RULES = ['refs', 'i18n', 'tokens', 'editable', 'schemecontract', 'budget', 'themecheck', 'build'];
+// As regras são descobertas lendo o diretório — ver loadRules() em lib.mjs.
 
 const args = parseArgs(process.argv.slice(2));
 
@@ -36,18 +37,24 @@ const dim = (t) => paint('2', t);
 const bold = (t) => paint('1', t);
 
 const baseline = loadBaseline();
-const selected = args.rules ?? RULES;
+const all = await loadRules();
+
+if (args.rules) {
+  const known = new Set(all.map((r) => r.meta.name));
+  const unknown = args.rules.filter((name) => !known.has(name));
+  if (unknown.length) {
+    console.error(red(`Regra desconhecida: ${unknown.join(', ')}`));
+    console.error(dim(`  disponíveis: ${[...known].sort().join(', ')}`));
+    process.exit(2);
+  }
+}
+
+const selected = args.rules ? all.filter((r) => args.rules.includes(r.meta.name)) : all;
 const found = [];
 const failures = [];
 
-for (const name of selected) {
-  let rule;
-  try {
-    rule = await import(`./rules/${name}.mjs`);
-  } catch (error) {
-    console.error(red(`Regra desconhecida ou quebrada: ${name}\n${error.message}`));
-    process.exit(2);
-  }
+for (const rule of selected) {
+  const name = rule.meta.name;
 
   if (args.fast && rule.meta.slow) continue;
   // O modo por arquivo serve ao hook de edição: regras que olham o tema

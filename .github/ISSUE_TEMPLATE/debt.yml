@@ -11,7 +11,7 @@ body:
     id: rule
     attributes:
       label: Regra
-      options: [i18n, tokens, editable, schemecontract, themecheck, budget, refs]
+      options: [i18n, tokens, editable, schemecontract, settings, themecheck, budget, refs]
     validations:
       required: true
   - type: input
