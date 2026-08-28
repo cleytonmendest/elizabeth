@@ -1,0 +1,37 @@
+name: Bug
+description: Algo do tema não funciona como deveria
+labels: ["bug"]
+body:
+  - type: textarea
+    id: esperado
+    attributes:
+      label: O que deveria acontecer
+    validations:
+      required: true
+  - type: textarea
+    id: atual
+    attributes:
+      label: O que acontece
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Como reproduzir
+      placeholder: |
+        1. Página / template
+        2. Color scheme e preset em uso
+        3. Desktop ou mobile
+    validations:
+      required: true
+  - type: textarea
+    id: guard
+    attributes:
+      label: Que guard rail teria pego isto?
+      description: |
+        A pergunta mais importante do formulário. Se nenhum linter existente
+        pegaria este bug, provavelmente falta uma regra — e corrigir só o
+        sintoma garante que ele volta. Se couber num linter, abra também uma
+        issue com label `guard-rail`.
+    validations:
+      required: true

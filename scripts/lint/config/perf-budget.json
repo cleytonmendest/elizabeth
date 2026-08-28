@@ -1,0 +1,10 @@
+{
+  "$comment": "Teto de peso dos assets carregados em TODA página por layout/theme.liquid. Asset co-locado (renderizado dentro da section que o usa) não conta e é o padrão preferido do tema. Os valores abaixo são o estado atual + margem: servem para impedir piora, e devem ser BAIXADOS conforme o Swiper virar carregamento condicional.",
+  "global": {
+    "js": 190000,
+    "css": 75000
+  },
+  "perAsset": {
+    "swiper-bundle.min.js": 160000
+  }
+}

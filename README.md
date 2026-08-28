@@ -2,10 +2,11 @@
 
 Tema customizado para e-commerce de moda feminina (vestidos e ocasiões especiais), construído sobre Shopify Online Store 2.0 + TailwindCSS.
 
-**Autor:** Cleyton Mendes · **Versão:** 2.4.0 · **Idioma base:** pt-BR (i18n PT/EN em progresso)
+**Autor:** Cleyton Mendes · **Idioma base:** pt-BR (i18n PT/EN)
 
-> Para detalhes de arquitetura, convenções e design system, veja [`CLAUDE.md`](CLAUDE.md).
-> Para o estado/prioridades do desenvolvimento, veja [`docs/ROADMAP.md`](docs/ROADMAP.md).
+> Arquitetura, convenções e as regras do repositório: [`CLAUDE.md`](CLAUDE.md).
+> Estado atual do tema: `npm run status` (medido, não documentado).
+> Decisões e seus porquês: [`docs/adr/`](docs/adr/). Trabalho aberto: GitHub Issues.
 
 ## Stack
 
@@ -19,10 +20,23 @@ Tema customizado para e-commerce de moda feminina (vestidos e ocasiões especiai
 Pré-requisitos: [Shopify CLI](https://shopify.dev/themes/tools/cli/installation), Node.js + npm.
 
 ```bash
-npm install            # dependências
-npm run tail           # watch do TailwindCSS (src → assets/application.css)
-shopify theme dev      # servidor local com live reload
+npm install          # dependências + ativa os hooks de git
+npm run tail         # watch do TailwindCSS (src → assets/application.css)
+shopify theme dev    # servidor local com live reload
 ```
+
+### O gate
+
+```bash
+npm run gate         # build + linters — rode antes de abrir PR
+npm run status       # painel de conformidade
+```
+
+Os linters (`scripts/lint/`) verificam i18n, design tokens, integridade
+referencial, contrato dos color schemes, orçamento de performance e Theme
+Check. Rodam a cada edição (hook), no `pre-commit` e no CI. Violação nova
+reprova; a dívida conhecida está em `scripts/lint/config/baseline.json` e só
+pode diminuir.
 
 Deploy: `shopify theme push` · Pull: `shopify theme pull` · Publicar: `shopify theme publish`
 
@@ -39,7 +53,9 @@ assets/        CSS compilado, JS (Web Components) e libs (Swiper)
 locales/       traduções storefront (pt-BR/en) + schema (.schema.json)
 config/        settings_schema.json / settings_data.json
 src/           tailwind.css (fonte do CSS)
-docs/          ROADMAP.md, I18N_MIGRATION_GUIDE.md
+docs/          adr/ (decisões), history.md (congelado)
+scripts/       linters e painel de estado
+.githooks/     gate de pre-commit
 ```
 
 ## Principais recursos

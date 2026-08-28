@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/lint/hook.mjs\"",
+            "timeout": 60,
+            "statusMessage": "Verificando os linters do tema..."
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && { [ -d node_modules ] || npm ci --silent; } && git config core.hooksPath .githooks && echo '{\"systemMessage\":\"Gate do tema ativo: linters rodam a cada edição, pre-commit e CI. Estado atual: npm run status\"}'",
+            "timeout": 180,
+            "statusMessage": "Preparando o ambiente do tema..."
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run status)",
+      "Bash(npm run build)",
+      "Bash(npm run gate)",
+      "Bash(node scripts/lint/index.mjs:*)",
+      "Bash(node scripts/status.mjs:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ]
+  }
+}

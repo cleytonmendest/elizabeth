@@ -1,0 +1,61 @@
+#!/bin/sh
+#
+# Gate local antes do commit.
+#
+# Ativado por `npm run setup` (que o `npm install` roda sozinho via `prepare`),
+# apontando core.hooksPath para .githooks/.
+#
+# Roda o conjunto rápido: as regras lentas (Theme Check completo e rebuild do
+# Tailwind) ficam para o CI, que é a autoridade final. A ideia aqui é dar
+# retorno em poucos segundos, não substituir o CI.
+#
+# Para pular em uma emergência: git commit --no-verify
+# (o CI vai pegar de qualquer forma — o hook é conveniência, não a trava)
+
+set -e
+
+changed=$(git diff --cached --name-only --diff-filter=ACM)
+
+# Nada de tema mudou (só docs, por exemplo) → não gasta tempo.
+if ! printf '%s\n' "$changed" | grep -qE '^(sections|snippets|templates|layout|assets|locales|config|src)/'; then
+  exit 0
+fi
+
+echo "→ lint (regras rápidas)"
+npm run lint --silent -- --fast || {
+  echo ""
+  echo "Commit bloqueado: há violações NOVAS acima."
+  echo "  · corrija-as, ou"
+  echo "  · registre a exceção com justificativa em scripts/lint/config/design-exceptions.json"
+  echo ""
+  exit 1
+}
+
+# Se o CSS-fonte ou qualquer .liquid mudou, o application.css precisa vir junto.
+if printf '%s\n' "$changed" | grep -qE '\.liquid$|^src/'; then
+  if ! printf '%s\n' "$changed" | grep -q '^assets/application.css$'; then
+    echo "→ verificando se o build do Tailwind está em dia"
+    npm run lint --silent -- --rules=build || {
+      echo ""
+      echo "Commit bloqueado: rode 'npm run build' e inclua assets/application.css no commit."
+      echo ""
+      exit 1
+    }
+  fi
+fi
+
+# Nudge (não bloqueia): mostra a dívida que ainda existe nos arquivos tocados,
+# para aplicar a regra "deixou melhor do que encontrou" enquanto o contexto
+# está fresco. Bloquear aqui criaria o incentivo errado — não mexer no arquivo.
+liquid_changed=$(printf '%s\n' "$changed" | grep -E '\.liquid$' | paste -sd, -)
+if [ -n "$liquid_changed" ]; then
+  npm run lint --silent -- --fast --files="$liquid_changed" 2>/dev/null | grep -c 'baseline' >/dev/null 2>&1 && {
+    count=$(npm run lint --silent -- --fast --files="$liquid_changed" 2>/dev/null | grep -c '\[baseline\]' || true)
+    if [ "${count:-0}" -gt 0 ]; then
+      echo "→ nota: os arquivos deste commit ainda têm $count item(ns) de dívida conhecida."
+      echo "  Veja com: npm run lint -- --files=$liquid_changed"
+    fi
+  }
+fi
+
+exit 0

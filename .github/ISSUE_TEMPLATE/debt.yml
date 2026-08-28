@@ -1,0 +1,30 @@
+name: Dívida técnica (baseline)
+description: Zerar um pedaço do baseline dos linters
+labels: ["debt"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A dívida conhecida vive em `scripts/lint/config/baseline.json` e só pode
+        diminuir. Veja o estado com `npm run status`.
+  - type: dropdown
+    id: rule
+    attributes:
+      label: Regra
+      options: [i18n, tokens, editable, schemecontract, themecheck, budget, refs]
+    validations:
+      required: true
+  - type: input
+    id: escopo
+    attributes:
+      label: Escopo
+      placeholder: "ex: todos os rounded-lg de snippets/, ou config/settings_schema.json"
+    validations:
+      required: true
+  - type: input
+    id: alvo
+    attributes:
+      label: Quanto sai do baseline
+      placeholder: "ex: 93 itens (de 505 para 412)"
+    validations:
+      required: true

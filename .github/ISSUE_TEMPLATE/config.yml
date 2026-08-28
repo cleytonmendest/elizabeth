@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Estado atual do tema
+    url: https://github.com/cleytonmendest/elizabeth/actions/workflows/ci.yml
+    about: O estado de conformidade é medido, não documentado. Veja o resumo do último Gate.
+  - name: Decisões de arquitetura (ADR)
+    url: https://github.com/cleytonmendest/elizabeth/tree/main/docs/adr
+    about: Por que o tema é do jeito que é.

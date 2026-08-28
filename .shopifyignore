@@ -1,2 +1,14 @@
+# Arquivos que existem no repositório mas não fazem parte do tema publicado.
 package.json
 package-lock.json
+yarn.lock
+node_modules/
+scripts/
+src/
+docs/
+.github/
+.githooks/
+.claude/
+CLAUDE.md
+README.md
+tailwind.config.js

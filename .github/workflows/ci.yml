@@ -1,0 +1,47 @@
+name: Gate
+
+# A autoridade final. O hook local é conveniência e pode ser pulado com
+# --no-verify; isto aqui não pode. Nenhuma regra do tema vive só na cabeça de
+# alguém (ou de uma IA) — tudo que precisa ser verdade é verificado aqui.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  gate:
+    name: Lint, build e conformidade
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build do Tailwind está em dia
+        run: npm run lint -- --rules=build
+
+      - name: Linters do tema
+        run: npm run lint
+
+      - name: Painel de conformidade
+        if: always()
+        run: npm run status -- --md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: A dívida do baseline não pode crescer
+        run: |
+          # `lint` já falha em violação nova. Aqui garantimos a outra metade da
+          # catraca: ninguém regravar o baseline para cima a fim de "passar".
+          total=$(node -p "require('./scripts/lint/config/baseline.json').total")
+          base=$(git show origin/${{ github.base_ref || 'main' }}:scripts/lint/config/baseline.json 2>/dev/null | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).total" 2>/dev/null || echo "$total")
+          echo "baseline: $base → $total"
+          if [ "$total" -gt "$base" ]; then
+            echo "::error::O baseline cresceu de $base para $total. Dívida técnica só pode diminuir — corrija a violação em vez de registrá-la."
+            exit 1
+          fi
