@@ -1,0 +1,20 @@
+{
+  "$comment": "Detecção de copy-paste entre arquivos. Diferente das outras regras, esta é HEURÍSTICA: os números abaixo foram escolhidos por calibragem contra o tema real, não derivados de um fato. Eles separam bem hoje — se começarem a acusar duplicação legítima, ajuste aqui em vez de silenciar caso a caso.",
+
+  "shingleSize": 8,
+  "$shingleSize": "Tamanho da janela deslizante, em tokens. Menor acusa qualquer markup parecido; maior só pega cópia literal grande. 8 separou bem entre o copy-paste real (image-banner→video) e a semelhança estrutural inocente.",
+
+  "minSharedBlocks": 40,
+  "$minSharedBlocks": "Piso absoluto de blocos idênticos. É o que cala os ícones SVG, que têm alta contenção percentual justamente por serem pequenos e boilerplate (14-15 blocos).",
+
+  "minContainment": 0.35,
+  "$minContainment": "Fração do arquivo MENOR que existe dentro do maior. Contenção é melhor que Jaccard aqui: quando um trecho é copiado para um arquivo bem maior, o Jaccard despenca e esconde a cópia.",
+
+  "exclude": [
+    "snippets/icon-*.liquid",
+    "assets/swiper-bundle.min.js",
+    "assets/application.css",
+    "assets/swiper-bundle.min.css"
+  ],
+  "$exclude": "Ícones são SVG boilerplate — parecidos por natureza, não por cópia. Os bundles e o CSS compilado são código de terceiro ou gerado."
+}
