@@ -42,3 +42,4 @@ Numeração sequencial, nunca reutilizada.
 | # | Decisão | Status |
 | --- | --- | --- |
 | [0001](0001-guard-rails-executaveis-no-lugar-do-roadmap.md) | Guard rails executáveis no lugar do ROADMAP | Aceito |
+| [0002](0002-taxonomia-de-labels-em-tres-eixos.md) | Taxonomia de labels em três eixos | Aceito |
