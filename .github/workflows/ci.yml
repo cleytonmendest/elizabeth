@@ -14,9 +14,9 @@ jobs:
     name: Lint, build e conformidade
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -38,10 +38,15 @@ jobs:
         run: |
           # `lint` já falha em violação nova. Aqui garantimos a outra metade da
           # catraca: ninguém regravar o baseline para cima a fim de "passar".
+          #
+          # A métrica é ITENS (fingerprints "regra|arquivo|código"), não
+          # ocorrências. O mesmo valor ruim repetido cinco vezes num arquivo é
+          # 1 item e 5 ocorrências; travar em itens é o que dá um número
+          # estável, que não oscila quando alguém move uma linha de lugar.
           total=$(node -p "require('./scripts/lint/config/baseline.json').total")
           base=$(git show origin/${{ github.base_ref || 'main' }}:scripts/lint/config/baseline.json 2>/dev/null | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).total" 2>/dev/null || echo "$total")
-          echo "baseline: $base → $total"
+          echo "baseline: $base → $total itens"
           if [ "$total" -gt "$base" ]; then
-            echo "::error::O baseline cresceu de $base para $total. Dívida técnica só pode diminuir — corrija a violação em vez de registrá-la."
+            echo "::error::O baseline cresceu de $base para $total itens. Dívida técnica só pode diminuir — corrija a violação em vez de registrá-la."
             exit 1
           fi

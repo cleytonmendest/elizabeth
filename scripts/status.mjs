@@ -40,11 +40,18 @@ const budget = measure();
 const kb = (n) => `${(n / 1024).toFixed(0)} KB`;
 
 const clean = rows.every((r) => r.fresh === 0);
-const totalDebt = rows.reduce((sum, r) => sum + r.debt, 0);
+
+// Duas métricas distintas, e confundi-las já produziu relatório errado:
+//   itens       fingerprints em baseline.json (regra|arquivo|código). É o que
+//               a catraca do CI trava, porque é o número estável.
+//   ocorrências quantas vezes aparecem. É o tamanho do trabalho de limpeza.
+// O mesmo valor ruim repetido cinco vezes num arquivo é 1 item e 5 ocorrências.
+const items = baseline.total ?? known.size;
+const occurrences = rows.reduce((sum, r) => sum + r.debt, 0);
 
 if (asMarkdown) {
   console.log('## Estado do tema\n');
-  console.log(`${clean ? '✅' : '❌'} **${clean ? 'Nenhuma violação nova' : 'Há violações novas'}** · ${totalDebt} item(ns) de dívida conhecida no baseline\n`);
+  console.log(`${clean ? '✅' : '❌'} **${clean ? 'Nenhuma violação nova' : 'Há violações novas'}** · dívida no baseline: **${items} itens** (${occurrences} ocorrências)\n`);
   console.log('| Verificação | Novas | Dívida |');
   console.log('| --- | ---: | ---: |');
   for (const r of rows) {
@@ -60,7 +67,7 @@ if (asMarkdown) {
     console.log(`  ${mark}  ${r.title.padEnd(pad)}  ${r.fresh === 0 ? 'limpo' : `${r.fresh} nova(s)`}${debt}`);
   }
   console.log(`\n  Peso global: ${kb(budget.js)} JS · ${kb(budget.css)} CSS (toda página)`);
-  console.log(`  Dívida total no baseline: ${totalDebt}\n`);
+  console.log(`  Dívida no baseline: ${items} itens · ${occurrences} ocorrências\n`);
 }
 
 process.exit(clean ? 0 : 1);

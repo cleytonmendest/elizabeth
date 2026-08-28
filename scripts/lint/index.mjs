@@ -139,7 +139,7 @@ function report(errors, warnings) {
     );
     console.log(dim('  com justificativa em scripts/lint/config/design-exceptions.json.'));
   } else if (warnings.length) {
-    console.log(green('✔ nenhuma violação nova') + dim(` · ${warnings.length} aviso(s) conhecido(s)`));
+    console.log(green('✔ nenhuma violação nova') + dim(` · ${warnings.length} ocorrência(s) de dívida conhecida`));
   } else {
     console.log(green('✔ tudo limpo'));
   }
