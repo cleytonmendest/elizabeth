@@ -31,9 +31,14 @@
         if (remaining === 0) {
           // innerHTML (igual ao render do servidor) — mensagem é texto confiável de setting;
           // evita exibir tags literais se o valor contiver HTML.
-          msg.innerHTML = bar.getAttribute('data-msg-success') || 'Frete grátis!';
+          //
+          // Sem fallback: o texto tem dono (`cart_free_shipping_success`, com
+          // default no schema) e o snippet sempre emite o atributo. Uma cópia
+          // aqui seria uma terceira versão — e a que existia já dizia outra
+          // coisa ("Frete grátis!" contra "Você ganhou frete grátis!").
+          msg.innerHTML = bar.dataset.msgSuccess ?? '';
         } else {
-          const tmpl = bar.getAttribute('data-msg-progress') || 'Faltam {valor}';
+          const tmpl = bar.dataset.msgProgress ?? '';
           msg.innerHTML = tmpl.replace('{valor}', '<strong>' + formatBRL(remaining) + '</strong>');
         }
       }

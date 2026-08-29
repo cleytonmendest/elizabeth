@@ -297,20 +297,24 @@ class AddToCart extends HTMLElement {
             this.hiddenInput.value = variant ? variant.id : '';
         }
 
-        // Atualiza o Botão
-        if (this.button) {
-            const isMobile = window.matchMedia('(max-width: 600px)').matches;
-            const textDesktop = this.button.dataset.textDesktop || 'ADICIONAR AO CARRINHO';
-            const textMobile = this.button.dataset.textMobile || 'Adicionar';
+        if (!this.button) return;
 
-            if (variant && variant.available) {
-                // Variante existe e está disponível
-                this.button.disabled = false;
-                this.button.textContent = isMobile ? textMobile : textDesktop;
-            } else {
-                this.button.disabled = true;
-                this.button.textContent = variant ? 'ESGOTADO' : 'INDISPONÍVEL';
+        // Todo texto vem do elemento, posto lá pelo Liquid com o filtro `t`.
+        // Sem fallback em português: uma cópia aqui divergiria do locale, e a
+        // loja em inglês mostraria "ESGOTADO". Quem não declara o atributo
+        // (o quick-add do card, que tem ícone dentro do botão) mantém o texto
+        // que o servidor renderizou.
+        const { textDesktop, textMobile, textSoldOut, textUnavailable } = this.button.dataset;
+
+        if (variant && variant.available) {
+            this.button.disabled = false;
+            if (textDesktop && textMobile) {
+                this.button.textContent = this.mediaQuery.matches ? textMobile : textDesktop;
             }
+        } else {
+            this.button.disabled = true;
+            const label = variant ? textSoldOut : textUnavailable;
+            if (label) this.button.textContent = label;
         }
     }
 

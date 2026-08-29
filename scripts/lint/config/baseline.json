@@ -4,13 +4,13 @@
   "counts": {
     "boundaries": 2,
     "editable": 7,
-    "i18n": 225,
+    "i18n": 223,
     "schemecontract": 1,
     "settings": 7,
     "similarity": 7,
     "tokens": 130
   },
-  "total": 379,
+  "total": 377,
   "fingerprints": [
     "boundaries|assets/cart.js|storefront-routes",
     "boundaries|assets/search-component.js|storefront-routes",
@@ -208,7 +208,6 @@
     "i18n|locales/pt-BR.json|orphan:header.search",
     "i18n|locales/pt-BR.json|orphan:newsletter.button",
     "i18n|locales/pt-BR.json|orphan:newsletter.description",
-    "i18n|locales/pt-BR.json|orphan:newsletter.error",
     "i18n|locales/pt-BR.json|orphan:newsletter.label",
     "i18n|locales/pt-BR.json|orphan:newsletter.modal.subtitle",
     "i18n|locales/pt-BR.json|orphan:newsletter.modal.title",
@@ -221,7 +220,6 @@
     "i18n|locales/pt-BR.json|orphan:product.general.save",
     "i18n|locales/pt-BR.json|orphan:product.general.sku",
     "i18n|locales/pt-BR.json|orphan:product.general.type",
-    "i18n|locales/pt-BR.json|orphan:product.general.unavailable",
     "i18n|locales/pt-BR.json|orphan:product.general.unit_price",
     "i18n|locales/pt-BR.json|orphan:product.general.vendor",
     "i18n|locales/pt-BR.json|orphan:product.installments.in",

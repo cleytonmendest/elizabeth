@@ -90,6 +90,8 @@
           aria-live="polite"
           data-text-desktop="{{ 'product.general.add_to_cart' | t }}"
           data-text-mobile="{{ 'product.general.add_to_cart_short' | t }}"
+          data-text-sold-out="{{ 'product.general.sold_out' | t }}"
+          data-text-unavailable="{{ 'product.general.unavailable' | t }}"
           {% unless current_variant.available %}disabled{% endunless %}
         >
           {% if current_variant.available %}
