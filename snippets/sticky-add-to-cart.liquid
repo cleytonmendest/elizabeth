@@ -1,6 +1,14 @@
 {%- comment -%}
-  Sticky Add to Cart Mobile
-  Aparece quando usuário rola para baixo (mobile only)
+  Barra fixa de comprar — desktop e mobile.
+
+  Aparece quando o botão principal de adicionar ao carrinho sai da viewport e
+  some quando ele volta (assets/sticky-atc.js). Não tem toggle: é
+  infraestrutura de conversão, não uma escolha de negócio do lojista — ver
+  docs/adr/0004-o-que-ganha-um-toggle.md.
+
+  O texto do botão é trocado por <add-to-cart> (assets/cart.js) a partir de
+  data-text-desktop / data-text-mobile — não renderize markup dentro dele,
+  porque o componente escreve textContent.
 
   Parâmetros:
   - product: objeto do produto (obrigatório)
@@ -13,14 +21,14 @@
 {{ 'sticky-atc.css' | asset_url | stylesheet_tag }}
 
 <div
-  class="fixed bottom-0 left-0 right-0 bg-background border-t border-border shadow-[0_-2px_8px_rgba(0,0,0,0.08)] translate-y-full transition-transform duration-300 ease-in-out z-40 lg:hidden"
+  class="fixed bottom-0 left-0 right-0 bg-background text-foreground border-t border-border shadow-[0_-2px_8px_rgba(0,0,0,0.08)] translate-y-full transition-transform duration-300 ease-in-out z-40"
   data-sticky-atc
   data-product-id="{{ product.id }}"
 >
-  <div class="container mx-auto px-3 py-3 flex items-center gap-2">
+  <div class="page-width py-3 flex items-center gap-3 lg:gap-6">
     {%- comment -%} Info do Produto {%- endcomment -%}
     <div class="flex-1 min-w-0">
-      <p class="text-xs truncate font-medium">
+      <p class="text-xs lg:text-sm truncate font-medium">
         {{ product.title }}
       </p>
       {%- render 'price-v2', use_variant: true -%}

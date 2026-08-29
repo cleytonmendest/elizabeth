@@ -239,6 +239,11 @@ class AddToCart extends HTMLElement {
             // Fallback para navegadores antigos
             this.mediaQuery.addListener(this.resizeHandler);
         }
+
+        // O Liquid renderiza um texto só — ele não sabe a largura da tela. Sem
+        // este ajuste no load, a barra fixa nasce com o texto curto ("Adicionar")
+        // e só troca para o longo no primeiro resize ou troca de variante.
+        this._onResize();
     }
 
     disconnectedCallback() {
@@ -258,14 +263,18 @@ class AddToCart extends HTMLElement {
     }
 
     _onResize() {
-        // Quando o tamanho da tela muda, atualiza o texto do botão
-        // Busca a variante atual do input hidden
+        // Quando o tamanho da tela muda, atualiza o texto do botão.
+        //
+        // Só age em botão que DECLARA os dois textos. O quick-add do card de
+        // produto é um <add-to-cart> cujo botão tem ícone SVG dentro e nenhum
+        // data-text-*: escrever textContent nele apagaria o ícone e trocaria o
+        // rótulo por um texto pt-BR cravado no JS.
+        const { textDesktop, textMobile } = this.button?.dataset ?? {};
+        if (!textDesktop || !textMobile) return;
+
         const variantId = this.hiddenInput?.value;
-        if (variantId && this.button && !this.button.disabled) {
-            const isMobile = this.mediaQuery.matches;
-            const textDesktop = this.button.dataset.textDesktop || 'ADICIONAR AO CARRINHO';
-            const textMobile = this.button.dataset.textMobile || 'Adicionar';
-            this.button.textContent = isMobile ? textMobile : textDesktop;
+        if (variantId && !this.button.disabled) {
+            this.button.textContent = this.mediaQuery.matches ? textMobile : textDesktop;
         }
     }
 

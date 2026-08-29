@@ -19,8 +19,8 @@
     <div class="{% if media_size == 'medium' or media_size == 'large' %} lg:flex-1 {% elsif media_size == 'small' %} lg:flex-[2] {% endif %}">
       {% render 'main-product-right', blocks: section.blocks %}
 
-      {%- comment -%} Sticky Add to Cart (Mobile) {%- endcomment -%}
-      {% render 'sticky-add-to-cart', product: product, section: section %}
+      {%- comment -%} Barra fixa de comprar (desktop e mobile) {%- endcomment -%}
+      {% render 'sticky-add-to-cart', product: product %}
     </div>
   </div>
 </div>
@@ -291,29 +291,6 @@
           "label": "t:sections.main_product.blocks.buy_button.settings.button_text.label",
           "id": "button_text",
           "default": "ADICIONAR AO CARRINHO"
-        },
-        {
-          "type": "header",
-          "content": "t:sections.main_product.blocks.buy_button.settings.floating_header.content"
-        },
-        {
-          "type": "checkbox",
-          "label": "t:sections.main_product.blocks.buy_button.settings.floating_button.label",
-          "info": "t:sections.main_product.blocks.buy_button.settings.floating_button.info",
-          "id": "floating_button",
-          "default": true
-        },
-        {
-          "type": "checkbox",
-          "label": "t:sections.main_product.blocks.buy_button.settings.show_product_name.label",
-          "id": "show_product_name",
-          "default": true
-        },
-        {
-          "type": "checkbox",
-          "label": "t:sections.main_product.blocks.buy_button.settings.show_product_price.label",
-          "id": "show_product_price",
-          "default": true
         }
       ]
     },
