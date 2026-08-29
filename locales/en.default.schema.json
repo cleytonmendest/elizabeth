@@ -1966,5 +1966,31 @@
         }
       }
     }
+  },
+  "settings_schema": {
+    "design": {
+      "name": "Design",
+      "intro": "These controls apply to the whole store. Choosing a value here keeps every section consistent with the others.",
+      "radius_style": {
+        "label": "Corner rounding",
+        "info": "Applies to buttons, cards, inputs and modals. The smaller and larger sizes derive from this choice.",
+        "options": {
+          "none": "Square",
+          "subtle": "Subtle",
+          "soft": "Soft",
+          "round": "Rounded"
+        }
+      },
+      "font_scale": {
+        "label": "Text size",
+        "info": "Scales the whole type scale, keeping the ratio between headings and body text.",
+        "options": {
+          "compact": "Compact",
+          "default": "Default",
+          "large": "Large",
+          "xlarge": "Extra large"
+        }
+      }
+    }
   }
 }

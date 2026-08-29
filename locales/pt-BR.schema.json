@@ -1966,5 +1966,31 @@
         }
       }
     }
+  },
+  "settings_schema": {
+    "design": {
+      "name": "Design",
+      "intro": "Estes controles valem para a loja inteira. Escolher um valor aqui mantém todas as seções coerentes entre si.",
+      "radius_style": {
+        "label": "Arredondamento",
+        "info": "Aplica-se a botões, cards, inputs e modais. Os tamanhos menores e maiores derivam desta escolha.",
+        "options": {
+          "none": "Reto",
+          "subtle": "Sutil",
+          "soft": "Suave",
+          "round": "Arredondado"
+        }
+      },
+      "font_scale": {
+        "label": "Tamanho do texto",
+        "info": "Multiplica a escala tipográfica inteira, mantendo a proporção entre títulos e corpo.",
+        "options": {
+          "compact": "Compacto",
+          "default": "Padrão",
+          "large": "Grande",
+          "xlarge": "Muito grande"
+        }
+      }
+    }
   }
 }

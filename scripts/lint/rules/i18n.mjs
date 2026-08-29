@@ -98,14 +98,17 @@ export function run() {
   }
 
   // --- settings_schema.json: mesma regra, settings globais do tema ---
+  //
+  // A identidade da violação é o ID do setting, nunca a posição no array. Um
+  // fingerprint posicional (`[5].settings[0].label`) muda toda vez que alguém
+  // insere um grupo antes, e a catraca acusa como "novas" 28 violações que são
+  // as mesmas de sempre — foi o que aconteceu ao adicionar o grupo Design.
   const settingsFile = 'config/settings_schema.json';
   try {
-    const settings = readJSONC(settingsFile);
-    walkSchema(settings, (key, value, keyPath) => {
-      if (!TRANSLATABLE.has(key)) return;
-      // `theme_name`/`theme_author` e afins vivem no primeiro bloco, que é
-      // metadado do tema e não texto de interface.
-      if (keyPath.startsWith('[0]')) return;
+    const groups = readJSONC(settingsFile);
+
+    const check = (value, code, where) => {
+      if (typeof value !== 'string') return;
       if (value.startsWith('t:')) {
         usedSchemaKeys.add(value.slice(2));
         return;
@@ -115,10 +118,40 @@ export function run() {
         offense({
           rule: 'i18n',
           file: settingsFile,
-          code: `hardcoded-settings:${keyPath}.${key}`,
-          message: `Setting global com texto literal em ${keyPath}.${key}: ${JSON.stringify(value)} — use uma chave t:.`,
+          code: `hardcoded-settings:${code}`,
+          message: `${where} com texto literal: ${JSON.stringify(value)} — use uma chave t:.`,
         })
       );
+    };
+
+    groups.forEach((group, index) => {
+      // O primeiro bloco é metadado do tema (theme_name, theme_author), não
+      // texto de interface.
+      if (index === 0) return;
+
+      const groupId = group.name?.replace(/^t:/, '') ?? `grupo-${index}`;
+      check(group.name, `group:${groupId}`, `Grupo "${groupId}"`);
+
+      for (const setting of group.settings ?? []) {
+        // `header` e `paragraph` não têm id; a própria chave os identifica.
+        const id = setting.id ?? `${setting.type}:${(setting.content ?? '').slice(0, 40)}`;
+        for (const field of ['label', 'info', 'content', 'placeholder']) {
+          check(setting[field], `${id}.${field}`, `Setting "${id}" (${field})`);
+        }
+        for (const option of setting.options ?? []) {
+          check(option.label, `${id}.option:${option.value}`, `Opção "${option.value}" de "${id}"`);
+        }
+
+        // `color_scheme_group` guarda os campos de cada esquema num `definition`
+        // aninhado. Iterar só o nível de cima perde os 16 labels que vivem ali
+        // (Fundo, Texto, Botão primário…) — e perder cobertura em silêncio é
+        // pior que não ter a regra.
+        for (const field of setting.definition ?? []) {
+          const fieldId = `${id}.definition:${field.id ?? field.type}`;
+          check(field.label, `${fieldId}.label`, `Campo "${field.id ?? field.type}" de "${id}"`);
+          check(field.info, `${fieldId}.info`, `Campo "${field.id ?? field.type}" de "${id}" (info)`);
+        }
+      }
     });
   } catch (error) {
     offenses.push(

@@ -79,7 +79,20 @@
             --font-heading-family: {{ settings.custom_font_head_name }}, {{ settings.type_header_font.fallback_families }};
           {%- endif -%}
 
-          --page-width: {{ settings.page_width  }}px;
+          --page-width: {{ settings.page_width }}px;
+          --spacing-sections: {{ settings.spacing_sections }}px;
+
+          {%- comment -%}
+            Eixos de design do lojista (nível 1 do ADR 0003). Ele escolhe UM
+            valor por eixo; a escala inteira deriva por calc(). Derivar em vez
+            de expor cada degrau é o que impede o raio pequeno de ficar maior
+            que o grande — não existe controle para isso.
+          {%- endcomment -%}
+          --radius-theme: {{ settings.radius_style | default: '8px' }};
+          --radius-theme-sm: calc(var(--radius-theme) / 2);
+          --radius-theme-lg: calc(var(--radius-theme) * 1.5);
+
+          --font-scale: {{ settings.font_scale | default: '1' }};
         }
 
         html {
@@ -178,7 +191,7 @@
       id="MainContent"
       class="content-for-layout focus-none flex flex-col"
       role="main"
-      style="gap: {{ settings.spacing_sections }}px"
+      style="gap: var(--spacing-sections)"
       tabindex="-1"
     >
       <div class="page-width py-4 w-full">
