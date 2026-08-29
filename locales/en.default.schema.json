@@ -1945,6 +1945,26 @@
       "presets": {
         "name": "Countdown Timer"
       }
+    },
+    "apps": {
+      "name": "Apps",
+      "presets": {
+        "name": "Apps"
+      },
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "spacing_header": {
+          "content": "Spacing"
+        },
+        "padding_top": {
+          "label": "Top padding"
+        },
+        "padding_bottom": {
+          "label": "Bottom padding"
+        }
+      }
     }
   }
 }

@@ -1945,6 +1945,26 @@
       "presets": {
         "name": "Contagem Regressiva"
       }
+    },
+    "apps": {
+      "name": "Apps",
+      "presets": {
+        "name": "Apps"
+      },
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
+        "spacing_header": {
+          "content": "Espaçamento"
+        },
+        "padding_top": {
+          "label": "Espaçamento superior"
+        },
+        "padding_bottom": {
+          "label": "Espaçamento inferior"
+        }
+      }
     }
   }
 }

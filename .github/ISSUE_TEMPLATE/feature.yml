@@ -1,0 +1,73 @@
+name: Feature / Section
+description: Nova funcionalidade ou section do tema
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        O que preencher aqui vira a **spec** da implementação. A regra é uma só:
+        **todo critério de aceite precisa virar assert de linter ou de teste.**
+        Se não dá para verificar automaticamente, não é critério — é desejo, e
+        desejo em documento é exatamente o que apodrece.
+
+  - type: textarea
+    id: problema
+    attributes:
+      label: Problema
+      description: O que o lojista ou o cliente da loja não consegue fazer hoje.
+    validations:
+      required: true
+
+  - type: textarea
+    id: settings
+    attributes:
+      label: O que o lojista controla
+      description: |
+        Todo texto, cor, imagem e link que aparece precisa ser editável no
+        editor. Liste os settings previstos.
+      placeholder: |
+        - color_scheme (obrigatório em toda section)
+        - heading, subheading (text)
+        - image (image_picker)
+        - link + label do CTA
+    validations:
+      required: true
+
+  - type: textarea
+    id: estados
+    attributes:
+      label: Estados
+      description: Vazio, carregando, erro, sem JS. O que aparece em cada um.
+    validations:
+      required: true
+
+  - type: textarea
+    id: aceite
+    attributes:
+      label: Critérios de aceite verificáveis
+      description: Cada linha precisa ser checável por comando.
+      value: |
+        - [ ] `npm run lint` sem violação nova
+        - [ ] Schema 100% em chaves `t:`, com entradas em pt-BR e en.default
+        - [ ] Section expõe `color_scheme` e pinta fundo + texto
+        - [ ] Legível nos 4 presets (Elizabeth, Rosé, Noir, Botânico)
+        - [ ] Funciona sem JavaScript (ou degrada de forma explícita)
+        - [ ]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      description: Onde no tema. Ver ADR 0002.
+      multiple: true
+      options: [pdp, plp, cart, header, footer, blog, customer, design-system, tooling]
+    validations:
+      required: true
+
+  - type: input
+    id: adr
+    attributes:
+      label: Precisa de ADR?
+      description: Se muda algo estrutural, linke o ADR. Senão, escreva "não".

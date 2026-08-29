@@ -1,25 +1,26 @@
 {
-  "name": "elizabeth_clean",
-  "version": "2.4.0",
+  "name": "elizabeth-theme",
+  "version": "2.31.0",
+  "private": true,
   "description": "Tema Shopify Online Store 2.0 para moda feminina (TailwindCSS, vanilla JS, Swiper).",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "tail": "npx tailwindcss -i ./src/tailwind.css -o ./assets/application.css --watch --minify",
-    "build": "npx tailwindcss -i ./src/tailwind.css -o ./assets/application.css --minify"
+    "tail": "tailwindcss -i ./src/tailwind.css -o ./assets/application.css --watch --minify",
+    "build": "tailwindcss -i ./src/tailwind.css -o ./assets/application.css --minify",
+    "lint": "node scripts/lint/index.mjs",
+    "lint:fast": "node scripts/lint/index.mjs --fast",
+    "lint:baseline": "node scripts/lint/index.mjs --write-baseline",
+    "status": "node scripts/status.mjs",
+    "gate": "npm run build && npm run lint",
+    "setup": "git config core.hooksPath .githooks && echo 'Hooks de git ativados (.githooks).'",
+    "prepare": "npm run setup"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/polidario/Elizabeth_Clean.git"
+    "url": "git+https://github.com/cleytonmendest/elizabeth.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/polidario/Elizabeth_Clean/issues"
-  },
-  "homepage": "https://github.com/polidario/Elizabeth_Clean#readme",
+  "license": "UNLICENSED",
   "devDependencies": {
+    "@shopify/theme-check-node": "^3.29.0",
     "tailwindcss": "^3.4.7"
   }
 }
