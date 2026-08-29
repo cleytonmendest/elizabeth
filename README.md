@@ -33,7 +33,7 @@ npm run status       # painel de conformidade
 ```
 
 Os linters (`scripts/lint/`) verificam i18n, design tokens, settings globais, fronteiras de
-capacidade, duplicação entre arquivos, integridade
+capacidade, duplicação entre arquivos, nível dos settings, integridade
 referencial, contrato dos color schemes, orçamento de performance e Theme
 Check. Rodam a cada edição (hook), no `pre-commit` e no CI. Violação nova
 reprova; a dívida conhecida está em `scripts/lint/config/baseline.json` e só

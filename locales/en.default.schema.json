@@ -1203,9 +1203,6 @@
         "columns_desktop": {
           "label": "Columns (Desktop)"
         },
-        "background_color": {
-          "label": "Background color"
-        },
         "cards_header": {
           "content": "Card settings"
         },
