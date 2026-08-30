@@ -50,6 +50,23 @@ export const claimsIssue = (branch, number) =>
   new RegExp(`(^|[/_-])issue[-_/]${number}($|[^0-9])`).test(branch);
 
 /**
+ * Os quatro valores que este script é DONO. Qualquer outro é decisão de gente.
+ *
+ * Isto nasceu de um estrago: na primeira execução real a issue #7 estava em
+ * "Stopped" — status que ninguém consegue derivar de branch, PR ou issue
+ * fechada — e o sync passou por cima com "Todo". Um recálculo só pode
+ * sobrescrever o que ele mesmo sabe produzir; o resto é informação que ele não
+ * tem, e apagar informação que não se entende é pior que não mexer.
+ */
+export const GERIDOS = new Set(['Todo', 'In Progress', 'In Review', 'Done']);
+
+/**
+ * Status fora do conjunto gerido é intervenção humana: o sync não encosta.
+ * Para devolver a issue ao controle automático, basta limpar o campo no board.
+ */
+export const ehOverrideHumano = (atual) => Boolean(atual) && !GERIDOS.has(atual);
+
+/**
  * O Status que os fatos exigem. Pura: sem rede, sem relógio, sem estado.
  *
  * `temInReview` diz se o board tem essa coluna. Se não tiver, PR aberto cai em
@@ -82,6 +99,19 @@ const CASOS = [
   ['nada', { number: 6, state: 'OPEN' }, {}, true, 'Todo'],
 ];
 
+/** Casos de `ehOverrideHumano`: o que o sync tem e o que não tem direito de mexer. */
+const CASOS_OVERRIDE = [
+  ['campo vazio é do sync', null, false],
+  ['string vazia é do sync', '', false],
+  ['Todo é do sync', 'Todo', false],
+  ['In Progress é do sync', 'In Progress', false],
+  ['In Review é do sync', 'In Review', false],
+  ['Done é do sync', 'Done', false],
+  ['Stopped é humano', 'Stopped', true],
+  ['Blocked é humano', 'Blocked', true],
+  ['qualquer coluna nova é humana', 'Aguardando lojista', true],
+];
+
 function selfTest() {
   let falhas = 0;
   for (const [nome, issue, fatos, temInReview, esperado] of CASOS) {
@@ -90,7 +120,14 @@ function selfTest() {
     if (!ok) falhas++;
     console.log(`  ${ok ? 'ok  ' : 'FALHOU'}  ${nome.padEnd(34)} → ${obtido}${ok ? '' : `  (esperado ${esperado})`}`);
   }
-  console.log(falhas ? `\n${falhas} de ${CASOS.length} caso(s) falharam.` : `\n${CASOS.length} casos, todos passaram.`);
+  for (const [nome, atual, esperado] of CASOS_OVERRIDE) {
+    const obtido = ehOverrideHumano(atual);
+    const ok = obtido === esperado;
+    if (!ok) falhas++;
+    console.log(`  ${ok ? 'ok  ' : 'FALHOU'}  ${nome.padEnd(34)} → ${obtido ? 'não encosta' : 'do sync'}${ok ? '' : '  (esperado o contrário)'}`);
+  }
+  const total = CASOS.length + CASOS_OVERRIDE.length;
+  console.log(falhas ? `\n${falhas} de ${total} caso(s) falharam.` : `\n${total} casos, todos passaram.`);
   return falhas === 0;
 }
 
@@ -220,16 +257,31 @@ async function main() {
     (d) => d.node.items
   );
 
-  // 4. Só o que diverge vira escrita.
+  // 4. Só o que diverge vira escrita — e só no que o sync é dono.
   const mudancas = [];
+  const preservados = [];
+  let naoIssue = 0;
   for (const item of itens) {
-    if (!item.content?.number) continue; // rascunho do board, não é issue
+    if (!item.content?.number) {
+      naoIssue++; // PR ou rascunho do board: este script só governa issue
+      continue;
+    }
     const atual = item.fieldValueByName?.name ?? null;
+    if (ehOverrideHumano(atual)) {
+      preservados.push({ numero: item.content.number, atual });
+      continue;
+    }
     const desejado = decide(item.content, { branches, prs }, { temInReview });
     if (atual !== desejado) mudancas.push({ item, atual, desejado });
   }
 
-  console.log(`${itens.length} item(ns) no board · ${mudancas.length} para mudar`);
+  console.log(
+    `${itens.length} item(ns) no board · ${naoIssue} não são issue · ` +
+      `${preservados.length} com status posto à mão · ${mudancas.length} para mudar`
+  );
+  for (const { numero, atual } of preservados) {
+    console.log(`  #${String(numero).padStart(3)}  ${atual} — decisão sua, não encostei`);
+  }
   if (!mudancas.length) return;
 
   for (const { item, atual, desejado } of mudancas) {
