@@ -12,3 +12,5 @@ docs/
 CLAUDE.md
 README.md
 tailwind.config.js
+sections/main-styleguide.liquid
+templates/page.styleguide.json
