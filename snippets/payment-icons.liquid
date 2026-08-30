@@ -121,7 +121,7 @@
   </div>
 
   {%- comment -%} Texto adicional opcional {%- endcomment -%}
-  {% if block and block.settings.show_installment_text %}
+  {% if block and block.settings.show_installment_text and block.settings.installment_text != blank %}
     <p class="text-xs text-foreground/60 mt-2">
       {{ block.settings.installment_text }}
     </p>

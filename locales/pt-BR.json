@@ -12,7 +12,8 @@
     "see_more": "Ver mais",
     "404": {
       "title": "Página não encontrada",
-      "subtext_html": "A página que você está procurando não existe"
+      "subtext_html": "A página que você está procurando não existe",
+      "back_home": "Voltar à página inicial"
     },
     "accessibility": {
       "skip_to_content": "Pular para o conteúdo",

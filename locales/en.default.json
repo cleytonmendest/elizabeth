@@ -12,7 +12,8 @@
     "see_more": "See more",
     "404": {
       "title": "Page not found",
-      "subtext_html": "The page you were looking for does not exist"
+      "subtext_html": "The page you were looking for does not exist",
+      "back_home": "Back to homepage"
     },
     "accessibility": {
       "skip_to_content": "Skip to content",
