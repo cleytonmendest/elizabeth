@@ -15,8 +15,8 @@
   {%- if fs_remaining < 0 -%}{%- assign fs_remaining = 0 -%}{%- endif -%}
   {%- assign fs_pct = fs_total | times: 100 | divided_by: fs_threshold -%}
   {%- if fs_pct > 100 -%}{%- assign fs_pct = 100 -%}{%- endif -%}
-  {%- assign fs_msg_success = settings.cart_free_shipping_success | default: 'Você ganhou frete grátis!' -%}
-  {%- assign fs_msg_progress = settings.cart_free_shipping_message | default: 'Faltam {valor} para o frete grátis' -%}
+  {%- assign fs_msg_success = settings.cart_free_shipping_success -%}
+  {%- assign fs_msg_progress = settings.cart_free_shipping_message -%}
   {%- comment -%} Token em variável: chave literal dentro de {{ }} quebra o parser do Shopify {%- endcomment -%}
   {%- assign fs_token = '{valor}' -%}
   <div

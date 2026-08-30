@@ -48,7 +48,7 @@
               {%- if product.description != blank -%}
                 <div class="my-4">
                   {% if block.settings.show_title == true %}
-                    <h2 class="font-semibold text-base">{{ block.settings.title_text | default: 'Descrição' }}</h2>
+                    <h2 class="font-semibold text-base">{{ block.settings.title_text }}</h2>
                   {% endif %}
                   <div class="text-sm" {{ block.shopify_attributes }}>
                     {{ product.description }}

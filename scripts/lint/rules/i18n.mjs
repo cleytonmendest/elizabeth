@@ -2,15 +2,17 @@
  * i18n — nenhuma string voltada ao usuário fica hardcoded, e os locales
  * PT/EN nunca divergem.
  *
- * Cobre os quatro modos de falha que a Theme Store reprova:
+ * Cobre os cinco modos de falha que a Theme Store reprova:
  *   1. `label`/`info`/`content`/`name` de schema escritos literalmente
  *   2. chave usada no código que não existe no locale ("translation missing")
  *   3. chave presente em um idioma e ausente no outro
  *   4. chave órfã acumulando no locale (aviso — não quebra a loja)
+ *   5. frase cravada num `| default:` do Liquid
  *
  * O que NÃO é violação, por decisão: `default` de setting e blocos `presets`
- * são conteúdo do lojista (texto literal é o correto), e labels puramente
- * numéricos (dia, hora, minuto) são independentes de idioma.
+ * são conteúdo do lojista (texto literal é o correto — é lá que o texto do
+ * modo 5 deve morar), e labels puramente numéricos (dia, hora, minuto) são
+ * independentes de idioma.
  */
 import {
   allLiquid,
@@ -24,6 +26,7 @@ import {
   stripInert,
   walkSchema,
 } from '../lib.mjs';
+import { isAllowed } from '../exceptions.mjs';
 
 export const meta = {
   name: 'i18n',
@@ -34,6 +37,33 @@ export const meta = {
 
 const TRANSLATABLE = new Set(['label', 'info', 'content', 'name']);
 const NUMERIC = /^\d+$/;
+
+/** `algo.x | default: 'valor'` — captura a origem junto, para saber quem é "x". */
+const LIQUID_DEFAULT = /([a-zA-Z_][\w.]*)\s*\|\s*default:\s*(['"])([^'"]*)\2/g;
+
+/**
+ * `| default:` recebe frase E valor de código no mesmo lugar, então a posição
+ * não separa os dois — diferente de todo o resto desta regra. E "tem palavra"
+ * também não separa: `'center'`, `'slider'`, `'grid-2'`, `'check-circle'`,
+ * `'general.see_more'` e `'/pages/terms'` têm todos uma palavra dentro.
+ *
+ * O que separa é a FORMA de uma frase escrita para gente ler, e nenhum dos três
+ * sinais é dicionário:
+ *
+ *   letra ESPAÇO letra   "Formas de Pagamento"
+ *   maiúscula inicial    "Descrição"
+ *   letra fora do ASCII  "grátis"
+ *
+ * Medido no tema quando a checagem nasceu: 7 acusados, 24 calados, sem erro dos
+ * dois lados. Valor de código é minúsculo, sem espaço e ASCII — e o que passa
+ * perto (chave `t:`, caminho, cor hex) sai por forma, não por sorte.
+ */
+const CODE_SHAPE = /^([a-z][\w-]*)(\.[\w-]+)+$|^\/[\w/-]*$|^#[0-9a-fA-F]{3,8}$/;
+
+const looksLikePhrase = (value) =>
+  Boolean(value) &&
+  !CODE_SHAPE.test(value) &&
+  (/\p{L}\s+\p{L}/u.test(value) || /^\p{Lu}/u.test(value) || /[^\x00-\x7F]/.test(value));
 
 const STOREFRONT = { 'pt-BR': 'locales/pt-BR.json', en: 'locales/en.default.json' };
 const SCHEMA = { 'pt-BR': 'locales/pt-BR.schema.json', en: 'locales/en.default.schema.json' };
@@ -160,6 +190,7 @@ export function run() {
   }
 
   // --- Storefront: toda chave usada com o filtro `t` precisa existir ---
+  const declaredDefaults = collectDeclaredDefaults();
   const T_FILTER = /'([a-z][a-zA-Z0-9_.]*)'\s*\|\s*t\b/g;
   for (const file of allLiquid()) {
     const src = stripInert(read(file));
@@ -179,6 +210,29 @@ export function run() {
           );
         }
       }
+    }
+
+    // `| default: 'frase'` — a última porta por onde português entra no
+    // storefront sem passar por locale nenhum.
+    for (const match of src.matchAll(LIQUID_DEFAULT)) {
+      const [, from, , value] = match;
+      if (!looksLikePhrase(value)) continue;
+
+      const id = from.split('.').pop();
+      const redundant = declaredDefaults.get(id)?.has(value);
+      if (isAllowed('i18n', file, `liquid-default:${from}`)) continue;
+
+      offenses.push(
+        offense({
+          rule: 'i18n',
+          file,
+          line: lineAt(src, match.index),
+          code: `liquid-default:${from}`,
+          message: redundant
+            ? `\`| default: ${JSON.stringify(value)}\` é redundante — o setting "${id}" já declara esse mesmo texto como \`default\` no schema, que é de onde o lojista o edita. Uma segunda cópia aqui só pode divergir; remova o filtro.`
+            : `Texto ${JSON.stringify(value)} cravado num \`| default:\` — não passa por locale, então a loja em outro idioma mostra isto em português. Use o \`default\` do setting (que é conteúdo do lojista) ou uma chave \`t:\`.`,
+        })
+      );
     }
   }
 
@@ -264,4 +318,42 @@ function reportOrphans(flatKeys, used, file, offenses) {
       })
     );
   }
+}
+
+/**
+ * Todo `default` declarado em schema, indexado por id do setting:
+ * `id -> Set(valores)`. Serve para distinguir um `| default:` que é cópia
+ * redundante de um que é a única fonte do texto — os dois são violação, mas a
+ * correção é diferente: um se apaga, o outro precisa ganhar dono antes.
+ *
+ * O índice é por id e não por arquivo porque um snippet lê
+ * `block.settings.installment_text` sem saber de que section o bloco veio. Casar
+ * também o VALOR evita que dois settings homônimos se confundam.
+ */
+function collectDeclaredDefaults() {
+  const byId = new Map();
+  const add = (id, value) => {
+    if (!id || typeof value !== 'string') return;
+    if (!byId.has(id)) byId.set(id, new Set());
+    byId.get(id).add(value);
+  };
+
+  try {
+    for (const group of readJSONC('config/settings_schema.json')) {
+      for (const setting of group.settings ?? []) add(setting.id, setting.default);
+    }
+  } catch {
+    // JSON inválido já é reportado acima; aqui só não há o que indexar.
+  }
+
+  for (const file of list('sections')) {
+    const parsed = extractSchema(read(file));
+    if (!parsed?.json) continue;
+    for (const setting of parsed.json.settings ?? []) add(setting.id, setting.default);
+    for (const block of parsed.json.blocks ?? []) {
+      for (const setting of block.settings ?? []) add(setting.id, setting.default);
+    }
+  }
+
+  return byId;
 }

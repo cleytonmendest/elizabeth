@@ -1,6 +1,6 @@
 {
   "$comment": "Dívida técnica conhecida. Gerado por \"npm run lint:baseline\". Só deve encolher — nunca adicione entradas à mão para silenciar uma violação nova.",
-  "generated": "2026-08-29",
+  "generated": "2026-08-30",
   "counts": {
     "boundaries": 2,
     "editable": 7,
