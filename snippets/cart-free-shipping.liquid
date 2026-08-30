@@ -15,8 +15,8 @@
   {%- if fs_remaining < 0 -%}{%- assign fs_remaining = 0 -%}{%- endif -%}
   {%- assign fs_pct = fs_total | times: 100 | divided_by: fs_threshold -%}
   {%- if fs_pct > 100 -%}{%- assign fs_pct = 100 -%}{%- endif -%}
-  {%- assign fs_msg_success = settings.cart_free_shipping_success | default: 'Você ganhou frete grátis!' -%}
-  {%- assign fs_msg_progress = settings.cart_free_shipping_message | default: 'Faltam {valor} para o frete grátis' -%}
+  {%- assign fs_msg_success = settings.cart_free_shipping_success -%}
+  {%- assign fs_msg_progress = settings.cart_free_shipping_message -%}
   {%- comment -%} Token em variável: chave literal dentro de {{ }} quebra o parser do Shopify {%- endcomment -%}
   {%- assign fs_token = '{valor}' -%}
   <div
@@ -26,14 +26,20 @@
     data-msg-success="{{ fs_msg_success | escape }}"
     data-msg-progress="{{ fs_msg_progress | escape }}"
   >
-    <p class="text-xs text-foreground/70 mb-2 text-center" data-fs-message>
-      {%- if fs_remaining == 0 -%}
-        {{ fs_msg_success }}
-      {%- else -%}
-        {%- capture fs_amount -%}<strong>{{ fs_remaining | money }}</strong>{%- endcapture -%}
-        {{ fs_msg_progress | replace: fs_token, fs_amount }}
-      {%- endif -%}
-    </p>
+    {%- comment -%}
+      Sem mensagem, o <p> não é renderizado — a barra de progresso já informa
+      sozinha. O lojista que limpa o campo está escolhendo não ter texto, e um
+      parágrafo vazio não é nem uma coisa nem outra.
+    {%- endcomment -%}
+    {%- if fs_remaining == 0 -%}
+      {%- assign fs_msg = fs_msg_success -%}
+    {%- else -%}
+      {%- capture fs_amount -%}<strong>{{ fs_remaining | money }}</strong>{%- endcapture -%}
+      {%- assign fs_msg = fs_msg_progress | replace: fs_token, fs_amount -%}
+    {%- endif -%}
+    {%- if fs_msg != blank -%}
+      <p class="text-xs text-foreground/70 mb-2 text-center" data-fs-message>{{ fs_msg }}</p>
+    {%- endif -%}
     <div class="h-1 w-full rounded-full bg-foreground/10 overflow-hidden">
       <div class="h-full rounded-full bg-foreground transition-[width] duration-500" data-fs-fill style="width: {{ fs_pct }}%"></div>
     </div>

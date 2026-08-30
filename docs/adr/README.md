@@ -43,3 +43,5 @@ Numeração sequencial, nunca reutilizada.
 | --- | --- | --- |
 | [0001](0001-guard-rails-executaveis-no-lugar-do-roadmap.md) | Guard rails executáveis no lugar do ROADMAP | Aceito |
 | [0002](0002-taxonomia-de-labels-em-tres-eixos.md) | Taxonomia de labels em três eixos | Aceito |
+| [0003](0003-tres-niveis-de-customizacao.md) | Três níveis de customização | Aceito |
+| [0004](0004-o-que-ganha-um-toggle.md) | Um toggle é decisão de negócio, não preferência de layout | Aceito |

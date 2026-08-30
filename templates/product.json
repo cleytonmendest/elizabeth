@@ -36,10 +36,7 @@
         "buy_button_HnrRzY": {
           "type": "buy_button",
           "settings": {
-            "button_text": "ADICIONAR AO CARRINHO",
-            "floating_button": true,
-            "show_product_name": true,
-            "show_product_price": true
+            "button_text": "ADICIONAR AO CARRINHO"
           }
         },
         "inventory_St0ckk": {

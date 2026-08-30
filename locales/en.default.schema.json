@@ -244,19 +244,6 @@
             },
             "button_text": {
               "label": "Button text"
-            },
-            "floating_header": {
-              "content": "Floating button settings"
-            },
-            "floating_button": {
-              "label": "Enable floating buy button?",
-              "info": "Mobile only"
-            },
-            "show_product_name": {
-              "label": "Show product name?"
-            },
-            "show_product_price": {
-              "label": "Show product price?"
             }
           }
         },
@@ -1104,19 +1091,6 @@
             },
             "button_text": {
               "label": "Button text"
-            },
-            "floating_header": {
-              "content": "Floating button settings"
-            },
-            "floating_button": {
-              "label": "Enable floating buy button?",
-              "info": "Mobile only"
-            },
-            "show_product_name": {
-              "label": "Show product name?"
-            },
-            "show_product_price": {
-              "label": "Show product price?"
             }
           }
         },
@@ -1202,9 +1176,6 @@
         },
         "columns_desktop": {
           "label": "Columns (Desktop)"
-        },
-        "background_color": {
-          "label": "Background color"
         },
         "cards_header": {
           "content": "Card settings"
@@ -1963,6 +1934,32 @@
         },
         "padding_bottom": {
           "label": "Bottom padding"
+        }
+      }
+    }
+  },
+  "settings_schema": {
+    "design": {
+      "name": "Design",
+      "intro": "These controls apply to the whole store. Choosing a value here keeps every section consistent with the others.",
+      "radius_style": {
+        "label": "Corner rounding",
+        "info": "Applies to buttons, cards, inputs and modals. The smaller and larger sizes derive from this choice.",
+        "options": {
+          "none": "Square",
+          "subtle": "Subtle",
+          "soft": "Soft",
+          "round": "Rounded"
+        }
+      },
+      "font_scale": {
+        "label": "Text size",
+        "info": "Scales the whole type scale, keeping the ratio between headings and body text.",
+        "options": {
+          "compact": "Compact",
+          "default": "Default",
+          "large": "Large",
+          "xlarge": "Extra large"
         }
       }
     }

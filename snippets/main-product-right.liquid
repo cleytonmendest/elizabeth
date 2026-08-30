@@ -48,8 +48,8 @@
       {%- when 'description' -%}
         {%- if product.description != blank -%}
           <div>
-            {% if block.settings.show_title == true %}
-              <h2 class="text-xs uppercase tracking-[0.18em] text-foreground/50 mb-2">{{ block.settings.title_text | default: 'Descrição' }}</h2>
+            {% if block.settings.show_title == true and block.settings.title_text != blank %}
+              <h2 class="text-xs uppercase tracking-[0.18em] text-foreground/50 mb-2">{{ block.settings.title_text }}</h2>
             {% endif %}
             <div class="text-sm leading-relaxed text-foreground/80" {{ block.shopify_attributes }}>
               {{ product.description }}

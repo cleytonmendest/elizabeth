@@ -1,5 +1,5 @@
 /**
- * Sticky Add to Cart (Mobile)
+ * Sticky Add to Cart (desktop e mobile)
  * - Controla apenas a visibilidade do sticky bar
  * - Aparece quando o botão principal não está visível na tela
  * - Toda lógica de add-to-cart é gerenciada pelo componente <add-to-cart>

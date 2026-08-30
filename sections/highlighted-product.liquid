@@ -47,8 +47,8 @@
             {%- when 'description' -%}
               {%- if product.description != blank -%}
                 <div class="my-4">
-                  {% if block.settings.show_title == true %}
-                    <h2 class="font-semibold text-base">{{ block.settings.title_text | default: 'Descrição' }}</h2>
+                  {% if block.settings.show_title == true and block.settings.title_text != blank %}
+                    <h2 class="font-semibold text-base">{{ block.settings.title_text }}</h2>
                   {% endif %}
                   <div class="text-sm" {{ block.shopify_attributes }}>
                     {{ product.description }}
@@ -184,29 +184,6 @@
           "label": "t:sections.highlighted_product.blocks.buy_button.settings.button_text.label",
           "id": "button_text",
           "default": "ADICIONAR AO CARRINHO"
-        },
-        {
-          "type": "header",
-          "content": "t:sections.highlighted_product.blocks.buy_button.settings.floating_header.content"
-        },
-        {
-          "type": "checkbox",
-          "label": "t:sections.highlighted_product.blocks.buy_button.settings.floating_button.label",
-          "info": "t:sections.highlighted_product.blocks.buy_button.settings.floating_button.info",
-          "id": "floating_button",
-          "default": true
-        },
-        {
-          "type": "checkbox",
-          "label": "t:sections.highlighted_product.blocks.buy_button.settings.show_product_name.label",
-          "id": "show_product_name",
-          "default": true
-        },
-        {
-          "type": "checkbox",
-          "label": "t:sections.highlighted_product.blocks.buy_button.settings.show_product_price.label",
-          "id": "show_product_price",
-          "default": true
         }
       ]
     },

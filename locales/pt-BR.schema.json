@@ -244,19 +244,6 @@
             },
             "button_text": {
               "label": "Texto do botão"
-            },
-            "floating_header": {
-              "content": "Configurações de botão flutuante"
-            },
-            "floating_button": {
-              "label": "Ativa botão de comprar flutuante?",
-              "info": "Somente quando mobile"
-            },
-            "show_product_name": {
-              "label": "Exibe Nome do produto?"
-            },
-            "show_product_price": {
-              "label": "Exibe Preço do produto?"
             }
           }
         },
@@ -1104,19 +1091,6 @@
             },
             "button_text": {
               "label": "Texto do botão"
-            },
-            "floating_header": {
-              "content": "Configurações de botão flutuante"
-            },
-            "floating_button": {
-              "label": "Ativa botão de comprar flutuante?",
-              "info": "Somente quando mobile"
-            },
-            "show_product_name": {
-              "label": "Exibe Nome do produto?"
-            },
-            "show_product_price": {
-              "label": "Exibe Preço do produto?"
             }
           }
         },
@@ -1202,9 +1176,6 @@
         },
         "columns_desktop": {
           "label": "Colunas (Desktop)"
-        },
-        "background_color": {
-          "label": "Cor de Fundo"
         },
         "cards_header": {
           "content": "Configurações dos Cards"
@@ -1963,6 +1934,32 @@
         },
         "padding_bottom": {
           "label": "Espaçamento inferior"
+        }
+      }
+    }
+  },
+  "settings_schema": {
+    "design": {
+      "name": "Design",
+      "intro": "Estes controles valem para a loja inteira. Escolher um valor aqui mantém todas as seções coerentes entre si.",
+      "radius_style": {
+        "label": "Arredondamento",
+        "info": "Aplica-se a botões, cards, inputs e modais. Os tamanhos menores e maiores derivam desta escolha.",
+        "options": {
+          "none": "Reto",
+          "subtle": "Sutil",
+          "soft": "Suave",
+          "round": "Arredondado"
+        }
+      },
+      "font_scale": {
+        "label": "Tamanho do texto",
+        "info": "Multiplica a escala tipográfica inteira, mantendo a proporção entre títulos e corpo.",
+        "options": {
+          "compact": "Compacto",
+          "default": "Padrão",
+          "large": "Grande",
+          "xlarge": "Muito grande"
         }
       }
     }

@@ -48,6 +48,11 @@ npm run lint:baseline                 # regrava a dívida (só depois de reduzi-
 do baseline só pode cair — o CI reprova se crescer. Ao corrigir dívida, rode
 `npm run lint:baseline` e mencione o número antes → depois no PR.
 
+A única exceção: **melhorar a cobertura de um linter** encontra violações que
+sempre existiram e não eram vistas. Isso é dívida escondida virando visível,
+não dívida nova. O CI libera o crescimento quando o diff toca
+`scripts/lint/rules/` — e só nesse caso.
+
 Violação legítima (cor de marca de terceiro, scrim de imagem, lightbox) vai
 para `scripts/lint/config/design-exceptions.json` **com justificativa escrita**
 — o linter falha se o campo `reason` faltar.
@@ -60,12 +65,17 @@ fica preso no markup. Cor vem sempre do color scheme da Shopify, nunca de hex:
 ```
 config/settings_schema.json   (lojista edita no admin)
       ↓ layout/theme.liquid gera
-CSS custom properties (--color-*)
+CSS custom properties (--color-*, --radius-*, --font-scale, --page-width)
       ↓ tailwind.config.js consome
-tokens semânticos (bg-background, text-foreground, bg-button…)
+tokens semânticos (bg-background, rounded-theme, text-sm…)
       ↓
-.liquid usa SÓ token
+.liquid usa SÓ token — e nunca sabe qual é o valor
 ```
+
+O lojista controla o **valor**; você controla **onde ele se aplica**. É o que
+deixa o tema customizável sem virar colagem. Um eixo tem UM controle e a escala
+deriva por `calc()` — ver [ADR 0003](docs/adr/0003-tres-niveis-de-customizacao.md),
+que também define onde cada setting pode viver.
 
 A classe `.color-scheme-N` **só define as variáveis** — ela não pinta nada
 sozinha. Toda section precisa aplicar fundo **e** cor de texto
@@ -115,10 +125,12 @@ hardcode URL de carrinho ou busca.
 ## Convenções
 
 - Liquid em `snake_case`; classes Tailwind preferidas a CSS custom
-- Raio: `rounded-theme` (8px) é o padrão; `-sm` (4px), `-lg` (12px),
-  `rounded-full` e `rounded-none` para casos específicos. **Nada de `rounded-lg`
-  / `-md` / `-xl`** — o linter reprova.
-- Corpo de texto: `text-sm` (14px). Escala completa em `tailwind.config.js`.
+- Raio: `rounded-theme` é o padrão; `-sm` e `-lg` derivam dele. **O valor é do
+  lojista** (`settings.radius_style`), então nunca assuma "8px" — use o token.
+  `rounded-full` e `rounded-none` para casos específicos. **Nada de
+  `rounded-lg` / `-md` / `-xl`** — o linter reprova.
+- Corpo de texto: `text-sm`. A escala inteira é multiplicada por
+  `settings.font_scale`, também do lojista. Degraus em `tailwind.config.js`.
 - Valor arbitrário (`text-[15px]`, `tracking-[0.18em]`) é violação: promova a
   token no config e use o token.
 

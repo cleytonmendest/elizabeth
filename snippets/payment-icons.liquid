@@ -4,7 +4,8 @@
   Parâmetros:
   - block: bloco com configurações (opcional)
   - show_title: mostrar título (default: true)
-  - title: título customizado (default: "Formas de Pagamento")
+  - title: título customizado (sem default aqui — o texto tem dono no
+    setting `title` do bloco payment_icons, em sections/main-product.liquid)
   - icon_style: estilo dos ícones - color ou grayscale (default: color)
   - size: tamanho dos ícones - small, medium, large (default: medium)
 {%- endcomment -%}
@@ -17,7 +18,6 @@
     assign size = block.settings.icon_size
   else
     assign show_title = show_title | default: true
-    assign title = title | default: 'Formas de Pagamento'
     assign icon_style = icon_style | default: 'color'
     assign size = size | default: 'medium'
   endif
@@ -121,9 +121,9 @@
   </div>
 
   {%- comment -%} Texto adicional opcional {%- endcomment -%}
-  {% if block and block.settings.show_installment_text %}
+  {% if block and block.settings.show_installment_text and block.settings.installment_text != blank %}
     <p class="text-xs text-foreground/60 mt-2">
-      {{ block.settings.installment_text | default: 'Parcele em até 6x sem juros no cartão de crédito' }}
+      {{ block.settings.installment_text }}
     </p>
   {% endif %}
 </div>

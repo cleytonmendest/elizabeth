@@ -12,21 +12,28 @@
  *      Liquid renderiza vazio sem erro. Um `{% if %}` sobre ele é sempre falso,
  *      então o bloco inteiro some da loja e nada indica o porquê.
  *
+ * Vale nos dois escopos, porque a falha é a mesma:
+ *
+ *   GLOBAL   `config/settings_schema.json` × todo o tema
+ *   SECTION  o `{% schema %}` da section × o markup dela
+ *
  * Esta regra existe porque `social_tiktok_link`, `social_snapchat_link`,
  * `social_tumblr_link` e `social_vimeo_link` estão declarados desde sempre e
- * nunca foram lidos por arquivo nenhum do tema.
+ * nunca foram lidos por arquivo nenhum do tema. O escopo de section entrou
+ * depois: `blog-posts` declarava um `background_color` que o markup nunca lia,
+ * e só foi pego de raspão pela regra `designscope`, por outro motivo.
  *
  * Nota sobre o que NÃO é violação: `type: header` e `type: paragraph` não têm
  * `id` (são rótulos visuais do editor), e `config/settings_data.json` é onde os
  * valores ficam guardados — armazenar não é usar.
  */
-import { allLiquid, lineAt, offense, read, readJSONC, stripInert } from '../lib.mjs';
+import { allLiquid, extractSchema, lineAt, list, offense, read, readJSONC, stripInert } from '../lib.mjs';
 import { isAllowed } from '../exceptions.mjs';
 
 export const meta = {
   name: 'settings',
-  title: 'Settings globais',
-  description: 'Todo setting declarado é lido, e todo setting lido é declarado.',
+  title: 'Settings declarados',
+  description: 'Todo setting declarado é lido — global e de section — e todo lido é declarado.',
   ratchet: true,
 };
 
@@ -97,5 +104,89 @@ export function run() {
     );
   }
 
+  // --- Settings de section: declarados no schema, lidos no markup ---
+  //
+  // Um setting de section é lido como `section.settings.x`, e um de bloco como
+  // `block.settings.x` — mas o nome da variável do loop varia (`b.settings.x`),
+  // então casamos `settings.x` com qualquer prefixo. Isso pode colidir com um
+  // setting global de mesmo id, o que faz a regra deixar de reportar em vez de
+  // reportar errado: o lado seguro.
+  //
+  // O escopo NÃO é só o arquivo da section. Um snippet renderizado por ela lê
+  // `section.settings.x` direto (product-gallery faz isso), ou recebe o valor
+  // como parâmetro. Olhar só a section acusa 70 falsos positivos — 31 no
+  // main-product, que delega quase tudo a snippets. Então o escopo é o fecho
+  // transitivo dos `render` a partir da section.
+  for (const file of list('sections')) {
+    const parsed = extractSchema(read(file));
+    if (!parsed?.json) continue;
+
+    const name = file.replace('sections/', '').replace('.liquid', '');
+    // Só markup: o próprio `{% schema %}` cita todos os ids, e presets são
+    // valores guardados, não uso.
+    const markup = withRenderedSnippets(file);
+
+    // Liquid permite apelidar o objeto: `assign st = section.settings` e depois
+    // `st.heading`. countdown-timer faz isso com TODOS os seus 19 settings, o
+    // que fazia a regra acusar a section inteira. Seguir o alias é obrigatório
+    // para a regra dizer a verdade.
+    const holders = ['settings'];
+    for (const alias of markup.matchAll(
+      /\{%-?\s*assign\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*[a-zA-Z_][a-zA-Z0-9_]*\.settings\s*-?%\}|\bassign\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*[a-zA-Z_][a-zA-Z0-9_]*\.settings\b/g
+    )) {
+      holders.push(alias[1] ?? alias[2]);
+    }
+
+    const declared = [
+      ...(parsed.json.settings ?? []).map((s) => ({ s, where: 'section' })),
+      ...(parsed.json.blocks ?? []).flatMap((b) =>
+        (b.settings ?? []).map((s) => ({ s, where: `bloco "${b.type}"` }))
+      ),
+    ];
+
+    for (const { s: setting, where } of declared) {
+      if (!setting.id) continue;
+      const id = setting.id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const used = new RegExp(
+        `(?:${holders.join('|')})\\.${id}\\b|(?:${holders.join('|')})\\[['"\`]${id}['"\`]\\]`
+      ).test(markup);
+      if (used) continue;
+      if (isAllowed('settings', file, `unused-section:${setting.id}`)) continue;
+
+      offenses.push(
+        offense({
+          rule: 'settings',
+          file,
+          line: parsed.line,
+          code: `unused-section:${setting.id}`,
+          message: `Setting "${setting.id}" (${where} de "${name}") não é lido no markup — o lojista preenche e nada acontece.`,
+        })
+      );
+    }
+  }
+
   return offenses;
+}
+
+/**
+ * O markup da section somada ao de todo snippet que ela renderiza, direta ou
+ * indiretamente. Um snippet lê `section.settings.x` como se estivesse na
+ * section, então ignorá-lo faz a regra acusar settings que funcionam.
+ */
+function withRenderedSnippets(file, seen = new Set()) {
+  if (seen.has(file)) return '';
+  seen.add(file);
+
+  let src;
+  try {
+    src = stripInert(read(file));
+  } catch {
+    return '';
+  }
+
+  let out = src;
+  for (const match of src.matchAll(/\{%-?\s*(?:render|include)\s+'([a-zA-Z0-9_\/-]+)'/g)) {
+    out += withRenderedSnippets(`snippets/${match[1]}.liquid`, seen);
+  }
+  return out;
 }

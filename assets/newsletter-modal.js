@@ -158,7 +158,7 @@ class NewsletterModal extends HTMLElement {
         const email = this.emailInput.value.trim();
 
         if (!this._validateEmail(email)) {
-            this._showFeedback('Por favor, insira um e-mail válido.', 'error');
+            this._showFeedback(this.form.dataset.invalidMessage ?? '', 'error');
             return;
         }
 
@@ -181,8 +181,7 @@ class NewsletterModal extends HTMLElement {
 
             if (response.ok) {
                 // Sucesso
-                const successMessage = this.form.dataset.successMessage || 'Obrigado! Você receberá nossas novidades em breve.';
-                this._showFeedback(successMessage, 'success');
+                this._showFeedback(this.form.dataset.successMessage ?? '', 'success');
 
                 // Limpa form
                 this.emailInput.value = '';
@@ -199,8 +198,7 @@ class NewsletterModal extends HTMLElement {
             }
         } catch (error) {
             console.error('Erro ao cadastrar newsletter:', error);
-            const errorMessage = this.form.dataset.errorMessage || 'Ops! Algo deu errado. Tente novamente.';
-            this._showFeedback(errorMessage, 'error');
+            this._showFeedback(this.form.dataset.errorMessage ?? '', 'error');
         } finally {
             this._setLoading(false);
         }

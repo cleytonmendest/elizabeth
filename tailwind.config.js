@@ -42,24 +42,30 @@ module.exports = {
       // Arredondamento padronizado (ver Design Standards no CLAUDE.md).
       // Usar rounded-theme em botões/cards/inputs/modais centraliza o controle:
       // mudar o nível de arredondamento do tema inteiro = uma linha aqui.
+      // Arredondamento — o VALOR vem do lojista (settings.radius_style), estes
+      // tokens só dizem ONDE ele se aplica. Ver ADR 0003. Os degraus derivam
+      // por calc() em layout/theme.liquid, então mudar o nível de
+      // arredondamento do tema inteiro continua sendo uma escolha só.
       borderRadius: {
-        theme: '8px',
-        'theme-sm': '4px',
-        'theme-lg': '12px',
+        theme: 'var(--radius-theme)',
+        'theme-sm': 'var(--radius-theme-sm)',
+        'theme-lg': 'var(--radius-theme-lg)',
       },
-      // Escala tipográfica — ancorada no CORPO = 14px (text-sm).
-      // Fonte única da verdade para tamanhos; o body herda 14px (layout/theme.liquid).
-      // Papel semântico de cada degrau no comentário.
+      // Escala tipográfica — ancorada no CORPO = 14px (text-sm) e multiplicada
+      // por --font-scale, que o lojista escolhe (settings.font_scale). Um
+      // multiplicador único em vez de nove campos: a proporção entre título e
+      // corpo fica preservada por construção. Ver ADR 0003.
+      // Os valores em px nos comentários são os de --font-scale: 1.
       fontSize: {
-        'xs':   ['0.75rem',  { lineHeight: '1rem' }],     // 12px · legendas, labels, textos legais
-        'sm':   ['0.875rem', { lineHeight: '1.25rem' }],  // 14px · CORPO (padrão)
-        'base': ['1rem',     { lineHeight: '1.5rem' }],   // 16px · corpo destacado / títulos pequenos
-        'lg':   ['1.125rem', { lineHeight: '1.75rem' }],  // 18px · subtítulo / h6
-        'xl':   ['1.25rem',  { lineHeight: '1.75rem' }],  // 20px · h5
-        '2xl':  ['1.5rem',   { lineHeight: '2rem' }],     // 24px · h4 / título de seção
-        '3xl':  ['1.875rem', { lineHeight: '2.25rem' }],  // 30px · h3
-        '4xl':  ['2.25rem',  { lineHeight: '2.5rem' }],   // 36px · h2
-        '5xl':  ['3rem',     { lineHeight: '1' }],        // 48px · h1 / hero
+        'xs':   ['calc(0.75rem * var(--font-scale))', { lineHeight: 'calc(1rem * var(--font-scale))' }],  // 12px · legendas, labels, textos legais
+        'sm':   ['calc(0.875rem * var(--font-scale))', { lineHeight: 'calc(1.25rem * var(--font-scale))' }],  // 14px · CORPO (padrão)
+        'base': ['calc(1rem * var(--font-scale))', { lineHeight: 'calc(1.5rem * var(--font-scale))' }],  // 16px · corpo destacado / títulos pequenos
+        'lg':   ['calc(1.125rem * var(--font-scale))', { lineHeight: 'calc(1.75rem * var(--font-scale))' }],  // 18px · subtítulo / h6
+        'xl':   ['calc(1.25rem * var(--font-scale))', { lineHeight: 'calc(1.75rem * var(--font-scale))' }],  // 20px · h5
+        '2xl':  ['calc(1.5rem * var(--font-scale))', { lineHeight: 'calc(2rem * var(--font-scale))' }],  // 24px · h4 / título de seção
+        '3xl':  ['calc(1.875rem * var(--font-scale))', { lineHeight: 'calc(2.25rem * var(--font-scale))' }],  // 30px · h3
+        '4xl':  ['calc(2.25rem * var(--font-scale))', { lineHeight: 'calc(2.5rem * var(--font-scale))' }],  // 36px · h2
+        '5xl':  ['calc(3rem * var(--font-scale))', { lineHeight: '1' }],  // 48px · h1 / hero
       },
     },
   },

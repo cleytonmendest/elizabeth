@@ -29,7 +29,11 @@
       href="{{ routes.root_url }}"
       class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 rounded-theme hover:opacity-90 transition-opacity"
     >
-      {{ section.settings.button_label | default: 'Voltar à página inicial' }}
+      {%- if section.settings.button_label != blank -%}
+        {{ section.settings.button_label }}
+      {%- else -%}
+        {{ 'general.404.back_home' | t }}
+      {%- endif -%}
     </a>
   </div>
 </div>
