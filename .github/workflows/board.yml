@@ -32,7 +32,12 @@ name: Board
 
 on:
   issues:
-    types: [opened, reopened, transferred]
+    types: [opened, reopened, transferred, closed]
+  # O Status sai destes fatos: PR que fecha a issue, e branch que a reivindica.
+  pull_request:
+    types: [opened, closed, reopened, ready_for_review, converted_to_draft]
+  create:
+  delete:
   workflow_dispatch:
     inputs:
       backfill:
@@ -44,16 +49,15 @@ on:
 env:
   PROJECT_URL: https://github.com/users/cleytonmendest/projects/2
 
-# Duas execuções ao mesmo tempo tentariam adicionar o mesmo item.
-concurrency:
-  group: board-${{ github.event.issue.number || 'backfill' }}
-  cancel-in-progress: false
-
 jobs:
   add:
     name: Issue nova no board
     if: github.event_name == 'issues'
     runs-on: ubuntu-latest
+    # Duas execuções para a mesma issue tentariam adicionar o mesmo item.
+    concurrency:
+      group: board-add-${{ github.event.issue.number }}
+      cancel-in-progress: false
     steps:
       - name: O secret PROJECT_TOKEN existe?
         env:
@@ -74,6 +78,9 @@ jobs:
     name: Backfill das issues abertas
     if: github.event_name == 'workflow_dispatch' && inputs.backfill
     runs-on: ubuntu-latest
+    concurrency:
+      group: board-backfill
+      cancel-in-progress: false
     steps:
       - name: O secret PROJECT_TOKEN existe?
         env:
@@ -168,3 +175,49 @@ jobs:
             exit 1
           fi
           echo "$total issue(s) no board."
+
+  sync:
+    name: Status derivado dos fatos
+    # Roda em tudo, inclusive depois do backfill: é um recálculo completo, não
+    # um incremento. Recalcular é idempotente e conserta qualquer divergência
+    # sozinho — não existe estado a manter entre execuções.
+    #
+    # `needs` só serve para ORDENAR: num dispatch, o backfill põe os itens no
+    # board e o sync precisa vir depois para enxergá-los. Como os dois outros
+    # jobs são pulados na maior parte dos eventos, o `if` precisa ser explícito
+    # — sem ele, `needs` de job pulado pularia o sync junto.
+    needs: [add, backfill]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    concurrency:
+      group: board-sync
+      # Um recálculo mais novo torna o anterior irrelevante, então cancelar o
+      # velho é seguro (e evita fila em rajada de eventos).
+      cancel-in-progress: true
+    steps:
+      - name: O secret PROJECT_TOKEN existe?
+        env:
+          TOKEN: ${{ secrets.PROJECT_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Falta o secret PROJECT_TOKEN. O GITHUB_TOKEN padrão não escreve em projeto de usuário — veja as instruções no topo de .github/workflows/board.yml."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      # A tabela de decisão é pura, então dá para exercitá-la sem rede. Roda
+      # ANTES de tocar o board: se a lógica quebrou, o job para aqui em vez de
+      # escrever status errado em 21 itens.
+      - name: A tabela de decisão continua valendo?
+        run: node scripts/board-sync.mjs --self-test
+
+      - name: Recalcular o Status
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: node scripts/board-sync.mjs
