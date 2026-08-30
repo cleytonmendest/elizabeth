@@ -34,6 +34,24 @@
  * `gh` falso que só sabia responder sucesso. Verificação que não pode falhar
  * não verifica.
  *
+ * ── Duas reconciliações, um caminho só ─────────────────────────────────────
+ *
+ * O script faz DUAS coisas, e as duas são recálculo completo: toda issue
+ * aberta tem item no board, e todo item gerido tem o Status que os fatos
+ * exigem. Nenhuma das duas é incremental, então rodar de novo conserta
+ * divergência em vez de acumular estado.
+ *
+ * Antes isso eram três jobs: um que adicionava a issue nova (só em evento
+ * `issues`), um backfill sob demanda (só em `workflow_dispatch`) e este sync.
+ * Dividir por tipo de evento criou o pior tipo de bug: o job de adicionar
+ * apontava para `actions/add-to-project@v1`, uma tag que nunca existiu, e
+ * ninguém percebeu por dois dias — porque as execuções verdes eram todas de
+ * `workflow_dispatch` e `pull_request`, que PULAM esse job. Caminho que só
+ * roda numa circunstância é caminho que ninguém testa.
+ *
+ * Agora todo evento executa o mesmo código. Uma execução verde de qualquer
+ * gatilho prova o caminho inteiro.
+ *
  * ── Uso ────────────────────────────────────────────────────────────────────
  *
  *   node scripts/board-sync.mjs --self-test
@@ -84,6 +102,18 @@ export function decide(issue, { branches = [], prs = [] }, { temInReview = false
   return 'Todo';
 }
 
+/**
+ * Issues abertas que ainda não têm item no board. Pura, pelo mesmo motivo de
+ * `decide`: é a parte onde dá para errar em silêncio.
+ *
+ * Item sem `content.number` é rascunho do board ou PR — não representa issue
+ * nenhuma e não pode fazer uma issue de verdade parecer já incluída.
+ */
+export function faltamNoBoard(issuesAbertas, itens) {
+  const jaTem = new Set(itens.map((i) => i.content?.number).filter(Boolean));
+  return issuesAbertas.filter((i) => !jaTem.has(i.number));
+}
+
 // ───────────────────────────────────────────────────────────────────────────
 
 const CASOS = [
@@ -112,6 +142,16 @@ const CASOS_OVERRIDE = [
   ['qualquer coluna nova é humana', 'Aguardando lojista', true],
 ];
 
+/** Casos de `faltamNoBoard`: quem entra no board e quem já está lá. */
+const CASOS_FALTANTES = [
+  ['board vazio: todas entram', [{ number: 1 }, { number: 2 }], [], [1, 2]],
+  ['todas já estão: nenhuma entra', [{ number: 1 }], [{ content: { number: 1 } }], []],
+  ['só a que falta', [{ number: 1 }, { number: 2 }], [{ content: { number: 1 } }], [2]],
+  ['rascunho do board não conta como issue', [{ number: 1 }], [{ content: null }], [1]],
+  ['item sem content não conta como issue', [{ number: 1 }], [{}], [1]],
+  ['issue fechada no board não é readicionada', [], [{ content: { number: 9 } }], []],
+];
+
 function selfTest() {
   let falhas = 0;
   for (const [nome, issue, fatos, temInReview, esperado] of CASOS) {
@@ -126,7 +166,13 @@ function selfTest() {
     if (!ok) falhas++;
     console.log(`  ${ok ? 'ok  ' : 'FALHOU'}  ${nome.padEnd(34)} → ${obtido ? 'não encosta' : 'do sync'}${ok ? '' : '  (esperado o contrário)'}`);
   }
-  const total = CASOS.length + CASOS_OVERRIDE.length;
+  for (const [nome, abertas, itens, esperado] of CASOS_FALTANTES) {
+    const obtido = faltamNoBoard(abertas, itens).map((i) => i.number);
+    const ok = JSON.stringify(obtido) === JSON.stringify(esperado);
+    if (!ok) falhas++;
+    console.log(`  ${ok ? 'ok  ' : 'FALHOU'}  ${nome.padEnd(34)} → [${obtido}]${ok ? '' : `  (esperado [${esperado}])`}`);
+  }
+  const total = CASOS.length + CASOS_OVERRIDE.length + CASOS_FALTANTES.length;
   console.log(falhas ? `\n${falhas} de ${total} caso(s) falharam.` : `\n${total} casos, todos passaram.`);
   return falhas === 0;
 }
@@ -256,6 +302,48 @@ async function main() {
     { project: projeto.id },
     (d) => d.node.items
   );
+
+  // 3.5. Toda issue ABERTA precisa ter item no board.
+  //
+  // `addProjectV2ItemById` casa pelo conteúdo: reenviar uma issue que já está
+  // no board devolve o item existente em vez de duplicar. É o que torna esta
+  // etapa idempotente, e é por isso que ela pode rodar em todo evento em vez
+  // de existir um job separado só para a issue recém-aberta.
+  //
+  // Issue FECHADA não entra: se ela já estiver no board, o passo seguinte a
+  // marca como Done; se nunca entrou, não há por que trazê-la agora.
+  const abertas = await paginate(
+    `query($owner: String!, $repo: String!, $endCursor: String) {
+       repository(owner: $owner, name: $repo) {
+         issues(states: OPEN, first: 100, after: $endCursor) {
+           nodes { id number }
+           pageInfo { hasNextPage endCursor }
+         }
+       }
+     }`,
+    { owner, repo },
+    (d) => d.repository.issues
+  );
+
+  const faltam = faltamNoBoard(abertas, itens);
+  console.log(`${abertas.length} issue(s) aberta(s) · ${faltam.length} fora do board`);
+  for (const issue of faltam) {
+    console.log(`  + #${issue.number}`);
+    if (dryRun) continue;
+    const add = await graphql(
+      `mutation($project: ID!, $content: ID!) {
+         addProjectV2ItemById(input: {projectId: $project, contentId: $content}) { item { id } }
+       }`,
+      { project: projeto.id, content: issue.id }
+    );
+    // Entra na lista desta execução para já sair daqui com o Status certo:
+    // uma issue nova vira item E vira "Todo" no mesmo run, sem segunda passada.
+    itens.push({
+      id: add.addProjectV2ItemById.item.id,
+      fieldValueByName: null,
+      content: { number: issue.number, state: 'OPEN' },
+    });
+  }
 
   // 4. Só o que diverge vira escrita — e só no que o sync é dono.
   const mudancas = [];

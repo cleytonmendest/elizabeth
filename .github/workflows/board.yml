@@ -1,9 +1,27 @@
 name: Board
 
-# Issue nova entra no board sozinha.
-#
 # O board é uma VISTA do backlog, não a fonte da verdade — essa continua sendo
 # a issue. Por isso o fluxo é de mão única: issue → board, nunca o contrário.
+#
+# ── Um job só, de propósito ────────────────────────────────────────────────
+#
+# Isto já foram três jobs: `add` (só em evento `issues`), `backfill` (só em
+# `workflow_dispatch`) e `sync`. A divisão por tipo de evento produziu o pior
+# tipo de bug: o `add` apontava para `actions/add-to-project@v1`, uma tag que
+# nunca existiu — a action publica v1.0.0/v1.0.1/v1.0.2 e um `v2` móvel, mas
+# nunca um `v1` móvel. Ele foi escrito, revisado e mergeado quebrado, e passou
+# dois dias sem ninguém ver, porque as execuções verdes eram todas de
+# `workflow_dispatch` e `pull_request` — que PULAM esse job. A primeira issue
+# aberta depois disso reprovou, e as seguintes também.
+#
+# A lição é a mesma que este repositório já aprendeu na catraca do baseline:
+# caminho que só roda numa circunstância é caminho que ninguém testa. Agora
+# todo gatilho executa exatamente o mesmo código, e uma execução verde de
+# qualquer um deles prova o caminho inteiro.
+#
+# `scripts/board-sync.mjs` reconcilia as duas coisas em cada execução: toda
+# issue aberta tem item, e todo item gerido tem o Status que os fatos exigem.
+# Recálculo completo é idempotente — rodar de novo conserta divergência.
 #
 # ── Por que isto precisa de um PAT ─────────────────────────────────────────
 #
@@ -16,19 +34,18 @@ name: Board
 #
 #   1. github.com/settings/tokens → "Generate new token (classic)"
 #      escopo: `project`, e SÓ ele. (`read:project` marca junto, é
-#      sub-escopo.) O backfill lista issues de um repo PÚBLICO, o que não
-#      exige escopo nenhum — por isso `repo` não entra aqui: ele daria
-#      leitura e escrita em todos os repositórios da conta sem necessidade.
-#      Se este repo virar privado um dia, aí sim o backfill passa a precisar
-#      de `repo` e falha até ganhá-lo.
+#      sub-escopo.) Listar issues de um repo PÚBLICO não exige escopo nenhum
+#      — por isso `repo` não entra aqui: ele daria leitura e escrita em todos
+#      os repositórios da conta sem necessidade. Se este repo virar privado um
+#      dia, aí sim passa a precisar de `repo` e falha até ganhá-lo.
 #      Um token fine-grained também serve, e é mais apertado: limitado a
 #      este repositório, com Projects = Read and write.
 #   2. No repo: Settings → Secrets and variables → Actions → New repository
 #      secret, com o nome PROJECT_TOKEN.
 #
-# Sem o secret, os dois jobs REPROVAM com a mensagem acima em vez de passar
-# sem fazer nada. Um workflow que "passa" sem executar é pior que um que
-# falha: ele some do radar.
+# Sem o secret o job REPROVA com a mensagem acima em vez de passar sem fazer
+# nada. Um workflow que "passa" sem executar é pior que um que falha: ele some
+# do radar.
 
 on:
   issues:
@@ -39,160 +56,21 @@ on:
   create:
   delete:
   workflow_dispatch:
-    inputs:
-      backfill:
-        description: 'Enviar TODAS as issues abertas ao board (idempotente)'
-        type: boolean
-        default: true
 
 # A URL vive num lugar só. Trocar de board é editar esta linha.
 env:
   PROJECT_URL: https://github.com/users/cleytonmendest/projects/2
 
 jobs:
-  add:
-    name: Issue nova no board
-    if: github.event_name == 'issues'
-    runs-on: ubuntu-latest
-    # Duas execuções para a mesma issue tentariam adicionar o mesmo item.
-    concurrency:
-      group: board-add-${{ github.event.issue.number }}
-      cancel-in-progress: false
-    steps:
-      - name: O secret PROJECT_TOKEN existe?
-        env:
-          TOKEN: ${{ secrets.PROJECT_TOKEN }}
-        run: |
-          if [ -z "$TOKEN" ]; then
-            echo "::error::Falta o secret PROJECT_TOKEN. O GITHUB_TOKEN padrão não escreve em projeto de usuário — veja as instruções no topo de .github/workflows/board.yml."
-            exit 1
-          fi
-
-      # Tag maior, como o ci.yml faz com actions/checkout@v5.
-      - uses: actions/add-to-project@v1
-        with:
-          project-url: ${{ env.PROJECT_URL }}
-          github-token: ${{ secrets.PROJECT_TOKEN }}
-
-  backfill:
-    name: Backfill das issues abertas
-    if: github.event_name == 'workflow_dispatch' && inputs.backfill
-    runs-on: ubuntu-latest
-    concurrency:
-      group: board-backfill
-      cancel-in-progress: false
-    steps:
-      - name: O secret PROJECT_TOKEN existe?
-        env:
-          TOKEN: ${{ secrets.PROJECT_TOKEN }}
-        run: |
-          if [ -z "$TOKEN" ]; then
-            echo "::error::Falta o secret PROJECT_TOKEN. O GITHUB_TOKEN padrão não escreve em projeto de usuário — veja as instruções no topo de .github/workflows/board.yml."
-            exit 1
-          fi
-
-      - name: Enviar as issues abertas
-        env:
-          GH_TOKEN: ${{ secrets.PROJECT_TOKEN }}
-          REPO: ${{ github.repository }}
-        run: |
-          set -eo pipefail
-
-          # ── Por que GraphQL e não `gh project item-add` ───────────────────
-          #
-          # `gh project` não recebe o TIPO do dono, então ele consulta o
-          # GitHub para descobrir se o login é usuário ou organização. Essa
-          # consulta não passa com um token que só tem escopo `project`, e o
-          # comando morre com "unknown owner type" — foi o que derrubou as 21
-          # na primeira execução real.
-          #
-          # A PROJECT_URL já carrega o tipo (`/users/` ou `/orgs/`). Sabendo
-          # dele, dá para ir direto na mutação, que precisa de exatamente o
-          # escopo que o token já tem. Menos adivinhação, menos permissão.
-          kind=$(printf '%s' "$PROJECT_URL" | sed -E 's#.*/(users|orgs)/[^/]+/projects/[0-9]+.*#\1#')
-          owner=$(printf '%s' "$PROJECT_URL" | sed -E 's#.*/(users|orgs)/([^/]+)/projects/[0-9]+.*#\2#')
-          number=$(printf '%s' "$PROJECT_URL" | sed -E 's#.*/projects/([0-9]+).*#\1#')
-          if [ -z "$owner" ] || [ -z "$number" ] || [ -z "$kind" ]; then
-            echo "::error::Não consegui extrair tipo, dono e número de PROJECT_URL ($PROJECT_URL)."
-            exit 1
-          fi
-          case "$kind" in
-            orgs)  campo=organization ;;
-            users) campo=user ;;
-          esac
-          echo "Board: projeto $number de $owner ($campo)"
-
-          # O node ID do projeto — é o que a mutação recebe, não o número.
-          project_id=$(gh api graphql \
-            -f query="query(\$login: String!, \$number: Int!) {
-              $campo(login: \$login) { projectV2(number: \$number) { id } }
-            }" \
-            -F login="$owner" -F number="$number" \
-            --jq ".data.$campo.projectV2.id")
-          if [ -z "$project_id" ] || [ "$project_id" = "null" ]; then
-            echo "::error::Não achei o projeto $number de $owner. Confira PROJECT_URL e se o PROJECT_TOKEN tem escopo project."
-            exit 1
-          fi
-
-          # Node IDs das issues abertas. `--paginate` cuida de passar dos 100.
-          gh api graphql --paginate \
-            -f query='query($owner: String!, $repo: String!, $endCursor: String) {
-              repository(owner: $owner, name: $repo) {
-                issues(states: OPEN, first: 100, after: $endCursor) {
-                  nodes { id url }
-                  pageInfo { hasNextPage endCursor }
-                }
-              }
-            }' \
-            -F owner="${REPO%/*}" -F repo="${REPO#*/}" \
-            --jq '.data.repository.issues.nodes[] | [.id, .url] | @tsv' > issues.tsv
-
-          total=$(wc -l < issues.tsv | tr -d ' ')
-          echo "$total issue(s) aberta(s) em $REPO"
-
-          # `addProjectV2ItemById` casa pelo conteúdo: reenviar uma issue que
-          # já está no board devolve o item existente em vez de duplicar. Por
-          # isso rodar de novo é seguro — e é como se corrige uma divergência.
-          falhas=0
-          while IFS=$'\t' read -r id url; do
-            [ -n "$id" ] || continue
-            if gh api graphql \
-              -f query='mutation($project: ID!, $content: ID!) {
-                addProjectV2ItemById(input: {projectId: $project, contentId: $content}) { item { id } }
-              }' \
-              -F project="$project_id" -F content="$id" </dev/null >/dev/null; then
-              echo "  ok   $url"
-            else
-              echo "  FALHOU  $url"
-              falhas=$((falhas + 1))
-            fi
-          done < issues.tsv
-
-          # Uma issue que falha não pode abortar as outras 20 — mas o job
-          # também não pode terminar verde escondendo a falha.
-          if [ "$falhas" -gt 0 ]; then
-            echo "::error::$falhas de $total issue(s) não entraram no board."
-            exit 1
-          fi
-          echo "$total issue(s) no board."
-
   sync:
-    name: Status derivado dos fatos
-    # Roda em tudo, inclusive depois do backfill: é um recálculo completo, não
-    # um incremento. Recalcular é idempotente e conserta qualquer divergência
-    # sozinho — não existe estado a manter entre execuções.
-    #
-    # `needs` só serve para ORDENAR: num dispatch, o backfill põe os itens no
-    # board e o sync precisa vir depois para enxergá-los. Como os dois outros
-    # jobs são pulados na maior parte dos eventos, o `if` precisa ser explícito
-    # — sem ele, `needs` de job pulado pularia o sync junto.
-    needs: [add, backfill]
-    if: ${{ !cancelled() }}
+    name: Board reconciliado com os fatos
     runs-on: ubuntu-latest
     concurrency:
       group: board-sync
       # Um recálculo mais novo torna o anterior irrelevante, então cancelar o
-      # velho é seguro (e evita fila em rajada de eventos).
+      # velho é seguro (e evita fila em rajada de eventos). Se um cancelado
+      # deixaria uma issue de fora, o próximo evento a traz — o recálculo é
+      # completo, não incremental.
       cancel-in-progress: true
     steps:
       - name: O secret PROJECT_TOKEN existe?
@@ -210,13 +88,13 @@ jobs:
         with:
           node-version: 22
 
-      # A tabela de decisão é pura, então dá para exercitá-la sem rede. Roda
-      # ANTES de tocar o board: se a lógica quebrou, o job para aqui em vez de
-      # escrever status errado em 21 itens.
+      # A lógica pura é exercitável sem rede. Roda ANTES de tocar o board: se
+      # ela quebrou, o job para aqui em vez de escrever status errado em 21
+      # itens (ou adicionar as issues erradas).
       - name: A tabela de decisão continua valendo?
         run: node scripts/board-sync.mjs --self-test
 
-      - name: Recalcular o Status
+      - name: Reconciliar o board
         env:
           GITHUB_TOKEN: ${{ secrets.PROJECT_TOKEN }}
           REPO: ${{ github.repository }}
