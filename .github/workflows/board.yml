@@ -15,9 +15,14 @@ name: Board
 # ── Configurar uma vez ─────────────────────────────────────────────────────
 #
 #   1. github.com/settings/tokens → "Generate new token (classic)"
-#      escopos: `project` (escrever no board) e `repo` (o backfill lista as
-#      issues). Um token fine-grained também serve, com permissão de
-#      Projects: Read and write.
+#      escopo: `project`, e SÓ ele. (`read:project` marca junto, é
+#      sub-escopo.) O backfill lista issues de um repo PÚBLICO, o que não
+#      exige escopo nenhum — por isso `repo` não entra aqui: ele daria
+#      leitura e escrita em todos os repositórios da conta sem necessidade.
+#      Se este repo virar privado um dia, aí sim o backfill passa a precisar
+#      de `repo` e falha até ganhá-lo.
+#      Um token fine-grained também serve, e é mais apertado: limitado a
+#      este repositório, com Projects = Read and write.
 #   2. No repo: Settings → Secrets and variables → Actions → New repository
 #      secret, com o nome PROJECT_TOKEN.
 #
