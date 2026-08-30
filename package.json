@@ -9,8 +9,11 @@
     "lint": "node scripts/lint/index.mjs",
     "lint:fast": "node scripts/lint/index.mjs --fast",
     "lint:baseline": "node scripts/lint/index.mjs --write-baseline",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:mutants": "node scripts/test-mutants.mjs",
     "status": "node scripts/status.mjs",
-    "gate": "npm run build && npm run lint",
+    "gate": "npm run build && npm run lint && npm test",
     "setup": "git config core.hooksPath .githooks && echo 'Hooks de git ativados (.githooks).'",
     "prepare": "npm run setup"
   },
@@ -23,6 +26,8 @@
     "@shopify/theme-check-node": "^3.29.0",
     "acorn": "^8.18.0",
     "acorn-walk": "^8.3.5",
-    "tailwindcss": "^3.4.7"
+    "jsdom": "^30.0.1",
+    "tailwindcss": "^3.4.7",
+    "vitest": "^4.1.11"
   }
 }

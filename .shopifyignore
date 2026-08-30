@@ -5,6 +5,7 @@ yarn.lock
 node_modules/
 scripts/
 src/
+tests/
 docs/
 .github/
 .githooks/
@@ -12,5 +13,6 @@ docs/
 CLAUDE.md
 README.md
 tailwind.config.js
+vitest.config.mjs
 sections/main-styleguide.liquid
 templates/page.styleguide.json
