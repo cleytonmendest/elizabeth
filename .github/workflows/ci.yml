@@ -15,6 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          # A catraca precisa do baseline da branch base e do diff contra ela.
+          # Com o clone raso do padrão, `origin/main` não existe no runner.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v5
         with:
@@ -49,14 +53,26 @@ jobs:
           # Isso não é dívida nova — é dívida que estava escondida. O sinal que
           # separa os dois casos é objetivo: alguma regra mudou neste diff?
           # Se não mudou, crescimento só pode vir de código novo, e reprova.
+          #
+          # Ler o baseline da base NÃO pode falhar em silêncio. A versão
+          # anterior caía para `|| echo "$total"` quando o `git show` não
+          # achava a ref — o que acontecia SEMPRE, porque o checkout raso não
+          # traz `origin/main`. O passo comparava o total consigo mesmo,
+          # passava, e não verificava nada. Uma catraca que sempre passa é
+          # pior que nenhuma: ela dá a impressão de estar guardando.
           base_ref="${{ github.base_ref || 'main' }}"
           total=$(node -p "require('./scripts/lint/config/baseline.json').total")
-          base=$(git show "origin/$base_ref:scripts/lint/config/baseline.json" 2>/dev/null | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).total" 2>/dev/null || echo "$total")
+
+          if ! base_json=$(git show "origin/$base_ref:scripts/lint/config/baseline.json" 2>&1); then
+            echo "::error::Não consegui ler o baseline de origin/$base_ref — a catraca não pôde ser verificada. Passar assim seria fingir que verificou."
+            echo "$base_json"
+            exit 1
+          fi
+          base=$(printf '%s' "$base_json" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).total")
           echo "baseline: $base → $total itens"
 
           if [ "$total" -le "$base" ]; then exit 0; fi
 
-          git fetch --no-tags --depth=50 origin "$base_ref" >/dev/null 2>&1 || true
           if git diff --name-only "origin/$base_ref...HEAD" | grep -q '^scripts/lint/rules/'; then
             echo "::warning::O baseline subiu de $base para $total itens, mas uma regra mudou neste PR — crescimento tratado como cobertura nova, não dívida nova. Confirme no corpo do PR que o código do tema não piorou."
             exit 0
