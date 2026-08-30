@@ -1,0 +1,416 @@
+{%- comment -%}
+  main-styleguide — o alvo visual do tema.
+
+  ── Por que é página do tema, e não HTML em docs/ ─────────────────────────
+
+  Porque só assim ela renderiza com os color schemes REAIS do lojista. Um HTML
+  estático mostraria as cores de quem escreveu o HTML, e viraria uma segunda
+  fonte de verdade — o problema que o ADR 0001 eliminou. Aqui, se um componente
+  não reage ao scheme, aparece na hora, na própria tela.
+
+  ── Como usar ─────────────────────────────────────────────────────────────
+
+  1. No admin: Páginas → criar uma página (título livre, ex.: "Style guide")
+  2. Nela, em "Modelo", escolher `page.styleguide`
+  3. Abrir a URL da página
+
+  A página NÃO vai para o tema publicado: `.shopifyignore` tira este arquivo,
+  o template e o snippet do zip de submissão.
+
+  ── O que ela cobre ───────────────────────────────────────────────────────
+
+  Os schemes são iterados a partir de `settings.color_schemes`, nunca contados
+  à mão: se o lojista criar um sexto esquema, ele aparece aqui sozinho.
+
+  O que ela NÃO cobre, e por quê: escalas que ainda não existem (z-index,
+  aspect ratio, letter-spacing) estão na issue #29. Mostrar valor arbitrário
+  aqui seria registrar a dívida como se fosse sistema.
+{%- endcomment -%}
+
+{%- liquid
+  comment
+    Um produto de verdade para os componentes que precisam de um. Se a loja
+    estiver vazia, cada bloco que depende dele mostra um aviso em vez de
+    quebrar — a página tem que renderizar em qualquer loja.
+  endcomment
+  assign sample_product = collections.all.products.first
+-%}
+
+<div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  <div class="page-width py-12">
+    <header class="border-b border-border pb-8 mb-12">
+      <p class="text-xs uppercase tracking-widest text-foreground/50 mb-3">Design system</p>
+      <h1 class="text-4xl font-light tracking-tight mb-4">Style guide</h1>
+      <p class="text-sm text-foreground/70 max-w-2xl">
+        Todo componente, em todo estado, com os color schemes reais desta loja.
+        Se algo aqui não reage ao esquema selecionado, é bug — não preferência.
+        Esta página não vai para o tema publicado.
+      </p>
+    </header>
+
+    {%- comment -%} ═══ 1. Color schemes ═══════════════════════════════ {%- endcomment -%}
+    <section class="mb-16">
+      <h2 class="text-2xl font-light tracking-tight mb-2">Color schemes</h2>
+      <p class="text-sm text-foreground/60 mb-6">
+        Cada bloco abaixo está dentro da sua própria classe <code class="text-xs">.color-scheme-N</code>.
+        As amostras são os mesmos componentes, repetidos: o que mudar de cor entre
+        os blocos está ligado ao esquema; o que não mudar, não está.
+      </p>
+
+      <div class="grid gap-6 md:grid-cols-2">
+        {%- for scheme in settings.color_schemes -%}
+          <div class="color-{{ scheme.id }} color-background color-text rounded-theme border border-border p-6">
+            <p class="text-xs uppercase tracking-widest text-foreground/50 mb-4">{{ scheme.id }}</p>
+
+            <div class="grid grid-cols-4 gap-3 mb-6">
+              <div>
+                <div class="h-12 rounded-theme-sm border border-border bg-background"></div>
+                <p class="text-xs text-foreground/60 mt-1">background</p>
+              </div>
+              <div>
+                <div class="h-12 rounded-theme-sm border border-border bg-foreground"></div>
+                <p class="text-xs text-foreground/60 mt-1">foreground</p>
+              </div>
+              <div>
+                <div class="h-12 rounded-theme-sm border border-border bg-button"></div>
+                <p class="text-xs text-foreground/60 mt-1">button</p>
+              </div>
+              <div>
+                <div class="h-12 rounded-theme-sm border border-border bg-badge"></div>
+                <p class="text-xs text-foreground/60 mt-1">badge</p>
+              </div>
+              <div>
+                <div class="h-12 rounded-theme-sm border border-border bg-success"></div>
+                <p class="text-xs text-foreground/60 mt-1">success</p>
+              </div>
+              <div>
+                <div class="h-12 rounded-theme-sm border border-border bg-error"></div>
+                <p class="text-xs text-foreground/60 mt-1">error</p>
+              </div>
+              <div>
+                <div class="h-12 rounded-theme-sm border border-border bg-warning"></div>
+                <p class="text-xs text-foreground/60 mt-1">warning</p>
+              </div>
+              <div>
+                <div class="h-12 rounded-theme-sm border-2 border-border"></div>
+                <p class="text-xs text-foreground/60 mt-1">border</p>
+              </div>
+            </div>
+
+            {%- comment -%} As mesmas peças em todo scheme: é a comparação que prova. {%- endcomment -%}
+            <div class="flex flex-wrap items-center gap-3">
+              <button type="button" class="color-button rounded-theme px-4 py-2 text-xs uppercase tracking-widest">
+                Botão
+              </button>
+              <span class="color-badge rounded-full px-3 py-1 text-xs">Badge</span>
+              <a href="#styleguide" class="color-link text-sm underline">Link</a>
+            </div>
+
+            <input
+              type="text"
+              value="Campo de texto"
+              readonly
+              class="color-input w-full mt-3 rounded-theme border border-border px-3 py-2 text-sm"
+            >
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <div class="mt-6 rounded-theme border border-border p-4">
+        <p class="text-xs uppercase tracking-widest text-foreground/50 mb-2">Classe conhecida por estar quebrada</p>
+        <div class="color-background-secondary rounded-theme-sm border border-border p-4">
+          <p class="text-sm">
+            Este bloco usa <code class="text-xs">.color-background-secondary</code>, que consome
+            <code class="text-xs">--color-card-background</code> — uma variável que o
+            <code class="text-xs">layout/theme.liquid</code> nunca gera. Se ele parece
+            igual ao fundo da página, é porque a regra CSS inteira foi descartada
+            pelo navegador. É a issue #34, visível a olho nu.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {%- comment -%} ═══ 2. Tipografia ══════════════════════════════════ {%- endcomment -%}
+    <section class="mb-16">
+      <h2 class="text-2xl font-light tracking-tight mb-2">Tipografia</h2>
+      <p class="text-sm text-foreground/60 mb-6">
+        A escala inteira é multiplicada por <code class="text-xs">settings.font_scale</code>
+        (Design → Escala tipográfica). Os tamanhos em pixel abaixo valem com o
+        multiplicador em 1; mude o setting e todos crescem juntos, mantendo a proporção.
+      </p>
+
+      <div class="space-y-4">
+        <div class="border-b border-border pb-3">
+          <p class="text-5xl font-light tracking-tight">text-5xl</p>
+          <p class="text-xs text-foreground/50 mt-1">48px · h1 / hero</p>
+        </div>
+        <div class="border-b border-border pb-3">
+          <p class="text-4xl font-light tracking-tight">text-4xl</p>
+          <p class="text-xs text-foreground/50 mt-1">36px · h2</p>
+        </div>
+        <div class="border-b border-border pb-3">
+          <p class="text-3xl font-light">text-3xl</p>
+          <p class="text-xs text-foreground/50 mt-1">30px · h3</p>
+        </div>
+        <div class="border-b border-border pb-3">
+          <p class="text-2xl font-light">text-2xl</p>
+          <p class="text-xs text-foreground/50 mt-1">24px · h4 / título de seção</p>
+        </div>
+        <div class="border-b border-border pb-3">
+          <p class="text-xl">text-xl</p>
+          <p class="text-xs text-foreground/50 mt-1">20px · h5</p>
+        </div>
+        <div class="border-b border-border pb-3">
+          <p class="text-lg">text-lg</p>
+          <p class="text-xs text-foreground/50 mt-1">18px · subtítulo / h6</p>
+        </div>
+        <div class="border-b border-border pb-3">
+          <p class="text-base">text-base</p>
+          <p class="text-xs text-foreground/50 mt-1">16px · corpo destacado</p>
+        </div>
+        <div class="border-b border-border pb-3">
+          <p class="text-sm">text-sm — o corpo padrão do tema</p>
+          <p class="text-xs text-foreground/50 mt-1">14px · CORPO</p>
+        </div>
+        <div>
+          <p class="text-xs">text-xs</p>
+          <p class="text-xs text-foreground/50 mt-1">12px · legendas, labels, textos legais</p>
+        </div>
+      </div>
+    </section>
+
+    {%- comment -%} ═══ 3. Raio ════════════════════════════════════════ {%- endcomment -%}
+    <section class="mb-16">
+      <h2 class="text-2xl font-light tracking-tight mb-2">Raio</h2>
+      <p class="text-sm text-foreground/60 mb-6">
+        O valor vem de <code class="text-xs">settings.radius_style</code> (Design → Arredondamento).
+        <code class="text-xs">-sm</code> e <code class="text-xs">-lg</code> derivam dele por
+        <code class="text-xs">calc()</code>, então mudar o setting move os três juntos.
+        Em 0px os três ficam iguais — é o esperado.
+      </p>
+
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-5">
+        <div>
+          <div class="h-20 border border-border bg-foreground/5 rounded-theme-sm"></div>
+          <p class="text-xs text-foreground/60 mt-2">rounded-theme-sm</p>
+        </div>
+        <div>
+          <div class="h-20 border border-border bg-foreground/5 rounded-theme"></div>
+          <p class="text-xs text-foreground/60 mt-2">rounded-theme <span class="text-foreground/40">(padrão)</span></p>
+        </div>
+        <div>
+          <div class="h-20 border border-border bg-foreground/5 rounded-theme-lg"></div>
+          <p class="text-xs text-foreground/60 mt-2">rounded-theme-lg</p>
+        </div>
+        <div>
+          <div class="h-20 border border-border bg-foreground/5 rounded-full"></div>
+          <p class="text-xs text-foreground/60 mt-2">rounded-full</p>
+        </div>
+        <div>
+          <div class="h-20 border border-border bg-foreground/5 rounded-none"></div>
+          <p class="text-xs text-foreground/60 mt-2">rounded-none</p>
+        </div>
+      </div>
+    </section>
+
+    {%- comment -%} ═══ 4. Botões e ações ══════════════════════════════ {%- endcomment -%}
+    <section class="mb-16">
+      <h2 class="text-2xl font-light tracking-tight mb-6">Botões e ações</h2>
+
+      <div class="flex flex-wrap items-center gap-4">
+        <button type="button" class="color-button rounded-theme px-6 py-3 text-xs uppercase tracking-widest transition-opacity hover:opacity-90">
+          Primário
+        </button>
+        <button type="button" class="color-button-secondary rounded-theme border border-border px-6 py-3 text-xs uppercase tracking-widest transition-opacity hover:opacity-90">
+          Secundário
+        </button>
+        <button type="button" disabled class="color-button rounded-theme px-6 py-3 text-xs uppercase tracking-widest opacity-50">
+          Desabilitado
+        </button>
+        <button type="button" class="color-button rounded-full flex items-center justify-center w-11 h-11">
+          {% render 'icon-cart', size: 18 %}
+        </button>
+        <a href="#styleguide" class="color-link text-sm underline">Link de texto</a>
+      </div>
+
+      <p class="text-xs text-foreground/50 mt-4">
+        O estado de foco é visível pelo teclado: navegue com Tab para conferir o anel.
+      </p>
+    </section>
+
+    {%- comment -%} ═══ 5. Formulário ══════════════════════════════════ {%- endcomment -%}
+    <section class="mb-16">
+      <h2 class="text-2xl font-light tracking-tight mb-6">Formulário</h2>
+
+      <div class="grid gap-6 md:grid-cols-2 max-w-3xl">
+        <label class="block">
+          <span class="text-xs uppercase tracking-widest text-foreground/60">Campo de texto</span>
+          <input type="text" placeholder="Digite algo" class="color-input mt-2 w-full rounded-theme border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/40">
+        </label>
+
+        <label class="block">
+          <span class="text-xs uppercase tracking-widest text-foreground/60">Seleção</span>
+          <select class="color-input mt-2 w-full rounded-theme border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/40">
+            <option>Uma opção</option>
+            <option>Outra opção</option>
+          </select>
+        </label>
+
+        <label class="block md:col-span-2">
+          <span class="text-xs uppercase tracking-widest text-foreground/60">Área de texto</span>
+          <textarea rows="3" placeholder="Observações do pedido" class="color-input mt-2 w-full rounded-theme border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/40"></textarea>
+        </label>
+
+        <label class="block md:col-span-2">
+          <span class="text-xs uppercase tracking-widest text-foreground/60">Campo com erro</span>
+          <input type="email" value="email-invalido" class="color-input mt-2 w-full rounded-theme border border-error px-3 py-2 text-sm">
+          <span class="text-xs text-error mt-1 block">Por favor, insira um e-mail válido.</span>
+        </label>
+
+        <div class="md:col-span-2">
+          <span class="text-xs uppercase tracking-widest text-foreground/60 block mb-2">Seletor de quantidade</span>
+          {% render 'quantity-selector' %}
+        </div>
+      </div>
+    </section>
+
+    {%- comment -%} ═══ 6. Feedback ════════════════════════════════════ {%- endcomment -%}
+    <section class="mb-16">
+      <h2 class="text-2xl font-light tracking-tight mb-6">Feedback</h2>
+
+      <div class="flex flex-wrap gap-3 mb-6">
+        <span class="color-badge rounded-full px-3 py-1 text-xs uppercase tracking-widest">Badge</span>
+        <span class="text-success text-sm">Texto de sucesso</span>
+        <span class="text-error text-sm">Texto de erro</span>
+        <span class="text-warning text-sm">Texto de aviso</span>
+      </div>
+
+      <div class="space-y-3 max-w-2xl">
+        <div class="color-success-bg rounded-theme border border-border p-4 text-sm">Produto adicionado ao carrinho.</div>
+        <div class="color-error-bg rounded-theme border border-border p-4 text-sm">Não foi possível adicionar ao carrinho.</div>
+        <div class="color-warning-bg rounded-theme border border-border p-4 text-sm">Restam poucas unidades.</div>
+      </div>
+    </section>
+
+    {%- comment -%} ═══ 7. Sombras ═════════════════════════════════════ {%- endcomment -%}
+    <section class="mb-16">
+      <h2 class="text-2xl font-light tracking-tight mb-6">Sombras</h2>
+
+      <div class="grid grid-cols-2 gap-6 md:grid-cols-4">
+        <div class="color-shadow rounded-theme bg-background p-6 text-center text-xs">color-shadow</div>
+        <div class="color-shadow-md rounded-theme bg-background p-6 text-center text-xs">color-shadow-md</div>
+        <div class="color-shadow-lg rounded-theme bg-background p-6 text-center text-xs">color-shadow-lg</div>
+        <div class="color-shadow-xl rounded-theme bg-background p-6 text-center text-xs">color-shadow-xl</div>
+      </div>
+    </section>
+
+    {%- comment -%} ═══ 8. Componentes reais ═══════════════════════════ {%- endcomment -%}
+    <section class="mb-16">
+      <h2 class="text-2xl font-light tracking-tight mb-2">Componentes reais</h2>
+      <p class="text-sm text-foreground/60 mb-6">
+        Renderizados com <code class="text-xs">render</code> de verdade, não recriados aqui.
+        Se um snippet mudar, esta página muda junto — é o que a torna alvo de teste visual.
+      </p>
+
+      <div class="space-y-8">
+        <div>
+          <p class="text-xs uppercase tracking-widest text-foreground/50 mb-3">payment-icons</p>
+          {% render 'payment-icons', show_title: false %}
+        </div>
+
+        <div>
+          <p class="text-xs uppercase tracking-widest text-foreground/50 mb-3">price-v2</p>
+          {%- if sample_product -%}
+            {% render 'price-v2', product: sample_product, use_variant: true, pdp: true, show_installments: true %}
+          {%- else -%}
+            <p class="text-sm text-foreground/50">Sem produto na loja para amostrar.</p>
+          {%- endif -%}
+        </div>
+
+        <div>
+          <p class="text-xs uppercase tracking-widest text-foreground/50 mb-3">card-product-slider</p>
+          {%- if sample_product -%}
+            <div class="max-w-xs">
+              {% render 'card-product-slider', card_product: sample_product %}
+            </div>
+          {%- else -%}
+            <p class="text-sm text-foreground/50">Sem produto na loja para amostrar.</p>
+          {%- endif -%}
+        </div>
+      </div>
+    </section>
+
+    {%- comment -%} ═══ 9. Estados ═════════════════════════════════════ {%- endcomment -%}
+    <section class="mb-16">
+      <h2 class="text-2xl font-light tracking-tight mb-6">Estados</h2>
+
+      <div class="grid gap-4 md:grid-cols-3">
+        <div class="rounded-theme border border-border p-8 text-center">
+          <p class="text-sm text-foreground/50">Vazio — nenhum resultado</p>
+        </div>
+        <div class="rounded-theme border border-border p-8 text-center">
+          <p class="text-sm text-foreground/50">Carregando…</p>
+        </div>
+        <div class="rounded-theme border border-error p-8 text-center">
+          <p class="text-sm text-error">Erro ao carregar</p>
+        </div>
+      </div>
+    </section>
+
+    {%- comment -%} ═══ 10. Ícones ═════════════════════════════════════ {%- endcomment -%}
+    <section id="styleguide">
+      <h2 class="text-2xl font-light tracking-tight mb-2">Ícones</h2>
+      <p class="text-sm text-foreground/60 mb-6">
+        Todos herdam <code class="text-xs">currentColor</code>, então seguem o scheme.
+        Um que não seguir aparece com a cor errada aqui.
+      </p>
+
+      <div class="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6">
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-angle-down', size: 20 %}<p class="text-xs text-foreground/50 mt-2">angle-down</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-angle-left', size: 20 %}<p class="text-xs text-foreground/50 mt-2">angle-left</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-angle-right', size: 20 %}<p class="text-xs text-foreground/50 mt-2">angle-right</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-angle-up', size: 20 %}<p class="text-xs text-foreground/50 mt-2">angle-up</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-arrow-right', size: 20 %}<p class="text-xs text-foreground/50 mt-2">arrow-right</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-cart', size: 20 %}<p class="text-xs text-foreground/50 mt-2">cart</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-close', size: 20 %}<p class="text-xs text-foreground/50 mt-2">close</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-lock', size: 20 %}<p class="text-xs text-foreground/50 mt-2">lock</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-menu', size: 20 %}<p class="text-xs text-foreground/50 mt-2">menu</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-minus', size: 20 %}<p class="text-xs text-foreground/50 mt-2">minus</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-play', size: 20 %}<p class="text-xs text-foreground/50 mt-2">play</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-plus', size: 20 %}<p class="text-xs text-foreground/50 mt-2">plus</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-return', size: 20 %}<p class="text-xs text-foreground/50 mt-2">return</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-search', size: 20 %}<p class="text-xs text-foreground/50 mt-2">search</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-short-arrow-left', size: 20 %}<p class="text-xs text-foreground/50 mt-2">short-arrow-left</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-short-arrow-right', size: 20 %}<p class="text-xs text-foreground/50 mt-2">short-arrow-right</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-trash', size: 20 %}<p class="text-xs text-foreground/50 mt-2">trash</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-truck', size: 20 %}<p class="text-xs text-foreground/50 mt-2">truck</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-user', size: 20 %}<p class="text-xs text-foreground/50 mt-2">user</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-wishlist', size: 20 %}<p class="text-xs text-foreground/50 mt-2">wishlist</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-social-facebook', size: 20 %}<p class="text-xs text-foreground/50 mt-2">facebook</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-social-instagram', size: 20 %}<p class="text-xs text-foreground/50 mt-2">instagram</p></div>
+        <div class="rounded-theme border border-border p-4 text-center">{% render 'icon-social-youtube', size: 20 %}<p class="text-xs text-foreground/50 mt-2">youtube</p></div>
+      </div>
+
+      <p class="text-xs text-foreground/50 mt-4">
+        Os 13 ícones de bandeira de pagamento estão na amostra do
+        <code class="text-xs">payment-icons</code> acima, com a cor de marca deles.
+      </p>
+    </section>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main_styleguide.name",
+  "class": "section",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.main_styleguide.settings.color_scheme.label",
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

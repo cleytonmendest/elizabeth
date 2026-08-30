@@ -9,6 +9,14 @@
  */
 {
   "sections": {
+    "main_styleguide": {
+      "name": "Style guide (internal)",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        }
+      }
+    },
     "main_404": {
       "name": "404 page",
       "settings": {
