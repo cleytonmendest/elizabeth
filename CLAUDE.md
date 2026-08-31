@@ -103,6 +103,12 @@ Essa suíte tem duas metades, e a divisão é o ponto:
   ainda **não rodaram nenhuma vez** — os seletores saíram do Liquid, mas só a
   primeira execução real os valida.
 
+Um teste está marcado como `test.fixme` apontando para a
+[issue #51](https://github.com/cleytonmendest/elizabeth/issues/51): a busca
+preditiva não responde através do proxy do `theme dev`, e afrouxar a asserção
+até passar transformaria defeito real em verde. `fixme` aparece no relatório;
+`skip` silencioso não apareceria.
+
 **A catraca vale aqui também.** A primeira execução contra a loja encontrou
 `color-contrast` em sete páginas, quase toda causada pelo mesmo breadcrumb
 (`text-foreground/50` dá 3,54:1 no esquema claro, contra os 4,5:1 do WCAG AA).
