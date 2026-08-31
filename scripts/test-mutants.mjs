@@ -18,6 +18,19 @@
  * automática de operadores: a lista é curta e escolhida a dedo, porque o que
  * ela protege é a intenção do teste, não a cobertura de linhas.
  *
+ * Há duas listas, e cada execução roda UMA:
+ *
+ *   npm run test:mutants          assets/*.js, via Vitest
+ *   npm run test:mutants -- --e2e  o verificador de a11y, via Playwright
+ *
+ * A segunda precisa de Chromium, então vive no job de navegador do CI.
+ *
+ * A segunda não é luxo. Ela já pagou por si: a primeira versão de
+ * `e2e/gate.spec.mjs` afirmava `expect(relatorio(...)).toBe('')`, e um mutante
+ * mostrou que um `relatorio` devolvendo '' por engano deixaria o teste passar
+ * com a página cheia de violações. O gate verificava o gate — e o teste do
+ * gate não verificava nada.
+ *
  * O arquivo original é restaurado sempre, inclusive se o processo falhar.
  */
 import fs from 'node:fs';
@@ -27,6 +40,9 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const VITEST = path.join(ROOT, 'node_modules', '.bin', 'vitest');
+const PLAYWRIGHT = path.join(ROOT, 'node_modules', '.bin', 'playwright');
+
+const comE2E = process.argv.includes('--e2e');
 
 const MUTANTES = [
   {
@@ -108,6 +124,53 @@ const MUTANTES = [
   },
 ];
 
+/**
+ * Mutantes do verificador de acessibilidade. Rodam com `--e2e`, porque exigem
+ * navegador. Note que aqui o alvo NÃO é o tema: é `e2e/helpers/axe.mjs`, o
+ * código que decide se uma página passa ou não.
+ */
+const MUTANTES_E2E = [
+  {
+    porque: 'o axe passa a devolver lista vazia — toda página "acessível"',
+    arquivo: 'e2e/helpers/axe.mjs',
+    de: '  return violations;',
+    para: '  return [];',
+    teste: 'e2e/gate.spec.mjs',
+  },
+  {
+    porque: 'os critérios do WCAG viram uma tag que não existe',
+    arquivo: 'e2e/helpers/axe.mjs',
+    de: "['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']",
+    para: "['tag-que-nao-existe']",
+    teste: 'e2e/gate.spec.mjs',
+  },
+  {
+    porque: 'o filtro de escopo deixa de excluir (widget de terceiro reprovaria o PR)',
+    arquivo: 'e2e/helpers/axe.mjs',
+    de: 'builder = builder.exclude(seletor);',
+    para: 'builder = builder;',
+    teste: 'e2e/gate.spec.mjs',
+  },
+  {
+    porque: 'o relatório fica vazio e a falha não diz o que quebrou',
+    arquivo: 'e2e/helpers/axe.mjs',
+    de: '  return violations\n    .map((v) => {',
+    para: '  return [].map((v) => {',
+    teste: 'e2e/gate.spec.mjs',
+  },
+  {
+    porque: 'o relatório perde o seletor do nó afetado',
+    arquivo: 'e2e/helpers/axe.mjs',
+    de: '    em: ${onde}${resto}',
+    para: '    em: ???',
+    teste: 'e2e/gate.spec.mjs',
+  },
+];
+
+// Listas separadas, não somadas: cada uma roda no job de CI que tem as
+// ferramentas dela. Somar faria o job de navegador repetir os 11 do unitário.
+const LISTA = comE2E ? MUTANTES_E2E : MUTANTES;
+
 const colors = process.stdout.isTTY && !process.env.NO_COLOR;
 const ESC = String.fromCharCode(27);
 const paint = (code, text) => (colors ? `${ESC}[${code}m${text}${ESC}[0m` : text);
@@ -117,7 +180,7 @@ const dim = (t) => paint('2', t);
 
 const sobreviventes = [];
 
-for (const mutante of MUTANTES) {
+for (const mutante of LISTA) {
   const alvo = path.join(ROOT, mutante.arquivo);
   const original = fs.readFileSync(alvo, 'utf8');
 
@@ -134,7 +197,10 @@ for (const mutante of MUTANTES) {
   let resultado;
   try {
     fs.writeFileSync(alvo, original.replace(mutante.de, mutante.para));
-    resultado = spawnSync(VITEST, ['run', mutante.teste], { cwd: ROOT, encoding: 'utf8' });
+    const navegador = mutante.teste.startsWith('e2e/');
+    resultado = navegador
+      ? spawnSync(PLAYWRIGHT, ['test', mutante.teste], { cwd: ROOT, encoding: 'utf8' })
+      : spawnSync(VITEST, ['run', mutante.teste], { cwd: ROOT, encoding: 'utf8' });
   } finally {
     fs.writeFileSync(alvo, original);
   }
@@ -150,9 +216,9 @@ for (const mutante of MUTANTES) {
 console.log('');
 if (sobreviventes.length) {
   console.error(
-    red(`${sobreviventes.length} de ${MUTANTES.length} mutante(s) sobreviveram.`) +
+    red(`${sobreviventes.length} de ${LISTA.length} mutante(s) sobreviveram.`) +
       ' A suíte ficou verde com o tema quebrado — esses testes não verificam o que dizem verificar.'
   );
   process.exit(1);
 }
-console.log(green(`${MUTANTES.length} mutantes, ${MUTANTES.length} mortos.`));
+console.log(green(`${LISTA.length} mutantes, ${LISTA.length} mortos.`));

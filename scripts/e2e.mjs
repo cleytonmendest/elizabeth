@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+/**
+ * Roda a suíte de navegador e DIZ o que não rodou.
+ *
+ * A suíte tem duas metades. A de gate (`e2e/gate.spec.mjs`) verifica que o
+ * verificador de acessibilidade sabe reprovar, e não precisa de loja: roda
+ * sempre, em toda execução, em todo gatilho. A de storefront precisa de um
+ * `shopify theme dev` autenticado em THEME_URL.
+ *
+ * O motivo deste script existir é uma linha só: quando a segunda metade não
+ * roda, isso precisa APARECER. A alternativa óbvia — um job de CI com `if:`
+ * checando o secret — é o bug que este repositório acabou de corrigir no
+ * board: um caminho que só roda em certas circunstâncias fica quebrado sem
+ * ninguém ver, porque as execuções verdes são todas das outras.
+ *
+ * Então o job roda sempre, o script roda sempre, e a ausência da credencial
+ * vira um aviso no resumo do run em vez de um job cinza que some da tela.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const PLAYWRIGHT = path.join(ROOT, 'node_modules', '.bin', 'playwright');
+
+const temLoja = Boolean(process.env.THEME_URL);
+
+function avisar(texto) {
+  console.log(process.env.CI ? `::warning::${texto}` : texto);
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `> [!WARNING]\n> ${texto}\n\n`);
+  }
+}
+
+if (temLoja) {
+  console.log(`Loja: ${process.env.THEME_URL}`);
+} else {
+  avisar(
+    'A metade de storefront NÃO rodou: falta THEME_URL (um `shopify theme dev` ' +
+      'autenticado). O que rodou foi só o gate de acessibilidade, que verifica o ' +
+      'verificador. Enquanto este aviso aparecer, nenhuma página do tema foi ' +
+      'medida por axe neste run — o verde abaixo não cobre acessibilidade real.'
+  );
+}
+
+const { status } = spawnSync(PLAYWRIGHT, ['test', ...process.argv.slice(2)], {
+  cwd: ROOT,
+  stdio: 'inherit',
+});
+process.exit(status ?? 1);

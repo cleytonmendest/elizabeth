@@ -12,6 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:mutants": "node scripts/test-mutants.mjs",
+    "test:e2e": "node scripts/e2e.mjs",
+    "test:e2e:gate": "node scripts/e2e.mjs e2e/gate.spec.mjs",
     "status": "node scripts/status.mjs",
     "gate": "npm run build && npm run lint && npm test",
     "setup": "git config core.hooksPath .githooks && echo 'Hooks de git ativados (.githooks).'",
@@ -23,6 +25,8 @@
   },
   "license": "UNLICENSED",
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1",
     "@shopify/theme-check-node": "^3.29.0",
     "acorn": "^8.18.0",
     "acorn-walk": "^8.3.5",

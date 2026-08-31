@@ -108,3 +108,85 @@ jobs:
       # repositório já viu na catraca do baseline e no board.
       - name: Os testes conseguem falhar?
         run: npm run test:mutants
+
+  e2e:
+    name: Navegador (axe + fluxos)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      # O runner do Actions não traz navegador. (O ambiente remoto do Claude
+      # Code traz, e lá se usa CHROMIUM_PATH — ver playwright.config.mjs.)
+      - name: Instalar o Chromium
+        run: npx playwright install --with-deps chromium
+
+      # ── O único bloco deste arquivo que nunca rodou ────────────────────────
+      #
+      # `shopify theme dev` precisa de uma loja autenticada. Enquanto os
+      # secrets não existirem, este passo não sobe nada e o passo seguinte roda
+      # só o gate de acessibilidade — avisando em alto e bom som que a metade
+      # de storefront ficou de fora (scripts/e2e.mjs).
+      #
+      # Repare no que NÃO foi feito aqui: o job inteiro não está atrás de um
+      # `if:`. Um job que só roda quando um secret existe é o bug que este
+      # repositório corrigiu no board — `actions/add-to-project@v1` ficou
+      # quebrado dois dias porque o job dele só rodava em evento `issues`, e as
+      # execuções verdes eram todas dos outros gatilhos. Aqui o job roda
+      # sempre; o que varia é quanto ele consegue medir, e isso aparece.
+      #
+      # Para ligar: Settings → Secrets and variables → Actions
+      #   SHOPIFY_STORE              minha-loja.myshopify.com
+      #   SHOPIFY_CLI_THEME_TOKEN    senha de app do Theme Access
+      #                              (shopify.dev/docs/storefronts/themes/tools/theme-access)
+      - name: Subir a loja de desenvolvimento
+        if: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN != '' }}
+        env:
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+          SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
+        run: |
+          set -euo pipefail
+          npm install -g @shopify/cli
+          shopify theme dev --port 9292 --theme-editor-sync=false > theme-dev.log 2>&1 &
+
+          # Esperar a porta responder, com teto. Sem o teto, uma credencial
+          # errada vira um job pendurado até o timeout do runner, e o log de
+          # 6 horas depois não diz o que aconteceu.
+          for _ in $(seq 1 60); do
+            if curl -sf -o /dev/null http://127.0.0.1:9292/; then
+              echo "THEME_URL=http://127.0.0.1:9292" >> "$GITHUB_ENV"
+              echo "Loja no ar."
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "::error::O shopify theme dev não respondeu em 120s. Log abaixo."
+          cat theme-dev.log
+          exit 1
+
+      - name: Playwright
+        run: npm run test:e2e
+
+      # O mesmo princípio do job de testes unitários, um nível acima: aqui o
+      # alvo da mutação não é o tema, é o VERIFICADOR de acessibilidade. Um
+      # critério configurado errado deixaria toda página passar exibindo
+      # "0 violações" com a mesma cara de quando está tudo certo.
+      - name: O gate de a11y consegue reprovar?
+        run: npm run test:mutants -- --e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

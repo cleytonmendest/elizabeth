@@ -43,8 +43,10 @@ npm run status    # painel de conformidade
 npm run lint -- --rules=tokens        # uma regra só
 npm run lint -- --files=sections/x.liquid   # um arquivo só
 npm run lint:baseline                 # regrava a dívida (só depois de reduzi-la)
-npm test          # Vitest nos Web Components
+npm test          # Vitest nos Web Components (jsdom)
 npm run test:mutants                  # os testes conseguem falhar?
+npm run test:e2e                      # Playwright: axe + fluxos
+npm run test:e2e:gate                 # só o gate de a11y (não precisa de loja)
 ```
 
 **A catraca:** violação já existente é aviso; violação **nova** é erro. O total
@@ -81,9 +83,36 @@ o script reclamar que não achou o trecho a mutar, atualize a lista em
 `scripts/test-mutants.mjs` — ela é curta e escolhida a dedo, não uma varredura
 automática.
 
-Falta a metade de navegador da [issue #31](https://github.com/cleytonmendest/elizabeth/issues/31):
-Playwright + axe contra `shopify theme dev`, que precisa da credencial da loja
-como secret do CI.
+## O navegador
+
+O jsdom não é navegador: ele não calcula layout, não resolve contraste, não
+move foco. Acessibilidade e regressão visual só existem em `e2e/`, com
+Playwright.
+
+Essa suíte tem duas metades, e a divisão é o ponto:
+
+- **`e2e/gate.spec.mjs` não precisa de loja.** Ele não testa o tema — testa o
+  VERIFICADOR: planta um defeito conhecido (imagem sem alt, contraste baixo,
+  botão sem nome) e exige que o axe o encontre, e planta uma página correta e
+  exige que ele fique quieto. Sem isso, um critério configurado errado faria
+  toda página passar com a mesma cara de quando está tudo certo. Roda sempre.
+- **O resto aponta para `THEME_URL`**, um `shopify theme dev` autenticado. Sem
+  a variável, esses testes se declaram PULADOS com o motivo escrito, e
+  `scripts/e2e.mjs` avisa no resumo do CI que nenhuma página foi medida. Eles
+  ainda **não rodaram nenhuma vez** — os seletores saíram do Liquid, mas só a
+  primeira execução real os valida.
+
+Para ligar a segunda metade: secrets `SHOPIFY_STORE` e
+`SHOPIFY_CLI_THEME_TOKEN` (senha de app do Theme Access). O job do CI já roda
+sempre — o que muda com o secret é quanto ele consegue medir.
+
+O job NÃO está atrás de um `if:`, de propósito. Job que só roda quando um
+secret existe é o mesmo defeito que quebrou o board por dois dias.
+
+Neste ambiente remoto o Chromium já vem instalado, mas numa build que pode não
+ser a que o Playwright baixaria. Rode com
+`CHROMIUM_PATH=/opt/pw-browsers/chromium-*/chrome-linux/chrome`; não rode
+`playwright install` aqui.
 
 ## Os dois princípios que os linters codificam
 
