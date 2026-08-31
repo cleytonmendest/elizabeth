@@ -80,3 +80,31 @@ jobs:
 
           echo "::error::O baseline cresceu de $base para $total itens sem nenhuma mudança em scripts/lint/rules/. Dívida técnica só pode diminuir — corrija a violação em vez de registrá-la."
           exit 1
+
+  test:
+    name: Testes unitários
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      # Job separado do gate de propósito: lint vermelho e teste vermelho são
+      # problemas diferentes, e ver os dois de uma vez é mais rápido que
+      # descobrir o segundo depois de corrigir o primeiro.
+      - name: Vitest
+        run: npm test
+
+      # A suíte verde diz que os testes passaram, não que eles verificam algo.
+      # Este passo quebra o tema de propósito, uma quebra por vez, e exige que
+      # a suíte fique vermelha. Sem ele, um teste que perdeu o alvo continuaria
+      # verde para sempre — que é exatamente o modo de falhar que este
+      # repositório já viu na catraca do baseline e no board.
+      - name: Os testes conseguem falhar?
+        run: npm run test:mutants

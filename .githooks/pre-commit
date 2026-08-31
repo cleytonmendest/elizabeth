@@ -31,6 +31,19 @@ npm run lint --silent -- --fast || {
   exit 1
 }
 
+# Componente mexido → roda a suíte. São ~2s; o mutante (npm run test:mutants)
+# fica para o CI, que é onde a pergunta "esses testes conseguem falhar?" precisa
+# ser feita sem pressa.
+if printf '%s\n' "$changed" | grep -qE '^assets/.*\.js$|^tests/'; then
+  echo "→ testes unitários"
+  npm test --silent || {
+    echo ""
+    echo "Commit bloqueado: a suíte está vermelha."
+    echo ""
+    exit 1
+  }
+fi
+
 # Se o CSS-fonte ou qualquer .liquid mudou, o application.css precisa vir junto.
 if printf '%s\n' "$changed" | grep -qE '\.liquid$|^src/'; then
   if ! printf '%s\n' "$changed" | grep -q '^assets/application.css$'; then

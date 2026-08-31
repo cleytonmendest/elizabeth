@@ -15,6 +15,7 @@ automatizar — tudo o mais foi movido para onde não apodrece:
 | --- | --- | --- |
 | Estado atual do tema | medido, não escrito | `npm run status` |
 | As regras do tema | `scripts/lint/rules/` | `npm run lint` |
+| O que os componentes fazem | `tests/` | `npm test` |
 | O que fazer a seguir | GitHub Issues | — |
 | Por que algo é assim | `docs/adr/` | — |
 | Dívida técnica conhecida | `scripts/lint/config/baseline.json` | `npm run status` |
@@ -37,11 +38,13 @@ Três camadas, autoridade crescente. Nenhuma delas depende de você lembrar:
 3. **GitHub Actions** — `.github/workflows/ci.yml`. Não pulável.
 
 ```bash
-npm run gate      # build + todos os linters (rode antes de abrir PR)
+npm run gate      # build + linters + testes (rode antes de abrir PR)
 npm run status    # painel de conformidade
 npm run lint -- --rules=tokens        # uma regra só
 npm run lint -- --files=sections/x.liquid   # um arquivo só
 npm run lint:baseline                 # regrava a dívida (só depois de reduzi-la)
+npm test          # Vitest nos Web Components
+npm run test:mutants                  # os testes conseguem falhar?
 ```
 
 **A catraca:** violação já existente é aviso; violação **nova** é erro. O total
@@ -56,6 +59,31 @@ não dívida nova. O CI libera o crescimento quando o diff toca
 Violação legítima (cor de marca de terceiro, scrim de imagem, lightbox) vai
 para `scripts/lint/config/design-exceptions.json` **com justificativa escrita**
 — o linter falha se o campo `reason` faltar.
+
+## Os testes
+
+Os linters verificam ESTRUTURA — que o token existe, que a chave de tradução
+existe, que o asset referenciado existe. Nada disso olha o que o componente
+faz quando a cliente clica. É o que `tests/` cobre, em jsdom.
+
+Os alvos são scripts clássicos: o Liquid os injeta com `<script src defer>`,
+eles não exportam nada, e `price-component.js` depende de `formatPrice` ser
+global — criada por `cart.js`. `tests/helpers/load-asset.mjs` reproduz essa
+semântica em vez de convertê-los em módulos ES: transformar o código de
+produção para agradar o teste faria o teste medir outro programa.
+
+**`npm run test:mutants` é a parte que não se pula.** Ele quebra o tema de
+propósito, uma quebra por vez, e exige que a suíte fique vermelha. Uma suíte
+verde diz que os testes passaram — não que eles verificam alguma coisa. Um
+teste que perdeu o alvo (o seletor mudou, o evento trocou de nome) fica verde
+exibindo o mesmo silêncio de um teste que funciona. Ao mexer num componente, se
+o script reclamar que não achou o trecho a mutar, atualize a lista em
+`scripts/test-mutants.mjs` — ela é curta e escolhida a dedo, não uma varredura
+automática.
+
+Falta a metade de navegador da [issue #31](https://github.com/cleytonmendest/elizabeth/issues/31):
+Playwright + axe contra `shopify theme dev`, que precisa da credencial da loja
+como secret do CI.
 
 ## Os dois princípios que os linters codificam
 

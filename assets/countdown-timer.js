@@ -22,8 +22,13 @@ class CountdownTimer extends HTMLElement {
       return;
     }
 
-    this.tick();
+    // O intervalo é agendado ANTES do primeiro tick de propósito: um alvo já
+    // vencido faz o tick chamar clearInterval, e ele precisa ter um id para
+    // limpar. Na ordem inversa o clearInterval recebia `undefined`, não
+    // limpava nada, e o setInterval logo abaixo deixava a seção escondida
+    // contando de segundo em segundo para sempre.
     this.interval = setInterval(() => this.tick(), 1000);
+    this.tick();
   }
 
   disconnectedCallback() {
