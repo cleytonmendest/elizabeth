@@ -171,21 +171,51 @@ jobs:
           fi
 
           npm install -g @shopify/cli
-          shopify theme dev --port 9292 --theme-editor-sync=false > theme-dev.log 2>&1 &
+
+          # Os flags saíram de `shopify theme dev --help`, não de memória — a
+          # primeira versão passava `--theme-editor-sync=false` e o CLI morria
+          # com "Unexpected argument: false", porque ele é um switch booleano
+          # (e já vem desligado, então some daqui).
+          #
+          # `--live-reload off` não é conveniência: o modo padrão INJETA um
+          # script de hot reload no HTML da vitrine. Esse script não existe na
+          # loja de verdade, e medir acessibilidade num DOM que só existe em
+          # desenvolvimento seria medir outra página.
+          #
+          # `--error-overlay silent` pela mesma razão: falha de upload
+          # desenha um overlay na página, e o axe acusaria problemas de um
+          # elemento que o tema não tem. A falha continua visível no log.
+          shopify theme dev \
+            --port 9292 \
+            --live-reload off \
+            --error-overlay silent \
+            > theme-dev.log 2>&1 &
+          dev_pid=$!
 
           # Esperar a porta responder, com teto. Sem o teto, uma credencial
           # errada vira um job pendurado até o timeout do runner, e o log de
-          # 6 horas depois não diz o que aconteceu.
-          for _ in $(seq 1 60); do
+          # 6 horas depois não diz o que aconteceu. São 5 minutos porque a
+          # primeira execução SOBE o tema inteiro antes de servir.
+          #
+          # E o laço checa se o processo ainda VIVE. Sem isso, um CLI que
+          # morre no primeiro segundo (foi o que aconteceu com um flag errado)
+          # gasta os 5 minutos inteiros antes de alguém ver o motivo, que já
+          # estava escrito no log desde o começo.
+          for _ in $(seq 1 150); do
             if curl -sf -o /dev/null http://127.0.0.1:9292/; then
               echo "THEME_URL=http://127.0.0.1:9292" >> "$GITHUB_ENV"
               echo "Loja no ar."
               exit 0
             fi
+            if ! kill -0 "$dev_pid" 2>/dev/null; then
+              echo "::error::O shopify theme dev morreu antes de servir. Log abaixo."
+              cat theme-dev.log
+              exit 1
+            fi
             sleep 2
           done
 
-          echo "::error::O shopify theme dev não respondeu em 120s. Log abaixo."
+          echo "::error::O shopify theme dev não respondeu em 300s. Log abaixo."
           cat theme-dev.log
           exit 1
 
