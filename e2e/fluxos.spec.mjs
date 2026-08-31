@@ -38,6 +38,13 @@ test('quick-add do card mantém o ícone e adiciona sem sair da coleção', asyn
   // a lógica; só o navegador prova que o ícone continua desenhado na tela.
   await page.goto('/collections/all');
 
+  // `card-quick-add` só renderiza <add-to-cart> para produto de UMA variante;
+  // com mais de uma, o card vira um link para a PDP. Num catálogo onde todo
+  // produto tem variante — como o desta loja — não há quick-add para testar,
+  // e o teste diz isso em vez de falhar por ausência.
+  const temQuickAdd = (await page.locator('add-to-cart').count()) > 0;
+  test.skip(!temQuickAdd, 'catálogo sem produto de variante única — não há quick-add nesta coleção');
+
   // O quick-add mora num overlay `opacity-0 group-hover:opacity-100` sobre a
   // imagem do card: ele existe no DOM desde o começo, mas só fica visível
   // quando o mouse entra no card. A primeira versão deste teste procurava o
@@ -110,8 +117,13 @@ test('busca preditiva mostra resultado enquanto digita', async ({ page }) => {
   // breakpoint, e uma no menu mobile. Todas existem no DOM ao mesmo tempo e
   // apenas uma está visível, então o seletor precisa dizer qual.
   const busca = page.locator('search-component:visible').first();
-  await busca.locator('input[name="q"]').fill('a');
 
-  await expect(busca.locator('.search-results')).toBeVisible();
+  // Dois detalhes que só o código do componente conta: ele ignora consulta com
+  // menos de 2 caracteres (`if (query.length < 2) return`), e espera 300ms de
+  // debounce antes de buscar. Digitar "a" e olhar na hora não abre nada — foi
+  // o que a primeira versão deste teste fez.
+  await busca.locator('input[name="q"]').fill('ve');
+
+  await expect(busca.locator('.search-results')).toBeVisible({ timeout: 10_000 });
   await expect(busca.locator('.search-result-item').first()).toBeVisible();
 });

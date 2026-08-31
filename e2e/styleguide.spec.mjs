@@ -24,10 +24,30 @@
  * em vez de fingido aqui: um teste que troca de preset sem trocar de servidor
  * mediria quatro vezes a mesma coisa.
  */
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
 import { THEME_URL, MOTIVO, STYLEGUIDE_PATH } from './helpers/loja.mjs';
 
+const BASELINE = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '__screenshots__',
+  'styleguide.png'
+);
+
 test.skip(!THEME_URL, MOTIVO);
+
+// Enquanto a imagem de referência não estiver commitada, este teste se declara
+// pulado com o motivo — e volta a rodar sozinho no instante em que o arquivo
+// aparecer. A alternativa (deixar o Playwright gravar a imagem e seguir) seria
+// promover o estado atual a verdade sem ninguém ter olhado, que é o oposto do
+// que uma baseline visual serve para fazer.
+test.skip(
+  !fs.existsSync(BASELINE),
+  'Sem baseline commitada. Baixe styleguide-actual.png do artefato do CI, ' +
+    'OLHE a imagem, e commite em e2e/__screenshots__/styleguide.png.'
+);
 
 test('a página inteira bate com a baseline', async ({ page }) => {
   await page.goto(STYLEGUIDE_PATH);

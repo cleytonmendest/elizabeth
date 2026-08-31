@@ -14,6 +14,7 @@
  */
 import { test, expect } from '@playwright/test';
 import { violacoes, regras, relatorio } from './helpers/axe.mjs';
+import { avaliar, resolvidas, impressao } from './helpers/baseline.mjs';
 
 /** Documento completo: o axe julga o `<html>`, então `lang` e `<title>` contam. */
 const pagina = (corpo, { lang = 'pt-BR' } = {}) => `<!DOCTYPE html>
@@ -103,5 +104,50 @@ test.describe('o filtro de escopo funciona', () => {
 
     expect(regras(await violacoes(page))).toContain('image-alt');
     expect(regras(await violacoes(page, { excluir: ['#terceiro'] }))).not.toContain('image-alt');
+  });
+});
+
+
+test.describe('a catraca separa dívida conhecida de regressão', () => {
+  // Lógica pura, sem navegador — mas mora aqui porque este arquivo é o que
+  // testa o VERIFICADOR, e a catraca decide quem passa. Um `avaliar` que
+  // devolvesse tudo como "conhecida" deixaria qualquer regressão entrar
+  // exibindo o mesmo verde de quando está tudo certo.
+  const violacao = (id) => ({ id, help: id, nodes: [{ target: ['x'] }] });
+  const BASE = { 'carrinho|color-contrast': 'dívida medida' };
+
+  test('violação registrada no baseline não reprova', () => {
+    const { conhecidas, novas } = avaliar('carrinho', [violacao('color-contrast')], BASE);
+    expect(novas).toEqual([]);
+    expect(conhecidas).toHaveLength(1);
+  });
+
+  test('regra nova na mesma página reprova', () => {
+    const { novas } = avaliar('carrinho', [violacao('button-name')], BASE);
+    expect(novas.map((v) => v.id)).toEqual(['button-name']);
+  });
+
+  test('a MESMA regra numa página diferente reprova', () => {
+    // O que impede o baseline de virar licença geral: ele é por página.
+    const { novas } = avaliar('home', [violacao('color-contrast')], BASE);
+    expect(novas.map((v) => v.id)).toEqual(['color-contrast']);
+  });
+
+  test('baseline vazio: tudo é novo', () => {
+    const { novas } = avaliar('carrinho', [violacao('color-contrast')], {});
+    expect(novas).toHaveLength(1);
+  });
+
+  test('dívida que sumiu é apontada para o baseline poder encolher', () => {
+    // Sem isto o número nunca cai: ninguém lembra de regravar o arquivo
+    // depois de corrigir.
+    expect(resolvidas('carrinho', [], BASE)).toEqual(['carrinho|color-contrast']);
+    expect(resolvidas('carrinho', [violacao('color-contrast')], BASE)).toEqual([]);
+  });
+
+  test('a impressão digital não carrega o seletor', () => {
+    // Seletor de axe tem :nth-child e id gerado pelo Shopify: ele muda quando
+    // alguém insere um bloco, sem nada ter piorado.
+    expect(impressao('carrinho', 'color-contrast')).toBe('carrinho|color-contrast');
   });
 });

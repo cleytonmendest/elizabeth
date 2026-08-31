@@ -13,18 +13,75 @@
  * `settings.color_schemes` lado a lado — foi exatamente para isso que ela
  * existe (issue #30).
  */
+import fs from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { violacoes, regras, relatorio } from './helpers/axe.mjs';
 import { THEME_URL, MOTIVO, STYLEGUIDE_PATH } from './helpers/loja.mjs';
+import { avaliar, resolvidas, carregar, impressao, ARQUIVO } from './helpers/baseline.mjs';
 
 test.skip(!THEME_URL, MOTIVO);
 
 /** Widgets de terceiro que a lojista instala e o tema não controla. */
 const FORA_DO_TEMA = ['#shopify-chat', '[id^="shopify-block-"]'];
 
-async function semViolacao(page) {
+const BASELINE = carregar();
+
+/**
+ * `npm run test:e2e:baseline` regrava o arquivo a partir do que a loja mostra
+ * AGORA. Roda com --workers=1 de propósito: o acumulador abaixo é de processo,
+ * e dois workers escreveriam metade do resultado cada um.
+ *
+ * Regravar à mão seria a mesma armadilha do ROADMAP — um arquivo que depende
+ * de alguém lembrar de atualizar diverge no primeiro dia corrido.
+ */
+const REGRAVANDO = process.env.A11Y_BASELINE_WRITE === '1';
+const medido = {};
+
+test.afterAll(() => {
+  if (!REGRAVANDO) return;
+  const violacoes = Object.fromEntries(Object.entries(medido).sort());
+  fs.writeFileSync(
+    ARQUIVO,
+    JSON.stringify(
+      {
+        _leia: JSON.parse(fs.readFileSync(ARQUIVO, 'utf8'))._leia,
+        _medido_em: new Date().toISOString().slice(0, 10),
+        _total: Object.keys(violacoes).length,
+        violacoes,
+      },
+      null,
+      2
+    ) + '\n'
+  );
+  console.log(`\nbaseline regravado: ${Object.keys(violacoes).length} impressão(ões).`);
+});
+
+/**
+ * Reprova por violação NOVA; a conhecida vira aviso no log.
+ *
+ * O aperto é o mesmo do lint: dívida registrada não bloqueia ninguém, mas
+ * também não some de vista — e o dia em que ela for corrigida, o teste avisa
+ * para regravar o baseline, senão o número nunca cai.
+ */
+async function semViolacaoNova(page, pagina) {
   const encontradas = await violacoes(page, { excluir: FORA_DO_TEMA });
-  expect(regras(encontradas), `\n${relatorio(encontradas)}\n`).toEqual([]);
+  const { conhecidas, novas } = avaliar(pagina, encontradas, BASELINE);
+
+  if (REGRAVANDO) {
+    for (const v of encontradas) {
+      medido[impressao(pagina, v.id)] = `${v.nodes.length} nó(s) — ${v.help}`;
+    }
+    return;
+  }
+
+  for (const v of conhecidas) {
+    console.log(`  [baseline] ${pagina}: ${v.id} — dívida conhecida, ver e2e/a11y-baseline.json`);
+  }
+  for (const f of resolvidas(pagina, encontradas, BASELINE)) {
+    console.log(`  [resolvida] ${f} não viola mais — rode "npm run test:e2e:baseline" para travar a melhoria`);
+  }
+
+  expect(regras(novas), `\nVIOLAÇÃO NOVA:\n${relatorio(novas)}\n`).toEqual([]);
 }
 
 const PAGINAS = [
@@ -37,20 +94,20 @@ const PAGINAS = [
 ];
 
 for (const [nome, caminho] of PAGINAS) {
-  test(`sem violação de WCAG AA: ${nome}`, async ({ page }) => {
+  test(`sem violação NOVA de WCAG AA: ${nome}`, async ({ page }) => {
     await page.goto(caminho);
-    await semViolacao(page);
+    await semViolacaoNova(page, nome);
   });
 }
 
-test('sem violação de WCAG AA: página de produto', async ({ page }) => {
+test('sem violação NOVA de WCAG AA: página de produto', async ({ page }) => {
   // O handle do produto depende do catálogo da loja, então chegamos nele pelo
   // caminho da cliente em vez de cravar uma URL que quebra quando o catálogo
   // muda.
   await page.goto('/collections/all');
   await page.locator('a[href*="/products/"]').first().click();
   await expect(page).toHaveURL(/\/products\//);
-  await semViolacao(page);
+  await semViolacaoNova(page, 'página de produto');
 });
 
 test('o drawer do carrinho aberto também passa', async ({ page }) => {
@@ -59,5 +116,5 @@ test('o drawer do carrinho aberto também passa', async ({ page }) => {
   await page.goto('/');
   await page.locator('#minicart-button').click();
   await expect(page.locator('cart-drawer')).toHaveClass(/active/);
-  await semViolacao(page);
+  await semViolacaoNova(page, 'drawer do carrinho');
 });

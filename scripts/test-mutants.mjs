@@ -165,6 +165,27 @@ const MUTANTES_E2E = [
     para: '    em: ???',
     teste: 'e2e/gate.spec.mjs',
   },
+  {
+    porque: 'a catraca passa a tratar TODA violação como dívida conhecida',
+    arquivo: 'e2e/helpers/baseline.mjs',
+    de: '(baseline[impressao(pagina, v.id)] ? conhecidas : novas).push(v);',
+    para: 'conhecidas.push(v);',
+    teste: 'e2e/gate.spec.mjs',
+  },
+  {
+    porque: 'a impressão digital perde a página — o baseline vira licença geral',
+    arquivo: 'e2e/helpers/baseline.mjs',
+    de: 'export const impressao = (pagina, regra) => `${pagina}|${regra}`;',
+    para: 'export const impressao = (pagina, regra) => `${regra}`;',
+    teste: 'e2e/gate.spec.mjs',
+  },
+  {
+    porque: 'dívida já paga deixa de ser apontada — o baseline nunca encolhe',
+    arquivo: 'e2e/helpers/baseline.mjs',
+    de: 'return Object.keys(baseline).filter((f) => f.startsWith(`${pagina}|`) && !vistas.has(f));',
+    para: 'return [];',
+    teste: 'e2e/gate.spec.mjs',
+  },
 ];
 
 // Listas separadas, não somadas: cada uma roda no job de CI que tem as

@@ -47,6 +47,7 @@ npm test          # Vitest nos Web Components (jsdom)
 npm run test:mutants                  # os testes conseguem falhar?
 npm run test:e2e                      # Playwright: axe + fluxos
 npm run test:e2e:gate                 # só o gate de a11y (não precisa de loja)
+npm run test:e2e:baseline             # regrava a dívida de a11y (depois de reduzi-la)
 ```
 
 **A catraca:** violação já existente é aviso; violação **nova** é erro. O total
@@ -102,8 +103,25 @@ Essa suíte tem duas metades, e a divisão é o ponto:
   ainda **não rodaram nenhuma vez** — os seletores saíram do Liquid, mas só a
   primeira execução real os valida.
 
-Para ligar a segunda metade: secrets `SHOPIFY_STORE` e
-`SHOPIFY_CLI_THEME_TOKEN` (senha de app do Theme Access). O job do CI já roda
+**A catraca vale aqui também.** A primeira execução contra a loja encontrou
+`color-contrast` em sete páginas, quase toda causada pelo mesmo breadcrumb
+(`text-foreground/50` dá 3,54:1 no esquema claro, contra os 4,5:1 do WCAG AA).
+Um gate de tolerância zero nunca ficaria verde, e gate que nunca fica verde é
+desligado. Então: violação registrada em `e2e/a11y-baseline.json` é aviso,
+violação **nova** é erro, e o total só pode cair — mesma regra do lint.
+
+A impressão digital é `página|regra`, sem o seletor, pelo mesmo motivo que o
+baseline do lint trava itens e não ocorrências: seletor de axe carrega
+`:nth-child` e id gerado pelo Shopify, e muda sem nada ter piorado.
+
+Nota sobre opacidade: `text-foreground/50` passa no esquema ESCURO (5,28:1) e
+reprova no claro. Opacidade como texto secundário depende das cores que a
+lojista escolhe — nenhum valor fixo garante contraste nos dois lados. A
+correção certa é um token próprio por scheme, na [issue #29](https://github.com/cleytonmendest/elizabeth/issues/29).
+
+Para ligar a segunda metade: secrets `SHOPIFY_STORE`,
+`SHOPIFY_CLI_THEME_TOKEN` (senha de app do Theme Access) e, se a loja tiver
+proteção por senha, `SHOPIFY_STORE_PASSWORD`. O job do CI já roda
 sempre — o que muda com o secret é quanto ele consegue medir.
 
 O job NÃO está atrás de um `if:`, de propósito. Job que só roda quando um
