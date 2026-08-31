@@ -81,8 +81,22 @@
     if (discountRow) discountRow.classList.toggle('hidden', cart.total_discount <= 0);
   }
 
+  /**
+   * Um carrinho da Shopify tem `items` (array) e `item_count` (número). Um
+   * item de linha não tem nenhum dos dois.
+   *
+   * O `cart.js` agora só publica carrinho no `cart-update` (issue #4), mas
+   * este arquivo não é dono desse evento: `cart-update` é um nome genérico, e
+   * num tema da Theme Store apps de terceiro convivem na mesma página. Se
+   * chegar outra coisa, a conta de frete vira NaN e a cliente lê "Faltam
+   * R$ NaN para frete grátis". Ignorar é melhor que exibir isso.
+   */
+  function ehCarrinho(cart) {
+    return Boolean(cart) && Array.isArray(cart.items) && typeof cart.item_count === 'number';
+  }
+
   function onCart(cart) {
-    if (!cart) return;
+    if (!ehCarrinho(cart)) return;
     updateFreeShippingBars(cart);
     updateCartPage(cart);
   }

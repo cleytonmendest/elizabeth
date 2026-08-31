@@ -65,8 +65,13 @@ describe('publish', () => {
   it('os nomes de evento são os que os componentes escutam', () => {
     // Trocar um destes desacopla silenciosamente drawer, bolha e preço: o
     // publisher continua publicando e ninguém mais ouve.
+    //
+    // Este teste reprovou quando `cart:item-added` entrou, que é o
+    // comportamento certo: mudança de contrato tem que ser deliberada, não
+    // escorregar junto com um commit de outra coisa.
     expect(PUB_SUB_EVENTS).toEqual({
       cartUpdate: 'cart-update',
+      itemAdded: 'cart:item-added',
       quantityUpdate: 'quantity-update',
       variantChange: 'variant-change',
       cartError: 'cart-error',
@@ -105,6 +110,27 @@ describe('debounce', () => {
     expect(fn).toHaveBeenCalledWith(3);
   });
 });
+
+/** O que `/cart/add.js` devolve: o item adicionado, sem nada do carrinho. */
+const ITEM_DE_LINHA = {
+  id: 42,
+  key: '42:abc',
+  quantity: 2,
+  title: 'Vestido midi',
+  price: 9990,
+  line_price: 19980,
+  final_line_price: 19980,
+  product_id: 7,
+};
+
+/** O que `/cart.js` e `/cart/change.js` devolvem. */
+const CARRINHO = {
+  item_count: 2,
+  items: [ITEM_DE_LINHA],
+  items_subtotal_price: 19980,
+  total_discount: 0,
+  total_price: 19980,
+};
 
 describe('CartManager', () => {
   let eventos;
@@ -182,13 +208,67 @@ describe('CartManager', () => {
       expect(config.body.get('quantity')).toBe('2');
     });
 
-    it('publica cart-update com a resposta', async () => {
+    it('publica cart:item-added — NÃO cart-update', async () => {
+      // A primeira versão deste teste afirmava `cart-update`, porque eu
+      // transcrevi o que o código fazia e chamei aquilo de contrato. Estava
+      // errado nos dois: `/cart/add.js` devolve o ITEM, e a suíte passou a
+      // proteger o bug da issue #4 em vez de pegá-lo.
       document.body.innerHTML = '<form><input name="id" value="42"></form>';
-      respondeCom({ id: 42 });
+      respondeCom(ITEM_DE_LINHA);
 
       await CartManager.addToCart(document.querySelector('form'));
 
-      expect(eventos).toEqual([{ nome: 'cart-update', detail: { id: 42 } }]);
+      expect(eventos).toEqual([{ nome: 'cart:item-added', detail: ITEM_DE_LINHA }]);
+    });
+
+    it('produto JÁ EXISTENTE também vai por cart:item-added', async () => {
+      // O pior caso da issue #4: a Shopify devolve a linha com a quantidade já
+      // SOMADA, então o payload parece plausível e passa despercebido. É a
+      // origem provável do bug de minicart relatado como intermitente.
+      document.body.innerHTML = '<form><input name="id" value="42"></form>';
+      respondeCom({ ...ITEM_DE_LINHA, quantity: 3, final_line_price: 29970 });
+
+      await CartManager.addToCart(document.querySelector('form'));
+
+      expect(eventos.map((e) => e.nome)).toEqual(['cart:item-added']);
+      expect(eventos[0].detail.quantity).toBe(3);
+    });
+  });
+
+  describe('o contrato de cart-update', () => {
+    // O que a issue #4 pede em uma frase: todo publish de `cart-update` (e de
+    // `quantity-update`) carrega um CARRINHO. Sem isto, cada ouvinte precisa
+    // adivinhar o formato — e os dois que existem adivinharam errado.
+    const ehCarrinho = (detail) =>
+      detail !== null &&
+      typeof detail === 'object' &&
+      Array.isArray(detail.items) &&
+      typeof detail.item_count === 'number';
+
+    it('getCart publica um carrinho', async () => {
+      respondeCom(CARRINHO);
+      await CartManager.getCart();
+      expect(eventos.map((e) => e.nome)).toEqual(['cart-update']);
+      expect(ehCarrinho(eventos[0].detail)).toBe(true);
+    });
+
+    it('updateQuantity publica um carrinho', async () => {
+      respondeCom(CARRINHO);
+      await CartManager.updateQuantity('1', 2);
+      expect(eventos.map((e) => e.nome)).toEqual(['quantity-update']);
+      expect(ehCarrinho(eventos[0].detail)).toBe(true);
+    });
+
+    it('addToCart não publica cart-update com o que não é carrinho', async () => {
+      document.body.innerHTML = '<form><input name="id" value="42"></form>';
+      respondeCom(ITEM_DE_LINHA);
+
+      await CartManager.addToCart(document.querySelector('form'));
+
+      const cartUpdates = eventos.filter((e) => e.nome === 'cart-update');
+      expect(cartUpdates).toEqual([]);
+      // E a prova de que o item NÃO passaria pelo teste de carrinho:
+      expect(ehCarrinho(ITEM_DE_LINHA)).toBe(false);
     });
   });
 
