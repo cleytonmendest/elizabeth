@@ -1,0 +1,14 @@
+{
+  "_leia": "Dívida de acessibilidade que JÁ EXISTIA quando o gate passou a rodar contra a loja. Aviso, não erro. Violação NOVA reprova, e este total só pode cair — a mesma regra do scripts/lint/config/baseline.json. Só entra aqui o que foi MEDIDO: a home não aparece porque ela passou limpa, e reservar uma linha 'por precaução' esconderia a primeira regressão que acontecesse nela.",
+  "_medido_em": "2026-08-31, primeira execução do gate contra a loja de desenvolvimento",
+  "_total": 7,
+  "violacoes": {
+    "coleção|color-contrast": "breadcrumb (text-foreground/50) + rótulos de filtro (text-foreground/40)",
+    "busca|color-contrast": "breadcrumb",
+    "carrinho|color-contrast": "breadcrumb + text-foreground/55",
+    "404|color-contrast": "breadcrumb + text-6xl",
+    "style guide (todos os color schemes)|color-contrast": "breadcrumb",
+    "página de produto|color-contrast": "breadcrumb + 9 outros nós",
+    "drawer do carrinho|color-contrast": "text-foreground/55"
+  }
+}

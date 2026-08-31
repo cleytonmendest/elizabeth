@@ -43,8 +43,11 @@ npm run status    # painel de conformidade
 npm run lint -- --rules=tokens        # uma regra só
 npm run lint -- --files=sections/x.liquid   # um arquivo só
 npm run lint:baseline                 # regrava a dívida (só depois de reduzi-la)
-npm test          # Vitest nos Web Components
+npm test          # Vitest nos Web Components (jsdom)
 npm run test:mutants                  # os testes conseguem falhar?
+npm run test:e2e                      # Playwright: axe + fluxos
+npm run test:e2e:gate                 # só o gate de a11y (não precisa de loja)
+npm run test:e2e:baseline             # regrava a dívida de a11y (depois de reduzi-la)
 ```
 
 **A catraca:** violação já existente é aviso; violação **nova** é erro. O total
@@ -81,9 +84,59 @@ o script reclamar que não achou o trecho a mutar, atualize a lista em
 `scripts/test-mutants.mjs` — ela é curta e escolhida a dedo, não uma varredura
 automática.
 
-Falta a metade de navegador da [issue #31](https://github.com/cleytonmendest/elizabeth/issues/31):
-Playwright + axe contra `shopify theme dev`, que precisa da credencial da loja
-como secret do CI.
+## O navegador
+
+O jsdom não é navegador: ele não calcula layout, não resolve contraste, não
+move foco. Acessibilidade e regressão visual só existem em `e2e/`, com
+Playwright.
+
+Essa suíte tem duas metades, e a divisão é o ponto:
+
+- **`e2e/gate.spec.mjs` não precisa de loja.** Ele não testa o tema — testa o
+  VERIFICADOR: planta um defeito conhecido (imagem sem alt, contraste baixo,
+  botão sem nome) e exige que o axe o encontre, e planta uma página correta e
+  exige que ele fique quieto. Sem isso, um critério configurado errado faria
+  toda página passar com a mesma cara de quando está tudo certo. Roda sempre.
+- **O resto aponta para `THEME_URL`**, um `shopify theme dev` autenticado. Sem
+  a variável, esses testes se declaram PULADOS com o motivo escrito, e
+  `scripts/e2e.mjs` avisa no resumo do CI que nenhuma página foi medida. Eles
+  ainda **não rodaram nenhuma vez** — os seletores saíram do Liquid, mas só a
+  primeira execução real os valida.
+
+Um teste está marcado como `test.fixme` apontando para a
+[issue #51](https://github.com/cleytonmendest/elizabeth/issues/51): a busca
+preditiva não responde através do proxy do `theme dev`, e afrouxar a asserção
+até passar transformaria defeito real em verde. `fixme` aparece no relatório;
+`skip` silencioso não apareceria.
+
+**A catraca vale aqui também.** A primeira execução contra a loja encontrou
+`color-contrast` em sete páginas, quase toda causada pelo mesmo breadcrumb
+(`text-foreground/50` dá 3,54:1 no esquema claro, contra os 4,5:1 do WCAG AA).
+Um gate de tolerância zero nunca ficaria verde, e gate que nunca fica verde é
+desligado. Então: violação registrada em `e2e/a11y-baseline.json` é aviso,
+violação **nova** é erro, e o total só pode cair — mesma regra do lint.
+
+A impressão digital é `página|regra`, sem o seletor, pelo mesmo motivo que o
+baseline do lint trava itens e não ocorrências: seletor de axe carrega
+`:nth-child` e id gerado pelo Shopify, e muda sem nada ter piorado.
+
+Nota sobre opacidade: `text-foreground/50` passa no esquema ESCURO (5,28:1) e
+reprova no claro. Opacidade como texto secundário depende das cores que a
+lojista escolhe — nenhum valor fixo garante contraste nos dois lados. A
+correção certa é um token próprio por scheme, na [issue #29](https://github.com/cleytonmendest/elizabeth/issues/29).
+
+Para ligar a segunda metade: secrets `SHOPIFY_STORE`,
+`SHOPIFY_CLI_THEME_TOKEN` (senha de app do Theme Access) e, se a loja tiver
+proteção por senha, `SHOPIFY_STORE_PASSWORD`. O job do CI já roda
+sempre — o que muda com o secret é quanto ele consegue medir.
+
+O job NÃO está atrás de um `if:`, de propósito. Job que só roda quando um
+secret existe é o mesmo defeito que quebrou o board por dois dias.
+
+Neste ambiente remoto o Chromium já vem instalado, mas numa build que pode não
+ser a que o Playwright baixaria. Rode com
+`CHROMIUM_PATH=/opt/pw-browsers/chromium-*/chrome-linux/chrome`; não rode
+`playwright install` aqui.
 
 ## Os dois princípios que os linters codificam
 

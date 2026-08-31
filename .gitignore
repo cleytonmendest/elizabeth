@@ -1,3 +1,10 @@
 node_modules
 memory/
 .DS_Store
+
+# Artefatos do Playwright. O relatório e os traces são diagnóstico de UMA
+# execução; as baselines de screenshot (e2e/__screenshots__) NÃO entram aqui —
+# essas são referência e precisam estar commitadas para haver comparação.
+playwright-report/
+test-results/
+theme-dev.log

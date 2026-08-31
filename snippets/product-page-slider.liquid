@@ -59,13 +59,23 @@
 
 {%- comment -%} Setas — somente desktop {%- endcomment -%}
 <div class="hidden lg:flex absolute w-full justify-between top-[50%] z-10">
+  {%- comment -%}
+    O aria-label não é enfeite: o conteúdo do botão é só um SVG, então sem ele
+    o leitor de tela anuncia "botão" e nada mais. O axe classifica como
+    button-name, gravidade crítica — foi o primeiro achado do gate de
+    acessibilidade quando ele rodou contra a loja pela primeira vez.
+  {%- endcomment -%}
   <button
+    type="button"
+    aria-label="{{ 'general.accessibility.previous' | t }}"
     onclick="sliderPrev('{{ section.id }}')"
     class="text-foreground"
   >
     {% render 'icon-short-arrow-left', size: 40 %}
   </button>
   <button
+    type="button"
+    aria-label="{{ 'general.accessibility.next' | t }}"
     onclick="sliderNext('{{ section.id }}')"
     class="text-foreground"
   >
