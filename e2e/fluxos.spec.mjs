@@ -143,10 +143,19 @@ test('busca preditiva responde enquanto a cliente digita', async ({ page }) => {
   await expect(busca.locator('.search-results')).toBeVisible({ timeout: 10_000 });
   await expect(busca).toHaveClass(/is-searching/);
 
-  // E ele escreveu ALGUMA resposta — resultado ou a mensagem de vazio. Um
-  // painel aberto e em branco seria o fetch tendo falhado em silêncio, que é
-  // exatamente o defeito que este teste existe para pegar.
-  await expect(busca.locator('.search-results-content')).not.toBeEmpty();
+  // E ele escreveu ALGUMA resposta — resultado ou a mensagem de vazio.
+  //
+  // O timeout é generoso de propósito. Painel aberto com conteúdo vazio é o
+  // estado de LOADING (`_showLoading` limpa o conteúdo, abre o painel e marca
+  // is-searching), e a chamada a /search/suggest.json atravessa o proxy do
+  // `shopify theme dev` até a loja de verdade — bem mais lento que na loja
+  // publicada. Com 5s o teste media a latência do ambiente, não o componente.
+  //
+  // 15s continua sendo um gate real: busca preditiva que demora mais que isso
+  // está quebrada para a cliente de qualquer jeito. E o caminho de erro do
+  // componente é tratado (catch → esconde o painel), então painel aberto e
+  // vazio no fim desse prazo significa fetch pendurado, que é defeito.
+  await expect(busca.locator('.search-results-content')).not.toBeEmpty({ timeout: 15_000 });
 
   const itens = busca.locator('.search-result-item');
   if ((await itens.count()) > 0) {
