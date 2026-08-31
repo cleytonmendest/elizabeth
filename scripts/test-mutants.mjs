@@ -122,7 +122,29 @@ const MUTANTES = [
     para: 'this.tick();\n    this.interval = setInterval(() => this.tick(), 1000);',
     teste: 'tests/countdown-timer.test.mjs',
   },
+  {
+    porque: 'addToCart volta a publicar o item de linha como se fosse carrinho (issue #4)',
+    arquivo: 'assets/cart.js',
+    de: 'publish(PUB_SUB_EVENTS.itemAdded, result);',
+    para: 'publish(PUB_SUB_EVENTS.cartUpdate, result);',
+    teste: 'tests/cart.test.mjs',
+  },
+  {
+    porque: 'a guarda do drawer cai e a bolha volta a receber undefined',
+    arquivo: 'assets/cart.js',
+    de: '            if (!ehCarrinho(event.detail)) return;',
+    para: '            if (false) return;',
+    teste: 'tests/cart-drawer.test.mjs',
+  },
+  {
+    porque: 'a barra de frete grátis volta a exibir "Faltam R$ NaN"',
+    arquivo: 'assets/cart-extras.js',
+    de: '    if (!ehCarrinho(cart)) return;',
+    para: '    if (!cart) return;',
+    teste: 'tests/cart-extras.test.mjs',
+  },
 ];
+
 
 /**
  * Mutantes do verificador de acessibilidade. Rodam com `--e2e`, porque exigem

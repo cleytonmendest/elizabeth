@@ -197,8 +197,21 @@ opção padrão; global exige justificativa.
 
 **Componentes:** Web Components (`<variant-selects>`, `<my-slider>`,
 `<countdown-timer>`…). Sempre `if (!customElements.get('nome'))` antes de
-definir. Comunicação por evento (`variant:change`, `cart-update`,
-`quantity-update`, `cart-error`), nunca acoplamento direto.
+definir. Comunicação por evento, nunca acoplamento direto. O contrato:
+
+| Evento | O detail carrega |
+| --- | --- |
+| `cart-update` | o **carrinho** (`items`, `item_count`, `total_price`) |
+| `quantity-update` | o **carrinho** |
+| `cart:item-added` | o **item** que acabou de entrar (o que `/cart/add.js` devolve) |
+| `variant:change` | a variante escolhida, ou `undefined` |
+| `cart-error` | o erro |
+
+Os dois primeiros e o terceiro têm nomes diferentes porque carregam coisas
+diferentes — até a v2.31.0 o `addToCart` publicava o item como se fosse
+carrinho, e a barra de frete grátis exibia "Faltam R$ NaN" ([issue #4](https://github.com/cleytonmendest/elizabeth/issues/4)).
+Quem escuta `cart-update` ainda checa o formato: o nome é genérico e app de
+terceiro divide a mesma página.
 
 **Globais** (`theme.liquid`): `window.shopUrl`, `window.routes`. Nunca
 hardcode URL de carrinho ou busca.

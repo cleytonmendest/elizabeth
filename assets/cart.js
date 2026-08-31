@@ -1,7 +1,23 @@
 const ON_CHANGE_DEBOUNCE_TIMER = 300;
 
+/**
+ * O contrato dos eventos. `cart-update` e `quantity-update` carregam SEMPRE o
+ * objeto carrinho — com `items`, `item_count`, `total_price`. Quem escuta pode
+ * contar com isso.
+ *
+ * `cart:item-added` é o outro: ele carrega o ITEM que acabou de entrar, que é
+ * o que `/cart/add.js` devolve. São informações diferentes e por isso têm
+ * nomes diferentes.
+ *
+ * Isso não é purismo. Até a v2.31.0 o `addToCart` publicava o item de linha
+ * como se fosse carrinho, e os dois ouvintes liam campos que não existiam ali:
+ * a bolha recebia `undefined`, e a barra de frete grátis chegava a exibir
+ * "Faltam R$ NaN para frete grátis" — porque `total_price` de um item é
+ * undefined, e `Math.max(limiar - undefined, 0)` é NaN. Ver issue #4.
+ */
 const PUB_SUB_EVENTS = {
     cartUpdate: 'cart-update',
+    itemAdded: 'cart:item-added',
     quantityUpdate: 'quantity-update',
     variantChange: 'variant-change',
     cartError: 'cart-error',
@@ -19,6 +35,11 @@ function fetchConfig(type = 'json') {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: `application/${type}` },
     };
+}
+
+/** Carrinho da Shopify tem `items` e `item_count`; item de linha não tem. */
+function ehCarrinho(cart) {
+    return Boolean(cart) && Array.isArray(cart.items) && typeof cart.item_count === 'number';
 }
 
 function publish(event, detail) {
@@ -56,7 +77,10 @@ class CartManager {
         try {
             const response = await fetch(`${routes.cart_add_url}`, config);
             const result = await response.json();
-            publish(PUB_SUB_EVENTS.cartUpdate, result);
+            // `/cart/add.js` devolve o ITEM adicionado, não o carrinho. Quem
+            // precisa do carrinho recebe pelo `cartUpdate` que o `getCart()`
+            // publica logo em seguida (ver submitHandler).
+            publish(PUB_SUB_EVENTS.itemAdded, result);
             return result;
         } catch (error) {
             console.error('Erro ao adicionar ao carrinho:', error);
@@ -98,12 +122,18 @@ class CartDrawer extends HTMLElement {
 
     setupEventSubscriptions() {
         document.addEventListener(PUB_SUB_EVENTS.cartUpdate, (event) => {
+            // Mesma guarda do cart-extras, e pelo mesmo motivo: `cart-update`
+            // é nome genérico, e app de terceiro pode disparar o dele na mesma
+            // página. Sem isto a bolha recebe `undefined` e o resumo escreve
+            // "R$ NaN" — o sintoma da issue #4.
+            if (!ehCarrinho(event.detail)) return;
             this.updateCartSummary(event.detail);
             this.updateQtdBubble(event.detail.item_count)
         });
 
         document.addEventListener(PUB_SUB_EVENTS.quantityUpdate, (event) => {
             const cart = event.detail;
+            if (!ehCarrinho(cart)) return;
 
             cart.items.forEach((item, index) => {
                 this.updateItemTotalPrice(index + 1, item.final_line_price);
