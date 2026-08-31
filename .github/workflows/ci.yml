@@ -150,6 +150,10 @@ jobs:
         env:
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
           SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
+          # Deliberadamente com outro nome: o CLI lê SHOPIFY_FLAG_STORE_PASSWORD
+          # e uma string VAZIA nele conta como "senha fornecida", o que faria a
+          # loja sem proteção falhar. Só vira a variável de verdade se existir.
+          STORE_PASSWORD: ${{ secrets.SHOPIFY_STORE_PASSWORD }}
         run: |
           set -euo pipefail
 
@@ -168,6 +172,14 @@ jobs:
             echo "Sem credencial da loja (SHOPIFY_STORE / SHOPIFY_CLI_THEME_TOKEN)."
             echo "O passo seguinte roda só o gate de acessibilidade, e avisa."
             exit 0
+          fi
+
+          # Loja protegida por senha de storefront: sem isto o CLI PERGUNTA a
+          # senha, e perguntar num runner sem terminal é morrer na hora.
+          # Loja sem proteção não precisa do secret e não passa por aqui.
+          if [ -n "${STORE_PASSWORD:-}" ]; then
+            export SHOPIFY_FLAG_STORE_PASSWORD="$STORE_PASSWORD"
+            echo "Loja protegida por senha: usando SHOPIFY_STORE_PASSWORD."
           fi
 
           npm install -g @shopify/cli
@@ -215,6 +227,9 @@ jobs:
               # crua já custou uma rodada de CI para ser entendida.
               if grep -qiE '401|invalid api key|unrecognized login' theme-dev.log; then
                 echo "::error::O secret SHOPIFY_CLI_THEME_TOKEN foi recusado (401) pela loja em SHOPIFY_STORE. Ele precisa ser uma senha do app Theme Access (começa com shptka_) gerada NESSA loja — token de Admin API ou de outra loja dá exatamente este erro. Gere em https://apps.shopify.com/theme-access e regrave o secret."
+              fi
+              if grep -qiE 'Enter your store password|Failed to prompt' theme-dev.log; then
+                echo "::error::A loja tem proteção por senha de storefront, e o CLI tentou PERGUNTAR a senha — num runner não existe terminal para responder. Grave a senha (admin → Loja virtual → Preferências → Proteção por senha) no secret SHOPIFY_STORE_PASSWORD, ou desative a proteção na loja de desenvolvimento."
               fi
               if grep -qiE 'not found|does not exist|could not be found' theme-dev.log; then
                 echo "::error::A loja em SHOPIFY_STORE não foi encontrada. O valor deve ser o domínio myshopify.com (exemplo: minha-loja.myshopify.com)."
