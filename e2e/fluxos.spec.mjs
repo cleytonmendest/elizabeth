@@ -111,6 +111,18 @@ test('carregar mais acrescenta produtos sem recarregar a página', async ({ page
 });
 
 test('busca preditiva mostra resultado enquanto digita', async ({ page }) => {
+  // O termo sai do catálogo, não da minha cabeça. A primeira versão buscava
+  // "ve" — o painel abria e vinha vazio, porque nada na loja casava. Um teste
+  // que depende de eu adivinhar o acervo mede o acervo, não a busca.
+  await page.goto('/collections/all');
+  const href = await page.locator('a[href*="/products/"]').first().getAttribute('href');
+  const termo = (href ?? '')
+    .split('/products/')[1]
+    ?.split(/[?#]/)[0]
+    .split('-')
+    .find((palavra) => palavra.length >= 3);
+  test.skip(!termo, 'nenhum produto na coleção para tirar um termo de busca');
+
   await page.goto('/');
 
   // `search-component` é renderizado quatro vezes — três no header, uma por
@@ -122,8 +134,10 @@ test('busca preditiva mostra resultado enquanto digita', async ({ page }) => {
   // menos de 2 caracteres (`if (query.length < 2) return`), e espera 300ms de
   // debounce antes de buscar. Digitar "a" e olhar na hora não abre nada — foi
   // o que a primeira versão deste teste fez.
-  await busca.locator('input[name="q"]').fill('ve');
+  await busca.locator('input[name="q"]').fill(termo);
 
   await expect(busca.locator('.search-results')).toBeVisible({ timeout: 10_000 });
-  await expect(busca.locator('.search-result-item').first()).toBeVisible();
+  // O produto de onde o termo saiu existe, então tem que voltar pelo menos um
+  // resultado — é a diferença entre "o painel abriu" e "a busca funciona".
+  await expect(busca.locator('.search-result-item').first()).toBeVisible({ timeout: 10_000 });
 });
