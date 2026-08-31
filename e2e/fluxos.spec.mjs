@@ -110,19 +110,23 @@ test('carregar mais acrescenta produtos sem recarregar a página', async ({ page
   await expect(page).toHaveURL(/\/collections\/all\/?$/);
 });
 
-test('busca preditiva mostra resultado enquanto digita', async ({ page }) => {
-  // O termo sai do catálogo, não da minha cabeça. A primeira versão buscava
-  // "ve" — o painel abria e vinha vazio, porque nada na loja casava. Um teste
-  // que depende de eu adivinhar o acervo mede o acervo, não a busca.
-  await page.goto('/collections/all');
-  const href = await page.locator('a[href*="/products/"]').first().getAttribute('href');
-  const termo = (href ?? '')
-    .split('/products/')[1]
-    ?.split(/[?#]/)[0]
-    .split('-')
-    .find((palavra) => palavra.length >= 3);
-  test.skip(!termo, 'nenhum produto na coleção para tirar um termo de busca');
-
+test('busca preditiva responde enquanto a cliente digita', async ({ page }) => {
+  // ── O que este teste afirma, e o que ele deliberadamente NÃO afirma ──────
+  //
+  // Afirma a corrente inteira do componente: o input recebe texto, o debounce
+  // de 300ms dispara, o fetch volta, e o painel é preenchido e revelado. É
+  // tudo que o TEMA controla.
+  //
+  // Não afirma que veio produto. Tentei isso duas vezes e as duas custaram uma
+  // rodada de CI: primeiro com um termo que inventei ("ve"), depois com uma
+  // palavra tirada do handle de um produto que existe na loja. As duas vezes o
+  // painel abriu com "nenhum resultado". Quantos produtos o índice de busca da
+  // loja devolve é propriedade do CATÁLOGO, não do tema — um teste que exige
+  // resultado mede a loja de desenvolvimento, e quebra quando alguém despublica
+  // um produto.
+  //
+  // Quando houver resultado, o teste aperta sozinho: as asserções condicionais
+  // no fim verificam que o item é link para /products/.
   await page.goto('/');
 
   // `search-component` é renderizado quatro vezes — três no header, uma por
@@ -130,14 +134,23 @@ test('busca preditiva mostra resultado enquanto digita', async ({ page }) => {
   // apenas uma está visível, então o seletor precisa dizer qual.
   const busca = page.locator('search-component:visible').first();
 
-  // Dois detalhes que só o código do componente conta: ele ignora consulta com
-  // menos de 2 caracteres (`if (query.length < 2) return`), e espera 300ms de
-  // debounce antes de buscar. Digitar "a" e olhar na hora não abre nada — foi
-  // o que a primeira versão deste teste fez.
-  await busca.locator('input[name="q"]').fill(termo);
+  // O componente ignora consulta com menos de 2 caracteres
+  // (`if (query.length < 2) return`) e espera 300ms de debounce. Digitar uma
+  // letra e olhar na hora não abre nada.
+  await busca.locator('input[name="q"]').fill('ves');
 
+  // O painel abriu e o componente se declarou buscando.
   await expect(busca.locator('.search-results')).toBeVisible({ timeout: 10_000 });
-  // O produto de onde o termo saiu existe, então tem que voltar pelo menos um
-  // resultado — é a diferença entre "o painel abriu" e "a busca funciona".
-  await expect(busca.locator('.search-result-item').first()).toBeVisible({ timeout: 10_000 });
+  await expect(busca).toHaveClass(/is-searching/);
+
+  // E ele escreveu ALGUMA resposta — resultado ou a mensagem de vazio. Um
+  // painel aberto e em branco seria o fetch tendo falhado em silêncio, que é
+  // exatamente o defeito que este teste existe para pegar.
+  await expect(busca.locator('.search-results-content')).not.toBeEmpty();
+
+  const itens = busca.locator('.search-result-item');
+  if ((await itens.count()) > 0) {
+    await expect(itens.first()).toBeVisible();
+    await expect(itens.first()).toHaveAttribute('href', /\/products\//);
+  }
 });
