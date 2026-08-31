@@ -30,6 +30,7 @@
     "@shopify/theme-check-node": "^3.29.0",
     "acorn": "^8.18.0",
     "acorn-walk": "^8.3.5",
+    "actionlint": "^2.0.6",
     "jsdom": "^30.0.1",
     "tailwindcss": "^3.4.7",
     "vitest": "^4.1.11"

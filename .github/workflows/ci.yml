@@ -147,12 +147,29 @@ jobs:
       #   SHOPIFY_CLI_THEME_TOKEN    senha de app do Theme Access
       #                              (shopify.dev/docs/storefronts/themes/tools/theme-access)
       - name: Subir a loja de desenvolvimento
-        if: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN != '' }}
         env:
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
           SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
         run: |
           set -euo pipefail
+
+          # A decisão fica no shell, NÃO num `if:` do passo — por dois motivos.
+          #
+          # O primeiro é que não funciona: o contexto `secrets` não existe em
+          # `if:`, e a primeira versão disto derrubou o workflow INTEIRO na
+          # validação ("Unrecognized named-value: 'secrets'"), levando junto o
+          # gate e os testes unitários, que não têm nada a ver com a loja.
+          #
+          # O segundo é o motivo pelo qual a correção certa não era mover o
+          # `if:` para outro lugar: passo condicional é caminho que só roda em
+          # certas circunstâncias, e este repositório já perdeu dois dias com
+          # um desses. Aqui o passo roda sempre e o shell diz o que fez.
+          if [ -z "${SHOPIFY_CLI_THEME_TOKEN:-}" ] || [ -z "${SHOPIFY_FLAG_STORE:-}" ]; then
+            echo "Sem credencial da loja (SHOPIFY_STORE / SHOPIFY_CLI_THEME_TOKEN)."
+            echo "O passo seguinte roda só o gate de acessibilidade, e avisa."
+            exit 0
+          fi
+
           npm install -g @shopify/cli
           shopify theme dev --port 9292 --theme-editor-sync=false > theme-dev.log 2>&1 &
 
