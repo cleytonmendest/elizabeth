@@ -210,6 +210,15 @@ jobs:
             if ! kill -0 "$dev_pid" 2>/dev/null; then
               echo "::error::O shopify theme dev morreu antes de servir. Log abaixo."
               cat theme-dev.log
+              # O erro do CLI é preciso mas não diz o que FAZER. Estes dois
+              # casos respondem por quase toda falha de conexão, e a mensagem
+              # crua já custou uma rodada de CI para ser entendida.
+              if grep -qiE '401|invalid api key|unrecognized login' theme-dev.log; then
+                echo "::error::O secret SHOPIFY_CLI_THEME_TOKEN foi recusado (401) pela loja em SHOPIFY_STORE. Ele precisa ser uma senha do app Theme Access (começa com shptka_) gerada NESSA loja — token de Admin API ou de outra loja dá exatamente este erro. Gere em https://apps.shopify.com/theme-access e regrave o secret."
+              fi
+              if grep -qiE 'not found|does not exist|could not be found' theme-dev.log; then
+                echo "::error::A loja em SHOPIFY_STORE não foi encontrada. O valor deve ser o domínio myshopify.com (exemplo: minha-loja.myshopify.com)."
+              fi
               exit 1
             fi
             sleep 2
