@@ -37,13 +37,22 @@ test('quick-add do card mantém o ícone e adiciona sem sair da coleção', asyn
   // em TODO <add-to-cart>, apagando o SVG de cada card. tests/add-to-cart cobre
   // a lógica; só o navegador prova que o ícone continua desenhado na tela.
   await page.goto('/collections/all');
-  const quickAdd = page.locator('add-to-cart button[name="add"]').first();
 
+  // O quick-add mora num overlay `opacity-0 group-hover:opacity-100` sobre a
+  // imagem do card: ele existe no DOM desde o começo, mas só fica visível
+  // quando o mouse entra no card. A primeira versão deste teste procurava o
+  // ícone sem passar o mouse — e o Playwright, corretamente, não achou.
+  const card = page.locator('add-to-cart').first();
+  await card.scrollIntoViewIfNeeded();
+  await card.hover();
+
+  const quickAdd = card.locator('button[name="add"]');
+  await expect(quickAdd).toBeVisible();
   await expect(quickAdd.locator('svg')).toBeVisible();
   await quickAdd.click();
 
   await expect(page.locator('cart-drawer')).toHaveClass(/active/);
-  await expect(quickAdd.locator('svg')).toBeVisible();
+  await expect(quickAdd.locator('svg')).toBeAttached();
   await expect(page).toHaveURL(/\/collections\//);
 });
 
@@ -53,7 +62,13 @@ test('trocar de variante muda preço e URL juntos', async ({ page }) => {
   test.skip((await radios.count()) < 2, 'produto sem variante para trocar');
 
   const precoAntes = await page.locator('.selling-price').first().textContent();
-  await radios.nth(1).check();
+
+  // O radio é `class="sr-only peer"` — invisível por CSS, com o swatch
+  // desenhado no <label>. Clicar no input direto não funciona: outro elemento
+  // intercepta o ponteiro. Quem a cliente clica é o label, e é o que o teste
+  // tem que clicar também.
+  const alvo = radios.nth(1);
+  await page.locator(`label[for="${await alvo.getAttribute('id')}"]`).click();
 
   // A URL tem que acompanhar: é o que faz o link compartilhado abrir na
   // variante certa.
@@ -90,8 +105,13 @@ test('carregar mais acrescenta produtos sem recarregar a página', async ({ page
 
 test('busca preditiva mostra resultado enquanto digita', async ({ page }) => {
   await page.goto('/');
-  await page.locator('search-component input[name="q"]').fill('a');
 
-  await expect(page.locator('search-component .search-results')).toBeVisible();
-  await expect(page.locator('.search-result-item').first()).toBeVisible();
+  // `search-component` é renderizado quatro vezes — três no header, uma por
+  // breakpoint, e uma no menu mobile. Todas existem no DOM ao mesmo tempo e
+  // apenas uma está visível, então o seletor precisa dizer qual.
+  const busca = page.locator('search-component:visible').first();
+  await busca.locator('input[name="q"]').fill('a');
+
+  await expect(busca.locator('.search-results')).toBeVisible();
+  await expect(busca.locator('.search-result-item').first()).toBeVisible();
 });
