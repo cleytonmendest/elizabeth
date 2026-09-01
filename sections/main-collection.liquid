@@ -236,7 +236,7 @@
             <div class="mt-6 lg:hidden">
               <button
                 type="submit"
-                class="w-full color-button text-xs uppercase tracking-[0.18em] py-3 hover:opacity-90 transition-opacity"
+                class="w-full color-button text-xs uppercase tracking-[0.18em] py-3 hover:opacity-90 transition-opacity rounded-theme"
               >
                 {{ 'collection.filters.apply' | t }}
               </button>
@@ -344,13 +344,13 @@
             {%- if active_filter_count > 0 -%}
               <h2 class="text-2xl font-light tracking-tight mb-2">{{ 'collection.general.no_results' | t }}</h2>
               <p class="text-sm text-foreground/55 mb-8">{{ 'collection.general.no_results_text' | t }}</p>
-              <a href="{{ collection.url }}" class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity">
+              <a href="{{ collection.url }}" class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity rounded-theme">
                 {{ 'collection.filters.clear_all' | t }}
               </a>
             {%- else -%}
               <h2 class="text-2xl font-light tracking-tight mb-2">{{ 'collection.general.no_products' | t }}</h2>
               <p class="text-sm text-foreground/55 mb-8">{{ 'collection.general.empty_text' | t }}</p>
-              <a href="{{ routes.collections_url }}" class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity">
+              <a href="{{ routes.collections_url }}" class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity rounded-theme">
                 {{ 'collection.general.view_all_collections' | t }}
               </a>
             {%- endif -%}
