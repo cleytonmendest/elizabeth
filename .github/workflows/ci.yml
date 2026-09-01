@@ -204,44 +204,27 @@ jobs:
             > theme-dev.log 2>&1 &
           dev_pid=$!
 
-          # Esperar a porta responder, com teto. Sem o teto, uma credencial
-          # errada vira um job pendurado até o timeout do runner, e o log de
-          # 6 horas depois não diz o que aconteceu. São 5 minutos porque a
-          # primeira execução SOBE o tema inteiro antes de servir.
+          # A sonda vive em scripts/loja-no-ar.mjs, COM TESTE, e não mais aqui.
           #
-          # E o laço checa se o processo ainda VIVE. Sem isso, um CLI que
-          # morre no primeiro segundo (foi o que aconteceu com um flag errado)
-          # gasta os 5 minutos inteiros antes de alguém ver o motivo, que já
-          # estava escrito no log desde o começo.
-          for _ in $(seq 1 150); do
-            if curl -sf -o /dev/null http://127.0.0.1:9292/; then
-              echo "THEME_URL=http://127.0.0.1:9292" >> "$GITHUB_ENV"
-              echo "Loja no ar."
-              exit 0
-            fi
-            if ! kill -0 "$dev_pid" 2>/dev/null; then
-              echo "::error::O shopify theme dev morreu antes de servir. Log abaixo."
-              cat theme-dev.log
-              # O erro do CLI é preciso mas não diz o que FAZER. Estes dois
-              # casos respondem por quase toda falha de conexão, e a mensagem
-              # crua já custou uma rodada de CI para ser entendida.
-              if grep -qiE '401|invalid api key|unrecognized login' theme-dev.log; then
-                echo "::error::O secret SHOPIFY_CLI_THEME_TOKEN foi recusado (401) pela loja em SHOPIFY_STORE. Ele precisa ser uma senha do app Theme Access (começa com shptka_) gerada NESSA loja — token de Admin API ou de outra loja dá exatamente este erro. Gere em https://apps.shopify.com/theme-access e regrave o secret."
-              fi
-              if grep -qiE 'Enter your store password|Failed to prompt' theme-dev.log; then
-                echo "::error::A loja tem proteção por senha de storefront, e o CLI tentou PERGUNTAR a senha — num runner não existe terminal para responder. Grave a senha (admin → Loja virtual → Preferências → Proteção por senha) no secret SHOPIFY_STORE_PASSWORD, ou desative a proteção na loja de desenvolvimento."
-              fi
-              if grep -qiE 'not found|does not exist|could not be found' theme-dev.log; then
-                echo "::error::A loja em SHOPIFY_STORE não foi encontrada. O valor deve ser o domínio myshopify.com (exemplo: minha-loja.myshopify.com)."
-              fi
-              exit 1
-            fi
-            sleep 2
-          done
+          # A versão que morava neste bloco perguntava só
+          # `curl -sf -o /dev/null` e declarava "Loja no ar." — e a tela de
+          # senha da Shopify responde 200. No dia em que a loja voltou a
+          # exigir senha, o passo passou, exportou THEME_URL, e o Playwright
+          # mediu acessibilidade da tela de senha por 80 segundos, entregando
+          # o problema como 10 falhas de WCAG. Duas horas para descobrir que a
+          # loja estava trancada.
+          #
+          # O defeito era uma sonda que não conseguia falhar: afirmava "o tema
+          # está no ar" tendo verificado "alguma coisa respondeu". Agora ela
+          # exige `window.shopUrl`, que só existe em página servida pelo nosso
+          # layout, e o teste planta as duas páginas para provar que ela
+          # separa uma da outra.
+          node scripts/loja-no-ar.mjs \
+            --url http://127.0.0.1:9292/ \
+            --pid "$dev_pid" \
+            --log theme-dev.log
 
-          echo "::error::O shopify theme dev não respondeu em 300s. Log abaixo."
-          cat theme-dev.log
-          exit 1
+          echo "THEME_URL=http://127.0.0.1:9292" >> "$GITHUB_ENV"
 
       - name: Playwright
         run: npm run test:e2e

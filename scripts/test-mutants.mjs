@@ -143,6 +143,30 @@ const MUTANTES = [
     para: '    if (!cart) return;',
     teste: 'tests/cart-extras.test.mjs',
   },
+  {
+    // O defeito exato que a sonda anterior tinha: aprovar qualquer coisa que
+    // responda. É o mutante mais importante desta lista, porque a suíte que
+    // não o mata é a suíte que deixaria a tela de senha passar de novo.
+    porque: 'a sonda volta a aprovar qualquer página que responda 200',
+    arquivo: 'scripts/loja-no-ar.mjs',
+    de: "  return typeof html === 'string' && html.includes(MARCA_DO_TEMA);",
+    para: '  return true;',
+    teste: 'tests/loja-no-ar.test.mjs',
+  },
+  {
+    porque: 'a sonda reprova certo, mas o recado não diz mais o que fazer',
+    arquivo: 'scripts/loja-no-ar.mjs',
+    de: "    'O caso de longe mais comum é a loja estar atrás da proteção por senha da vitrine — a Shopify serve a tela de senha com 200, e ela não passa pelo nosso layout.',",
+    para: "    '',",
+    teste: 'tests/loja-no-ar.test.mjs',
+  },
+  {
+    porque: '"respondeu errado" volta a ser relatado como "ninguém respondeu"',
+    arquivo: 'scripts/loja-no-ar.mjs',
+    de: '      ultimaSemTema = {',
+    para: '      ultimaSemTema = ultimaSemTema ?? null; const _ignorado = {',
+    teste: 'tests/loja-no-ar.test.mjs',
+  },
 ];
 
 
