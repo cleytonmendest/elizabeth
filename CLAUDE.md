@@ -99,9 +99,9 @@ Essa suíte tem duas metades, e a divisão é o ponto:
   toda página passar com a mesma cara de quando está tudo certo. Roda sempre.
 - **O resto aponta para `THEME_URL`**, um `shopify theme dev` autenticado. Sem
   a variável, esses testes se declaram PULADOS com o motivo escrito, e
-  `scripts/e2e.mjs` avisa no resumo do CI que nenhuma página foi medida. Eles
-  ainda **não rodaram nenhuma vez** — os seletores saíram do Liquid, mas só a
-  primeira execução real os valida.
+  `scripts/e2e.mjs` avisa no resumo do CI que nenhuma página foi medida. Com o
+  secret configurado, eles rodam contra a loja de verdade a cada PR — foi assim
+  que os seletores saídos do Liquid deixaram de ser suposição.
 
 Um teste está marcado como `test.fixme` apontando para a
 [issue #51](https://github.com/cleytonmendest/elizabeth/issues/51): a busca
@@ -125,10 +125,10 @@ reprova no claro. Opacidade como texto secundário depende das cores que a
 lojista escolhe — nenhum valor fixo garante contraste nos dois lados. A
 correção certa é um token próprio por scheme, na [issue #29](https://github.com/cleytonmendest/elizabeth/issues/29).
 
-Para ligar a segunda metade: secrets `SHOPIFY_STORE`,
-`SHOPIFY_CLI_THEME_TOKEN` (senha de app do Theme Access) e, se a loja tiver
-proteção por senha, `SHOPIFY_STORE_PASSWORD`. O job do CI já roda
-sempre — o que muda com o secret é quanto ele consegue medir.
+A segunda metade depende de três secrets, já configurados nesta loja de dev:
+`SHOPIFY_STORE`, `SHOPIFY_CLI_THEME_TOKEN` (senha de app do Theme Access) e,
+porque a loja tem proteção por senha, `SHOPIFY_STORE_PASSWORD`. O job do CI já
+roda sempre — o que muda com o secret é quanto ele consegue medir.
 
 O job NÃO está atrás de um `if:`, de propósito. Job que só roda quando um
 secret existe é o mesmo defeito que quebrou o board por dois dias.
