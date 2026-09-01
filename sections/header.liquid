@@ -53,10 +53,10 @@
 </style>
 
 <div class="w-full color-{{ section.settings.color_scheme }}">
-  <main-header class="w-full block relative z-10" data-type="{{ header_type }}">
+  <main-header class="w-full block relative z-sticky" data-type="{{ header_type }}">
     <div
       id="main-header-container"
-      class="color-background w-full transition-shadow duration-300 group relative z-[1]"
+      class="color-background w-full transition-shadow duration-300 group relative z-raised"
     >
       <div class="!py-3 page-width w-full">
         <div class="flex justify-between">
@@ -87,7 +87,7 @@
       </div>
     </div>
     {%- comment -%} Overlay da busca preditiva: cobre a página, mas fica atrás do header (z menor que o container) {%- endcomment -%}
-    <div class="search-overlay fixed inset-0 bg-foreground/40 z-0 hidden"></div>
+    <div class="search-overlay fixed inset-0 bg-foreground/40 z-base hidden"></div>
   </main-header>
 </div>
 

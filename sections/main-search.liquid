@@ -3,7 +3,7 @@
 
 <div class="page-width py-8">
   <div class="text-center mb-10 md:mb-12">
-    <h1 class="text-3xl md:text-4xl font-light tracking-tight mb-5">
+    <h1 class="text-3xl md:text-4xl font-light tracking-title mb-5">
       {%- if search.performed -%}
         {{ 'general.search.results_for' | t: terms: search.terms }}
       {%- else -%}
@@ -76,7 +76,7 @@
         {%- comment -%} PRODUTOS {%- endcomment -%}
         {%- if products.size > 0 -%}
           <div class="search-section" data-section="products">
-            <h2 class="text-xl md:text-2xl font-light tracking-tight mb-6">{{ 'general.search.products' | t }}</h2>
+            <h2 class="text-xl md:text-2xl font-light tracking-title mb-6">{{ 'general.search.products' | t }}</h2>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-{{ section.settings.products_per_row }} gap-4 md:gap-6 mb-12">
               {%- for product in products -%}
                 {%- render 'card-product-slider',
@@ -95,13 +95,13 @@
         {%- comment -%} ARTIGOS {%- endcomment -%}
         {%- if articles.size > 0 -%}
           <div class="search-section" data-section="articles">
-            <h2 class="text-xl md:text-2xl font-light tracking-tight mb-6">{{ 'general.search.blog_articles' | t }}</h2>
+            <h2 class="text-xl md:text-2xl font-light tracking-title mb-6">{{ 'general.search.blog_articles' | t }}</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {%- for article in articles limit: articles_per_page -%}
                 <article class="group border border-border rounded-theme overflow-hidden transition-colors hover:border-foreground/30">
                   <a href="{{ article.url }}" class="block">
                     {%- if article.image -%}
-                      <div class="aspect-[16/9] overflow-hidden bg-foreground/5">
+                      <div class="aspect-video overflow-hidden bg-foreground/5">
                         <img
                           src="{{ article.image | image_url: width: 600 }}"
                           alt="{{ article.image.alt | escape }}"
@@ -136,7 +136,7 @@
         {%- comment -%} PÁGINAS {%- endcomment -%}
         {%- if pages.size > 0 -%}
           <div class="search-section" data-section="pages">
-            <h2 class="text-xl md:text-2xl font-light tracking-tight mb-6">{{ 'general.search.pages' | t }}</h2>
+            <h2 class="text-xl md:text-2xl font-light tracking-title mb-6">{{ 'general.search.pages' | t }}</h2>
             <div class="space-y-4 mb-12">
               {%- for page in pages -%}
                 <div class="border border-border rounded-theme p-4 transition-colors hover:border-foreground/30">
@@ -165,14 +165,14 @@
           <svg class="w-16 h-16 mx-auto text-foreground/25 mb-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
-          <h2 class="text-2xl font-light tracking-tight mb-2">{{ 'general.search.no_results_title' | t }}</h2>
+          <h2 class="text-2xl font-light tracking-title mb-2">{{ 'general.search.no_results_title' | t }}</h2>
           <p class="text-sm text-foreground/55 mb-6">
             {{ 'general.search.no_results_text_html' | t: terms: search.terms }}
           </p>
 
           {%- if section.settings.show_suggestions -%}
             <div class="max-w-md mx-auto">
-              <h3 class="text-xs uppercase tracking-[0.18em] text-foreground/60 mb-4">{{ 'general.search.suggestions_title' | t }}</h3>
+              <h3 class="text-xs uppercase tracking-label text-foreground/60 mb-4">{{ 'general.search.suggestions_title' | t }}</h3>
               <ul class="text-left text-sm text-foreground/55 space-y-2">
                 <li>• {{ 'general.search.suggestion_1' | t }}</li>
                 <li>• {{ 'general.search.suggestion_2' | t }}</li>
@@ -182,7 +182,7 @@
             </div>
           {%- endif -%}
 
-          <a href="{{ routes.all_products_collection_url }}" class="inline-flex items-center mt-8 bg-foreground text-background text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity">
+          <a href="{{ routes.all_products_collection_url }}" class="inline-flex items-center mt-8 bg-foreground text-background text-xs uppercase tracking-label px-6 py-3.5 hover:opacity-90 transition-opacity">
             {{ 'general.search.view_all_products' | t }}
           </a>
         </div>
@@ -192,7 +192,7 @@
     {%- comment -%} Página inicial de busca - mostrar sugestões ou categorias populares {%- endcomment -%}
     {%- if section.settings.show_popular_searches -%}
       <div class="max-w-2xl mx-auto text-center">
-        <h2 class="text-xs uppercase tracking-[0.18em] text-foreground/60 mb-5">{{ 'general.search.popular_searches' | t }}</h2>
+        <h2 class="text-xs uppercase tracking-label text-foreground/60 mb-5">{{ 'general.search.popular_searches' | t }}</h2>
         <div class="flex flex-wrap gap-2 justify-center">
           {%- assign popular_terms = section.settings.popular_terms | split: ',' -%}
           {%- for term in popular_terms -%}

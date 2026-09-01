@@ -40,7 +40,7 @@
   <div class="page-width py-12">
     <header class="border-b border-border pb-8 mb-12">
       <p class="text-xs uppercase tracking-widest text-foreground/50 mb-3">Design system</p>
-      <h1 class="text-4xl font-light tracking-tight mb-4">Style guide</h1>
+      <h1 class="text-4xl font-light tracking-title mb-4">Style guide</h1>
       <p class="text-sm text-foreground/70 max-w-2xl">
         Todo componente, em todo estado, com os color schemes reais desta loja.
         Se algo aqui não reage ao esquema selecionado, é bug — não preferência.
@@ -50,7 +50,7 @@
 
     {%- comment -%} ═══ 1. Color schemes ═══════════════════════════════ {%- endcomment -%}
     <section class="mb-16">
-      <h2 class="text-2xl font-light tracking-tight mb-2">Color schemes</h2>
+      <h2 class="text-2xl font-light tracking-title mb-2">Color schemes</h2>
       <p class="text-sm text-foreground/60 mb-6">
         Cada bloco abaixo está dentro da sua própria classe <code class="text-xs">.color-scheme-N</code>.
         As amostras são os mesmos componentes, repetidos: o que mudar de cor entre
@@ -132,7 +132,7 @@
 
     {%- comment -%} ═══ 2. Tipografia ══════════════════════════════════ {%- endcomment -%}
     <section class="mb-16">
-      <h2 class="text-2xl font-light tracking-tight mb-2">Tipografia</h2>
+      <h2 class="text-2xl font-light tracking-title mb-2">Tipografia</h2>
       <p class="text-sm text-foreground/60 mb-6">
         A escala inteira é multiplicada por <code class="text-xs">settings.font_scale</code>
         (Design → Escala tipográfica). Os tamanhos em pixel abaixo valem com o
@@ -141,11 +141,11 @@
 
       <div class="space-y-4">
         <div class="border-b border-border pb-3">
-          <p class="text-5xl font-light tracking-tight">text-5xl</p>
+          <p class="text-5xl font-light tracking-title">text-5xl</p>
           <p class="text-xs text-foreground/50 mt-1">48px · h1 / hero</p>
         </div>
         <div class="border-b border-border pb-3">
-          <p class="text-4xl font-light tracking-tight">text-4xl</p>
+          <p class="text-4xl font-light tracking-title">text-4xl</p>
           <p class="text-xs text-foreground/50 mt-1">36px · h2</p>
         </div>
         <div class="border-b border-border pb-3">
@@ -181,7 +181,7 @@
 
     {%- comment -%} ═══ 3. Raio ════════════════════════════════════════ {%- endcomment -%}
     <section class="mb-16">
-      <h2 class="text-2xl font-light tracking-tight mb-2">Raio</h2>
+      <h2 class="text-2xl font-light tracking-title mb-2">Raio</h2>
       <p class="text-sm text-foreground/60 mb-6">
         O valor vem de <code class="text-xs">settings.radius_style</code> (Design → Arredondamento).
         <code class="text-xs">-sm</code> e <code class="text-xs">-lg</code> derivam dele por
@@ -215,7 +215,7 @@
 
     {%- comment -%} ═══ 4. Botões e ações ══════════════════════════════ {%- endcomment -%}
     <section class="mb-16">
-      <h2 class="text-2xl font-light tracking-tight mb-6">Botões e ações</h2>
+      <h2 class="text-2xl font-light tracking-title mb-6">Botões e ações</h2>
 
       <div class="flex flex-wrap items-center gap-4">
         <button type="button" class="color-button rounded-theme px-6 py-3 text-xs uppercase tracking-widest transition-opacity hover:opacity-90">
@@ -240,7 +240,7 @@
 
     {%- comment -%} ═══ 5. Formulário ══════════════════════════════════ {%- endcomment -%}
     <section class="mb-16">
-      <h2 class="text-2xl font-light tracking-tight mb-6">Formulário</h2>
+      <h2 class="text-2xl font-light tracking-title mb-6">Formulário</h2>
 
       <div class="grid gap-6 md:grid-cols-2 max-w-3xl">
         <label class="block">
@@ -276,7 +276,7 @@
 
     {%- comment -%} ═══ 6. Feedback ════════════════════════════════════ {%- endcomment -%}
     <section class="mb-16">
-      <h2 class="text-2xl font-light tracking-tight mb-6">Feedback</h2>
+      <h2 class="text-2xl font-light tracking-title mb-6">Feedback</h2>
 
       <div class="flex flex-wrap gap-3 mb-6">
         <span class="color-badge rounded-full px-3 py-1 text-xs uppercase tracking-widest">Badge</span>
@@ -294,7 +294,7 @@
 
     {%- comment -%} ═══ 7. Sombras ═════════════════════════════════════ {%- endcomment -%}
     <section class="mb-16">
-      <h2 class="text-2xl font-light tracking-tight mb-6">Sombras</h2>
+      <h2 class="text-2xl font-light tracking-title mb-6">Sombras</h2>
 
       <div class="grid grid-cols-2 gap-6 md:grid-cols-4">
         <div class="color-shadow rounded-theme bg-background p-6 text-center text-xs">color-shadow</div>
@@ -306,7 +306,7 @@
 
     {%- comment -%} ═══ 8. Componentes reais ═══════════════════════════ {%- endcomment -%}
     <section class="mb-16">
-      <h2 class="text-2xl font-light tracking-tight mb-2">Componentes reais</h2>
+      <h2 class="text-2xl font-light tracking-title mb-2">Componentes reais</h2>
       <p class="text-sm text-foreground/60 mb-6">
         Renderizados com <code class="text-xs">render</code> de verdade, não recriados aqui.
         Se um snippet mudar, esta página muda junto — é o que a torna alvo de teste visual.
@@ -342,7 +342,7 @@
 
     {%- comment -%} ═══ 9. Estados ═════════════════════════════════════ {%- endcomment -%}
     <section class="mb-16">
-      <h2 class="text-2xl font-light tracking-tight mb-6">Estados</h2>
+      <h2 class="text-2xl font-light tracking-title mb-6">Estados</h2>
 
       <div class="grid gap-4 md:grid-cols-3">
         <div class="rounded-theme border border-border p-8 text-center">
@@ -359,7 +359,7 @@
 
     {%- comment -%} ═══ 10. Ícones ═════════════════════════════════════ {%- endcomment -%}
     <section id="styleguide">
-      <h2 class="text-2xl font-light tracking-tight mb-2">Ícones</h2>
+      <h2 class="text-2xl font-light tracking-title mb-2">Ícones</h2>
       <p class="text-sm text-foreground/60 mb-6">
         Todos herdam <code class="text-xs">currentColor</code>, então seguem o scheme.
         Um que não seguir aparece com a cor errada aqui.

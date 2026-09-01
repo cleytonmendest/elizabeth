@@ -6,10 +6,10 @@
           {{
             block.settings.image
             | image_url: width: 1500
-            | image_tag: alt: block.settings.label, class: 'w-full aspect-[4/3] object-cover transition-transform duration-500 ease-out group-hover:scale-105', loading: 'lazy'
+            | image_tag: alt: block.settings.label, class: 'w-full aspect-landscape object-cover transition-transform duration-500 ease-out group-hover:scale-105', loading: 'lazy'
           }}
         {%- else -%}
-          <div class="w-full aspect-[4/3] bg-foreground/5"></div>
+          <div class="w-full aspect-landscape bg-foreground/5"></div>
         {%- endif -%}
         <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(0deg, rgba(0,0,0,.45) 0%, transparent 55%)"></div>
         <span class="absolute bottom-6 left-0 right-0 text-center text-white text-base lg:text-xl font-light uppercase tracking-[0.2em]">

@@ -45,3 +45,4 @@ Numeração sequencial, nunca reutilizada.
 | [0002](0002-taxonomia-de-labels-em-tres-eixos.md) | Taxonomia de labels em três eixos | Aceito |
 | [0003](0003-tres-niveis-de-customizacao.md) | Três níveis de customização | Aceito |
 | [0004](0004-o-que-ganha-um-toggle.md) | Um toggle é decisão de negócio, não preferência de layout | Aceito |
+| [0005](0005-escalas-de-tracking-z-index-e-proporcao.md) | Nomear as escalas de tracking, z-index e proporção a partir do que o código já fazia | Aceito |

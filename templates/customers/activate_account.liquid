@@ -14,7 +14,7 @@
     </div>
 
     {%- comment -%} Welcome Message {%- endcomment -%}
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+    <div class="bg-blue-50 border border-blue-200 rounded-theme p-4">
       <div class="flex">
         <div class="flex-shrink-0">
           <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
@@ -33,12 +33,12 @@
     </div>
 
     {%- comment -%} Form Card {%- endcomment -%}
-    <div class="bg-background rounded-lg shadow-lg p-8">
+    <div class="bg-background rounded-theme shadow-lg p-8">
 
       {%- comment -%} Error Messages {%- endcomment -%}
       {% form 'activate_customer_password' %}
         {% if form.errors %}
-          <div class="mb-6 color-error-bg border color-border rounded-lg p-4">
+          <div class="mb-6 color-error-bg border color-border rounded-theme p-4">
             <div class="flex">
               <div class="flex-shrink-0">
                 <svg class="h-5 w-5 color-error" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
@@ -69,7 +69,7 @@
               name="customer[password]"
               required
               autocomplete="new-password"
-              class="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent transition-all"
+              class="w-full px-4 py-3 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent transition-all"
               aria-describedby="password-requirements"
             >
             <button
@@ -109,7 +109,7 @@
               name="customer[password_confirmation]"
               required
               autocomplete="new-password"
-              class="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent transition-all"
+              class="w-full px-4 py-3 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent transition-all"
             >
             <button
               type="button"
@@ -132,7 +132,7 @@
         </div>
 
         {%- comment -%} Password Requirements {%- endcomment -%}
-        <div class="mb-6 bg-foreground/5 rounded-lg p-4">
+        <div class="mb-6 bg-foreground/5 rounded-theme p-4">
           <p class="text-xs font-medium text-foreground/70 mb-2" id="password-requirements">{{ 'customer.activate_account.requirements_title' | t }}</p>
           <ul class="text-xs text-foreground/60 space-y-1">
             <li class="flex items-start">
@@ -161,7 +161,7 @@
           <button
             type="submit"
             id="activate-button"
-            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-background bg-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-theme shadow-sm text-sm font-medium text-background bg-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {{ 'customer.activate_account.submit_button' | t }}
           </button>
@@ -170,7 +170,7 @@
             type="submit"
             name="decline"
             value="decline"
-            class="w-full flex justify-center py-3 px-4 border border-border rounded-lg shadow-sm text-sm font-medium text-foreground bg-background hover:bg-foreground/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors"
+            class="w-full flex justify-center py-3 px-4 border border-border rounded-theme shadow-sm text-sm font-medium text-foreground bg-background hover:bg-foreground/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors"
           >
             {{ 'customer.activate_account.decline' | t }}
           </button>

@@ -19,7 +19,7 @@
         {%- comment -%} Print Button {%- endcomment -%}
         <button
           onclick="window.print()"
-          class="hidden sm:inline-flex items-center px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors print:hidden"
+          class="hidden sm:inline-flex items-center px-4 py-2 border border-border rounded-theme text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors print:hidden"
         >
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
@@ -41,7 +41,7 @@
     </div>
 
     {%- comment -%} Status Timeline {%- endcomment -%}
-    <div class="bg-background rounded-lg shadow-lg p-6 mb-6">
+    <div class="bg-background rounded-theme shadow-lg p-6 mb-6">
       <h2 class="text-lg font-bold text-foreground mb-6">{{ 'customer.orders.status_title' | t }}</h2>
 
       <div class="relative">
@@ -161,7 +161,7 @@
                 href="{{ fulfillment.tracking_url }}"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-background bg-foreground hover:opacity-90 transition-colors print:hidden"
+                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-theme text-background bg-foreground hover:opacity-90 transition-colors print:hidden"
               >
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -185,14 +185,14 @@
 
       {%- comment -%} Order Items {%- endcomment -%}
       <div class="lg:col-span-2">
-        <div class="bg-background rounded-lg shadow-lg p-6">
+        <div class="bg-background rounded-theme shadow-lg p-6">
           <h2 class="text-lg font-bold text-foreground mb-6">{{ 'customer.orders.items_title' | t }}</h2>
 
           <div class="space-y-4">
             {%- for line_item in order.line_items -%}
               <div class="flex items-start pb-4 border-b border-border last:border-0 last:pb-0">
                 {%- comment -%} Product Image {%- endcomment -%}
-                <div class="flex-shrink-0 w-20 h-20 bg-foreground/5 rounded-lg overflow-hidden">
+                <div class="flex-shrink-0 w-20 h-20 bg-foreground/5 rounded-theme overflow-hidden">
                   {%- if line_item.image -%}
                     <img
                       src="{{ line_item.image | image_url: width: 160 }}"
@@ -262,7 +262,7 @@
           <div class="mt-6 pt-6 border-t border-border print:hidden">
             <a
               href="{{ routes.root_url }}"
-              class="inline-flex items-center px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
+              class="inline-flex items-center px-4 py-2 border border-border rounded-theme text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
             >
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -277,7 +277,7 @@
       <div class="space-y-6">
 
         {%- comment -%} Order Summary {%- endcomment -%}
-        <div class="bg-background rounded-lg shadow-lg p-6">
+        <div class="bg-background rounded-theme shadow-lg p-6">
           <h2 class="text-lg font-bold text-foreground mb-4">{{ 'customer.orders.summary_title' | t }}</h2>
 
           <div class="space-y-3">
@@ -318,7 +318,7 @@
 
         {%- comment -%} Shipping Address {%- endcomment -%}
         {%- if order.shipping_address -%}
-          <div class="bg-background rounded-lg shadow-lg p-6">
+          <div class="bg-background rounded-theme shadow-lg p-6">
             <h3 class="text-lg font-bold text-foreground mb-4">{{ 'customer.orders.shipping_address' | t }}</h3>
             <div class="text-sm text-foreground/70 space-y-1">
               <p class="font-medium text-foreground">{{ order.shipping_address.name }}</p>
@@ -340,7 +340,7 @@
 
         {%- comment -%} Billing Address {%- endcomment -%}
         {%- if order.billing_address -%}
-          <div class="bg-background rounded-lg shadow-lg p-6">
+          <div class="bg-background rounded-theme shadow-lg p-6">
             <h3 class="text-lg font-bold text-foreground mb-4">{{ 'customer.orders.billing_address' | t }}</h3>
             {%- if order.billing_address == order.shipping_address -%}
               <p class="text-sm text-foreground/60">{{ 'customer.orders.same_as_shipping' | t }}</p>
@@ -365,7 +365,7 @@
         {%- endif -%}
 
         {%- comment -%} Need Help? {%- endcomment -%}
-        <div class="bg-foreground/5 rounded-lg p-6 print:hidden">
+        <div class="bg-foreground/5 rounded-theme p-6 print:hidden">
           <h3 class="text-sm font-bold text-foreground mb-2">{{ 'customer.orders.need_help' | t }}</h3>
           <p class="text-xs text-foreground/60 mb-4">
             {{ 'customer.orders.need_help_text' | t }}

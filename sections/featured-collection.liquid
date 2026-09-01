@@ -41,7 +41,7 @@
       {%- comment -%} Placeholder no editor quando nenhuma coleção foi escolhida {%- endcomment -%}
       <div class="grid grid-cols-2 lg:grid-cols-{{ columns }} gap-4 md:gap-6">
         {%- for i in (1..columns) -%}
-          <div class="bg-foreground/5 rounded-theme aspect-[3/4]">
+          <div class="bg-foreground/5 rounded-theme aspect-portrait">
             {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'w-full h-full object-cover rounded-theme text-foreground/20' }}
           </div>
         {%- endfor -%}

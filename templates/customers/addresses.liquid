@@ -16,7 +16,7 @@
       <button
         type="button"
         onclick="openAddressModal('new')"
-        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-background bg-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors"
+        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-theme text-background bg-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors"
       >
         <svg class="mr-2 -ml-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
@@ -42,7 +42,7 @@
     {%- if customer.addresses.size > 0 -%}
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {%- for address in customer.addresses -%}
-          <div class="bg-background rounded-lg shadow-lg p-6 relative {% if address == customer.default_address %}ring-2 ring-foreground{% endif %}">
+          <div class="bg-background rounded-theme shadow-lg p-6 relative {% if address == customer.default_address %}ring-2 ring-foreground{% endif %}">
 
             {%- comment -%} Default Badge {%- endcomment -%}
             {%- if address == customer.default_address -%}
@@ -94,7 +94,7 @@
               <button
                 type="button"
                 onclick="openAddressModal('edit-{{ address.id }}')"
-                class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-border rounded-lg text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
+                class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-border rounded-theme text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
               >
                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -106,7 +106,7 @@
                 <button
                   type="button"
                   onclick="confirmDeleteAddress({{ address.id }})"
-                  class="inline-flex items-center justify-center px-3 py-2 border border-error rounded-lg text-sm font-medium color-error bg-background hover:color-error-bg transition-colors"
+                  class="inline-flex items-center justify-center px-3 py-2 border border-error rounded-theme text-sm font-medium color-error bg-background hover:color-error-bg transition-colors"
                   aria-label="{{ 'customer.addresses.delete_aria' | t }}"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -135,7 +135,7 @@
 
     {%- else -%}
       {%- comment -%} Empty State {%- endcomment -%}
-      <div class="bg-background rounded-lg shadow-lg p-12 text-center">
+      <div class="bg-background rounded-theme shadow-lg p-12 text-center">
         <svg class="mx-auto h-12 w-12 text-foreground/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -148,7 +148,7 @@
           <button
             type="button"
             onclick="openAddressModal('new')"
-            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-background bg-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors"
+            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-theme text-background bg-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors"
           >
             <svg class="mr-2 -ml-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
@@ -163,12 +163,12 @@
 </div>
 
 {%- comment -%} Modal for New Address {%- endcomment -%}
-<div id="address-modal-new" class="address-modal hidden fixed inset-0 bg-foreground/50 bg-opacity-75 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+<div id="address-modal-new" class="address-modal hidden fixed inset-0 bg-foreground/50 bg-opacity-75 z-drawer overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
   <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
     <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="closeAddressModal('new')"></div>
     <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-    <div class="inline-block align-bottom bg-background rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
+    <div class="inline-block align-bottom bg-background rounded-theme px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
       <div class="absolute top-0 right-0 pt-4 pr-4">
         <button type="button" onclick="closeAddressModal('new')" class="bg-background rounded-md text-foreground/40 hover:text-foreground/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground">
           <span class="sr-only">{{ 'customer.shared.close' | t }}</span>
@@ -198,7 +198,7 @@
               id="address_first_name_new"
               name="address[first_name]"
               required
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -211,7 +211,7 @@
               id="address_last_name_new"
               name="address[last_name]"
               required
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -223,7 +223,7 @@
               type="text"
               id="address_company_new"
               name="address[company]"
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -238,7 +238,7 @@
               required
               placeholder="00000-000"
               maxlength="9"
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
               onblur="searchCEP('new')"
             >
             <p class="mt-1 text-xs text-foreground/50">{{ 'customer.addresses.cep_hint' | t }}</p>
@@ -253,7 +253,7 @@
               id="address_phone_new"
               name="address[phone]"
               placeholder="(00) 00000-0000"
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -267,7 +267,7 @@
               name="address[address1]"
               required
               placeholder="{{ 'customer.addresses.address1_placeholder' | t }}"
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -280,7 +280,7 @@
               id="address_address2_new"
               name="address[address2]"
               placeholder="{{ 'customer.addresses.address2_placeholder' | t }}"
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -293,7 +293,7 @@
               id="address_city_new"
               name="address[city]"
               required
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -305,7 +305,7 @@
               id="address_province_new"
               name="address[province]"
               required
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
               <option value="">{{ 'customer.addresses.select_placeholder' | t }}</option>
               <option value="AC">Acre</option>
@@ -346,7 +346,7 @@
               id="address_country_new"
               name="address[country]"
               required
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
               <option value="Brazil" selected>Brasil</option>
             </select>
@@ -358,13 +358,13 @@
           <button
             type="button"
             onclick="closeAddressModal('new')"
-            class="px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
+            class="px-4 py-2 border border-border rounded-theme text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
           >
             {{ 'customer.shared.cancel' | t }}
           </button>
           <button
             type="submit"
-            class="px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-background bg-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors"
+            class="px-4 py-2 border border-transparent rounded-theme shadow-sm text-sm font-medium text-background bg-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors"
           >
             {{ 'customer.addresses.save_address' | t }}
           </button>
@@ -377,12 +377,12 @@
 
 {%- comment -%} Modals for Editing Each Address {%- endcomment -%}
 {%- for address in customer.addresses -%}
-<div id="address-modal-edit-{{ address.id }}" class="address-modal hidden fixed inset-0 bg-foreground/50 bg-opacity-75 z-50 overflow-y-auto" aria-labelledby="modal-title-{{ address.id }}" role="dialog" aria-modal="true">
+<div id="address-modal-edit-{{ address.id }}" class="address-modal hidden fixed inset-0 bg-foreground/50 bg-opacity-75 z-drawer overflow-y-auto" aria-labelledby="modal-title-{{ address.id }}" role="dialog" aria-modal="true">
   <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
     <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="closeAddressModal('edit-{{ address.id }}')"></div>
     <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-    <div class="inline-block align-bottom bg-background rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
+    <div class="inline-block align-bottom bg-background rounded-theme px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
       <div class="absolute top-0 right-0 pt-4 pr-4">
         <button type="button" onclick="closeAddressModal('edit-{{ address.id }}')" class="bg-background rounded-md text-foreground/40 hover:text-foreground/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground">
           <span class="sr-only">{{ 'customer.shared.close' | t }}</span>
@@ -413,7 +413,7 @@
               name="address[first_name]"
               value="{{ address.first_name }}"
               required
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -427,7 +427,7 @@
               name="address[last_name]"
               value="{{ address.last_name }}"
               required
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -440,7 +440,7 @@
               id="address_company_{{ address.id }}"
               name="address[company]"
               value="{{ address.company }}"
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -456,7 +456,7 @@
               required
               placeholder="00000-000"
               maxlength="9"
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
               onblur="searchCEP('{{ address.id }}')"
             >
           </div>
@@ -471,7 +471,7 @@
               name="address[phone]"
               value="{{ address.phone }}"
               placeholder="(00) 00000-0000"
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -486,7 +486,7 @@
               value="{{ address.address1 }}"
               required
               placeholder="{{ 'customer.addresses.address1_placeholder' | t }}"
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -500,7 +500,7 @@
               name="address[address2]"
               value="{{ address.address2 }}"
               placeholder="{{ 'customer.addresses.address2_placeholder' | t }}"
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -514,7 +514,7 @@
               name="address[city]"
               value="{{ address.city }}"
               required
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
 
@@ -526,7 +526,7 @@
               id="address_province_{{ address.id }}"
               name="address[province]"
               required
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
               <option value="">{{ 'customer.addresses.select_placeholder' | t }}</option>
               <option value="AC" {% if address.province_code == 'AC' %}selected{% endif %}>Acre</option>
@@ -567,7 +567,7 @@
               id="address_country_{{ address.id }}"
               name="address[country]"
               required
-              class="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
               <option value="Brazil" {% if address.country == 'Brazil' %}selected{% endif %}>Brasil</option>
             </select>
@@ -579,13 +579,13 @@
           <button
             type="button"
             onclick="closeAddressModal('edit-{{ address.id }}')"
-            class="px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
+            class="px-4 py-2 border border-border rounded-theme text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
           >
             {{ 'customer.shared.cancel' | t }}
           </button>
           <button
             type="submit"
-            class="px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-background bg-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors"
+            class="px-4 py-2 border border-transparent rounded-theme shadow-sm text-sm font-medium text-background bg-foreground hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground transition-colors"
           >
             {{ 'customer.addresses.save_changes' | t }}
           </button>
@@ -598,9 +598,9 @@
 {%- endfor -%}
 
 {%- comment -%} Delete Confirmation Modal {%- endcomment -%}
-<div id="delete-modal" class="hidden fixed inset-0 bg-foreground/50 bg-opacity-75 z-50" role="dialog" aria-modal="true">
+<div id="delete-modal" class="hidden fixed inset-0 bg-foreground/50 bg-opacity-75 z-drawer" role="dialog" aria-modal="true">
   <div class="flex items-center justify-center min-h-screen px-4">
-    <div class="bg-background rounded-lg p-6 max-w-sm w-full">
+    <div class="bg-background rounded-theme p-6 max-w-sm w-full">
       <div class="flex items-center mb-4">
         <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full color-error-bg">
           <svg class="h-6 w-6 color-error" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -616,7 +616,7 @@
         <button
           type="button"
           onclick="closeDeleteModal()"
-          class="flex-1 px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
+          class="flex-1 px-4 py-2 border border-border rounded-theme text-sm font-medium text-foreground bg-background hover:bg-foreground/5 transition-colors"
         >
           {{ 'customer.shared.cancel' | t }}
         </button>
@@ -624,7 +624,7 @@
           <input type="hidden" name="_method" value="delete">
           <button
             type="submit"
-            class="w-full px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-background bg-error hover:opacity-90 transition-colors"
+            class="w-full px-4 py-2 border border-transparent rounded-theme text-sm font-medium text-background bg-error hover:opacity-90 transition-colors"
           >
             {{ 'customer.addresses.delete' | t }}
           </button>

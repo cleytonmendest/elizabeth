@@ -4,7 +4,7 @@
   {%- comment -%} Hero Image {%- endcomment -%}
   {% if article.image and section.settings.show_featured_image %}
     <div class="w-full {% if section.settings.hero_fullwidth %}{% else %}page-width{% endif %} !mb-8 !lg:mb-12">
-      <div class="relative overflow-hidden {% unless section.settings.hero_fullwidth %}rounded-theme{% endunless %} aspect-[21/9] bg-foreground/5">
+      <div class="relative overflow-hidden {% unless section.settings.hero_fullwidth %}rounded-theme{% endunless %} aspect-ultrawide bg-foreground/5">
         <img
           src="{{ article.image | image_url: width: 1920 }}"
           srcset="{{ article.image | image_url: width: 800 }} 800w,
@@ -26,7 +26,7 @@
       {%- comment -%} Main Content {%- endcomment -%}
       <div class="flex-1 max-w-3xl mx-auto lg:mx-0">
         {%- comment -%} Title {%- endcomment -%}
-        <h1 class="text-3xl lg:text-5xl font-light tracking-tight text-foreground mb-6 leading-tight">
+        <h1 class="text-3xl lg:text-5xl font-light tracking-title text-foreground mb-6 leading-tight">
           {{ article.title }}
         </h1>
 
@@ -63,7 +63,7 @@
         {%- comment -%} Tags {%- endcomment -%}
         {% if article.tags.size > 0 and section.settings.show_tags %}
           <div class="py-6 mb-8 border-y border-border">
-            <p class="text-xs uppercase tracking-[0.18em] text-foreground/60 mb-3">{{ 'blog.article.tags' | t }}</p>
+            <p class="text-xs uppercase tracking-label text-foreground/60 mb-3">{{ 'blog.article.tags' | t }}</p>
             <div class="flex flex-wrap gap-2">
               {% for tag in article.tags %}
                 <a
@@ -80,7 +80,7 @@
         {%- comment -%} Social Share {%- endcomment -%}
         {% if section.settings.show_share %}
           <div class="mb-12">
-            <p class="text-xs uppercase tracking-[0.18em] text-foreground/60 mb-4">{{ 'general.social.share' | t }}</p>
+            <p class="text-xs uppercase tracking-label text-foreground/60 mb-4">{{ 'general.social.share' | t }}</p>
             <div class="flex flex-wrap gap-3">
               {% assign share_url = shop.url | append: article.url | url_encode %}
               {% assign share_title = article.title | url_encode %}
@@ -152,7 +152,7 @@
         {%- comment -%} Related Articles {%- endcomment -%}
         {% if section.settings.show_related and blog.articles.size > 1 %}
           <div class="mb-12">
-            <h2 class="text-2xl font-light tracking-tight text-foreground mb-6">{{ 'blog.article.related' | t }}</h2>
+            <h2 class="text-2xl font-light tracking-title text-foreground mb-6">{{ 'blog.article.related' | t }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {% assign related_count = 0 %}
               {% for related_article in blog.articles limit: 6 %}
@@ -189,7 +189,7 @@
         {%- comment -%} Comments {%- endcomment -%}
         {% if blog.comments_enabled? and section.settings.show_comments %}
           <div class="mb-12">
-            <h2 class="text-2xl font-light tracking-tight text-foreground mb-6">
+            <h2 class="text-2xl font-light tracking-title text-foreground mb-6">
               {{ 'blog.comments.count' | t: count: article.comments_count }}
             </h2>
 
@@ -220,7 +220,7 @@
 
             {%- comment -%} Comment Form {%- endcomment -%}
             <div class="p-6 border border-border rounded-theme">
-              <h3 class="text-xs uppercase tracking-[0.18em] text-foreground/60 mb-4">{{ 'blog.comments.title' | t }}</h3>
+              <h3 class="text-xs uppercase tracking-label text-foreground/60 mb-4">{{ 'blog.comments.title' | t }}</h3>
               {% form 'new_comment', article %}
                 {% if form.posted_successfully? %}
                   <div class="mb-4 p-4 bg-green-50 border border-green-200 text-green-800 rounded-theme">
@@ -295,7 +295,7 @@
 
           {%- comment -%} Artigos Recentes {%- endcomment -%}
           <div class="border border-border rounded-theme p-6">
-            <h3 class="text-xs uppercase tracking-[0.18em] text-foreground/60 mb-4">{{ 'blog.general.recent_posts' | t }}</h3>
+            <h3 class="text-xs uppercase tracking-label text-foreground/60 mb-4">{{ 'blog.general.recent_posts' | t }}</h3>
             <div class="space-y-4">
               {% for recent_article in blog.articles limit: 5 %}
                 {% if recent_article.id != article.id %}

@@ -15,7 +15,7 @@
   {% if section.settings.title != blank or nav %}
     <div class="flex items-end mt-4 lg:mt-8 {% if section.settings.title == blank and nav %}justify-end{% else %}justify-between{% endif %}">
       {% if section.settings.title != blank %}
-        <h2 class="text-2xl md:text-3xl font-light tracking-tight text-foreground">{{ section.settings.title }}</h2>
+        <h2 class="text-2xl md:text-3xl font-light tracking-title text-foreground">{{ section.settings.title }}</h2>
       {% endif %}
       {% if nav %}
         <div class="flex gap-2 shrink-0">
@@ -61,10 +61,10 @@
               {{
                 block.settings.image
                 | image_url: width: 600
-                | image_tag: alt: block.settings.title, class: 'w-full aspect-[3/4] object-cover transition-transform duration-500 ease-out group-hover:scale-105', loading: 'lazy'
+                | image_tag: alt: block.settings.title, class: 'w-full aspect-portrait object-cover transition-transform duration-500 ease-out group-hover:scale-105', loading: 'lazy'
               }}
             {%- else -%}
-              <div class="w-full aspect-[3/4] bg-foreground/5"></div>
+              <div class="w-full aspect-portrait bg-foreground/5"></div>
             {%- endif -%}
             <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(0deg, rgba(0,0,0,.5) 0%, transparent 45%)"></div>
             <h3 class="absolute bottom-4 left-0 right-0 text-center text-white text-sm uppercase tracking-[0.16em]">
