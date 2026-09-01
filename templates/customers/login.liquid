@@ -39,7 +39,7 @@
 
     {%- comment -%} Success Message {%- endcomment -%}
     {%- if reset_success == true -%}
-      <div class="color-success-bg border color-border rounded-lg p-4" role="alert">
+      <div class="color-success-bg border color-border rounded-theme p-4" role="alert">
         <div class="flex items-start">
           <svg class="w-5 h-5 color-success mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
@@ -52,13 +52,13 @@
     {%- endif -%}
 
     {%- comment -%} Login Form {%- endcomment -%}
-    <div id="login-form" class="bg-background shadow-lg rounded-lg p-8 space-y-6">
+    <div id="login-form" class="bg-background shadow-lg rounded-theme p-8 space-y-6">
 
       {%- form 'customer_login', novalidate: 'novalidate', class: 'space-y-6' -%}
 
         {%- comment -%} Error Messages {%- endcomment -%}
         {%- if form.errors -%}
-          <div class="color-error-bg border color-border rounded-lg p-4" role="alert">
+          <div class="color-error-bg border color-border rounded-theme p-4" role="alert">
             <div class="flex items-start">
               <svg class="w-5 h-5 color-error mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
@@ -83,7 +83,7 @@
             autocomplete="email"
             required
             aria-required="true"
-            class="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-foreground focus:border-transparent transition-all outline-none"
+            class="w-full px-4 py-3 border border-border rounded-theme focus:ring-2 focus:ring-foreground focus:border-transparent transition-all outline-none"
             placeholder="{{ 'customer.shared.email_placeholder' | t }}"
             {%- if form.email -%}
               value="{{ form.email }}"
@@ -103,7 +103,7 @@
             autocomplete="current-password"
             required
             aria-required="true"
-            class="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-foreground focus:border-transparent transition-all outline-none"
+            class="w-full px-4 py-3 border border-border rounded-theme focus:ring-2 focus:ring-foreground focus:border-transparent transition-all outline-none"
             placeholder="••••••••"
           >
         </div>
@@ -144,7 +144,7 @@
     </div>
 
     {%- comment -%} Recover Password Form {%- endcomment -%}
-    <div id="recover-password-form" class="bg-background shadow-lg rounded-lg p-8 space-y-6 hidden">
+    <div id="recover-password-form" class="bg-background shadow-lg rounded-theme p-8 space-y-6 hidden">
 
       {%- form 'recover_customer_password', novalidate: 'novalidate', class: 'space-y-6' -%}
 
@@ -160,7 +160,7 @@
 
         {%- comment -%} Error Messages {%- endcomment -%}
         {%- if form.errors -%}
-          <div class="color-error-bg border color-border rounded-lg p-4" role="alert">
+          <div class="color-error-bg border color-border rounded-theme p-4" role="alert">
             <div class="flex items-start">
               <svg class="w-5 h-5 color-error mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
@@ -184,7 +184,7 @@
             autocomplete="email"
             required
             aria-required="true"
-            class="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-foreground focus:border-transparent transition-all outline-none"
+            class="w-full px-4 py-3 border border-border rounded-theme focus:ring-2 focus:ring-foreground focus:border-transparent transition-all outline-none"
             placeholder="{{ 'customer.shared.email_placeholder' | t }}"
           >
         </div>

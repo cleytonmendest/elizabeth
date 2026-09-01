@@ -123,7 +123,7 @@
           <button
             type="button"
             data-play-button
-            class="absolute inset-0 z-[2] flex items-center justify-center group/play"
+            class="absolute inset-0 z-above flex items-center justify-center group/play"
             aria-label="{{ 'sections.video.play' | t }}"
           >
             <span class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-background/90 text-foreground flex items-center justify-center shadow transition-transform duration-300 group-hover/play:scale-110">
@@ -157,7 +157,7 @@
       {%- endif -%}
 
       {%- if scrim_bg != 'none' -%}
-        <div class="video-scrim absolute inset-0 z-[1] pointer-events-none" style="background: {{ scrim_bg }};"></div>
+        <div class="video-scrim absolute inset-0 z-raised pointer-events-none" style="background: {{ scrim_bg }};"></div>
       {%- endif -%}
 
       {%- liquid
@@ -169,10 +169,10 @@
       {%- if has_content -%}
         <div
           data-video-overlay
-          class="absolute inset-0 z-[1] flex flex-col justify-center {{ pos_cls }} text-foreground px-6 md:px-14 lg:px-20 py-10 pointer-events-none [&_a]:pointer-events-auto"
+          class="absolute inset-0 z-raised flex flex-col justify-center {{ pos_cls }} text-foreground px-6 md:px-14 lg:px-20 py-10 pointer-events-none [&_a]:pointer-events-auto"
         >
           {%- if section.settings.eyebrow != blank -%}
-            <p class="text-[11px] md:text-xs uppercase tracking-[0.3em] opacity-90 mb-3 md:mb-4">{{ section.settings.eyebrow }}</p>
+            <p class="text-[11px] md:text-xs uppercase tracking-hero opacity-90 mb-3 md:mb-4">{{ section.settings.eyebrow }}</p>
           {%- endif -%}
           {%- if section.settings.heading != blank -%}
             <h2 class="font-light text-3xl md:text-5xl leading-tight max-w-xl mb-5 md:mb-6">{{ section.settings.heading }}</h2>

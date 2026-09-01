@@ -67,6 +67,35 @@ module.exports = {
         '4xl':  ['calc(2.25rem * var(--font-scale))', { lineHeight: 'calc(2.5rem * var(--font-scale))' }],  // 36px · h2
         '5xl':  ['calc(3rem * var(--font-scale))', { lineHeight: '1' }],  // 48px · h1 / hero
       },
+      // Letter-spacing — três papéis, e os valores saíram do que o código já
+      // fazia, não de gosto. Ver ADR 0005: `text-xs uppercase` carregava
+      // QUATRO trackings diferentes, o que prova que a variação era ruído.
+      // Ao contrário do raio, o valor aqui não é do lojista: espaçamento de
+      // letra é decisão tipográfica do tema, não customização de loja.
+      letterSpacing: {
+        title: '-0.025em',  // h1–h3 e títulos de seção · era tracking-tight, 45x
+        label: '0.18em',    // rótulo curto em CAIXA ALTA · valor dominante, 47x
+        hero:  '0.3em',     // kicker sobre mídia de destaque · 4x, sempre no mesmo papel
+      },
+      // z-index — os degraus são os que o código já usa; o ADR dá nome e ordem
+      // a eles, sem renumerar. Renumerar arriscaria o empilhamento contra app
+      // de terceiro, que divide a mesma página e não conhece nossa escala.
+      zIndex: {
+        base:    '0',     // plano da página (véu que fica ATRÁS)
+        raised:  '1',     // encostado acima: barra do header, scrim sobre imagem
+        above:   '2',     // acima do scrim: botão de play, hotspot do lookbook
+        sticky:  '10',    // controle sobre mídia: badge, seta de slider, header grudado
+        overlay: '40',    // véu que escurece a página, e o que flutua junto dele
+        drawer:  '50',    // gaveta que entra por cima do véu
+        modal:   '9999',  // diálogo. Alto de propósito: app de terceiro na mesma página
+      },
+      // Proporções — `video` (16/9) já é degrau do Tailwind e continua valendo.
+      aspectRatio: {
+        portrait:  '3 / 4',   // mídia editorial em pé
+        product:   '2 / 3',   // foto de produto no card de slider
+        landscape: '4 / 3',   // mídia deitada
+        ultrawide: '21 / 9',  // hero de artigo
+      },
     },
   },
   plugins: [],

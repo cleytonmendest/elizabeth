@@ -112,10 +112,10 @@
         {%- if st.eyebrow != blank or st.heading != blank or st.text != blank -%}
           <div class="flex flex-col {{ col_cls }} gap-3 max-w-2xl">
             {%- if st.eyebrow != blank -%}
-              <p class="text-[11px] md:text-xs uppercase tracking-[0.3em] opacity-70">{{ st.eyebrow }}</p>
+              <p class="text-[11px] md:text-xs uppercase tracking-hero opacity-70">{{ st.eyebrow }}</p>
             {%- endif -%}
             {%- if st.heading != blank -%}
-              <h2 class="font-light text-2xl md:text-4xl leading-tight tracking-tight">{{ st.heading }}</h2>
+              <h2 class="font-light text-2xl md:text-4xl leading-tight tracking-title">{{ st.heading }}</h2>
             {%- endif -%}
             {%- if st.text != blank -%}
               <div class="text-sm md:text-base leading-relaxed opacity-80">{{ st.text }}</div>
@@ -143,20 +143,20 @@
             {%- if st.show_days -%}
               <div data-unit="days" class="flex flex-col items-center gap-2">
                 <span data-value class="{{ box_cls }} block text-center font-light tabular-nums text-3xl md:text-5xl leading-none">00</span>
-                <span class="text-[10px] md:text-xs uppercase tracking-[0.18em] opacity-70">{{ 'countdown.days' | t }}</span>
+                <span class="text-[10px] md:text-xs uppercase tracking-label opacity-70">{{ 'countdown.days' | t }}</span>
               </div>
             {%- endif -%}
             <div data-unit="hours" class="flex flex-col items-center gap-2">
               <span data-value class="{{ box_cls }} block text-center font-light tabular-nums text-3xl md:text-5xl leading-none">00</span>
-              <span class="text-[10px] md:text-xs uppercase tracking-[0.18em] opacity-70">{{ 'countdown.hours' | t }}</span>
+              <span class="text-[10px] md:text-xs uppercase tracking-label opacity-70">{{ 'countdown.hours' | t }}</span>
             </div>
             <div data-unit="minutes" class="flex flex-col items-center gap-2">
               <span data-value class="{{ box_cls }} block text-center font-light tabular-nums text-3xl md:text-5xl leading-none">00</span>
-              <span class="text-[10px] md:text-xs uppercase tracking-[0.18em] opacity-70">{{ 'countdown.minutes' | t }}</span>
+              <span class="text-[10px] md:text-xs uppercase tracking-label opacity-70">{{ 'countdown.minutes' | t }}</span>
             </div>
             <div data-unit="seconds" class="flex flex-col items-center gap-2">
               <span data-value class="{{ box_cls }} block text-center font-light tabular-nums text-3xl md:text-5xl leading-none">00</span>
-              <span class="text-[10px] md:text-xs uppercase tracking-[0.18em] opacity-70">{{ 'countdown.seconds' | t }}</span>
+              <span class="text-[10px] md:text-xs uppercase tracking-label opacity-70">{{ 'countdown.seconds' | t }}</span>
             </div>
           </div>
         </countdown-timer>
@@ -165,7 +165,7 @@
           {%- if st.button_style == 'link' -%}
             <a
               href="{{ st.link }}"
-              class="group inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-foreground hover:opacity-70 transition-opacity"
+              class="group inline-flex items-center gap-2 text-xs uppercase tracking-label text-foreground hover:opacity-70 transition-opacity"
             >
               {{ cta_text }}
               <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">

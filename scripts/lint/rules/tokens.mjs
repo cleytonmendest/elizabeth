@@ -51,7 +51,13 @@ const CHECKS = [
   {
     code: 'radius',
     // Qualquer rounded que não seja rounded-theme*, rounded-full ou rounded-none.
-    pattern: /\brounded(?!-(?:theme(?:-sm|-lg)?|full|none)\b)(?:-(?:sm|md|lg|xl|2xl|3xl|\[[^\]]+\]))?\b/g,
+    // O segundo lookahead cobre a forma POR CANTO (`rounded-br-none`): ela é a
+    // maneira correta de tirar um canto só, e sem esta linha a regra a acusava
+    // mandando usar `rounded-none` — que tiraria os quatro. O terceiro cobre
+    // `rounded-tl-[600px]`: a regra o reportava como "rounded", nome que não
+    // existe na linha, enquanto o check `arbitrary` já o reporta com o nome
+    // certo. Duas acusações para o mesmo defeito, uma delas ilegível.
+    pattern: /\brounded(?!-(?:theme(?:-sm|-lg)?|full|none)\b)(?!-(?:t|r|b|l|tl|tr|br|bl)-(?:theme(?:-sm|-lg)?|full|none)\b)(?!-(?:t|r|b|l|tl|tr|br|bl)-\[)(?:-(?:sm|md|lg|xl|2xl|3xl|\[[^\]]+\]))?\b/g,
     message: (v) =>
       `${v} não é token do tema. Use rounded-theme / rounded-theme-sm / rounded-theme-lg (ou rounded-full / rounded-none).`,
   },
@@ -60,6 +66,25 @@ const CHECKS = [
     // Valor arbitrário do Tailwind: `tracking-[0.18em]`, `text-[11px]`, `z-[9999]`…
     pattern: /\b[a-z][a-z0-9]*(?:-[a-z0-9]+)*-\[[^\]\s"']+\]/g,
     message: (v) => `Valor arbitrário ${v} fora da escala do tema — promova a um token em tailwind.config.js.`,
+  },
+  // Os dois checks abaixo pegam classe STOCK do Tailwind: ela não é "arbitrária"
+  // e passava batida. Foi assim que o raio chegou a 50/50 — metade do tema em
+  // `rounded-theme`, metade em `rounded-lg`, ambos valendo 8px e por isso
+  // indistinguíveis até o dia em que a lojista mexesse no setting. Definir a
+  // escala sem fechar esta porta seria repetir o mesmo erro em outro eixo.
+  {
+    code: 'tracking',
+    // `(?<![-\w])` evita casar dentro de nome maior: `consent-tracking-api`,
+    // que é API da Shopify num <script>, não classe do Tailwind.
+    pattern: /(?<![-\w])tracking-(?!title\b|label\b|hero\b|\[)[a-z]+\b/g,
+    message: (v) =>
+      `${v} é degrau do Tailwind, não do tema. Use tracking-title (título), tracking-label (rótulo em caixa alta) ou tracking-hero (kicker sobre mídia). Ver ADR 0005.`,
+  },
+  {
+    code: 'zindex',
+    pattern: /(?<![-\w])z-(?!base\b|raised\b|above\b|sticky\b|overlay\b|drawer\b|modal\b|auto\b|\[)\d+\b/g,
+    message: (v) =>
+      `${v} é degrau numérico do Tailwind, fora da escala nomeada. Use z-base / z-raised / z-above / z-sticky / z-overlay / z-drawer / z-modal. Ver ADR 0005.`,
   },
 ];
 

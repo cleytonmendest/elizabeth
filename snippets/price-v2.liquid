@@ -48,7 +48,7 @@
     <span class="listing-price line-through {% if compare_at_price > price %}{% else %} hidden {%- endif -%} {% if pdp %} text-base {% else %} text-sm {% endif %} text-foreground/40 font-light">
       {{- compare_at_price | money -}}
     </span>
-    <span class="selling-price {% if pdp %} text-2xl font-medium tracking-tight {% else %} text-sm {% endif %} text-foreground">
+    <span class="selling-price {% if pdp %} text-2xl font-medium tracking-title {% else %} text-sm {% endif %} text-foreground">
       {{ money_price }}
     </span>
   </div>

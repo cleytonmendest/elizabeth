@@ -39,7 +39,7 @@
         loading="eager"
       >
       <div class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center text-center px-4">
-        <h1 class="text-white text-3xl md:text-5xl font-light tracking-tight">
+        <h1 class="text-white text-3xl md:text-5xl font-light tracking-title">
           {{ collection.title }}
         </h1>
         {%- if collection.description != blank and section.settings.show_collection_description -%}
@@ -51,7 +51,7 @@
     </div>
   {%- else -%}
     <div class="text-center mb-10 md:mb-12">
-      <h1 class="text-3xl md:text-4xl font-light tracking-tight mb-3">{{ collection.title }}</h1>
+      <h1 class="text-3xl md:text-4xl font-light tracking-title mb-3">{{ collection.title }}</h1>
       {%- if collection.description != blank and section.settings.show_collection_description -%}
         <div class="text-sm text-foreground/55 max-w-2xl mx-auto">
           {{ collection.description }}
@@ -70,18 +70,18 @@
       {%- if show_filters -%}
         {%- comment -%} Filtros nativos: sidebar inline no desktop, drawer off-canvas no mobile {%- endcomment -%}
         <div
-          class="fixed inset-0 z-40 bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"
+          class="fixed inset-0 z-overlay bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"
           data-filters-overlay
         ></div>
         <aside
-          class="filters-panel fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] -translate-x-full overflow-y-auto bg-background p-6 transition-transform duration-300 lg:static lg:z-auto lg:w-64 lg:max-w-none lg:translate-x-0 lg:overflow-visible lg:bg-transparent lg:p-0 lg:transition-none flex-shrink-0"
+          class="filters-panel fixed inset-y-0 left-0 z-drawer w-80 max-w-[85vw] -translate-x-full overflow-y-auto bg-background p-6 transition-transform duration-300 lg:static lg:z-auto lg:w-64 lg:max-w-none lg:translate-x-0 lg:overflow-visible lg:bg-transparent lg:p-0 lg:transition-none flex-shrink-0"
           data-filters-panel
           aria-label="{{ 'collection.filters.title' | t }}"
         >
           <div class="lg:sticky lg:top-20">
             {%- comment -%} Cabeçalho do drawer (somente mobile) {%- endcomment -%}
             <div class="flex items-center justify-between mb-6 lg:hidden">
-              <h2 class="text-xs uppercase tracking-[0.18em] text-foreground/60">{{ 'collection.filters.title' | t }}</h2>
+              <h2 class="text-xs uppercase tracking-label text-foreground/60">{{ 'collection.filters.title' | t }}</h2>
               <button
                 type="button"
                 data-filters-close
@@ -93,7 +93,7 @@
             </div>
 
             <div class="flex items-center justify-between mb-5">
-              <h2 class="hidden lg:block text-xs uppercase tracking-[0.18em] text-foreground/60">{{ 'collection.filters.title' | t }}</h2>
+              <h2 class="hidden lg:block text-xs uppercase tracking-label text-foreground/60">{{ 'collection.filters.title' | t }}</h2>
               {%- if active_filter_count > 0 -%}
                 <a
                   href="{{ collection.url }}{% if sort_by != blank %}?sort_by={{ sort_by }}{% endif %}"
@@ -236,7 +236,7 @@
             <div class="mt-6 lg:hidden">
               <button
                 type="submit"
-                class="w-full color-button text-xs uppercase tracking-[0.18em] py-3 hover:opacity-90 transition-opacity rounded-theme"
+                class="w-full color-button text-xs uppercase tracking-label py-3 hover:opacity-90 transition-opacity rounded-theme"
               >
                 {{ 'collection.filters.apply' | t }}
               </button>
@@ -325,7 +325,7 @@
                     type="button"
                     data-load-more
                     data-next-url="{{ paginate.next.url }}"
-                    class="inline-flex items-center justify-center border border-border rounded-theme px-8 py-3.5 text-xs uppercase tracking-[0.18em] text-foreground/80 hover:border-foreground/30 transition-colors disabled:opacity-50 disabled:cursor-wait"
+                    class="inline-flex items-center justify-center border border-border rounded-theme px-8 py-3.5 text-xs uppercase tracking-label text-foreground/80 hover:border-foreground/30 transition-colors disabled:opacity-50 disabled:cursor-wait"
                   >
                     {{ 'collection.general.load_more' | t }}
                   </button>
@@ -342,15 +342,15 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
             </svg>
             {%- if active_filter_count > 0 -%}
-              <h2 class="text-2xl font-light tracking-tight mb-2">{{ 'collection.general.no_results' | t }}</h2>
+              <h2 class="text-2xl font-light tracking-title mb-2">{{ 'collection.general.no_results' | t }}</h2>
               <p class="text-sm text-foreground/55 mb-8">{{ 'collection.general.no_results_text' | t }}</p>
-              <a href="{{ collection.url }}" class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity rounded-theme">
+              <a href="{{ collection.url }}" class="inline-flex items-center color-button text-xs uppercase tracking-label px-6 py-3.5 hover:opacity-90 transition-opacity rounded-theme">
                 {{ 'collection.filters.clear_all' | t }}
               </a>
             {%- else -%}
-              <h2 class="text-2xl font-light tracking-tight mb-2">{{ 'collection.general.no_products' | t }}</h2>
+              <h2 class="text-2xl font-light tracking-title mb-2">{{ 'collection.general.no_products' | t }}</h2>
               <p class="text-sm text-foreground/55 mb-8">{{ 'collection.general.empty_text' | t }}</p>
-              <a href="{{ routes.collections_url }}" class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 hover:opacity-90 transition-opacity rounded-theme">
+              <a href="{{ routes.collections_url }}" class="inline-flex items-center color-button text-xs uppercase tracking-label px-6 py-3.5 hover:opacity-90 transition-opacity rounded-theme">
                 {{ 'collection.general.view_all_collections' | t }}
               </a>
             {%- endif -%}

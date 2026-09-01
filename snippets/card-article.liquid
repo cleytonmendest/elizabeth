@@ -18,7 +18,7 @@
   <a href="{{ article.url }}" class="block">
     {%- comment -%} Imagem do Artigo {%- endcomment -%}
     {% if show_image %}
-      <div class="relative overflow-hidden rounded-theme mb-4 aspect-[16/9] bg-foreground/5">
+      <div class="relative overflow-hidden rounded-theme mb-4 aspect-video bg-foreground/5">
         {% if article.image %}
           <img
             src="{{ article.image | image_url: width: 600 }}"
@@ -55,7 +55,7 @@
     {% endif %}
 
     {%- comment -%} Título {%- endcomment -%}
-    <h3 class="text-lg font-light tracking-tight text-foreground line-clamp-2 mb-2">
+    <h3 class="text-lg font-light tracking-title text-foreground line-clamp-2 mb-2">
       {{ article.title }}
     </h3>
 
@@ -88,7 +88,7 @@
     {% endif %}
 
     {%- comment -%} Link "Ler mais" {%- endcomment -%}
-    <div class="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-foreground/70 group-hover:gap-3 transition-all">
+    <div class="flex items-center gap-2 text-xs uppercase tracking-label text-foreground/70 group-hover:gap-3 transition-all">
       <span>{{ 'blog.general.read_more' | t }}</span>
       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

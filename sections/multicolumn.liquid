@@ -18,10 +18,10 @@
     {%- if section.settings.heading != blank or section.settings.eyebrow != blank -%}
       <div class="text-center mb-8 lg:mb-12">
         {%- if section.settings.eyebrow != blank -%}
-          <p class="text-xs uppercase tracking-[0.18em] opacity-60 mb-3">{{ section.settings.eyebrow }}</p>
+          <p class="text-xs uppercase tracking-label opacity-60 mb-3">{{ section.settings.eyebrow }}</p>
         {%- endif -%}
         {%- if section.settings.heading != blank -%}
-          <h2 class="text-2xl lg:text-4xl font-light tracking-tight">{{ section.settings.heading }}</h2>
+          <h2 class="text-2xl lg:text-4xl font-light tracking-title">{{ section.settings.heading }}</h2>
         {%- endif -%}
       </div>
     {%- endif -%}
@@ -60,7 +60,7 @@
           {%- if block.settings.link != blank and block.settings.link_label != blank -%}
             <a
               href="{{ block.settings.link }}"
-              class="group inline-flex items-center gap-2 mt-auto text-xs uppercase tracking-[0.18em] color-text hover:opacity-70 transition-opacity"
+              class="group inline-flex items-center gap-2 mt-auto text-xs uppercase tracking-label color-text hover:opacity-70 transition-opacity"
             >
               {{ block.settings.link_label }}
               <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">

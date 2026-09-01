@@ -3,15 +3,15 @@
 <script src="{{ 'cart-extras.js' | asset_url }}" defer></script>
 
 <cart-drawer
-  class="cart-drawer fixed z-50 left-0 top-0 w-screen h-full flex justify-end bg-foreground/50"
+  class="cart-drawer fixed z-drawer left-0 top-0 w-screen h-full flex justify-end bg-foreground/50"
   role="dialog"
   aria-modal="true"
   aria-label="{{ 'cart.general.title' | t }}"
 >
   <div class="cart-drawer">
-    <div class="cart-inner pb-16 h-full w-full sm:w-[385px] bg-background z-10 relative" tabindex="-1">
+    <div class="cart-inner pb-16 h-full w-full sm:w-[385px] bg-background z-sticky relative" tabindex="-1">
       <div class="cart-header flex h-16 px-4 items-center border-b border-border">
-        <span class="flex-1 flex items-center justify-center text-sm uppercase tracking-[0.18em] text-foreground/70">{{ 'cart.general.title' | t }}</span>
+        <span class="flex-1 flex items-center justify-center text-sm uppercase tracking-label text-foreground/70">{{ 'cart.general.title' | t }}</span>
         <button
           class="w-5 hover:opacity-70 transition-opacity"
           type="button"
@@ -23,12 +23,12 @@
       </div>
 
       <div id="cart-empty" class="h-full {% if cart == empty %}flex{% else %}hidden{% endif %} items-center justify-center flex-col px-6 text-center">
-        <h3 class="text-xl font-light tracking-tight mb-1">{{ 'cart.general.empty' | t }}</h3>
+        <h3 class="text-xl font-light tracking-title mb-1">{{ 'cart.general.empty' | t }}</h3>
         <p class="text-sm text-foreground/55 mb-6">{{ 'cart.general.empty_text' | t }}</p>
         <button
           type="button"
           onclick="this.closest('cart-drawer').close()"
-          class="inline-flex items-center color-button text-xs uppercase tracking-[0.18em] px-6 py-3.5 rounded-theme hover:opacity-90 transition-opacity"
+          class="inline-flex items-center color-button text-xs uppercase tracking-label px-6 py-3.5 rounded-theme hover:opacity-90 transition-opacity"
         >
           {{ 'cart.general.continue_shopping' | t }}
         </button>
@@ -67,7 +67,7 @@
           </div>
           {%- if settings.cart_notes -%}
             <details class="cart-note mb-4"{% if cart.note != blank %} open{% endif %}>
-              <summary class="flex cursor-pointer list-none items-center justify-between py-1 text-xs uppercase tracking-[0.18em] text-foreground/60 hover:text-foreground transition-colors">
+              <summary class="flex cursor-pointer list-none items-center justify-between py-1 text-xs uppercase tracking-label text-foreground/60 hover:text-foreground transition-colors">
                 <span>{{ 'cart.general.note' | t }}</span>
                 <span class="cart-note-chevron shrink-0 opacity-60 transition-transform">
                   {% render 'icon-angle-down', size: 16 %}
@@ -83,7 +83,7 @@
             </details>
           {%- endif -%}
           <button
-            class="color-button-secondary w-full h-11 flex items-center justify-center text-xs uppercase tracking-[0.18em] transition-colors rounded-theme"
+            class="color-button-secondary w-full h-11 flex items-center justify-center text-xs uppercase tracking-label transition-colors rounded-theme"
             type="button"
             onclick="this.closest('cart-drawer').close()"
           >
@@ -92,7 +92,7 @@
           <a
             href="/checkout"
             data-cart-checkout
-            class="color-button flex cursor-pointer h-11 w-full items-center justify-center mt-3 text-xs uppercase tracking-[0.18em] transition-opacity rounded-theme hover:opacity-90"
+            class="color-button flex cursor-pointer h-11 w-full items-center justify-center mt-3 text-xs uppercase tracking-label transition-opacity rounded-theme hover:opacity-90"
             >{{ 'cart.general.checkout' | t }}</a
           >
         </div>

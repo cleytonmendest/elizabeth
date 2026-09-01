@@ -32,10 +32,10 @@
   <div class="page-width !py-12 lg:!py-16">
     <div class="flex flex-col {{ align_cls }} {{ max_w }}">
       {%- if section.settings.eyebrow != blank -%}
-        <p class="text-xs uppercase tracking-[0.18em] opacity-60 mb-4">{{ section.settings.eyebrow }}</p>
+        <p class="text-xs uppercase tracking-label opacity-60 mb-4">{{ section.settings.eyebrow }}</p>
       {%- endif -%}
       {%- if section.settings.heading != blank -%}
-        <h2 class="text-2xl lg:text-4xl font-light tracking-tight leading-tight mb-5">{{ section.settings.heading }}</h2>
+        <h2 class="text-2xl lg:text-4xl font-light tracking-title leading-tight mb-5">{{ section.settings.heading }}</h2>
       {%- endif -%}
       {%- if section.settings.text != blank -%}
         <div class="text-sm lg:text-base leading-relaxed opacity-80">{{ section.settings.text }}</div>
@@ -44,7 +44,7 @@
         {% if section.settings.button_style == 'link' %}
           <a
             href="{{ section.settings.link }}"
-            class="group inline-flex items-center gap-2 mt-7 text-xs uppercase tracking-[0.18em] color-text hover:opacity-70 transition-opacity"
+            class="group inline-flex items-center gap-2 mt-7 text-xs uppercase tracking-label color-text hover:opacity-70 transition-opacity"
           >
             {{ cta_text }}
             <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">
@@ -54,7 +54,7 @@
         {% else %}
           <a
             href="{{ section.settings.link }}"
-            class="inline-flex items-center gap-2 mt-7 px-6 py-3.5 color-button text-xs uppercase tracking-[0.18em] hover:opacity-90 transition-opacity rounded-theme"
+            class="inline-flex items-center gap-2 mt-7 px-6 py-3.5 color-button text-xs uppercase tracking-label hover:opacity-90 transition-opacity rounded-theme"
           >
             {{ cta_text }}
             {% render 'icon-arrow-right', size: 15 %}

@@ -25,7 +25,7 @@
 
           {%- comment -%} Background decorativo curvo (opcional) {%- endcomment -%}
           {% if enable_curved_background %}
-            <div class="absolute color-{{ section.settings.background_accent_scheme }} color-background lg:top-auto top-0 w-full lg:h-2/3 h-5/6 z-0 opacity-60
+            <div class="absolute color-{{ section.settings.background_accent_scheme }} color-background lg:top-auto top-0 w-full lg:h-2/3 h-5/6 z-base opacity-60
               {% if forloop.index == 1 %}
                 lg:rounded-tl-[600px] lg:rounded-br-none
               {% else %}
@@ -35,15 +35,15 @@
             </div>
           {% endif %}
 
-          <div class="max-w-xl relative z-[2] p-6 lg:p-8 text-{{ text_alignment }} color-text
+          <div class="max-w-xl relative z-above p-6 lg:p-8 text-{{ text_alignment }} color-text
             {% if forloop.index == 1 %} lg:pl-16 {% endif %}">
 
             {% if block.settings.pre_title != blank %}
-              <p class="text-xs uppercase tracking-[0.18em] opacity-60 mb-4">{{ block.settings.pre_title }}</p>
+              <p class="text-xs uppercase tracking-label opacity-60 mb-4">{{ block.settings.pre_title }}</p>
             {% endif %}
 
             {% if block.settings.title != blank %}
-              <h2 class="text-2xl lg:text-4xl font-light tracking-tight leading-tight mb-4 lg:mb-6">{{ block.settings.title }}</h2>
+              <h2 class="text-2xl lg:text-4xl font-light tracking-title leading-tight mb-4 lg:mb-6">{{ block.settings.title }}</h2>
             {% endif %}
 
             {% if block.settings.text != blank %}
@@ -58,14 +58,14 @@
                 endif
               -%}
               {% if block.settings.button_style == 'link' %}
-                <a href="{{ block.settings.link }}" class="group inline-flex items-center gap-2 mt-7 text-xs uppercase tracking-[0.18em] color-text hover:opacity-70 transition-opacity">
+                <a href="{{ block.settings.link }}" class="group inline-flex items-center gap-2 mt-7 text-xs uppercase tracking-label color-text hover:opacity-70 transition-opacity">
                   {{ cta_label }}
                   <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">
                     {% render 'icon-arrow-right', size: 16 %}
                   </span>
                 </a>
               {% else %}
-                <a href="{{ block.settings.link }}" class="inline-flex items-center gap-2 mt-7 px-6 py-3.5 color-button text-xs uppercase tracking-[0.18em] hover:opacity-90 transition-opacity rounded-theme">
+                <a href="{{ block.settings.link }}" class="inline-flex items-center gap-2 mt-7 px-6 py-3.5 color-button text-xs uppercase tracking-label hover:opacity-90 transition-opacity rounded-theme">
                   {{ cta_label }}
                   {% render 'icon-arrow-right', size: 15 %}
                 </a>

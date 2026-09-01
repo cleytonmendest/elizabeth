@@ -51,14 +51,14 @@
 
   {%- comment -%} Contador de posição — somente mobile {%- endcomment -%}
   {%- if product.images.size > 1 -%}
-    <div class="lg:hidden absolute top-3 right-3 z-10 bg-background/85 text-foreground text-xs tracking-wide rounded-theme px-2.5 py-1">
+    <div class="lg:hidden absolute top-3 right-3 z-sticky bg-background/85 text-foreground text-xs tracking-wide rounded-theme px-2.5 py-1">
       <span class="index-active">1</span> / {{ product.images.size }}
     </div>
   {%- endif -%}
 </my-slider>
 
 {%- comment -%} Setas — somente desktop {%- endcomment -%}
-<div class="hidden lg:flex absolute w-full justify-between top-[50%] z-10">
+<div class="hidden lg:flex absolute w-full justify-between top-[50%] z-sticky">
   {%- comment -%}
     O aria-label não é enfeite: o conteúdo do botão é só um SVG, então sem ele
     o leitor de tela anuncia "botão" e nada mais. O axe classifica como

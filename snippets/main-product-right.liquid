@@ -29,9 +29,9 @@
       {%- when 'title' -%}
         <div class="product__title" {{ block.shopify_attributes }}>
           {%- if product.type != blank -%}
-            <p class="text-xs uppercase tracking-[0.18em] text-foreground/50 mb-2.5">{{ product.type }}</p>
+            <p class="text-xs uppercase tracking-label text-foreground/50 mb-2.5">{{ product.type }}</p>
           {%- endif -%}
-          <h1 class="text-4xl font-light tracking-tight leading-tight">{{ product.title | escape }}</h1>
+          <h1 class="text-4xl font-light tracking-title leading-tight">{{ product.title | escape }}</h1>
         </div>
 
       {%- when 'price' -%}
@@ -49,7 +49,7 @@
         {%- if product.description != blank -%}
           <div>
             {% if block.settings.show_title == true and block.settings.title_text != blank %}
-              <h2 class="text-xs uppercase tracking-[0.18em] text-foreground/50 mb-2">{{ block.settings.title_text }}</h2>
+              <h2 class="text-xs uppercase tracking-label text-foreground/50 mb-2">{{ block.settings.title_text }}</h2>
             {% endif %}
             <div class="text-sm leading-relaxed text-foreground/80" {{ block.shopify_attributes }}>
               {{ product.description }}
