@@ -168,6 +168,30 @@ const MUTANTES = [
     teste: 'tests/loja-no-ar.test.mjs',
   },
   {
+    // O defeito com que a regra `remotes` nasceu: espalhar um Map dá pares
+    // `[chave, valor]`, a alternância vira `settings.(logo_svg,textarea)`, e a
+    // regra varre o tema inteiro sem achar nada. Ela passou verde assim.
+    porque: 'a alternância volta a ser montada do Map inteiro, e a regra não acha nada',
+    arquivo: 'scripts/lint/rules/remotes.mjs',
+    de: "  const ids = [...tipos.keys()].join('|');",
+    para: "  const ids = [...tipos].join('|');",
+    teste: 'tests/remotes.test.mjs',
+  },
+  {
+    porque: 'config volta a poder guardar <link> para domínio externo',
+    arquivo: 'scripts/lint/rules/remotes.mjs',
+    de: '  const achou = valor.match(SUBRECURSO);',
+    para: '  const achou = null;',
+    teste: 'tests/remotes.test.mjs',
+  },
+  {
+    porque: '`| escape` deixa de neutralizar, e a regra reprova quem já se protegeu',
+    arquivo: 'scripts/lint/rules/remotes.mjs',
+    de: '    if (NEUTRALIZA.test(resto)) continue;',
+    para: '    if (false) continue;',
+    teste: 'tests/remotes.test.mjs',
+  },
+  {
     // O defeito exato que a versão em shell tinha: comparar o total consigo
     // mesmo e sempre passar. É o mutante mais importante da catraca — a suíte
     // que não o mata é a suíte que deixaria o baseline crescer de novo.

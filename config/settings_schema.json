@@ -295,7 +295,7 @@
         "id": "type_header_font",
         "default": "assistant_n4",
         "label": "Fonte",
-        "info": "A seleção de uma fonte diferente pode afetar a velocidade da loja. As fontes padrão da Shopify só exibem peso 400 ou 700. Caso queira mais pesos de fontes, necessitará incluir uma fonte custom."
+        "info": "As fontes vêm da biblioteca da Shopify, servidas pelo CDN da loja. A escolha afeta a velocidade da página: uma família com muitos pesos custa mais para carregar."
       },
       {
         "type": "header",
@@ -306,41 +306,7 @@
         "id": "type_body_font",
         "default": "assistant_n4",
         "label": "Fonte",
-        "info": "A seleção de uma fonte diferente pode afetar a velocidade da loja. As fontes padrão da Shopify só exibem peso 400 ou 700. Caso queira mais pesos de fontes, necessitará incluir uma fonte custom."
-      },
-      {
-        "type": "header",
-        "content": "Fonte Customizada Títulos",
-        "info": "Caso as fontes padrão não sejam suficiente, pode adicionar um link para uma fonte google por exemplo. Esse campo é prioridade, se estiver preenchido, sobrescreverá a fonte padrão. Caso não queira, remova todos os campos"
-      },
-      {
-        "type": "text",
-        "id": "custom_font_head_name",
-        "label": "Nome da Fonte Custom",
-        "default": "Work Sans"
-      },
-      {
-        "type": "textarea",
-        "id": "custom_font_head",
-        "label": "URL",
-        "default": "<link href='https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap' rel='stylesheet'>"
-      },
-      {
-        "type": "header",
-        "content": "Fonte Customizada Corpo",
-        "info": "Caso as fontes padrão não sejam suficiente, pode adicionar um link para uma fonte google por exemplo. Esse campo é prioridade, se estiver preenchido, sobrescreverá a fonte padrão. Caso não queira, remova todos os campos"
-      },
-      {
-        "type": "text",
-        "id": "custom_font_body_name",
-        "label": "Nome da Fonte Custom",
-        "default": "Work Sans"
-      },
-      {
-        "type": "textarea",
-        "id": "custom_font_body",
-        "label": "URL",
-        "default": "<link href='https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap' rel='stylesheet'>"
+        "info": "As fontes vêm da biblioteca da Shopify, servidas pelo CDN da loja. A escolha afeta a velocidade da página: uma família com muitos pesos custa mais para carregar."
       }
     ]
   },
