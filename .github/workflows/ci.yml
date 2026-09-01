@@ -9,6 +9,22 @@ on:
   push:
     branches: [main]
 
+# Nenhum job daqui escreve no repositório: eles leem, compilam e medem. O
+# default do repo pode ser mais largo que isso, e um default largo é permissão
+# que ninguém escolheu conceder.
+permissions:
+  contents: read
+
+# Rajada de pushes numa PR não precisa de N execuções do job de navegador (que
+# instala Chromium e sobe uma loja). O `board.yml` já fazia isto; a ausência
+# aqui era esquecimento, não decisão.
+#
+# Em `main`, NÃO cancela: ali cada execução é o registro de que aquele commit
+# passou, e cancelar apaga o registro em vez de economizar tempo.
+concurrency:
+  group: gate-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   gate:
     name: Lint, build e conformidade
@@ -38,48 +54,30 @@ jobs:
         if: always()
         run: npm run status -- --md >> "$GITHUB_STEP_SUMMARY"
 
-      - name: A dívida do baseline não pode crescer
-        run: |
-          # `lint` já falha em violação nova. Aqui garantimos a outra metade da
-          # catraca: ninguém regravar o baseline para cima a fim de "passar".
-          #
-          # A métrica é ITENS (fingerprints "regra|arquivo|código"), não
-          # ocorrências. O mesmo valor ruim repetido cinco vezes num arquivo é
-          # 1 item e 5 ocorrências; travar em itens é o que dá um número
-          # estável, que não oscila quando alguém move uma linha de lugar.
-          #
-          # Há UM caso em que crescer é legítimo: melhorar a cobertura de um
-          # linter encontra violações que sempre existiram mas não eram vistas.
-          # Isso não é dívida nova — é dívida que estava escondida. O sinal que
-          # separa os dois casos é objetivo: alguma regra mudou neste diff?
-          # Se não mudou, crescimento só pode vir de código novo, e reprova.
-          #
-          # Ler o baseline da base NÃO pode falhar em silêncio. A versão
-          # anterior caía para `|| echo "$total"` quando o `git show` não
-          # achava a ref — o que acontecia SEMPRE, porque o checkout raso não
-          # traz `origin/main`. O passo comparava o total consigo mesmo,
-          # passava, e não verificava nada. Uma catraca que sempre passa é
-          # pior que nenhuma: ela dá a impressão de estar guardando.
-          base_ref="${{ github.base_ref || 'main' }}"
-          total=$(node -p "require('./scripts/lint/config/baseline.json').total")
-
-          if ! base_json=$(git show "origin/$base_ref:scripts/lint/config/baseline.json" 2>&1); then
-            echo "::error::Não consegui ler o baseline de origin/$base_ref — a catraca não pôde ser verificada. Passar assim seria fingir que verificou."
-            echo "$base_json"
-            exit 1
-          fi
-          base=$(printf '%s' "$base_json" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).total")
-          echo "baseline: $base → $total itens"
-
-          if [ "$total" -le "$base" ]; then exit 0; fi
-
-          if git diff --name-only "origin/$base_ref...HEAD" | grep -q '^scripts/lint/rules/'; then
-            echo "::warning::O baseline subiu de $base para $total itens, mas uma regra mudou neste PR — crescimento tratado como cobertura nova, não dívida nova. Confirme no corpo do PR que o código do tema não piorou."
-            exit 0
-          fi
-
-          echo "::error::O baseline cresceu de $base para $total itens sem nenhuma mudança em scripts/lint/rules/. Dívida técnica só pode diminuir — corrija a violação em vez de registrá-la."
-          exit 1
+      # `lint` já falha em violação nova. Este passo garante a outra metade da
+      # catraca: ninguém regravar um baseline para cima a fim de "passar".
+      #
+      # A lógica NÃO mora mais aqui. Ela vivia neste bloco em shell, e o próprio
+      # bloco documentava que uma versão anterior dele comparava o total consigo
+      # mesmo e passava sem verificar nada — a mesma forma de defeito da sonda
+      # da loja. Shell dentro de YAML não tem teste e não roda na máquina de
+      # ninguém. Agora é `scripts/catraca.mjs`, COM teste e com mutante.
+      #
+      # E ela trava DUAS catracas, não uma: o baseline do lint e o de a11y. O
+      # segundo não tinha lado de CI nenhum — `npm run test:e2e:baseline` está
+      # documentado, e quem regravasse para cima passava verde.
+      #
+      # `if: always()` porque um PR que falha no lint E cresce o baseline
+      # precisa descobrir as duas coisas de uma vez. É o mesmo motivo pelo qual
+      # os testes unitários são um job separado deste.
+      - name: A dívida registrada não pode crescer
+        if: always()
+        env:
+          # Via env, não interpolado no shell: nome de branch é texto de quem
+          # abriu o PR, e `${{ }}` dentro de `run:` monta o script antes do
+          # shell ver aspas.
+          BASE_REF: ${{ github.base_ref || 'main' }}
+        run: node scripts/catraca.mjs --base-ref "$BASE_REF"
 
   test:
     name: Testes unitários
@@ -182,7 +180,14 @@ jobs:
             echo "Loja protegida por senha: usando SHOPIFY_STORE_PASSWORD."
           fi
 
-          npm install -g @shopify/cli
+          # Versão TRAVADA, pelo mesmo motivo que existe package-lock.json e
+          # que o Node está fixo em 22. Sem o pin, toda execução puxava a
+          # última publicada — e o comentário logo abaixo conta que uma
+          # mudança de flag deste CLI já matou este passo. Era a única
+          # ferramenta solta no gate, e justamente a que já quebrou.
+          #
+          # Para subir: rode localmente com a versão nova antes de trocar aqui.
+          npm install -g @shopify/cli@4.7.0
 
           # Os flags saíram de `shopify theme dev --help`, não de memória — a
           # primeira versão passava `--theme-editor-sync=false` e o CLI morria

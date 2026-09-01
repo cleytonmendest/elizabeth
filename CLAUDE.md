@@ -50,14 +50,22 @@ npm run test:e2e:gate                 # só o gate de a11y (não precisa de loja
 npm run test:e2e:baseline             # regrava a dívida de a11y (depois de reduzi-la)
 ```
 
-**A catraca:** violação já existente é aviso; violação **nova** é erro. O total
-do baseline só pode cair — o CI reprova se crescer. Ao corrigir dívida, rode
+**A catraca:** violação já existente é aviso; violação **nova** é erro. E o
+baseline precisa descrever o que as regras realmente produzem: entrada
+registrada que ninguém mais viola **reprova** o `npm run lint` até ser
+regravada — seja porque a dívida foi paga (ótimo, trave o progresso), seja
+porque a linha foi escrita à mão para silenciar algo. Ao corrigir dívida, rode
 `npm run lint:baseline` e mencione o número antes → depois no PR.
 
-A única exceção: **melhorar a cobertura de um linter** encontra violações que
-sempre existiram e não eram vistas. Isso é dívida escondida virando visível,
-não dívida nova. O CI libera o crescimento quando o diff toca
-`scripts/lint/rules/` — e só nesse caso.
+O total só pode cair, e quem verifica isso é `scripts/catraca.mjs` — um script
+com teste e com mutante, não um bloco de shell dentro do YAML. Ele trava os
+**dois** baselines, o do lint e o de a11y, e conta os itens em vez de acreditar
+no campo `total` que cada arquivo carrega.
+
+A única exceção: **melhorar a cobertura de um verificador** encontra violações
+que sempre existiram e não eram vistas. Isso é dívida escondida virando
+visível, não dívida nova. O CI libera o crescimento quando o diff toca
+`scripts/lint/rules/` (lint) ou `e2e/helpers/axe.mjs` (a11y) — e só aí.
 
 Violação legítima (cor de marca de terceiro, scrim de imagem, lightbox) vai
 para `scripts/lint/config/design-exceptions.json` **com justificativa escrita**
@@ -115,6 +123,13 @@ até passar transformaria defeito real em verde. `fixme` aparece no relatório;
 Um gate de tolerância zero nunca ficaria verde, e gate que nunca fica verde é
 desligado. Então: violação registrada em `e2e/a11y-baseline.json` é aviso,
 violação **nova** é erro, e o total só pode cair — mesma regra do lint.
+
+"Mesma regra" era meia verdade até `scripts/catraca.mjs` existir. A regra tem
+dois lados — violação nova reprova, **e** o baseline não pode crescer — e a
+a11y só tinha o primeiro: `npm run test:e2e:baseline` está documentado logo
+acima, e quem regravasse para cima passava verde, porque nenhum passo do CI
+lia esse arquivo. Agora os dois baselines passam pela mesma catraca, no job
+`gate` (que não precisa de navegador para comparar dois números).
 
 A impressão digital é `página|regra`, sem o seletor, pelo mesmo motivo que o
 baseline do lint trava itens e não ocorrências: seletor de axe carrega

@@ -57,6 +57,11 @@ on:
   delete:
   workflow_dispatch:
 
+# Quem escreve no board é o PROJECT_TOKEN, não o GITHUB_TOKEN — então o token
+# injetado pelo Actions só precisa clonar o repositório.
+permissions:
+  contents: read
+
 # A URL vive num lugar só. Trocar de board é editar esta linha.
 env:
   PROJECT_URL: https://github.com/users/cleytonmendest/projects/2

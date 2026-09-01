@@ -10,15 +10,20 @@
  *
  * ── A catraca ──────────────────────────────────────────────────────────────
  * Violação já existente fica registrada em config/baseline.json e sai como
- * aviso. Violação nova é erro e quebra o build. O baseline só pode encolher:
- * se uma violação registrada some, o comando avisa para regravar. É assim que
- * a dívida fica visível e contável em vez de virar uma nota num documento que
- * ninguém atualiza.
+ * aviso. Violação nova é erro e quebra o build. E o baseline precisa descrever
+ * o que as regras REALMENTE produzem: entrada registrada que ninguém mais
+ * viola reprova até ser regravada, seja porque a dívida foi paga, seja porque
+ * a linha foi escrita à mão. É assim que a dívida fica visível e contável em
+ * vez de virar uma nota num documento que ninguém atualiza.
+ *
+ * A outra metade da catraca — o total não pode crescer entre a base e o PR —
+ * mora em `scripts/catraca.mjs`, que trava também o baseline de a11y.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadRules } from './lib.mjs';
+import { fantasmas } from '../catraca.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const BASELINE = path.join(HERE, 'config', 'baseline.json');
@@ -94,22 +99,37 @@ for (const item of scoped) {
 
 report(errors, warnings);
 
-// Catraca: violações que saíram do baseline significam progresso — mas o
-// baseline precisa ser regravado, senão elas voltam a passar despercebidas.
-// Só vale quando a execução cobriu TODAS as regras: com `--rules` ou `--files`
-// as regras não executadas pareceriam "corrigidas".
+// O outro lado da catraca: o baseline não pode conter fingerprint que nenhuma
+// regra produz mais. Isso era um `console.log` sugerindo "rode lint:baseline"
+// — e sugestão que alguém precisa lembrar de seguir é a categoria de coisa que
+// este repositório move para código. Enquanto foi só recado, duas coisas
+// passavam: dívida já paga inflando o número que o `npm run status` publica
+// (com a folga que isso dá para dívida nova entrar debaixo do total antigo), e
+// linha adicionada à mão para silenciar uma violação nova — que o lint então
+// vê como conhecida. O cabeçalho do baseline.json PEDE que ninguém edite à
+// mão; aqui o pedido vira verificação.
+//
+// Só vale quando a execução cobriu TODAS as regras: com `--rules`, `--files`
+// ou `--fast` as regras não executadas pareceriam "corrigidas".
+let assombracoes = [];
 if (!args.files && !args.rules && !args.fast) {
-  const present = new Set(scoped.map((item) => item.fingerprint));
-  const fixed = [...baseline].filter((fingerprint) => !present.has(fingerprint));
-  if (fixed.length) {
+  const presentes = new Set(scoped.filter((item) => item.ratchet).map((item) => item.fingerprint));
+  assombracoes = fantasmas(baseline, presentes);
+
+  if (assombracoes.length) {
     console.log(
-      green(`\n✓ ${fixed.length} violação(ões) do baseline foram corrigidas.`) +
-        dim(' Rode "npm run lint:baseline" para travar o progresso.')
+      red(`\n✖ ${assombracoes.length} entrada(s) do baseline que nenhuma regra produz.`)
+    );
+    for (const fingerprint of assombracoes.slice(0, 20)) console.log(dim(`    ${fingerprint}`));
+    if (assombracoes.length > 20) console.log(dim(`    … e mais ${assombracoes.length - 20}.`));
+    console.log(
+      dim('  Ou a dívida foi corrigida (ótimo) e falta travar o progresso, ou alguém escreveu\n') +
+        dim('  a linha à mão. Nos dois casos: npm run lint:baseline')
     );
   }
 }
 
-process.exit(errors.length ? 1 : 0);
+process.exit(errors.length || assombracoes.length ? 1 : 0);
 
 // ───────────────────────────────────────────────────────────────────────────
 
