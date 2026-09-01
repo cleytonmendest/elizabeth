@@ -46,3 +46,4 @@ Numeração sequencial, nunca reutilizada.
 | [0003](0003-tres-niveis-de-customizacao.md) | Três níveis de customização | Aceito |
 | [0004](0004-o-que-ganha-um-toggle.md) | Um toggle é decisão de negócio, não preferência de layout | Aceito |
 | [0005](0005-escalas-de-tracking-z-index-e-proporcao.md) | Nomear as escalas de tracking, z-index e proporção a partir do que o código já fazia | Aceito |
+| [0006](0006-fonte-vem-da-biblioteca-da-shopify.md) | A tipografia vem da biblioteca da Shopify, e nenhum setting injeta markup | Aceito |

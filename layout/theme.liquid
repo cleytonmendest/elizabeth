@@ -52,13 +52,6 @@
       assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
     %}
 
-    {%- if settings.custom_font_head != blank -%}
-      {{ settings.custom_font_head }}
-    {% endif %}
-    {%- if settings.custom_font_body != blank and settings.custom_font_body != settings.custom_font_head -%}
-      {{ settings.custom_font_body }}
-    {% endif %}
-
     {% style %}
         {{ settings.type_body_font | font_face: font_display: 'swap' }}
         {{ body_font_bold | font_face: font_display: 'swap' }}
@@ -67,17 +60,8 @@
         {{ settings.type_header_font | font_face: font_display: 'swap' }}
 
         :root {
-          {%- if settings.custom_font_body == blank and settings.custom_font_body_name == blank -%}
-            --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
-          {% else %}
-            --font-body-family: {{ settings.custom_font_body_name }}, {{ settings.type_body_font.fallback_families }};
-          {%- endif -%}
-
-          {%- if settings.custom_font_head == blank and settings.custom_font_head_name == blank -%}
-            --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
-          {% else %}
-            --font-heading-family: {{ settings.custom_font_head_name }}, {{ settings.type_header_font.fallback_families }};
-          {%- endif -%}
+          --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+          --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
 
           --page-width: {{ settings.page_width }}px;
           --spacing-sections: {{ settings.spacing_sections }}px;
