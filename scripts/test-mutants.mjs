@@ -167,6 +167,44 @@ const MUTANTES = [
     para: '      ultimaSemTema = ultimaSemTema ?? null; const _ignorado = {',
     teste: 'tests/loja-no-ar.test.mjs',
   },
+  {
+    // O defeito exato que a versão em shell tinha: comparar o total consigo
+    // mesmo e sempre passar. É o mutante mais importante da catraca — a suíte
+    // que não o mata é a suíte que deixaria o baseline crescer de novo.
+    porque: 'a catraca volta a aprovar qualquer crescimento do baseline',
+    arquivo: 'scripts/catraca.mjs',
+    de: '  if (atual <= base) {',
+    para: '  if (true) {',
+    teste: 'tests/catraca.test.mjs',
+  },
+  {
+    porque: 'a exceção de cobertura vira licença geral para crescer',
+    arquivo: 'scripts/catraca.mjs',
+    de: '  if (cobertura) {',
+    para: '  if (true) {',
+    teste: 'tests/catraca.test.mjs',
+  },
+  {
+    porque: 'o total da a11y volta a ser LIDO do campo que a mão edita',
+    arquivo: 'scripts/catraca.mjs',
+    de: '    contar: (json) => Object.keys(json.violacoes ?? {}).length,',
+    para: '    contar: (json) => json._total ?? 0,',
+    teste: 'tests/catraca.test.mjs',
+  },
+  {
+    porque: 'apagar o baseline deixa de ser reprovado (a catraca some junto)',
+    arquivo: 'scripts/catraca.mjs',
+    de: '  if (naBase && !aqui) {',
+    para: '  if (false) {',
+    teste: 'tests/catraca.test.mjs',
+  },
+  {
+    porque: 'entrada de baseline que nenhuma regra produz para de ser apontada',
+    arquivo: 'scripts/catraca.mjs',
+    de: '  return [...registradas].filter((fingerprint) => !presentes.has(fingerprint)).sort();',
+    para: '  return [];',
+    teste: 'tests/catraca.test.mjs',
+  },
 ];
 
 
