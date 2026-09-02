@@ -231,7 +231,21 @@ jobs:
 
           echo "THEME_URL=http://127.0.0.1:9292" >> "$GITHUB_ENV"
 
+      # A conta de cliente é um secret À PARTE da credencial da loja, e a
+      # separação tem consequência: a loja pode estar no ar sem a conta
+      # existir. Nesse caso o que se declara pulado é só a metade de conta, com
+      # o motivo próprio — em vez de um `skip` genérico que esconde qual das
+      # duas faltou. Ver e2e/helpers/loja.mjs.
+      #
+      #   SHOPIFY_CUSTOMER_EMAIL     e-mail da conta de teste
+      #   SHOPIFY_CUSTOMER_PASSWORD  senha dela
+      #
+      # A conta é usada para CADASTRAR e APAGAR endereços a cada execução;
+      # use uma descartável, sem dado real.
       - name: Playwright
+        env:
+          SHOPIFY_CUSTOMER_EMAIL: ${{ secrets.SHOPIFY_CUSTOMER_EMAIL }}
+          SHOPIFY_CUSTOMER_PASSWORD: ${{ secrets.SHOPIFY_CUSTOMER_PASSWORD }}
         run: npm run test:e2e
 
       # O mesmo princípio do job de testes unitários, um nível acima: aqui o

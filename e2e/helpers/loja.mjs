@@ -17,3 +17,21 @@ export const MOTIVO =
 
 /** Onde a lojista publicou a página com o template `page.styleguide`. */
 export const STYLEGUIDE_PATH = process.env.STYLEGUIDE_PATH || '/pages/styleguide';
+
+/**
+ * A conta de cliente da loja de dev, para os testes que só existem depois do
+ * login — o formulário de endereço mora atrás dele.
+ *
+ * Separada de THEME_URL de propósito: a loja pode estar no ar sem a conta
+ * existir, e nesse caso o que não roda é só a metade de conta. Um único
+ * `skip` para as duas coisas esconderia qual das duas faltou.
+ */
+export const CLIENTE = {
+  email: process.env.SHOPIFY_CUSTOMER_EMAIL,
+  senha: process.env.SHOPIFY_CUSTOMER_PASSWORD,
+};
+
+export const MOTIVO_CLIENTE =
+  'SHOPIFY_CUSTOMER_EMAIL / SHOPIFY_CUSTOMER_PASSWORD não definidos — este ' +
+  'teste precisa de uma conta de cliente na loja de dev. Sem ela, o formulário ' +
+  'de endereço (atrás de login) não é medido por nenhum teste de navegador.';
