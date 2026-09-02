@@ -205,6 +205,38 @@ const MUTANTES = [
     teste: 'tests/preview.test.mjs',
   },
   {
+    // O defeito que a issue #25 descreve, do outro lado: com o `required`
+    // ligado num select vazio, trocar o país para um que não tem província
+    // faz o botão salvar parar de funcionar sem dizer nada. Troca um bug
+    // visível ("só dá para cadastrar no Brasil") por um invisível.
+    porque: 'país sem províncias volta a deixar um select vazio e obrigatório no formulário',
+    arquivo: 'assets/country-provinces.js',
+    de: '      this.estado.required = false;',
+    para: '      this.estado.required = true;',
+    teste: 'tests/country-provinces.test.mjs',
+  },
+  {
+    porque: 'o país gravado deixa de ser reselecionado, e editar um endereço troca o país sozinho',
+    arquivo: 'assets/country-provinces.js',
+    de: '    if (salvo) this.pais.value = salvo;',
+    para: '    void salvo;',
+    teste: 'tests/country-provinces.test.mjs',
+  },
+  {
+    porque: 'a placeholder vazia passa a contar como lista fixa, e a regra `mercado` acusa markup correto',
+    arquivo: 'scripts/lint/rules/mercado.mjs',
+    de: "const OPTION_COM_VALOR = /<option\\b[^>]*\\bvalue\\s*=\\s*(['\"])(?!\\1)([^'\"]*)\\1/gi;",
+    para: "const OPTION_COM_VALOR = /<option\\b[^>]*\\bvalue\\s*=\\s*(['\"])([^'\"]*)\\1/gi;",
+    teste: 'tests/mercado.test.mjs',
+  },
+  {
+    porque: 'a regra `mercado` para de olhar o JSON-LD e só vê o formulário',
+    arquivo: 'scripts/lint/rules/mercado.mjs',
+    de: "  for (const campo of CAMPOS_JSONLD) {",
+    para: "  for (const campo of []) {",
+    teste: 'tests/mercado.test.mjs',
+  },
+  {
     // O defeito com que a regra `remotes` nasceu: espalhar um Map dá pares
     // `[chave, valor]`, a alternância vira `settings.(logo_svg,textarea)`, e a
     // regra varre o tema inteiro sem achar nada. Ela passou verde assim.

@@ -26,13 +26,24 @@
   {%- if shop.description -%}
   "description": {{ shop.description | json }},
   {%- endif -%}
+  {%- comment -%}
+    O telefone só entra se a loja tiver um. O default anterior era um número
+    brasileiro inventado (+55-11-99999-9999), publicado ao Google como contato
+    da loja — pior que campo ausente, porque campo ausente não mente.
+
+    `areaServed` e `availableLanguage` vêm da loja e do idioma pedido, não de
+    "BR"/"Portuguese" escritos aqui: numa loja em inglês eles afirmavam ao
+    Google exatamente o contrário do que a página mostra.
+  {%- endcomment -%}
+  {%- if shop.phone != blank -%}
   "contactPoint": {
     "@type": "ContactPoint",
-    "telephone": "{{ shop.phone | default: '+55-11-99999-9999' }}",
+    "telephone": {{ shop.phone | json }},
     "contactType": "Customer Service",
-    "areaServed": "BR",
-    "availableLanguage": ["Portuguese"]
+    "areaServed": {{ shop.address.country_code | json }},
+    "availableLanguage": [{{ request.locale.iso_code | json }}]
   },
+  {%- endif -%}
   "sameAs": [
     {%- comment -%} Adicionar redes sociais aqui {%- endcomment -%}
     {%- if settings.social_instagram_link -%}
@@ -47,7 +58,7 @@
   ],
   "address": {
     "@type": "PostalAddress",
-    "addressCountry": "BR"
+    "addressCountry": {{ shop.address.country_code | json }}
   }
 }
 </script>
