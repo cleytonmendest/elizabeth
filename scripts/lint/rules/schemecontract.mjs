@@ -3,11 +3,11 @@
  *
  * O tema tem um pipeline de três pontas:
  *
- *   config/settings_schema.json  →  layout/theme.liquid  →  CSS custom props
- *                                                            ↓
- *                              assets/*.css  +  tailwind.config.js consomem
+ *   config/settings_schema.json  →  snippets/theme-styles.liquid  →  CSS custom props
+ *                                                                      ↓
+ *                                assets/*.css  +  tailwind.config.js consomem
  *
- * Se alguém consome `var(--color-alguma-coisa)` que o theme.liquid não gera, a
+ * Se alguém consome `var(--color-alguma-coisa)` que ninguém gera, a
  * propriedade resolve para vazio e a regra CSS inteira é descartada pelo
  * navegador — sem erro, sem aviso, só um estilo que não aparece. É uma falha
  * invisível em revisão de código e em Theme Check.
@@ -24,14 +24,61 @@ export const meta = {
   ratchet: true,
 };
 
-const SOURCE = 'layout/theme.liquid';
+/**
+ * Onde as variáveis NASCEM.
+ *
+ * Era o caminho único `layout/theme.liquid` até a #27. Quando o terceiro
+ * layout apareceu (a página de senha) o bloco que as emite virou
+ * `snippets/theme-styles.liquid` — e esta regra acusou 47 violações de uma
+ * vez, todas falsas: ela olhava para o lugar antigo e concluía que NADA era
+ * gerado.
+ *
+ * Plural de propósito, e incluindo os layouts: a pergunta que importa não é
+ * "está no theme.liquid?" e sim "alguma coisa que chega na página gera isto?".
+ * Um layout pode declarar variável própria sem estar errado.
+ */
+const GERADORES = ['snippets/theme-styles.liquid'];
+
+/** Os `--color-*: …` declarados numa fonte. Pura, para poder ser testada. */
+export function variaveisGeradas(fonte) {
+  return [...String(fonte ?? '').matchAll(/(--color-[a-z0-9-]+)\s*:/g)].map((match) => match[1]);
+}
 
 export function run() {
   const offenses = [];
 
+  const sources = [...GERADORES, ...list('layout')];
   const generated = new Set(
-    [...read(SOURCE).matchAll(/(--color-[a-z0-9-]+)\s*:/g)].map((match) => match[1])
+    sources.flatMap((file) => {
+      try {
+        return variaveisGeradas(read(file));
+      } catch {
+        return [];
+      }
+    })
   );
+
+  /**
+   * Nenhuma variável encontrada não significa "o tema está todo errado" —
+   * significa que a REGRA perdeu a fonte, provavelmente porque o bloco mudou
+   * de arquivo. Antes disto existir, esse caso saía como uma violação por
+   * consumidor: 47 erros apontando para 47 arquivos inocentes, e nenhum deles
+   * dizendo qual era o problema de verdade.
+   */
+  if (generated.size === 0) {
+    return [
+      offense({
+        rule: 'schemecontract',
+        file: GERADORES[0],
+        line: 1,
+        code: 'sem-fonte',
+        message:
+          'Nenhuma `--color-*` é gerada por ' +
+          `${GERADORES.join(', ')} nem pelos layouts. O bloco que as emite mudou de ` +
+          'lugar? Atualize GERADORES em scripts/lint/rules/schemecontract.mjs.',
+      }),
+    ];
+  }
 
   const consumers = [
     ...list('assets', '.css'),
@@ -65,7 +112,7 @@ export function run() {
           file,
           line: lineAt(src, match.index),
           code: `undefined-var:${variable}`,
-          message: `${variable} é consumida aqui mas nunca é gerada em ${SOURCE} — a regra CSS é descartada silenciosamente.`,
+          message: `${variable} é consumida aqui mas nunca é gerada por nenhum layout nem por snippets/theme-styles.liquid — a regra CSS é descartada silenciosamente.`,
         })
       );
     }

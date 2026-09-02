@@ -1,0 +1,132 @@
+{%- comment -%}
+  A página `/collections` — a lista de TODAS as coleções da loja.
+
+  Não existia. Sem ela a Shopify serve um fallback fora do design do tema, e a
+  Theme Store cobra a página. O sinal de que ela já era esperada estava em
+  `snippets/breadcrumb.liquid`, que tem um `{%- when 'list-collections' -%}`
+  aguardando desde sempre um template que nunca chegou — a chave
+  `general.breadcrumbs.all_collections` já existe nos dois idiomas. Ver #27.
+
+  ── Por que o título fica ABAIXO da imagem ─────────────────────────────────
+
+  A issue sugeria reusar o visual de `section-images-link`, que escreve o
+  rótulo em branco POR CIMA da foto. Aqui a foto é escolhida pela lojista, uma
+  por coleção, e nenhum valor de opacidade garante contraste sobre uma imagem
+  que o tema não conhece — é o mesmo problema de fundo que a #29 registra para
+  `text-foreground/50`. Sobre imagem clara, texto branco simplesmente some, e
+  o axe não consegue medir contraste contra foto.
+
+  Título abaixo da imagem, em token do color scheme: legível nos 4 presets,
+  nos dois esquemas, e sobre qualquer foto que ela suba.
+{%- endcomment -%}
+
+<div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  <div class="page-width !py-12 md:!py-16">
+
+    <h1 class="text-3xl md:text-4xl font-light tracking-title mb-8 md:mb-10">
+      {%- if section.settings.heading != blank -%}
+        {{ section.settings.heading }}
+      {%- else -%}
+        {{ 'general.breadcrumbs.all_collections' | t }}
+      {%- endif -%}
+    </h1>
+
+    {%- paginate collections by section.settings.collections_per_page -%}
+      {%- if collections.size > 0 -%}
+        <div class="grid grid-cols-2 md:grid-cols-{{ section.settings.collections_per_row }} gap-4 md:gap-6">
+          {%- for collection in collections -%}
+            <a href="{{ collection.url }}" class="group block">
+              <div class="overflow-hidden rounded-theme bg-foreground/5">
+                {%- if collection.featured_image -%}
+                  {{
+                    collection.featured_image
+                    | image_url: width: 800
+                    | image_tag:
+                      class: 'w-full aspect-portrait object-cover transition-transform duration-500 ease-out group-hover:scale-105',
+                      widths: '300, 500, 800',
+                      sizes: '(min-width: 768px) 33vw, 50vw',
+                      loading: 'lazy',
+                      alt: collection.title
+                  }}
+                {%- else -%}
+                  {%- comment -%} Coleção sem imagem continua clicável e com a mesma altura. {%- endcomment -%}
+                  <div class="w-full aspect-portrait" aria-hidden="true"></div>
+                {%- endif -%}
+              </div>
+
+              <h2 class="mt-3 text-sm font-medium text-foreground group-hover:underline">
+                {{ collection.title }}
+              </h2>
+
+              {%- if section.settings.show_product_count -%}
+                {%- comment -%} Sem opacidade: reprovou no axe. Ver o comentário em main-password e a #29. {%- endcomment -%}
+                <p class="mt-1 text-xs text-foreground">
+                  {{ 'collection.general.product_count' | t: count: collection.all_products_count }}
+                </p>
+              {%- endif -%}
+            </a>
+          {%- endfor -%}
+        </div>
+
+        {%- if paginate.pages > 1 -%}
+          <div class="mt-10 md:mt-12">
+            {% render 'pagination', paginate: paginate %}
+          </div>
+        {%- endif -%}
+      {%- else -%}
+        {%- comment -%}
+          Também sem opacidade. Este só não reprovou porque a loja de dev TEM
+          coleções: o estado vazio não renderiza, e o axe não mede o que não
+          está na tela. Mesmo papel de texto secundário, mesmo risco.
+        {%- endcomment -%}
+        <p class="text-sm text-foreground">{{ 'collection.general.no_collections' | t }}</p>
+      {%- endif -%}
+    {%- endpaginate -%}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main_list_collections.name",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.main_list_collections.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.main_list_collections.settings.heading.label",
+      "info": "t:sections.main_list_collections.settings.heading.info"
+    },
+    {
+      "type": "range",
+      "id": "collections_per_row",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 3,
+      "label": "t:sections.main_list_collections.settings.collections_per_row.label"
+    },
+    {
+      "type": "range",
+      "id": "collections_per_page",
+      "min": 6,
+      "max": 36,
+      "step": 3,
+      "default": 12,
+      "label": "t:sections.main_list_collections.settings.collections_per_page.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "t:sections.main_list_collections.settings.show_product_count.label",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,144 @@
+{%- comment -%}
+  As CSS custom properties do tema — o meio do pipeline da ADR 0003:
+
+    config/settings_schema.json   o lojista escolhe o VALOR
+          ↓ este snippet emite
+    :root { --color-*, --radius-*, --font-scale, --page-width }
+          ↓ tailwind.config.js consome
+    tokens semânticos (bg-background, rounded-theme, text-sm…)
+
+  Vive num snippet, e não em cada layout, porque LAYOUT NÃO É UM SÓ. Eram
+  dois (`theme` e `gift_card`), agora são três com o `password` da #27, e o
+  bloco tinha sido copiado — o par `gift_card`↔`theme` estava registrado no
+  baseline da regra `similarity` desde que ela existe.
+
+  Copiar de novo não seria só dívida: a cópia do gift card DIVERGIU, e em três
+  lugares que ninguém veria olhando a página no editor.
+
+    1. Emitia as cores separadas por VÍRGULA (`255,255,255`). O Tailwind
+       consome com barra de alpha — `rgb(var(--color-background)/1)` — e
+       vírgula com barra é sintaxe inválida: o navegador descarta a
+       declaração inteira. Todo `bg-*`, `text-*` e `border-*` estava morto
+       naquela página.
+    2. Não emitia `--radius-theme`, então todo `rounded-theme` caía.
+    3. Não emitia `--font-scale`, então `calc(0.875rem * var(--font-scale))`
+       ficava inválido e a escala tipográfica inteira caía.
+
+  Três eixos do design system desligados numa página que ninguém abre com
+  frequência — que é exatamente onde uma cópia apodrece sem ser notada. Agora
+  há uma fonte só, e ela é esta.
+
+  Junto com os tokens vêm os dois CSS que TODA página precisa. O que é de um
+  layout só continua nele: o Swiper da vitrine, o `@media print` do vale-
+  presente. E `<title>`, `canonical` e `<meta>` ficam em `theme-head`.
+{%- endcomment -%}
+
+{{ 'application.css' | asset_url | stylesheet_tag }}
+{{ 'color-scheme.css' | asset_url | stylesheet_tag }}
+    {%- liquid
+      assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
+      assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
+      assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
+    %}
+
+    {% style %}
+        {{ settings.type_body_font | font_face: font_display: 'swap' }}
+        {{ body_font_bold | font_face: font_display: 'swap' }}
+        {{ body_font_italic | font_face: font_display: 'swap' }}
+        {{ body_font_bold_italic | font_face: font_display: 'swap' }}
+        {{ settings.type_header_font | font_face: font_display: 'swap' }}
+
+        :root {
+          --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+          --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+
+          --page-width: {{ settings.page_width }}px;
+          --spacing-sections: {{ settings.spacing_sections }}px;
+
+          {%- comment -%}
+            Eixos de design do lojista (nível 1 do ADR 0003). Ele escolhe UM
+            valor por eixo; a escala inteira deriva por calc(). Derivar em vez
+            de expor cada degrau é o que impede o raio pequeno de ficar maior
+            que o grande — não existe controle para isso.
+          {%- endcomment -%}
+          --radius-theme: {{ settings.radius_style | default: '8px' }};
+          --radius-theme-sm: calc(var(--radius-theme) / 2);
+          --radius-theme-lg: calc(var(--radius-theme) * 1.5);
+
+          --font-scale: {{ settings.font_scale | default: '1' }};
+        }
+
+        html {
+          box-sizing: border-box;
+          height: 100%;
+        }
+
+        *{
+          text-decoration: none;
+        }
+
+        h1,h2,h3,h4,h5{
+          font-family: var(--font-heading-family);
+        }
+
+        body {
+          margin: 0;
+          font-family: var(--font-body-family);
+          font-size: 0.875rem; /* 14px — corpo padrão do tema (escala em tailwind.config.js) */
+          line-height: 1.5;
+        }
+
+        .page-width {
+          max-width: var(--page-width);
+          margin: 0 auto;
+          padding: 0 16px;
+        }
+
+        .overflow-hidden {
+          overflow: hidden;
+        }
+      {% for scheme in settings.color_schemes -%}
+          {% if forloop.index == 1 -%}
+            :root,
+          {%- endif %}
+          .color-{{ scheme.id }} {
+            --color-background: {{ scheme.settings.background.red }} {{ scheme.settings.background.green }} {{ scheme.settings.background.blue }};
+          {% if scheme.settings.background_gradient != empty %}
+            --gradient-background: {{ scheme.settings.background_gradient }};
+          {% else %}
+            --gradient-background: {{ scheme.settings.background }};
+          {% endif %}
+
+          {% liquid
+            assign background_color = scheme.settings.background
+            assign background_color_brightness = background_color | color_brightness
+            if background_color_brightness <= 26
+              assign background_color_contrast = background_color | color_lighten: 50
+            elsif background_color_brightness <= 65
+              assign background_color_contrast = background_color | color_lighten: 5
+            else
+              assign background_color_contrast = background_color | color_darken: 25
+            endif
+          %}
+
+          --color-foreground: {{ scheme.settings.text.red }} {{ scheme.settings.text.green }} {{ scheme.settings.text.blue }};
+          --color-text: {{ scheme.settings.text.red }} {{ scheme.settings.text.green }} {{ scheme.settings.text.blue }};
+          --color-background-contrast: {{ background_color_contrast.red }} {{ background_color_contrast.green }} {{ background_color_contrast.blue }};
+          --color-shadow: {{ scheme.settings.shadow.red }} {{ scheme.settings.shadow.green }} {{ scheme.settings.shadow.blue }};
+          --color-button: {{ scheme.settings.button.red }} {{ scheme.settings.button.green }} {{ scheme.settings.button.blue }};
+          --color-button-text: {{ scheme.settings.button_label.red }} {{ scheme.settings.button_label.green }} {{ scheme.settings.button_label.blue }};
+          --color-secondary-button: {{ scheme.settings.background.red }} {{ scheme.settings.background.green }} {{ scheme.settings.background.blue }};
+          --color-secondary-button-text: {{ scheme.settings.secondary_button_label.red }} {{ scheme.settings.secondary_button_label.green }} {{ scheme.settings.secondary_button_label.blue }};
+          --color-link: {{ scheme.settings.secondary_button_label.red }} {{ scheme.settings.secondary_button_label.green }} {{ scheme.settings.secondary_button_label.blue }};
+          --color-border: {{ scheme.settings.border.red }} {{ scheme.settings.border.green }} {{ scheme.settings.border.blue }};
+          --color-badge-foreground: {{ scheme.settings.badge_text.red }} {{ scheme.settings.badge_text.green }} {{ scheme.settings.badge_text.blue }};
+          --color-badge-background: {{ scheme.settings.badge_background.red }} {{ scheme.settings.badge_background.green }} {{ scheme.settings.badge_background.blue }};
+          --color-badge-text: {{ scheme.settings.badge_text.red }} {{ scheme.settings.badge_text.green }} {{ scheme.settings.badge_text.blue }};
+          --color-badge-border: {{ scheme.settings.badge_background.red }} {{ scheme.settings.badge_background.green }} {{ scheme.settings.badge_background.blue }};
+          --color-success: {{ scheme.settings.success.red }} {{ scheme.settings.success.green }} {{ scheme.settings.success.blue }};
+          --color-error: {{ scheme.settings.error.red }} {{ scheme.settings.error.green }} {{ scheme.settings.error.blue }};
+          --color-warning: {{ scheme.settings.warning.red }} {{ scheme.settings.warning.green }} {{ scheme.settings.warning.blue }};
+          --payment-terms-background-color: rgb({{ scheme.settings.background.rgb }});
+        }
+        {% endfor %}
+    {% endstyle %}
