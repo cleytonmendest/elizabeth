@@ -210,17 +210,27 @@ const MUTANTES = [
     // faz o botão salvar parar de funcionar sem dizer nada. Troca um bug
     // visível ("só dá para cadastrar no Brasil") por um invisível.
     porque: 'país sem províncias volta a deixar um select vazio e obrigatório no formulário',
-    arquivo: 'assets/country-provinces.js',
+    arquivo: 'assets/address-country.js',
     de: '      this.estado.required = false;',
     para: '      this.estado.required = true;',
-    teste: 'tests/country-provinces.test.mjs',
+    teste: 'tests/address-country.test.mjs',
+  },
+  {
+    // O `maxlength` do CEP tem nove; um ZIP+4 americano tem dez. Mantê-lo
+    // ligado fora do Brasil CORTA o que a pessoa digitou, sem aviso — e o
+    // formulário salva um código postal incompleto que parece certo.
+    porque: 'o limite de tamanho do CEP volta a valer fora do Brasil e trunca o código postal',
+    arquivo: 'assets/address-country.js',
+    de: "      else campo.removeAttribute('maxlength');",
+    para: '      else void campo;',
+    teste: 'tests/address-country.test.mjs',
   },
   {
     porque: 'o país gravado deixa de ser reselecionado, e editar um endereço troca o país sozinho',
-    arquivo: 'assets/country-provinces.js',
+    arquivo: 'assets/address-country.js',
     de: '    if (salvo) this.pais.value = salvo;',
     para: '    void salvo;',
-    teste: 'tests/country-provinces.test.mjs',
+    teste: 'tests/address-country.test.mjs',
   },
   {
     porque: 'a placeholder vazia passa a contar como lista fixa, e a regra `mercado` acusa markup correto',

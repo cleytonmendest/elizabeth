@@ -457,7 +457,7 @@
       "city": "Cidade",
       "country": "País",
       "province": "Estado",
-      "zip": "CEP",
+      "zip": "Código postal",
       "phone": "Telefone",
       "set_default": "Definir como endereço padrão",
       "add": "Adicionar endereço",
@@ -481,7 +481,8 @@
       "save_address": "Salvar Endereço",
       "save_changes": "Salvar Alterações",
       "delete_title": "Confirmar Exclusão",
-      "delete_confirm_text": "Tem certeza que deseja excluir este endereço? Esta ação não pode ser desfeita."
+      "delete_confirm_text": "Tem certeza que deseja excluir este endereço? Esta ação não pode ser desfeita.",
+      "zip_br": "CEP"
     },
     "orders": {
       "title": "Histórico de pedidos",

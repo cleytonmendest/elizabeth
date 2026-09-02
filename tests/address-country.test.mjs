@@ -1,5 +1,5 @@
 /**
- * assets/country-provinces.js — <country-provinces>.
+ * assets/address-country.js — <address-country>.
  *
  * O bug que este componente existe para não repetir tinha DUAS metades, e a
  * segunda é a que não se vê:
@@ -16,7 +16,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { loadAsset } from './helpers/load-asset.mjs';
 
-loadAsset('country-provinces.js');
+loadAsset('address-country.js');
 
 const BRASIL = [
   ['AC', 'Acre'],
@@ -43,14 +43,14 @@ function monta({ paises, selecionado = '', estadoSelecionado = '' } = {}) {
     .join('');
 
   document.body.innerHTML = `
-    <country-provinces>
+    <address-country>
       <select data-address-country name="address[country]">${opcoes}</select>
       <div data-address-province-field hidden>
         <select data-address-province name="address[province]" data-selected="${estadoSelecionado}">
           <option value="">Selecione</option>
         </select>
       </div>
-    </country-provinces>`;
+    </address-country>`;
 
   return {
     pais: document.querySelector('[data-address-country]'),
@@ -184,7 +184,7 @@ describe('o país salvo do endereço', () => {
    */
   it('volta a selecionar o país gravado, não o primeiro da lista', () => {
     document.body.innerHTML = `
-      <country-provinces>
+      <address-country>
         <select data-address-country data-default="Canada">
           <option value="Brazil" data-provinces='${JSON.stringify(BRASIL)}'>Brazil</option>
           <option value="Canada" data-provinces='${JSON.stringify(CANADA)}'>Canada</option>
@@ -192,7 +192,7 @@ describe('o país salvo do endereço', () => {
         <div data-address-province-field hidden>
           <select data-address-province data-selected="QC"><option value="">Selecione</option></select>
         </div>
-      </country-provinces>`;
+      </address-country>`;
 
     expect(document.querySelector('[data-address-country]').value).toBe('Canada');
     expect(document.querySelector('[data-address-province]').value).toBe('QC');
@@ -206,14 +206,14 @@ describe('o país salvo do endereço', () => {
    */
   it('data-default que não existe na lista não quebra o componente', () => {
     document.body.innerHTML = `
-      <country-provinces>
+      <address-country>
         <select data-address-country data-default="Atlântida">
           <option value="Brazil" data-provinces='${JSON.stringify(BRASIL)}'>Brazil</option>
         </select>
         <div data-address-province-field hidden>
           <select data-address-province><option value="">Selecione</option></select>
         </div>
-      </country-provinces>`;
+      </address-country>`;
 
     expect(document.querySelector('[data-address-country]').value).toBe('');
     expect(document.querySelector('[data-address-province-field]').hidden).toBe(true);
@@ -228,12 +228,12 @@ describe('o país salvo do endereço', () => {
 describe('o que não pode derrubar o formulário', () => {
   it('data-provinces ilegível esconde o campo em vez de travar o envio', () => {
     document.body.innerHTML = `
-      <country-provinces>
+      <address-country>
         <select data-address-country><option value="X" data-provinces="{não é json" selected>X</option></select>
         <div data-address-province-field hidden>
           <select data-address-province required><option value="">Selecione</option></select>
         </div>
-      </country-provinces>`;
+      </address-country>`;
 
     const estado = document.querySelector('[data-address-province]');
     expect(document.querySelector('[data-address-province-field]').hidden).toBe(true);
@@ -243,9 +243,123 @@ describe('o que não pode derrubar o formulário', () => {
   it('sem o campo de estado no DOM, o componente sai calado', () => {
     expect(() => {
       document.body.innerHTML = `
-        <country-provinces>
+        <address-country>
           <select data-address-country><option value="X" data-provinces="[]" selected>X</option></select>
-        </country-provinces>`;
+        </address-country>`;
     }).not.toThrow();
+  });
+});
+
+/**
+ * A segunda metade do mesmo defeito, e a que só apareceu quando alguém ABRIU o
+ * formulário: o motor já perguntava o país, mas o painel continuava brasileiro.
+ * "CEP", `00000-000`, "buscaremos o endereço automaticamente" e
+ * `(00) 00000-0000` apareciam para um endereço canadense.
+ *
+ * O `maxlength` é o que mais importa aqui. Os outros são texto errado; esse
+ * CORTA o que a pessoa digitou — um ZIP+4 americano tem dez caracteres, e o
+ * limite era nove. Perder caractere sem avisar é o defeito que só aparece
+ * quando a encomenda não chega.
+ */
+describe('o que é brasileiro só aparece no Brasil', () => {
+  function montaCampos(selecionado) {
+    document.body.innerHTML = `
+      <address-country>
+        <select data-address-country>
+          <option value="Brazil" data-provinces='${JSON.stringify(BRASIL)}'${
+            selecionado === 'Brazil' ? ' selected' : ''
+          }>Brazil</option>
+          <option value="Canada" data-provinces='${JSON.stringify(CANADA)}'${
+            selecionado === 'Canada' ? ' selected' : ''
+          }>Canada</option>
+        </select>
+        <label><span data-br-text="CEP">Código postal</span> *</label>
+        <input data-address-zip data-br-placeholder="00000-000" data-br-maxlength="9">
+        <p data-br-only hidden>Buscaremos o endereço automaticamente</p>
+        <input data-address-phone data-br-placeholder="(00) 00000-0000">
+        <div data-address-province-field hidden>
+          <select data-address-province><option value="">Selecione</option></select>
+        </div>
+      </address-country>`;
+
+    return {
+      pais: document.querySelector('[data-address-country]'),
+      cep: document.querySelector('[data-address-zip]'),
+      telefone: document.querySelector('[data-address-phone]'),
+      dica: document.querySelector('[data-br-only]'),
+      rotulo: document.querySelector('[data-br-text]'),
+    };
+  }
+
+  it('no Brasil, tudo ligado', () => {
+    const { cep, telefone, dica, rotulo } = montaCampos('Brazil');
+
+    expect(cep.placeholder).toBe('00000-000');
+    expect(cep.getAttribute('maxlength')).toBe('9');
+    expect(telefone.placeholder).toBe('(00) 00000-0000');
+    expect(dica.hidden).toBe(false);
+    expect(rotulo.textContent).toBe('CEP');
+  });
+
+  it('no Canadá, nada de formato brasileiro', () => {
+    const { cep, telefone, dica, rotulo } = montaCampos('Canada');
+
+    expect(cep.placeholder).toBe('');
+    expect(telefone.placeholder).toBe('');
+    expect(dica.hidden).toBe(true);
+    expect(rotulo.textContent).toBe('Código postal');
+  });
+
+  /** O que corta dado: sem limite, o ZIP+4 inteiro cabe. */
+  it('fora do Brasil o maxlength SAI — senão um ZIP+4 é truncado', () => {
+    const { cep } = montaCampos('Canada');
+    expect(cep.hasAttribute('maxlength')).toBe(false);
+
+    cep.value = '12345-6789';
+    expect(cep.value).toBe('12345-6789');
+  });
+
+  it('trocar de país troca os dois sentidos, não só um', () => {
+    const { pais, cep, dica, rotulo } = montaCampos('Brazil');
+
+    pais.value = 'Canada';
+    pais.dispatchEvent(new Event('change'));
+    expect(cep.hasAttribute('maxlength')).toBe(false);
+    expect(rotulo.textContent).toBe('Código postal');
+    expect(dica.hidden).toBe(true);
+
+    pais.value = 'Brazil';
+    pais.dispatchEvent(new Event('change'));
+    expect(cep.getAttribute('maxlength')).toBe('9');
+    expect(rotulo.textContent).toBe('CEP');
+    expect(dica.hidden).toBe(false);
+  });
+
+  /**
+   * O rótulo genérico vem do Liquid e não está escrito no JS. Voltar da
+   * segunda troca em diante depende de ele ter sido guardado na primeira.
+   */
+  it('o rótulo genérico sobrevive a várias idas e voltas', () => {
+    const { pais, rotulo } = montaCampos('Brazil');
+
+    for (const destino of ['Canada', 'Brazil', 'Canada']) {
+      pais.value = destino;
+      pais.dispatchEvent(new Event('change'));
+    }
+    expect(rotulo.textContent).toBe('Código postal');
+  });
+
+  it('sem campo de estado no DOM, os campos brasileiros ainda seguem o país', () => {
+    document.body.innerHTML = `
+      <address-country>
+        <select data-address-country>
+          <option value="Canada" data-provinces="[]" selected>Canada</option>
+        </select>
+        <input data-address-zip data-br-placeholder="00000-000" data-br-maxlength="9">
+      </address-country>`;
+
+    const cep = document.querySelector('[data-address-zip]');
+    expect(cep.placeholder).toBe('');
+    expect(cep.hasAttribute('maxlength')).toBe(false);
   });
 });
