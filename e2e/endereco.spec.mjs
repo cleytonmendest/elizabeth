@@ -25,7 +25,7 @@
  * ler a página.
  */
 import { test, expect } from '@playwright/test';
-import { THEME_URL, MOTIVO, CLIENTE, MOTIVO_CLIENTE } from './helpers/loja.mjs';
+import { THEME_URL, MOTIVO, CLIENTE, MOTIVO_CLIENTE, SENHA_VITRINE } from './helpers/loja.mjs';
 
 test.skip(!THEME_URL, MOTIVO);
 test.skip(!CLIENTE.email || !CLIENTE.senha, MOTIVO_CLIENTE);
@@ -45,8 +45,52 @@ const CARIMBO = 'e2e-endereco';
  * errado. A loja escreve o motivo num `[role="alert"]`; o teste passa a ler
  * esse texto e a colocá-lo na falha.
  */
+/**
+ * A tela de senha da vitrine, se ela aparecer. Devolve `true` se atravessou.
+ *
+ * Ela é o suspeito silencioso: renderiza sem erro nenhum, então "caí na tela de
+ * senha" e "o formulário não foi enviado" produzem exatamente a mesma falha.
+ * Foi o que a primeira execução real devolveu.
+ */
+async function atravessaSenhaDaVitrine(page) {
+  const campo = page.locator('input[name="password"]');
+  if ((await campo.count()) === 0) return false;
+
+  if (!SENHA_VITRINE) {
+    throw new Error(
+      'A vitrine pediu a senha da loja e SHOPIFY_STORE_PASSWORD não chegou ao ' +
+        'Playwright. Ela existe no passo que sobe o `theme dev`; precisa existir ' +
+        'também no passo do Playwright, em .github/workflows/ci.yml.'
+    );
+  }
+
+  await campo.first().fill(SENHA_VITRINE);
+  await page.locator('form[action*="/password"] button[type="submit"]').first().click();
+  await page.waitForLoadState('load');
+  return true;
+}
+
+/** O que a página é, para uma falha dizer onde parou em vez de só que parou. */
+async function ondeEstou(page) {
+  const titulo = await page.title().catch(() => '(sem título)');
+  const h1 = await page
+    .locator('h1')
+    .first()
+    .innerText()
+    .catch(() => '(sem h1)');
+  const pedeSenhaDaLoja = (await page.locator('input[name="password"]').count()) > 0;
+
+  return `url=${page.url()} · título="${titulo}" · h1="${h1.replace(/\s+/g, ' ').trim()}"${
+    pedeSenhaDaLoja ? ' · A PÁGINA PEDE A SENHA DA VITRINE' : ''
+  }`;
+}
+
 async function entrar(page) {
   await page.goto('/account/login');
+
+  // Antes de qualquer coisa: se a vitrine estiver trancada, tudo abaixo mede a
+  // tela de senha em vez do tema.
+  if (await atravessaSenhaDaVitrine(page)) await page.goto('/account/login');
 
   const formulario = page.locator('form[action*="/account/login"]').first();
   await expect(formulario, 'a página de login não trouxe o formulário do tema').toBeVisible();
@@ -55,6 +99,10 @@ async function entrar(page) {
   await formulario.locator('input[name="customer[password]"]').fill(CLIENTE.senha);
   await formulario.locator('button[type="submit"]').click();
   await page.waitForLoadState('load');
+
+  // O POST pode ter caído na tela de senha da vitrine: atravessa e confere de
+  // novo antes de declarar que o login falhou.
+  if (await atravessaSenhaDaVitrine(page)) await page.goto('/account/addresses');
 
   if (!/\/account\/login/.test(page.url())) return;
 
@@ -67,6 +115,7 @@ async function entrar(page) {
     [
       'O login com a conta de teste não passou.',
       `A loja respondeu: ${dito}`,
+      `A página em que parou: ${await ondeEstou(page)}`,
       '',
       'A causa mais comum não é a senha: cliente criado pela lojista no admin',
       'nasce SEM senha e só passa a conseguir entrar depois de aceitar o convite',

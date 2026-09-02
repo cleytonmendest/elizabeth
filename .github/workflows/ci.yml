@@ -246,6 +246,11 @@ jobs:
         env:
           SHOPIFY_CUSTOMER_EMAIL: ${{ secrets.SHOPIFY_CUSTOMER_EMAIL }}
           SHOPIFY_CUSTOMER_PASSWORD: ${{ secrets.SHOPIFY_CUSTOMER_PASSWORD }}
+          # A senha da VITRINE também chega aqui, e não só ao passo do `theme
+          # dev`: um POST autenticado pode voltar para a tela de senha, e ela
+          # renderiza sem erro nenhum — indistinguível de "o formulário não foi
+          # enviado", que foi exatamente a primeira falha real destes testes.
+          SHOPIFY_STORE_PASSWORD: ${{ secrets.SHOPIFY_STORE_PASSWORD }}
         run: npm run test:e2e
 
       # O mesmo princípio do job de testes unitários, um nível acima: aqui o

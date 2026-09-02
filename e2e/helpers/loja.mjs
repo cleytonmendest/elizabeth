@@ -35,3 +35,11 @@ export const MOTIVO_CLIENTE =
   'SHOPIFY_CUSTOMER_EMAIL / SHOPIFY_CUSTOMER_PASSWORD não definidos — este ' +
   'teste precisa de uma conta de cliente na loja de dev. Sem ela, o formulário ' +
   'de endereço (atrás de login) não é medido por nenhum teste de navegador.';
+
+/**
+ * A senha da VITRINE (a proteção da loja inteira), não a da conta de cliente.
+ * O `shopify theme dev` a usa para os GETs, mas a tela de senha volta a
+ * aparecer em outros caminhos — e ela renderiza sem erro nenhum, o que a torna
+ * indistinguível de "o formulário não foi enviado".
+ */
+export const SENHA_VITRINE = process.env.SHOPIFY_STORE_PASSWORD;
