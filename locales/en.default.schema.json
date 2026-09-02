@@ -32,6 +32,26 @@
         }
       }
     },
+    "main_cart": {
+      "name": "Cart",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "show_continue_shopping": {
+          "label": "Show \"continue shopping\"",
+          "info": "Applies to the cart with items. In the empty cart the link stays — there it is the only way out of the page."
+        },
+        "show_notes": {
+          "label": "Show order notes on this page",
+          "info": "Only takes effect if \"Allow customer notes\" is on in theme settings. Turn it off here to keep the field in the mini cart only."
+        },
+        "checkout_label": {
+          "label": "Checkout button text",
+          "info": "Leave blank to use the theme's translated text."
+        }
+      }
+    },
     "main_collection": {
       "name": "Collection Page",
       "settings": {

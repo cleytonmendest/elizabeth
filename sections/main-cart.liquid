@@ -1,0 +1,191 @@
+{%- comment -%}
+  A página do carrinho. Antes desta section, `templates/cart.liquid` eram 88
+  linhas de markup solto — o último achado da regra `templates` em todo o tema
+  (as outras duas, `page` e `contact`, saíram na #65). Ver issue #66.
+
+  O arquivo antigo não era mal escrito: usava `page-width`, `rounded-theme` e
+  chave `t:` em todo texto. Faltavam duas coisas, e as duas eram estruturais:
+
+  1. NADA ali era editável. A lojista não mudava cor, texto nem ordem, e não
+     conseguia acrescentar uma section abaixo do resumo — nem garantias, nem
+     prazo de entrega, nem produtos recomendados. Numa loja de moda o carrinho
+     é onde a cliente decide, e era a única página de decisão que o tema
+     trancava.
+  2. NÃO aplicava color scheme. Zero `color-background`, zero `color-text`: a
+     página herdava o que o layout deixasse. Por isso a regra `schemecontract`
+     nunca a reprovou — sem nenhum `color-*` não há co-ocorrência para checar,
+     e o arquivo passava limpo no gate exibindo o defeito.
+
+  ── O contrato de DOM (não renomeie nada daqui) ────────────────────────────
+
+  Esta página não é markup inerte: `assets/cart.js` e `assets/cart-extras.js`
+  leem estes ganchos, e `tests/cart-extras.test.mjs` os fixa em jsdom.
+
+    [data-cart-page]          raiz que o cart-extras usa para saber que está na
+                              PÁGINA (e não no drawer) antes de mexer na DOM
+    #cart-items-container     mesmo id do drawer — o cart.js troca o conteúdo
+                              dele pela resposta do servidor
+    .cart-item[data-key]      vem do snippet `cart-drawer-item`, compartilhado
+    [data-cart-subtotal]      resumo reativo, atualizado sem recarregar
+    [data-cart-total]
+    [data-cart-discount]      e [data-cart-discount-row], que ganha/perde
+                              `hidden` conforme o desconto
+    [data-cart-note]          sincronizado com o campo do drawer pelo JS
+
+  ── Por que `cart_notes` continua global ───────────────────────────────────
+
+  "Aceitar observações do pedido" é uma decisão da LOJA, não desta página: o
+  mesmo campo aparece no mini-carrinho, e o `initCartNotes` sincroniza os dois
+  como se fossem um só. Um checkbox por section que ligasse a feature criaria
+  duas verdades para a mesma pergunta.
+
+  Então os níveis se dividem como manda a ADR 0003: `settings.cart_notes`
+  (global) decide SE a loja aceita observações; `show_notes` (section) decide
+  se o campo aparece AQUI. Arranjo é exatamente o que o nível 2 controla, e
+  desligar o global continua apagando o campo nos dois lugares.
+{%- endcomment -%}
+
+<div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  <div class="page-width w-full !py-10 md:!py-14 min-h-page flex flex-col" data-cart-page>
+    <h1 class="text-3xl md:text-4xl font-light tracking-title mb-8 md:mb-10">{{ 'cart.general.title' | t }}</h1>
+
+    {%- if cart.item_count > 0 -%}
+      <div class="flex flex-col lg:flex-row gap-10 lg:gap-12">
+        {%- comment -%} Itens (mesmo snippet do drawer — fonte do #cart-items-container) {%- endcomment -%}
+        <div class="flex-1 min-w-0">
+          <div id="cart-items-container" class="border-t border-border">
+            {%- for item in cart.items -%}
+              {% render 'cart-drawer-item', item: item %}
+            {%- endfor -%}
+          </div>
+
+          {%- if section.settings.show_continue_shopping -%}
+            <a
+              href="{{ routes.all_products_collection_url }}"
+              class="inline-flex items-center gap-2 mt-6 text-xs uppercase tracking-label text-foreground/70 hover:text-foreground transition-colors"
+            >
+              {% render 'icon-angle-left', size: 14 %}
+              {{ 'cart.general.continue_shopping' | t }}
+            </a>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Resumo (sticky no desktop) {%- endcomment -%}
+        <aside class="w-full lg:w-80 flex-shrink-0">
+          <div class="lg:sticky lg:top-24 border border-border rounded-theme p-6">
+            <h2 class="text-xs uppercase tracking-label text-foreground/60 mb-5">{{ 'cart.general.order_summary' | t }}</h2>
+
+            {% render 'cart-free-shipping' %}
+
+            <div class="mt-5 space-y-2.5 text-sm">
+              <div class="flex justify-between">
+                <span class="text-foreground/60">{{ 'cart.general.subtotal' | t }}</span>
+                <span class="font-medium" data-cart-subtotal>{{ cart.items_subtotal_price | money }}</span>
+              </div>
+              <div class="flex justify-between {% if cart.total_discount <= 0 %}hidden{% endif %}" data-cart-discount-row>
+                <span class="text-foreground/60">{{ 'cart.general.discounts' | t }}</span>
+                <span class="font-medium color-success" data-cart-discount>-{{ cart.total_discount | money }}</span>
+              </div>
+            </div>
+
+            <div class="flex justify-between items-baseline mt-4 pt-4 border-t border-border">
+              <span class="text-sm font-medium">{{ 'cart.general.total' | t }}</span>
+              <span class="text-lg font-light" data-cart-total>{{ cart.total_price | money }}</span>
+            </div>
+
+            <form action="{{ routes.cart_url }}" method="post" class="mt-6">
+              {%- if settings.cart_notes and section.settings.show_notes -%}
+                <div class="mb-4">
+                  <label for="CartNote" class="block text-xs uppercase tracking-label text-foreground/60 mb-2">{{ 'cart.general.note' | t }}</label>
+                  <textarea
+                    id="CartNote"
+                    name="note"
+                    data-cart-note
+                    rows="3"
+                    placeholder="{{ 'cart.general.note_placeholder' | t | escape }}"
+                    class="w-full border border-border rounded-theme px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-foreground/40 resize-none"
+                  >{{ cart.note }}</textarea>
+                </div>
+              {%- endif -%}
+              <button
+                type="submit"
+                name="checkout"
+                class="w-full inline-flex items-center justify-center color-button text-xs uppercase tracking-label py-3.5 rounded-theme hover:opacity-90 transition-opacity"
+              >
+                {%- comment -%}
+                  Default VAZIO, ao contrário do `button_label` da 404: um
+                  literal em pt-BR no schema viaja com o tema e chegaria em
+                  português na loja de quem instalar em outro idioma. Vazio cai
+                  na chave traduzida, que existe nos dois locales.
+                {%- endcomment -%}
+                {%- if section.settings.checkout_label != blank -%}
+                  {{ section.settings.checkout_label }}
+                {%- else -%}
+                  {{ 'cart.general.checkout' | t }}
+                {%- endif -%}
+              </button>
+            </form>
+
+            <p class="text-xs text-foreground/40 text-center mt-3">{{ 'cart.general.taxes_shipping_checkout' | t }}</p>
+          </div>
+        </aside>
+      </div>
+    {%- else -%}
+      {%- comment -%}
+        Estado vazio (centralizado no espaço restante; título permanece no topo).
+
+        O "continuar comprando" daqui NÃO obedece a `show_continue_shopping`:
+        no carrinho vazio ele é a única ação da página, e escondê-lo deixaria a
+        cliente sem saída.
+      {%- endcomment -%}
+      <div class="flex-1 flex flex-col items-center justify-center text-center py-10">
+        <svg class="w-16 h-16 mx-auto text-foreground/25 mb-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        <h2 class="text-2xl font-light tracking-title mb-2">{{ 'cart.general.empty' | t }}</h2>
+        <p class="text-sm text-foreground/55 mb-8">{{ 'cart.general.empty_text' | t }}</p>
+        <a
+          href="{{ routes.all_products_collection_url }}"
+          class="inline-flex items-center color-button text-xs uppercase tracking-label px-6 py-3.5 hover:opacity-90 transition-opacity rounded-theme"
+        >
+          {{ 'cart.general.continue_shopping' | t }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main_cart.name",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.main_cart.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_continue_shopping",
+      "label": "t:sections.main_cart.settings.show_continue_shopping.label",
+      "info": "t:sections.main_cart.settings.show_continue_shopping.info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_notes",
+      "label": "t:sections.main_cart.settings.show_notes.label",
+      "info": "t:sections.main_cart.settings.show_notes.info",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "checkout_label",
+      "label": "t:sections.main_cart.settings.checkout_label.label",
+      "info": "t:sections.main_cart.settings.checkout_label.info"
+    }
+  ]
+}
+{% endschema %}

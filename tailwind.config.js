@@ -89,6 +89,16 @@ module.exports = {
         drawer:  '50',    // gaveta que entra por cima do véu
         modal:   '9999',  // diálogo. Alto de propósito: app de terceiro na mesma página
       },
+      // Altura mínima do miolo em página que pode chegar CURTA: carrinho vazio,
+      // 404. Sem ela o rodapé sobe até o meio da tela e a página parece
+      // quebrada. Não é escolha do lojista — é o piso que impede o layout de
+      // colapsar, do mesmo jeito que `tracking-*` não é escolha dele.
+      //
+      // O valor não foi inventado aqui: `min-h-[60vh]` já estava escrito em
+      // dois arquivos, e como valor arbitrário estava no baseline duas vezes.
+      minHeight: {
+        page: '60vh',
+      },
       // Proporções — `video` (16/9) já é degrau do Tailwind e continua valendo.
       aspectRatio: {
         portrait:  '3 / 4',   // mídia editorial em pé

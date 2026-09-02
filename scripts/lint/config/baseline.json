@@ -9,10 +9,9 @@
     "schemecontract": 1,
     "settings": 7,
     "similarity": 7,
-    "templates": 1,
-    "tokens": 94
+    "tokens": 92
   },
-  "total": 242,
+  "total": 239,
   "fingerprints": [
     "boundaries|assets/cart.js|storefront-routes",
     "boundaries|assets/search-component.js|storefront-routes",
@@ -161,7 +160,6 @@
     "similarity|sections/product-recommendations.liquid|pair:sections/recently-viewed.liquid",
     "similarity|snippets/quantity-selector.liquid|pair:snippets/sticky-add-to-cart.liquid",
     "similarity|templates/customers/register.liquid|pair:templates/customers/reset_password.liquid",
-    "templates|templates/cart.liquid|sem-section",
     "tokens|sections/countdown-timer.liquid|arbitrary:min-w-[60px]",
     "tokens|sections/countdown-timer.liquid|arbitrary:min-w-[76px]",
     "tokens|sections/countdown-timer.liquid|arbitrary:text-[10px]",
@@ -175,7 +173,6 @@
     "tokens|sections/highlighted-section.liquid|arbitrary:rounded-tr-[600px]",
     "tokens|sections/image-banner.liquid|arbitrary:text-[11px]",
     "tokens|sections/image-banner.liquid|arbitrary:tracking-[0.16em]",
-    "tokens|sections/main-404.liquid|arbitrary:min-h-[60vh]",
     "tokens|sections/main-article.liquid|arbitrary:bg-[#0c63d4]",
     "tokens|sections/main-article.liquid|arbitrary:bg-[#1877F2]",
     "tokens|sections/main-article.liquid|arbitrary:bg-[#1fb855]",
@@ -251,7 +248,6 @@
     "tokens|snippets/sticky-add-to-cart.liquid|arbitrary:w-[25px]",
     "tokens|snippets/sticky-add-to-cart.liquid|arbitrary:w-[30px]",
     "tokens|snippets/trust-badge-item.liquid|tracking:tracking-wide",
-    "tokens|templates/cart.liquid|arbitrary:min-h-[60vh]",
     "tokens|templates/customers/addresses.liquid|radius:rounded-md",
     "tokens|templates/customers/order.liquid|hex:#e5e7eb",
     "tokens|templates/gift_card.liquid|hex:#e5e7eb",
