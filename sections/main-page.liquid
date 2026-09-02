@@ -1,0 +1,66 @@
+{{ 'rich-text.css' | asset_url | stylesheet_tag }}
+
+{%- comment -%}
+  Toda página institucional que a lojista criar passa por aqui — Sobre, FAQ,
+  Trocas, Políticas. Antes desta section, `templates/page.liquid` eram duas
+  linhas (`<h1>` e a `{{ page.content }}` solta): sem page-width, sem color
+  scheme, sem nada editável no editor de tema. Ver issue #26.
+
+  A largura é um controle próprio porque texto corrido tem uma medida
+  confortável que não é a da vitrine: uma linha de 1920px de largura é
+  ilegível. O padrão é o intermediário, e a lojista decide os outros dois.
+{%- endcomment -%}
+
+<div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  <div class="page-width py-12 md:py-16">
+    <div class="mx-auto {% case section.settings.content_width %}{% when 'narrow' %}max-w-2xl{% when 'wide' %}max-w-5xl{% else %}max-w-3xl{% endcase %}">
+
+      {%- if section.settings.show_title -%}
+        <h1 class="text-2xl md:text-3xl font-light tracking-title text-foreground mb-8">
+          {{ page.title }}
+        </h1>
+      {%- endif -%}
+
+      {%- if page.content != blank -%}
+        <div class="rich-text">
+          {{ page.content }}
+        </div>
+      {%- endif -%}
+
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main_page.name",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.main_page.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "t:sections.main_page.settings.show_title.label",
+      "info": "t:sections.main_page.settings.show_title.info",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "content_width",
+      "label": "t:sections.main_page.settings.content_width.label",
+      "info": "t:sections.main_page.settings.content_width.info",
+      "options": [
+        { "value": "narrow", "label": "t:sections.main_page.settings.content_width.options.narrow" },
+        { "value": "medium", "label": "t:sections.main_page.settings.content_width.options.medium" },
+        { "value": "wide", "label": "t:sections.main_page.settings.content_width.options.wide" }
+      ],
+      "default": "medium"
+    }
+  ]
+}
+{% endschema %}

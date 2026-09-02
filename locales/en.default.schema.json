@@ -1944,6 +1944,46 @@
           "label": "Bottom padding"
         }
       }
+    },
+    "main_page": {
+      "name": "Page",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "show_title": {
+          "label": "Show the page title",
+          "info": "Turn off if the title is already in the content."
+        },
+        "content_width": {
+          "label": "Text width",
+          "info": "Body text has a comfortable measure that is not the storefront width — a very long line tires the reader.",
+          "options": {
+            "narrow": "Narrow",
+            "medium": "Medium",
+            "wide": "Wide"
+          }
+        }
+      }
+    },
+    "main_contact": {
+      "name": "Contact",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "show_title": {
+          "label": "Show the page title"
+        },
+        "subtext": {
+          "label": "Supporting text",
+          "info": "Appears below the title. A good place to say how quickly you reply."
+        },
+        "show_phone": {
+          "label": "Ask for a phone number",
+          "info": "The field stays optional for the customer even when shown."
+        }
+      }
     }
   },
   "settings_schema": {

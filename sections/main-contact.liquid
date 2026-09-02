@@ -1,0 +1,161 @@
+{{ 'rich-text.css' | asset_url | stylesheet_tag }}
+
+{%- comment -%}
+  Formulário de contato. Antes desta section, `templates/page.contact.liquid`
+  eram 14 linhas de boilerplate EM INGLÊS (`name`, `email`, `message`, `send`),
+  sem estilo, sem token e sem uma chave de tradução. Ver issue #26.
+
+  ── Sem JavaScript, de propósito ─────────────────────────────────────────
+
+  O `{% form 'contact' %}` da Shopify é um POST comum: o navegador envia, a
+  página recarrega, e a resposta traz `form.posted_successfully?` ou
+  `form.errors`. Não há uma linha de JS aqui, e não deve haver — um formulário
+  de contato que só funciona com JS perde justamente quem tem mais chance de
+  precisar dele.
+
+  Por isso os três estados são renderizados pelo Liquid, e o sucesso vem ANTES
+  do formulário: quem acabou de enviar precisa ver a confirmação sem rolar a
+  página até o fim para descobrir se funcionou.
+
+  As chaves `contact.form.*` já existiam nos dois idiomas desde sempre — e
+  estavam registradas no baseline como órfãs, declaradas e nunca usadas. Esta
+  section é o primeiro lugar do tema que as consome.
+{%- endcomment -%}
+
+{%- assign campo_classe = 'w-full px-4 py-2.5 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground/40 focus:border-transparent' -%}
+{%- assign rotulo_classe = 'block text-sm font-medium text-foreground/70 mb-2' -%}
+
+<div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  <div class="page-width py-12 md:py-16">
+    <div class="mx-auto max-w-2xl">
+
+      {%- if section.settings.show_title -%}
+        <h1 class="text-2xl md:text-3xl font-light tracking-title text-foreground mb-3">
+          {{ page.title }}
+        </h1>
+      {%- endif -%}
+
+      {%- if section.settings.subtext != blank -%}
+        <p class="text-sm text-foreground/60 mb-8">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+
+      {% form 'contact', class: 'space-y-5' %}
+
+        {%- comment -%} Sucesso primeiro: é a resposta à ação que acabou de acontecer. {%- endcomment -%}
+        {%- if form.posted_successfully? -%}
+          <div class="p-4 color-success-bg border color-border rounded-theme" role="status">
+            <p class="text-sm color-success">{{ 'contact.form.success' | t }}</p>
+          </div>
+        {%- endif -%}
+
+        {%- if form.errors -%}
+          <div class="p-4 color-error-bg border color-border rounded-theme" role="alert">
+            <p class="text-sm font-medium color-error mb-1">{{ 'contact.form.error' | t }}</p>
+            <div class="text-sm color-error">{{ form.errors | default_errors }}</div>
+          </div>
+        {%- endif -%}
+
+        <div>
+          <label for="ContactName" class="{{ rotulo_classe }}">{{ 'contact.form.name' | t }} *</label>
+          <input
+            type="text"
+            id="ContactName"
+            name="contact[name]"
+            value="{{ form.name }}"
+            required
+            autocomplete="name"
+            class="{{ campo_classe }}"
+          >
+        </div>
+
+        <div>
+          <label for="ContactEmail" class="{{ rotulo_classe }}">{{ 'contact.form.email' | t }} *</label>
+          <input
+            type="email"
+            id="ContactEmail"
+            name="contact[email]"
+            value="{{ form.email }}"
+            required
+            autocomplete="email"
+            class="{{ campo_classe }}"
+          >
+        </div>
+
+        {%- if section.settings.show_phone -%}
+          <div>
+            <label for="ContactPhone" class="{{ rotulo_classe }}">{{ 'contact.form.phone' | t }}</label>
+            <input
+              type="tel"
+              id="ContactPhone"
+              name="contact[phone]"
+              value="{{ form.phone }}"
+              autocomplete="tel"
+              class="{{ campo_classe }}"
+            >
+          </div>
+        {%- endif -%}
+
+        <div>
+          <label for="ContactMessage" class="{{ rotulo_classe }}">{{ 'contact.form.message' | t }} *</label>
+          <textarea
+            id="ContactMessage"
+            name="contact[body]"
+            rows="8"
+            required
+            class="{{ campo_classe }}"
+          >{{ form.body }}</textarea>
+        </div>
+
+        <button
+          type="submit"
+          class="color-button text-xs uppercase tracking-label px-8 py-3.5 rounded-theme hover:opacity-90 transition-opacity"
+        >
+          {{ 'contact.form.send' | t }}
+        </button>
+
+      {% endform %}
+
+      {%- if page.content != blank -%}
+        <div class="rich-text mt-12 pt-8 border-t border-border">
+          {{ page.content }}
+        </div>
+      {%- endif -%}
+
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main_contact.name",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.main_contact.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "t:sections.main_contact.settings.show_title.label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "subtext",
+      "label": "t:sections.main_contact.settings.subtext.label",
+      "info": "t:sections.main_contact.settings.subtext.info",
+      "default": "Responderemos em até 1 dia útil."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_phone",
+      "label": "t:sections.main_contact.settings.show_phone.label",
+      "info": "t:sections.main_contact.settings.show_phone.info",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

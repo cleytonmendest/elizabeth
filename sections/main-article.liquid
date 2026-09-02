@@ -1,4 +1,4 @@
-{{ 'article.css' | asset_url | stylesheet_tag }}
+{{ 'rich-text.css' | asset_url | stylesheet_tag }}
 
 <article class="article color-{{ section.settings.color_scheme }} color-background color-text">
   {%- comment -%} Hero Image {%- endcomment -%}
@@ -56,7 +56,7 @@
         </div>
 
         {%- comment -%} Article Content {%- endcomment -%}
-        <div class="article-content max-w-none mb-8">
+        <div class="rich-text max-w-none mb-8">
           {{ article.content }}
         </div>
 

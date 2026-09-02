@@ -1944,6 +1944,46 @@
           "label": "Espaçamento inferior"
         }
       }
+    },
+    "main_page": {
+      "name": "Página",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
+        "show_title": {
+          "label": "Mostrar o título da página",
+          "info": "Desligue se o título já estiver no conteúdo."
+        },
+        "content_width": {
+          "label": "Largura do texto",
+          "info": "Texto corrido tem uma medida confortável que não é a da vitrine — linha muito longa cansa a leitura.",
+          "options": {
+            "narrow": "Estreita",
+            "medium": "Média",
+            "wide": "Larga"
+          }
+        }
+      }
+    },
+    "main_contact": {
+      "name": "Contato",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
+        "show_title": {
+          "label": "Mostrar o título da página"
+        },
+        "subtext": {
+          "label": "Texto de apoio",
+          "info": "Aparece abaixo do título. Bom lugar para dizer em quanto tempo você responde."
+        },
+        "show_phone": {
+          "label": "Pedir telefone",
+          "info": "O campo é opcional para a cliente mesmo quando exibido."
+        }
+      }
     }
   },
   "settings_schema": {

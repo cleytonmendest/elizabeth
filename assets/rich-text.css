@@ -1,20 +1,28 @@
 /*
- * Estilos do corpo do artigo (rich text vindo de {{ article.content }}).
- * CSS real (não @apply): blocos <style> em .liquid não são processados pelo Tailwind.
- * Co-locado em main-article.liquid (carrega só na página de artigo).
+ * Estilos do rich text que o editor da Shopify produz — o mesmo HTML sai de
+ * `{{ article.content }}` e de `{{ page.content }}`.
+ *
+ * O arquivo se chamava `article.css` e a classe, `.article-content`. O nome
+ * passou a mentir quando a página institucional (issue #26) precisou do mesmo
+ * corpo de texto: ou duplicava 120 linhas de CSS, ou carregava um arquivo
+ * chamado "artigo" numa página que não é artigo. Nome que mente é o começo do
+ * arquivo que ninguém encontra.
+ *
+ * CSS real (não @apply): blocos <style> em .liquid não são processados pelo
+ * Tailwind. Co-locado em quem usa, então só pesa nas páginas de texto longo.
  * Usa as CSS variables do color scheme para respeitar o tema.
  */
-.article-content {
+.rich-text {
   color: rgb(var(--color-foreground) / 0.75);
   line-height: 1.75;
   font-size: 1rem;
 }
 
-.article-content > * + * {
+.rich-text > * + * {
   margin-top: 1rem;
 }
 
-.article-content h2 {
+.rich-text h2 {
   font-size: 1.5rem;
   font-weight: 300;
   letter-spacing: -0.01em;
@@ -23,7 +31,7 @@
   margin-bottom: 1rem;
 }
 
-.article-content h3 {
+.rich-text h3 {
   font-size: 1.25rem;
   font-weight: 400;
   color: rgb(var(--color-foreground));
@@ -31,44 +39,44 @@
   margin-bottom: 0.75rem;
 }
 
-.article-content p {
+.rich-text p {
   margin-bottom: 1rem;
 }
 
-.article-content ul,
-.article-content ol {
+.rich-text ul,
+.rich-text ol {
   margin-bottom: 1rem;
   padding-left: 1.5rem;
 }
 
-.article-content ul {
+.rich-text ul {
   list-style: disc;
 }
 
-.article-content ol {
+.rich-text ol {
   list-style: decimal;
 }
 
-.article-content li {
+.rich-text li {
   margin-bottom: 0.5rem;
 }
 
-.article-content a {
+.rich-text a {
   color: rgb(var(--color-foreground));
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
-.article-content a:hover {
+.rich-text a:hover {
   text-decoration: none;
 }
 
-.article-content img {
+.rich-text img {
   border-radius: 8px;
   margin: 1.5rem 0;
 }
 
-.article-content blockquote {
+.rich-text blockquote {
   border-left: 2px solid rgb(var(--color-foreground));
   padding-left: 1rem;
   font-style: italic;
@@ -76,12 +84,12 @@
   color: rgb(var(--color-foreground) / 0.6);
 }
 
-.article-content strong {
+.rich-text strong {
   font-weight: 600;
   color: rgb(var(--color-foreground));
 }
 
-.article-content code {
+.rich-text code {
   background: rgb(var(--color-foreground) / 0.05);
   padding: 0.125rem 0.4rem;
   border-radius: 4px;
@@ -89,7 +97,7 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-.article-content pre {
+.rich-text pre {
   background: rgb(var(--color-foreground));
   color: rgb(var(--color-background));
   padding: 1rem;
@@ -98,25 +106,25 @@
   margin: 1.5rem 0;
 }
 
-.article-content pre code {
+.rich-text pre code {
   background: transparent;
   padding: 0;
 }
 
-.article-content table {
+.rich-text table {
   width: 100%;
   margin: 1.5rem 0;
   border-collapse: collapse;
 }
 
-.article-content th,
-.article-content td {
+.rich-text th,
+.rich-text td {
   border: 1px solid rgb(var(--color-border));
   padding: 0.5rem 1rem;
   text-align: left;
 }
 
-.article-content th {
+.rich-text th {
   background: rgb(var(--color-foreground) / 0.05);
   font-weight: 600;
 }

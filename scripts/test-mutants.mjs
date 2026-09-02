@@ -247,6 +247,23 @@ const MUTANTES = [
     teste: 'tests/mercado.test.mjs',
   },
   {
+    // Afrouxar o regex para casar a palavra solta faria qualquer arquivo
+    // passar escrevendo "section" num comentário — que é o tipo de regra que
+    // existe, roda e não verifica nada.
+    porque: 'a palavra "section" solta passa a contar como section renderizada',
+    arquivo: 'scripts/lint/rules/templates.mjs',
+    de: "const RENDERIZA_SECTION = /\\{%-?\\s*sections?\\s+['\"]/;",
+    para: "const RENDERIZA_SECTION = /sections?/;",
+    teste: 'tests/templates.test.mjs',
+  },
+  {
+    porque: 'template JSON sem section nenhuma volta a passar como se estivesse montado',
+    arquivo: 'scripts/lint/rules/templates.mjs',
+    de: '  return Object.keys(json?.sections ?? {}).length;',
+    para: '  return 1;',
+    teste: 'tests/templates.test.mjs',
+  },
+  {
     // O defeito com que a regra `remotes` nasceu: espalhar um Map dá pares
     // `[chave, valor]`, a alternância vira `settings.(logo_svg,textarea)`, e a
     // regra varre o tema inteiro sem achar nada. Ela passou verde assim.
