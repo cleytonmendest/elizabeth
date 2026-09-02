@@ -147,6 +147,21 @@ describe('qual comentário reescrever', () => {
     expect(escolherComentario([citando], MARCADOR)).toBe(null);
   });
 
+  /**
+   * O ida-e-volta. Os outros testes verificam as duas metades separadas — o
+   * corpo começa com o marcador, e a escolha casa o marcador — sem nunca
+   * juntá-las. É no vão entre elas que a duplicação de comentário nasceria:
+   * bastaria `comentario()` ganhar uma linha antes do marcador, e cada push
+   * publicaria um comentário novo sem erro nenhum aparecer.
+   */
+  it('o corpo que publicamos é reconhecido de volta — o ciclo fecha', () => {
+    const { tema } = avaliar({ bruto: bom });
+    const corpo = comentario({ tema, sha: 'abc1234' });
+    const marcador = corpo.split('\n', 1)[0];
+
+    expect(escolherComentario([{ id: 7, body: corpo }], marcador)?.id).toBe(7);
+  });
+
   it('comentário sem body não derruba a escolha', () => {
     expect(escolherComentario([{ id: 13 }, meu], MARCADOR)?.id).toBe(10);
   });
