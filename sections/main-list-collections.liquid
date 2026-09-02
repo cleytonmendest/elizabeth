@@ -59,7 +59,8 @@
               </h2>
 
               {%- if section.settings.show_product_count -%}
-                <p class="mt-1 text-xs text-foreground/55">
+                {%- comment -%} Sem opacidade: reprovou no axe. Ver o comentário em main-password e a #29. {%- endcomment -%}
+                <p class="mt-1 text-xs text-foreground">
                   {{ 'collection.general.product_count' | t: count: collection.all_products_count }}
                 </p>
               {%- endif -%}
@@ -73,7 +74,12 @@
           </div>
         {%- endif -%}
       {%- else -%}
-        <p class="text-sm text-foreground/55">{{ 'collection.general.no_collections' | t }}</p>
+        {%- comment -%}
+          Também sem opacidade. Este só não reprovou porque a loja de dev TEM
+          coleções: o estado vazio não renderiza, e o axe não mede o que não
+          está na tela. Mesmo papel de texto secundário, mesmo risco.
+        {%- endcomment -%}
+        <p class="text-sm text-foreground">{{ 'collection.general.no_collections' | t }}</p>
       {%- endif -%}
     {%- endpaginate -%}
 
