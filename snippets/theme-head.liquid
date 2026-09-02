@@ -40,3 +40,25 @@
 {% if page_description %}
   <meta name="description" content="{{ page_description | escape }}">
 {% endif %}
+
+{%- comment -%}
+  A MARCA DO TEMA — `window.shopUrl`.
+
+  `request.origin` é Liquid, então esta linha só existe numa página que passou
+  por um layout NOSSO. É por ela que `scripts/loja-no-ar.mjs` e o
+  `abrePaginaDoTema` do Playwright distinguem a nossa página da tela de senha
+  da Shopify — a distinção que custou duas horas no dia em que o axe mediu
+  acessibilidade da tela de senha e reportou dez falhas de WCAG.
+
+  Estava só no `theme.liquid`, e por isso a marca era MENOS verdadeira do que
+  a mensagem de erro afirmava: o vale-presente nunca a teve. Com a página de
+  senha (#27) seriam dois layouts nossos indistinguíveis de página alheia —
+  justamente as duas que mais parecem com o fallback da Shopify.
+
+  `window.routes` NÃO vem junto: são rotas de carrinho e busca, e nem a página
+  de senha nem o vale-presente têm carrinho. Marca é identidade; rota é
+  capacidade.
+{%- endcomment -%}
+<script>
+  window.shopUrl = '{{ request.origin }}';
+</script>

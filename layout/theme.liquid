@@ -32,8 +32,8 @@
     {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
     {{ 'carousel-style.css' | asset_url | stylesheet_tag }}
 
+    {%- comment -%} `window.shopUrl` vem de `theme-head`: é marca, não rota. {%- endcomment -%}
     <script>
-      window.shopUrl = '{{ request.origin }}';
       window.routes = {
         cart_add_url: '{{ routes.cart_add_url }}',
         cart_change_url: '{{ routes.cart_change_url }}',

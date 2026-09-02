@@ -241,8 +241,12 @@ carrinho, e a barra de frete grátis exibia "Faltam R$ NaN" ([issue #4](https://
 Quem escuta `cart-update` ainda checa o formato: o nome é genérico e app de
 terceiro divide a mesma página.
 
-**Globais** (`theme.liquid`): `window.shopUrl`, `window.routes`. Nunca
-hardcode URL de carrinho ou busca.
+**Globais:** `window.shopUrl` sai de `snippets/theme-head.liquid` — é a MARCA
+do tema, e os três layouts a emitem, porque é por ela que a sonda e o
+Playwright distinguem nossa página da tela de senha da Shopify.
+`window.routes` fica em `theme.liquid`: é capacidade de carrinho e busca, que
+o vale-presente e a página de senha não têm. Nunca hardcode URL de carrinho
+ou busca.
 
 ## Convenções
 

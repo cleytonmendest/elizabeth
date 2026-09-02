@@ -87,9 +87,11 @@ async function semViolacaoNova(page, pagina) {
 const PAGINAS = [
   ['home', '/'],
   ['coleção', '/collections/all'],
+  ['lista de coleções', '/collections'],
   ['busca', '/search?q=vestido'],
   ['carrinho', '/cart'],
   ['404', '/esta-pagina-nao-existe-de-proposito'],
+  ['loja protegida por senha', '/password'],
   ['style guide (todos os color schemes)', STYLEGUIDE_PATH],
 ];
 

@@ -31,7 +31,8 @@
 
 /**
  * A marca do tema. `request.origin` é Liquid, então esta linha só existe numa
- * página que passou pelo nosso layout.
+ * página que passou por um layout NOSSO — os três, desde a #27: ela é emitida
+ * por `snippets/theme-head.liquid`, não por um layout específico.
  */
 export const MARCA_DO_TEMA = 'window.shopUrl';
 
@@ -75,7 +76,7 @@ export function diagnosticarLog(texto) {
  */
 export function recadoNaoEhOTema({ status, urlFinal, amostra }) {
   return [
-    `A porta respondeu (HTTP ${status}), mas a página servida NÃO é o tema: falta \`${MARCA_DO_TEMA}\`, que o layout/theme.liquid gera em toda página nossa.`,
+    `A porta respondeu (HTTP ${status}), mas a página servida NÃO é o tema: falta \`${MARCA_DO_TEMA}\`, que snippets/theme-head.liquid gera em toda página nossa.`,
     'O caso de longe mais comum é a loja estar atrás da proteção por senha da vitrine — a Shopify serve a tela de senha com 200, e ela não passa pelo nosso layout.',
     'Confira o secret SHOPIFY_STORE_PASSWORD contra admin → Loja virtual → Preferências → Proteção por senha. Um espaço ou quebra de linha sobrando no valor basta.',
     `URL final: ${urlFinal}`,
