@@ -3,21 +3,46 @@
   "allow": [
     {
       "rule": "tokens",
-      "files": ["snippets/icon-pay-*.liquid", "snippets/payment-icons.liquid"],
-      "codes": ["hex:*"],
+      "files": [
+        "snippets/icon-pay-*.liquid",
+        "snippets/payment-icons.liquid"
+      ],
+      "codes": [
+        "hex:*"
+      ],
       "reason": "Cores oficiais das bandeiras de cartão e meios de pagamento (Visa, Mastercard, Pix, Elo...). São marcas de terceiros com cor fixa — mudar com o color scheme descaracterizaria o logo e é vedado pelas guidelines das bandeiras."
     },
     {
       "rule": "tokens",
-      "files": ["snippets/icon-social-*.liquid"],
-      "codes": ["hex:*"],
+      "files": [
+        "snippets/icon-social-*.liquid"
+      ],
+      "codes": [
+        "hex:*"
+      ],
       "reason": "Cores oficiais das redes sociais (Instagram, Facebook, YouTube). Mesma razão das bandeiras: identidade de marca de terceiros, não é cor do tema."
     },
     {
       "rule": "tokens",
-      "files": ["snippets/product-gallery.liquid", "assets/product-gallery.css"],
-      "codes": ["bw:*", "hex:*"],
+      "files": [
+        "snippets/product-gallery.liquid",
+        "assets/product-gallery.css"
+      ],
+      "codes": [
+        "bw:*",
+        "hex:*"
+      ],
       "reason": "O lightbox é um visualizador de imagem em tela cheia: fundo escuro e controles claros são o comportamento correto independentemente do color scheme, para não competir com a foto do produto."
+    },
+    {
+      "rule": "templates",
+      "files": [
+        "templates/gift_card.liquid"
+      ],
+      "codes": [
+        "sem-section"
+      ],
+      "reason": "A Shopify não seciona o template de vale-presente: ele é servido fora do storefront normal, com layout próprio (layout/gift_card.liquid) e sem header nem footer. Não existe versão dele montada por section — exigir uma reprovaria um arquivo correto por motivo errado."
     }
   ]
 }
