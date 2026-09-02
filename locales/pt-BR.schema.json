@@ -9,6 +9,39 @@
  */
 {
   "sections": {
+    "main_list_collections": {
+      "name": "Lista de coleções",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
+        "heading": {
+          "label": "Título da página",
+          "info": "Deixe em branco para usar o texto traduzido do tema."
+        },
+        "collections_per_row": {
+          "label": "Coleções por linha (desktop)"
+        },
+        "collections_per_page": {
+          "label": "Coleções por página"
+        },
+        "show_product_count": {
+          "label": "Mostrar quantos produtos cada coleção tem"
+        }
+      }
+    },
+    "main_password": {
+      "name": "Loja protegida por senha",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
+        "show_signup": {
+          "label": "Pedir e-mail de quem quer ser avisada",
+          "info": "Os e-mails entram na sua lista de clientes com a tag \"newsletter\", a mesma do rodapé."
+        }
+      }
+    },
     "main_styleguide": {
       "name": "Style guide (interno)",
       "settings": {

@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-list-collections",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "heading": "",
+        "collections_per_row": 3,
+        "collections_per_page": 12,
+        "show_product_count": true
+      }
+    }
+  },
+  "order": ["main"]
+}

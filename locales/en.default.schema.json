@@ -9,6 +9,39 @@
  */
 {
   "sections": {
+    "main_list_collections": {
+      "name": "Collections list",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "heading": {
+          "label": "Page heading",
+          "info": "Leave blank to use the theme's translated text."
+        },
+        "collections_per_row": {
+          "label": "Collections per row (desktop)"
+        },
+        "collections_per_page": {
+          "label": "Collections per page"
+        },
+        "show_product_count": {
+          "label": "Show how many products each collection has"
+        }
+      }
+    },
+    "main_password": {
+      "name": "Password-protected store",
+      "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "show_signup": {
+          "label": "Ask for the email of people who want to be notified",
+          "info": "Emails go into your customer list tagged \"newsletter\", the same tag the footer uses."
+        }
+      }
+    },
     "main_styleguide": {
       "name": "Style guide (internal)",
       "settings": {

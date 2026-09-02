@@ -15,6 +15,15 @@
       "subtext_html": "A página que você está procurando não existe",
       "back_home": "Voltar à página inicial"
     },
+    "password_page": {
+      "signup_heading": "Avise-me quando abrir",
+      "login_form_heading": "Entrar com senha",
+      "login_form_password_label": "Senha",
+      "login_form_password_placeholder": "Sua senha",
+      "login_form_submit": "Entrar",
+      "login_form_error": "Senha incorreta",
+      "admin_link_html": "É a dona da loja? <a href=\"/admin\" class=\"underline\">Entre pelo admin</a>"
+    },
     "accessibility": {
       "skip_to_content": "Pular para o conteúdo",
       "close": "Fechar",
@@ -207,6 +216,11 @@
       "no_results": "Nenhum resultado",
       "no_results_text": "Nenhum produto corresponde aos filtros selecionados.",
       "view_all_collections": "Ver todas as coleções",
+      "product_count": {
+        "one": "{{ count }} produto",
+        "other": "{{ count }} produtos"
+      },
+      "no_collections": "Nenhuma coleção publicada ainda.",
       "load_more": "Carregar mais",
       "sort_reloaded": "A ordenação foi alterada. A página será recarregada.",
       "results_showing": {

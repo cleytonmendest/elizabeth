@@ -9,7 +9,10 @@
       </li>
 
       {%- case template.name -%}
-          {%- comment -%} ADICIONE ESTE NOVO BLOCO {%- endcomment -%}
+        {%- comment -%}
+          `/collections`. O `when` existia desde antes do template — a página
+          só passou a ser servida pelo tema na #27.
+        {%- endcomment -%}
         {%- when 'list-collections' -%}
           <li class="text-foreground/50 hover:text-foreground">
             <span class="breadcrumb-separator" aria-hidden="true">/</span>
@@ -42,7 +45,6 @@
             <span class="breadcrumb-current" aria-current="page">{{ collection.title }}</span>
           </li>
 
-          {%- comment -%} ... resto dos seus 'when' para article, blog, page, search ... {%- endcomment -%}
         {%- when 'article' -%}
           {%- if blog -%}
             <li class="text-foreground/50 hover:text-foreground">

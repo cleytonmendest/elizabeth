@@ -15,6 +15,15 @@
       "subtext_html": "The page you were looking for does not exist",
       "back_home": "Back to homepage"
     },
+    "password_page": {
+      "signup_heading": "Let me know when you open",
+      "login_form_heading": "Enter using password",
+      "login_form_password_label": "Password",
+      "login_form_password_placeholder": "Your password",
+      "login_form_submit": "Enter",
+      "login_form_error": "Wrong password",
+      "admin_link_html": "Are you the store owner? <a href=\"/admin\" class=\"underline\">Log in here</a>"
+    },
     "accessibility": {
       "skip_to_content": "Skip to content",
       "close": "Close",
@@ -207,6 +216,11 @@
       "no_results": "No results",
       "no_results_text": "No products match the selected filters.",
       "view_all_collections": "View all collections",
+      "product_count": {
+        "one": "{{ count }} product",
+        "other": "{{ count }} products"
+      },
+      "no_collections": "No collections published yet.",
       "load_more": "Load more",
       "sort_reloaded": "Sorting has changed. The page will reload.",
       "results_showing": {

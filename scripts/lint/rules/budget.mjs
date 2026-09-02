@@ -20,9 +20,51 @@ export const meta = {
 
 const THEME = 'layout/theme.liquid';
 
+/**
+ * Todo arquivo que o layout puxa em TODA página, seguindo `{% render %}`.
+ *
+ * Ler só o `theme.liquid` foi o que esta regra fazia até a #27 — e nessa issue
+ * `application.css` e `color-scheme.css` saíram do layout para um snippet.
+ * A conta caiu de 72 KB para 21 KB sozinha, sem uma linha a menos chegar no
+ * navegador. Um orçamento que subnotifica não avisa: ele parabeniza.
+ *
+ * Seguir o render é o próprio critério da regra escrito direito — snippet que
+ * o layout renderiza está em toda página, e por isso pesa em toda página.
+ *
+ * Conta a mais em um caso: `{% render %}` atrás de `{% if setting %}` (o botão
+ * de voltar ao topo, o aviso de cookies) entra sempre. Orçamento erra para o
+ * lado pessimista de propósito — o contrário seria descobrir o peso em
+ * produção.
+ */
+export function fontesGlobais(entrada, ler) {
+  const vistos = new Set();
+  const fila = [entrada];
+  const fontes = [];
+
+  while (fila.length) {
+    const file = fila.shift();
+    if (vistos.has(file)) continue;
+    vistos.add(file);
+
+    let src;
+    try {
+      src = ler(file);
+    } catch {
+      continue;
+    }
+
+    fontes.push(src);
+    for (const match of src.matchAll(/\{%-?\s*render\s+'([^']+)'/g)) {
+      fila.push(`snippets/${match[1]}.liquid`);
+    }
+  }
+
+  return fontes;
+}
+
 export function run() {
   const budget = readConfig('perf-budget.json');
-  const src = read(THEME);
+  const src = fontesGlobais(THEME, read).join('\n');
   const offenses = [];
 
   const assets = { js: collect(src, /<script[^>]*src="\{\{\s*'([^']+)'\s*\|\s*asset_url/g), css: collect(src, /\{\{\s*'([^']+)'\s*\|\s*asset_url\s*\|\s*stylesheet_tag/g) };
@@ -74,9 +116,16 @@ function collect(src, pattern) {
 
 const kb = (n) => `${(n / 1024).toFixed(1)} KB`;
 
-/** Exposto para o painel de status mostrar os números mesmo quando passa. */
+/**
+ * Exposto para o painel de status mostrar os números mesmo quando passa.
+ *
+ * Usa a MESMA `fontesGlobais` do `run()`. Eram duas leituras independentes do
+ * layout, e quando o `run()` foi corrigido para seguir os `{% render %}` o
+ * painel continuou publicando o número velho — regra verde e painel mentindo,
+ * lado a lado.
+ */
 export function measure() {
-  const src = read(THEME);
+  const src = fontesGlobais(THEME, read).join('\n');
   const js = collect(src, /<script[^>]*src="\{\{\s*'([^']+)'\s*\|\s*asset_url/g);
   const css = collect(src, /\{\{\s*'([^']+)'\s*\|\s*asset_url\s*\|\s*stylesheet_tag/g);
   const sum = (files) => files.reduce((total, file) => total + bytes(`assets/${file}`), 0);

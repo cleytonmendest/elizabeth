@@ -1,0 +1,42 @@
+{%- comment -%}
+  O `<head>` que os três layouts têm em comum.
+
+  Nasceu junto com `layout/password.liquid` (#27): assim que o terceiro layout
+  existiu, a regra `similarity` acusou 50 blocos idênticos entre ele e o
+  `theme.liquid` — e o par `gift_card`↔`theme` já estava no baseline desde
+  sempre. Dois layouts disfarçam copy-paste de "coincidência"; três provam que
+  é estrutura.
+
+  Aqui vive só o que é verdade em QUALQUER página do tema. O que é de um
+  layout só fica no layout — o Swiper que a vitrine carrega, o CSS de
+  impressão do gift card, o preconnect de fontes.
+
+  O que fica de fora, e por quê: `{{ content_for_header }}` tem que estar
+  LITERALMENTE no arquivo de layout — é exigência da Shopify, e o Theme Check
+  reprova quem o renderiza de dentro de um snippet. E o `charset` precisa vir
+  nos primeiros bytes do `<head>`, antes do `content_for_header`, que é
+  grande. Por isso a ordem em todo layout é a mesma:
+
+      {% render 'theme-head' %}     meta, título, favicon
+      {{ content_for_header }}      literal, obrigatório
+      {% render 'theme-styles' %}   CSS base + tokens de design
+{%- endcomment -%}
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="canonical" href="{{ canonical_url }}">
+
+{%- if settings.favicon != blank -%}
+  <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+{%- endif -%}
+
+<title>
+  {{ page_title }}
+  {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+  {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+  {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+</title>
+
+{% if page_description %}
+  <meta name="description" content="{{ page_description | escape }}">
+{% endif %}

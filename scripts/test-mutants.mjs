@@ -305,6 +305,35 @@ const MUTANTES = [
     teste: 'tests/themecheck.test.mjs',
   },
   {
+    // O defeito exato da #27: a regra lia só o layout, e um asset que mudou
+    // para dentro de um snippet sumiu da conta. O orçamento ficou VERDE por
+    // ter deixado de olhar — 51 KB de CSS evaporaram do painel sem uma linha
+    // a menos chegar ao navegador.
+    porque: 'o orçamento para de atravessar o snippet e volta a subnotificar o peso',
+    arquivo: 'scripts/lint/rules/budget.mjs',
+    de: '      fila.push(`snippets/${match[1]}.liquid`);',
+    para: '      void match;',
+    teste: 'tests/budget.test.mjs',
+  },
+  {
+    // O outro lado: seguir DEMAIS. Section tem asset co-locado de propósito —
+    // contá-lo como global apagaria a diferença que o tema inteiro preserva.
+    porque: 'o orçamento passa a contar asset co-locado de section como se fosse global',
+    arquivo: 'scripts/lint/rules/budget.mjs',
+    de: "    for (const match of src.matchAll(/\\{%-?\\s*render\\s+'([^']+)'/g)) {",
+    para: "    for (const match of src.matchAll(/\\{%-?\\s*sections?\\s+'([^']+)'/g)) {",
+    teste: 'tests/budget.test.mjs',
+  },
+  {
+    // Se consumir contasse como gerar, `color-scheme.css` se autoautorizaria e
+    // a regra nunca acharia nada — que é o defeito com que ela nasceu.
+    porque: 'consumir uma CSS variable volta a contar como gerá-la',
+    arquivo: 'scripts/lint/rules/schemecontract.mjs',
+    de: "  return [...String(fonte ?? '').matchAll(/(--color-[a-z0-9-]+)\\s*:/g)].map((match) => match[1]);",
+    para: "  return [...String(fonte ?? '').matchAll(/(--color-[a-z0-9-]+)/g)].map((match) => match[1]);",
+    teste: 'tests/schemecontract.test.mjs',
+  },
+  {
     // O defeito com que a regra `remotes` nasceu: espalhar um Map dá pares
     // `[chave, valor]`, a alternância vira `settings.(logo_svg,textarea)`, e a
     // regra varre o tema inteiro sem achar nada. Ela passou verde assim.
