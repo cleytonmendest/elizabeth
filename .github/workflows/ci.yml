@@ -126,24 +126,6 @@ jobs:
       - name: Instalar o Chromium
         run: npx playwright install --with-deps chromium
 
-      # ── O único bloco deste arquivo que nunca rodou ────────────────────────
-      #
-      # `shopify theme dev` precisa de uma loja autenticada. Enquanto os
-      # secrets não existirem, este passo não sobe nada e o passo seguinte roda
-      # só o gate de acessibilidade — avisando em alto e bom som que a metade
-      # de storefront ficou de fora (scripts/e2e.mjs).
-      #
-      # Repare no que NÃO foi feito aqui: o job inteiro não está atrás de um
-      # `if:`. Um job que só roda quando um secret existe é o bug que este
-      # repositório corrigiu no board — `actions/add-to-project@v1` ficou
-      # quebrado dois dias porque o job dele só rodava em evento `issues`, e as
-      # execuções verdes eram todas dos outros gatilhos. Aqui o job roda
-      # sempre; o que varia é quanto ele consegue medir, e isso aparece.
-      #
-      # Para ligar: Settings → Secrets and variables → Actions
-      #   SHOPIFY_STORE              minha-loja.myshopify.com
-      #   SHOPIFY_CLI_THEME_TOKEN    senha de app do Theme Access
-      #                              (shopify.dev/docs/storefronts/themes/tools/theme-access)
       # ── O tema que a suíte mede é EMPURRADO, não servido por proxy ───────
       #
       # Era `shopify theme dev` numa porta local. O proxy dele não é a vitrine:

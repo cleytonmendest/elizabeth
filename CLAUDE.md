@@ -112,14 +112,19 @@ Essa suíte tem duas metades, e a divisão é o ponto:
   testes se declaram PULADOS com o motivo escrito, e `scripts/e2e.mjs` avisa no
   resumo do CI que nenhuma página foi medida.
 
-**A suíte mediu um `shopify theme dev` até a #64, e isso custou três grupos de
-teste.** O proxy dele serve os arquivos locais e faz proxy do resto, e caminho
-que depende de SESSÃO não atravessa: a busca preditiva
+**A suíte mediu um `shopify theme dev` até a #64, e três grupos de teste
+ficaram no `fixme` por causa disso.** O proxy dele serve os arquivos locais e
+faz proxy do resto, e a suspeita era que nenhum caminho dependente de SESSÃO
+atravessava: a busca preditiva
 ([#51](https://github.com/cleytonmendest/elizabeth/issues/51)), o login de
 cliente ([#64](https://github.com/cleytonmendest/elizabeth/issues/64)) e o
 estado sem sessão da página de senha
-([#71](https://github.com/cleytonmendest/elizabeth/issues/71)). Não eram três
-bugs; era uma característica, e ela tem uma forma só.
+([#71](https://github.com/cleytonmendest/elizabeth/issues/71)).
+
+**Medir provou que a suspeita valia para dois dos três.** Sem o proxy, a #51
+passou na primeira execução. O login continua devolvendo a página limpa, sem
+erro e sem sessão — o `theme dev` nunca esteve no caminho dele. Uma hipótese
+que explica três sintomas é atraente até você medir; e é por isso que se mede.
 
 Pior que o teste vermelho: o verificador passou a mentir sobre o que media. O
 teste de a11y da página de senha media OUTRA página, com header e breadcrumb, e
@@ -133,9 +138,14 @@ mede o tema **publicado** e a suíte fica verde sobre a loja de produção. Por
 isso o setup exige `window.Shopify.theme.id` igual ao tema que empurramos, e
 não começa sem essa prova.
 
-`fixme` e não `skip` continua valendo para o que sobrou (#68, #71): fixme
-aparece no relatório, e afrouxar a asserção até passar transformaria defeito
-real em verde. `skip` silencioso faria o teste desaparecer sem ninguém notar.
+`fixme` e não `skip` continua valendo para o que sobrou — #64 (os cinco testes
+de endereço), #68 e #71: fixme aparece no relatório, e afrouxar a asserção até
+passar transformaria defeito real em verde. `skip` silencioso faria o teste
+desaparecer sem ninguém notar. A lista que vale é a do código:
+
+```bash
+grep -rn "test.fixme" e2e/
+```
 
 **A catraca vale aqui também.** A primeira execução contra a loja encontrou
 `color-contrast` em sete páginas, quase toda causada pelo mesmo breadcrumb

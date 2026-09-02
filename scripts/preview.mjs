@@ -4,10 +4,10 @@
  *
  * ── Por que isto não é um bloco de shell dentro do YAML ────────────────────
  *
- * Mesma razão de `scripts/catraca.mjs` e `scripts/loja-no-ar.mjs`: shell dentro
- * de YAML não tem teste, não roda na máquina de ninguém, e as duas vezes em que
- * este repositório escondeu lógica lá o resultado foi um verificador que sempre
- * passava. Aqui o risco é idêntico e tem nome — um comentário dizendo
+ * Mesma razão de `scripts/catraca.mjs` e `scripts/tema-de-teste.mjs`: shell
+ * dentro de YAML não tem teste, não roda na máquina de ninguém, e as duas
+ * vezes em que este repositório escondeu lógica lá o resultado foi um
+ * verificador que sempre passava. Aqui o risco é idêntico e tem nome — um comentário dizendo
  * "preview pronto" com a URL vazia é indistinguível de um preview que funciona,
  * até alguém clicar.
  *

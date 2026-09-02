@@ -102,8 +102,9 @@ const PAGINAS = [
     // `templates/password.json` foi renderizado pelo `layout/theme.liquid`,
     // não pelo `layout/password.liquid`. O nó reprovado é o breadcrumb.
     //
-    // A #64 tirou o proxy do caminho e resolveu a #51 e o login de cliente,
-    // mas NÃO esta: quem atravessa a senha da vitrine agora é o
+    // A #64 tirou o proxy do caminho e resolveu a #51 — não esta, e não o
+    // login de cliente, que nunca dependeu do proxy. Aqui o motivo mudou de
+    // forma: quem atravessa a senha da vitrine agora é o
     // `e2e/global-setup.mjs`, e a sessão que ele abre vale para toda a suíte.
     // Autenticado, `/password` continua vindo pelo layout da vitrine.
     //
@@ -115,16 +116,17 @@ const PAGINAS = [
     // Registrar isso no baseline seria pior que deixar vermelho: gravaria a
     // medição de uma página que não é a que este teste diz medir, e o dia em
     // que o layout de senha ganhasse um defeito real ninguém veria.
-    'issue #71 — via `theme dev` a página de senha usa o layout da vitrine, não o layout/password.liquid',
+    'issue #71 — a sessão do global-setup atravessa a senha, e autenticado o /password ' +
+      'vem pelo layout da vitrine, não pelo layout/password.liquid',
   ],
   ['style guide (todos os color schemes)', STYLEGUIDE_PATH],
 ];
 
 for (const [nome, caminho, motivoFixme] of PAGINAS) {
   test(`sem violação NOVA de WCAG AA: ${nome}`, async ({ page }) => {
-    // O terceiro item da tupla, quando existe, é a página que o proxy do
-    // `theme dev` não consegue servir como a vitrine serve. `fixme` e não
-    // `skip`: aparece no relatório, e a asserção continua sendo a correta.
+    // O terceiro item da tupla, quando existe, é a página que a suíte ainda não
+    // alcança no estado que este teste diz medir. `fixme` e não `skip`:
+    // aparece no relatório, e a asserção continua sendo a correta.
     if (motivoFixme) test.fixme(true, motivoFixme);
 
     await abrePaginaDoTema(page, caminho);

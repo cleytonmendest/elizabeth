@@ -33,17 +33,17 @@ test.skip(!CLIENTE.email || !CLIENTE.senha, MOTIVO_CLIENTE);
 /**
  * ⚠ FIXME — issue #64. Estes cinco testes estão CORRETOS e não passam.
  *
- * O login não sobrevive ao proxy do `shopify theme dev`: o POST em
- * /account/login volta com a página de login redesenhada limpa — sem erro e
- * sem sessão. Três execuções do CI estreitaram o diagnóstico até aqui:
+ * O POST em /account/login volta com a página de login redesenhada limpa —
+ * sem erro e sem sessão —, e o login à mão na vitrine funciona com as MESMAS
+ * credenciais. Quatro execuções de CI estreitaram o diagnóstico:
  *
  *   1ª  "Received string: .../account/login" — verdadeiro e inútil
  *   2ª  a loja não exibiu erro NENHUM, o que descarta credencial errada
  *   3ª  a página é a do tema ("Conta – Elizabeth Estudos"), não a de senha
+ *   4ª  o mesmo sintoma SEM o `theme dev` no caminho — ver abaixo
  *
  * Credencial inválida daria `form.errors`; válida daria 302 para /account. O
- * que volta é uma página como se o POST não tivesse ocorrido. E o login à mão
- * na vitrine funciona com as MESMAS credenciais.
+ * que volta é uma página como se o POST não tivesse ocorrido.
  *
  * ── 4ª rodada: NÃO era o proxy ─────────────────────────────────────────────
  *
@@ -92,9 +92,9 @@ const CARIMBO = 'e2e-endereco';
  * http://.../account/login" — verdadeira e inútil: não separa "a senha está
  * errada" de "a conta nunca foi ativada" de "o formulário nem foi enviado".
  *
- * É a mesma forma de defeito que `scripts/loja-no-ar.mjs` corrigiu: um
- * verificador que reprova sem informar manda a investigação para o lugar
- * errado. A loja escreve o motivo num `[role="alert"]`; o teste passa a ler
+ * É a mesma forma de defeito que `e2e/global-setup.mjs` evita ao dizer QUAL
+ * tema respondeu: um verificador que reprova sem informar manda a investigação
+ * para o lugar errado. A loja escreve o motivo num `[role="alert"]`; o teste passa a ler
  * esse texto e a colocá-lo na falha.
  */
 /**
@@ -111,8 +111,8 @@ async function atravessaSenhaDaVitrine(page) {
   if (!SENHA_VITRINE) {
     throw new Error(
       'A vitrine pediu a senha da loja e SHOPIFY_STORE_PASSWORD não chegou ao ' +
-        'Playwright. Ela existe no passo que sobe o `theme dev`; precisa existir ' +
-        'também no passo do Playwright, em .github/workflows/ci.yml.'
+        'Playwright. Ela existe no passo "Empurrar o tema de teste"; precisa ' +
+        'existir também no passo "Playwright", em .github/workflows/ci.yml.'
     );
   }
 

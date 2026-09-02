@@ -7,9 +7,10 @@
  * comentar "preview pronto" assim mesmo. Esse defeito não deixa rastro no CI;
  * ele deixa um revisor clicando num link vazio.
  *
- * É a mesma forma do defeito que `scripts/loja-no-ar.mjs` tinha (afirmar "a
- * loja está no ar" tendo verificado "alguma coisa respondeu"), e por isso a
- * distinção entre "ausente" e "inválido" está testada aqui com o mesmo cuidado.
+ * É a mesma forma do defeito que a antiga sonda da loja tinha — afirmar "a
+ * loja está no ar" tendo verificado "alguma coisa respondeu" (ADR 0007) —, e
+ * por isso a distinção entre "ausente" e "inválido" está testada aqui com o
+ * mesmo cuidado.
  */
 import { describe, it, expect } from 'vitest';
 import { avaliar, comentario, escolherComentario, MARCADOR } from '../scripts/preview.mjs';
