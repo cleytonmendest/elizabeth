@@ -23,7 +23,7 @@
  *        missing" quando o nome usado no Liquid não é o nome que está lá.
  */
 import { test, expect } from '@playwright/test';
-import { THEME_URL, MOTIVO } from './helpers/loja.mjs';
+import { THEME_URL, MOTIVO, abrePaginaDoTema } from './helpers/loja.mjs';
 
 test.skip(!THEME_URL, MOTIVO);
 
@@ -31,7 +31,7 @@ test.skip(!THEME_URL, MOTIVO);
 const FAMILIAS = ['--font-body-family', '--font-heading-family'];
 
 test('a fonte escolhida existe: nenhuma família resolve para vazio', async ({ page }) => {
-  await page.goto('/');
+  await abrePaginaDoTema(page, '/');
 
   const valores = await page.evaluate((nomes) => {
     const raiz = getComputedStyle(document.documentElement);
@@ -48,7 +48,7 @@ test('a fonte escolhida existe: nenhuma família resolve para vazio', async ({ p
 });
 
 test('o corpo da página realmente usa a família escolhida', async ({ page }) => {
-  await page.goto('/');
+  await abrePaginaDoTema(page, '/');
 
   const { usada, declarada } = await page.evaluate(() => ({
     usada: getComputedStyle(document.body).fontFamily,
@@ -62,7 +62,7 @@ test('o corpo da página realmente usa a família escolhida', async ({ page }) =
 });
 
 test('o JSON-LD da loja é JSON válido e não afirma um país fixo', async ({ page }) => {
-  await page.goto('/');
+  await abrePaginaDoTema(page, '/');
 
   const blocos = await page.locator('script[type="application/ld+json"]').allTextContents();
   expect(blocos.length, 'nenhum JSON-LD na home').toBeGreaterThan(0);
@@ -106,7 +106,7 @@ const PAGINAS = [
 
 for (const [nome, caminho] of PAGINAS) {
   test(`nenhuma tradução faltando: ${nome}`, async ({ page }) => {
-    await page.goto(caminho);
+    await abrePaginaDoTema(page, caminho);
 
     const texto = await page.locator('body').innerText();
     // A Shopify escreve isto no lugar do texto quando a chave não existe. Ele

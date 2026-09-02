@@ -9,6 +9,8 @@
  * Quem torna isso visível de fato é `scripts/e2e.mjs`, que avisa em alto e bom
  * som quando a metade de loja não rodou.
  */
+import { MARCA_DO_TEMA } from '../../scripts/loja-no-ar.mjs';
+
 export const THEME_URL = process.env.THEME_URL;
 
 export const MOTIVO =
@@ -43,3 +45,48 @@ export const MOTIVO_CLIENTE =
  * indistinguível de "o formulário não foi enviado".
  */
 export const SENHA_VITRINE = process.env.SHOPIFY_STORE_PASSWORD;
+
+/**
+ * Abre uma página E confirma que quem a serviu foi o nosso tema.
+ *
+ * ── Por que isto não é paranoia ────────────────────────────────────────────
+ *
+ * `scripts/loja-no-ar.mjs` já faz esta pergunta, uma vez, na subida: a porta
+ * respondeu, mas a página é do tema? Ela nasceu depois do dia em que a loja
+ * voltou a exigir senha, a sonda aprovou o 200 da tela de senha, e o axe mediu
+ * acessibilidade DELA por 80 segundos — entregando o problema como dez falhas
+ * de WCAG. Duas horas para descobrir que não era acessibilidade.
+ *
+ * A pergunta era feita uma vez e nunca mais. O proxy do `shopify theme dev`
+ * não é a vitrine (ver #51 e #64), e serve página que não é nossa em mais
+ * situações do que a subida: sob concorrência, numa rota que ele não resolve,
+ * num caminho autenticado. Quando isso acontece no meio da suíte, o axe acusa
+ * `html-has-lang` — e a mensagem manda quem lê investigar o `theme.liquid`,
+ * que está correto.
+ *
+ * Então a evidência passa a ser exigida em TODA navegação. Uma segunda
+ * tentativa cobre o caso transitório, e ela é anunciada em vez de silenciosa:
+ * proxy instável é informação, não detalhe a esconder.
+ */
+export async function abrePaginaDoTema(page, caminho) {
+  for (let tentativa = 1; tentativa <= 2; tentativa += 1) {
+    await page.goto(caminho);
+    if (await page.evaluate(() => 'shopUrl' in window)) return;
+
+    if (tentativa === 1) {
+      console.log(`  [proxy] ${caminho} veio sem \`${MARCA_DO_TEMA}\` — tentando de novo`);
+    }
+  }
+
+  const lang = await page.getAttribute('html', 'lang');
+  const titulo = await page.title().catch(() => '(sem título)');
+
+  throw new Error(
+    `A página ${caminho} NÃO foi servida pelo nosso tema em duas tentativas: falta ` +
+      `\`${MARCA_DO_TEMA}\`, que o layout/theme.liquid gera em toda página nossa. ` +
+      `título="${titulo}" lang="${lang}". Medir acessibilidade daqui reportaria ` +
+      'defeito de uma página que não é do tema — foi assim que uma tela de senha ' +
+      'virou dez falhas de WCAG. Ver as issues #51 e #64: o proxy do `theme dev` ' +
+      'não é a vitrine.'
+  );
+}
