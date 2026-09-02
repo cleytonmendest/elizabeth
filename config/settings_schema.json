@@ -8,12 +8,12 @@
     "theme_support_url": "https://github.com/Shopify/themekit/issues"
   },
   {
-    "name": "Logo",
+    "name": "t:settings_schema.logo.name",
     "settings": [
       {
         "type": "image_picker",
         "id": "logo",
-        "label": "Logo Principal"
+        "label": "t:settings_schema.logo.logo.label"
       },
       {
         "type": "range",
@@ -23,54 +23,54 @@
         "step": 10,
         "default": 100,
         "unit": "px",
-        "label": "Largura máxima da Logo (Header)"
+        "label": "t:settings_schema.logo.logo_width.label"
       },
       {
         "type": "image_picker",
         "id": "favicon",
-        "label": "Favicon",
-        "info": "Imagem que exibirá na Tab do navegador"
+        "label": "t:settings_schema.logo.favicon.label",
+        "info": "t:settings_schema.logo.favicon.info"
       },
       {
         "type": "textarea",
         "id": "logo_svg",
-        "label": "Logo SVG (Header)",
-        "info": "Caso incluído, utilizará o svg inserido desconsiderando campo 'Logo principal'. Melhor para alterações de cores"
+        "label": "t:settings_schema.logo.logo_svg.label",
+        "info": "t:settings_schema.logo.logo_svg.info"
       }
     ]
   },
   {
-    "name": "Parcelamento (somente visual)",
+    "name": "t:settings_schema.installments.name",
     "settings": [
       {
         "type": "checkbox",
         "id": "show_installments",
-        "label": "Exibe informações de parcelamentos nos produtos?",
-        "info": "Caso desativado, não exibirá nenhuma informação de parcelamento. Nem nas prateleiras nem na Página de Produto",
+        "label": "t:settings_schema.installments.show_installments.label",
+        "info": "t:settings_schema.installments.show_installments.info",
         "default": true
       },
       {
         "type": "number",
-        "label": "Quantidade máxima de parcelamento",
-        "info": "Quantidade máxima de parcelas que a loja consegue, ex: 10. Isto quer dizer que pode parcelar até em 10x",
+        "label": "t:settings_schema.installments.max_installments.label",
+        "info": "t:settings_schema.installments.max_installments.info",
         "default": 10,
         "id": "max_installments"
       },
       {
         "type": "number",
-        "label": "Valor mínimo de parcelas",
-        "info": "Valor mínimo por parcela, ex: 100. Se colocar o valor 100 só vai exibir o parcelamento no produto se o valor do produto for no minimo 200, fazendo R$200,00 em 2x = R$100,00 por parcela",
+        "label": "t:settings_schema.installments.min_value_installment.label",
+        "info": "t:settings_schema.installments.min_value_installment.info",
         "id": "min_value_installment",
         "default": 50
       }
     ]
   },
   {
-    "name": "Cores",
+    "name": "t:settings_schema.colors.name",
     "settings": [
       {
         "type": "paragraph",
-        "content": "Configure esquemas de cores reutilizáveis. Cada seção pode escolher qual esquema usar."
+        "content": "t:settings_schema.colors.intro.content"
       },
       {
         "type": "color_scheme_group",
@@ -79,49 +79,49 @@
           {
             "type": "color",
             "id": "background",
-            "label": "Fundo",
+            "label": "t:settings_schema.colors.color_schemes.background.label",
             "default": "#FFFFFF"
           },
           {
             "type": "color_background",
             "id": "background_gradient",
-            "label": "Gradiente de fundo",
-            "info": "Sobrepõe a cor de fundo se definido"
+            "label": "t:settings_schema.colors.color_schemes.background_gradient.label",
+            "info": "t:settings_schema.colors.color_schemes.background_gradient.info"
           },
           {
             "type": "color",
             "id": "text",
-            "label": "Texto",
+            "label": "t:settings_schema.colors.color_schemes.text.label",
             "default": "#121212"
           },
           {
             "type": "color",
             "id": "button",
-            "label": "Botão primário",
+            "label": "t:settings_schema.colors.color_schemes.button.label",
             "default": "#121212"
           },
           {
             "type": "color",
             "id": "button_label",
-            "label": "Texto do botão primário",
+            "label": "t:settings_schema.colors.color_schemes.button_label.label",
             "default": "#FFFFFF"
           },
           {
             "type": "color",
             "id": "secondary_button_label",
-            "label": "Texto do botão secundário",
+            "label": "t:settings_schema.colors.color_schemes.secondary_button_label.label",
             "default": "#121212"
           },
           {
             "type": "color",
             "id": "border",
-            "label": "Bordas",
+            "label": "t:settings_schema.colors.color_schemes.border.label",
             "default": "#E5E7EB"
           },
           {
             "type": "color",
             "id": "shadow",
-            "label": "Sombras",
+            "label": "t:settings_schema.colors.color_schemes.shadow.label",
             "default": "#121212"
           },
           {
@@ -131,13 +131,13 @@
           {
             "type": "color",
             "id": "badge_background",
-            "label": "Fundo de badge",
+            "label": "t:settings_schema.colors.color_schemes.badge_background.label",
             "default": "#DC2626"
           },
           {
             "type": "color",
             "id": "badge_text",
-            "label": "Texto de badge",
+            "label": "t:settings_schema.colors.color_schemes.badge_text.label",
             "default": "#FFFFFF"
           },
           {
@@ -147,19 +147,19 @@
           {
             "type": "color",
             "id": "success",
-            "label": "Sucesso",
+            "label": "t:settings_schema.colors.color_schemes.success.label",
             "default": "#059669"
           },
           {
             "type": "color",
             "id": "error",
-            "label": "Erro",
+            "label": "t:settings_schema.colors.color_schemes.error.label",
             "default": "#DC2626"
           },
           {
             "type": "color",
             "id": "warning",
-            "label": "Alerta",
+            "label": "t:settings_schema.colors.color_schemes.warning.label",
             "default": "#F59E0B"
           }
         ],
@@ -181,14 +181,14 @@
       },
       {
         "type": "header",
-        "content": "Páginas de Cliente"
+        "content": "t:settings_schema.colors.customer_pages.content"
       },
       {
         "type": "color_scheme",
         "id": "customer_color_scheme",
-        "label": "Esquema de cores das páginas de conta",
+        "label": "t:settings_schema.colors.customer_color_scheme.label",
         "default": "scheme-1",
-        "info": "Aplica-se a login, cadastro, conta, pedidos e endereços"
+        "info": "t:settings_schema.colors.customer_color_scheme.info"
       }
     ]
   },
@@ -252,7 +252,7 @@
     ]
   },
   {
-    "name": "Layout",
+    "name": "t:settings_schema.layout.name",
     "settings": [
       {
         "type": "range",
@@ -262,7 +262,7 @@
         "step": 20,
         "default": 1920,
         "unit": "px",
-        "label": "Largura máxima da Loja"
+        "label": "t:settings_schema.layout.page_width.label"
       },
       {
         "type": "range",
@@ -271,206 +271,206 @@
         "max": 100,
         "step": 4,
         "unit": "px",
-        "label": "Espaçamento entre Seções",
+        "label": "t:settings_schema.layout.spacing_sections.label",
         "default": 0
       },
       {
         "type": "checkbox",
         "id": "show_back_to_top",
-        "label": "Botão \"Voltar ao topo\"",
-        "info": "Exibe um botão flutuante que retorna ao topo da página ao rolar.",
+        "label": "t:settings_schema.layout.show_back_to_top.label",
+        "info": "t:settings_schema.layout.show_back_to_top.info",
         "default": true
       }
     ]
   },
   {
-    "name": "Tipografia",
+    "name": "t:settings_schema.typography.name",
     "settings": [
       {
         "type": "header",
-        "content": "Títulos"
+        "content": "t:settings_schema.typography.headings.content"
       },
       {
         "type": "font_picker",
         "id": "type_header_font",
         "default": "assistant_n4",
-        "label": "Fonte",
-        "info": "As fontes vêm da biblioteca da Shopify, servidas pelo CDN da loja. A escolha afeta a velocidade da página: uma família com muitos pesos custa mais para carregar."
+        "label": "t:settings_schema.typography.type_header_font.label",
+        "info": "t:settings_schema.typography.type_header_font.info"
       },
       {
         "type": "header",
-        "content": "Corpo"
+        "content": "t:settings_schema.typography.body.content"
       },
       {
         "type": "font_picker",
         "id": "type_body_font",
         "default": "assistant_n4",
-        "label": "Fonte",
-        "info": "As fontes vêm da biblioteca da Shopify, servidas pelo CDN da loja. A escolha afeta a velocidade da página: uma família com muitos pesos custa mais para carregar."
+        "label": "t:settings_schema.typography.type_body_font.label",
+        "info": "t:settings_schema.typography.type_body_font.info"
       }
     ]
   },
   {
-    "name": "Redes Sociais",
+    "name": "t:settings_schema.social.name",
     "settings": [
       {
         "type": "header",
-        "content": "Contas de redes sociais"
+        "content": "t:settings_schema.social.accounts.content"
       },
       {
         "type": "text",
         "id": "social_facebook_link",
-        "label": "Facebook",
-        "placeholder": "https://facebook.com/shopify"
+        "label": "t:settings_schema.social.social_facebook_link.label",
+        "placeholder": "t:settings_schema.social.social_facebook_link.placeholder"
       },
       {
         "type": "text",
         "id": "social_instagram_link",
-        "label": "Instagram",
-        "placeholder": "https://instagram.com/shopify"
+        "label": "t:settings_schema.social.social_instagram_link.label",
+        "placeholder": "t:settings_schema.social.social_instagram_link.placeholder"
       },
       {
         "type": "text",
         "id": "social_youtube_link",
-        "label": "Youtube",
-        "placeholder": "https://www.youtube.com/shopify"
+        "label": "t:settings_schema.social.social_youtube_link.label",
+        "placeholder": "t:settings_schema.social.social_youtube_link.placeholder"
       },
       {
         "type": "text",
         "id": "social_tiktok_link",
-        "label": "Tiktok",
-        "placeholder": "https://tiktok.com/@shopify"
+        "label": "t:settings_schema.social.social_tiktok_link.label",
+        "placeholder": "t:settings_schema.social.social_tiktok_link.placeholder"
       },
       {
         "type": "text",
         "id": "social_twitter_link",
-        "label": "X / Twitter",
-        "placeholder": "https://x.com/shopify"
+        "label": "t:settings_schema.social.social_twitter_link.label",
+        "placeholder": "t:settings_schema.social.social_twitter_link.placeholder"
       },
       {
         "type": "text",
         "id": "social_snapchat_link",
-        "label": "Snapchat",
-        "placeholder": "https://www.snapchat.com/add/shopify"
+        "label": "t:settings_schema.social.social_snapchat_link.label",
+        "placeholder": "t:settings_schema.social.social_snapchat_link.placeholder"
       },
       {
         "type": "text",
         "id": "social_pinterest_link",
-        "label": "Pinterest",
-        "placeholder": "https://pinterest.com/shopify"
+        "label": "t:settings_schema.social.social_pinterest_link.label",
+        "placeholder": "t:settings_schema.social.social_pinterest_link.placeholder"
       },
       {
         "type": "text",
         "id": "social_tumblr_link",
-        "label": "Tumblr",
-        "placeholder": "https://shopify.tumblr.com"
+        "label": "t:settings_schema.social.social_tumblr_link.label",
+        "placeholder": "t:settings_schema.social.social_tumblr_link.placeholder"
       },
       {
         "type": "text",
         "id": "social_vimeo_link",
-        "label": "Vimeo",
-        "placeholder": "https://vimeo.com/shopify"
+        "label": "t:settings_schema.social.social_vimeo_link.label",
+        "placeholder": "t:settings_schema.social.social_vimeo_link.placeholder"
       }
     ]
   },
   {
-    "name": "Carrinho",
+    "name": "t:settings_schema.cart.name",
     "settings": [
       {
         "type": "header",
-        "content": "Frete grátis"
+        "content": "t:settings_schema.cart.free_shipping.content"
       },
       {
         "type": "checkbox",
         "id": "cart_free_shipping_enabled",
-        "label": "Mostrar barra de progresso de frete grátis",
+        "label": "t:settings_schema.cart.cart_free_shipping_enabled.label",
         "default": true
       },
       {
         "type": "number",
         "id": "cart_free_shipping_threshold",
-        "label": "Valor mínimo para frete grátis (R$)",
+        "label": "t:settings_schema.cart.cart_free_shipping_threshold.label",
         "default": 299,
-        "info": "Usado na barra de progresso do carrinho e do mini-carrinho. Defina 0 para desativar."
+        "info": "t:settings_schema.cart.cart_free_shipping_threshold.info"
       },
       {
         "type": "text",
         "id": "cart_free_shipping_message",
-        "label": "Mensagem de progresso",
+        "label": "t:settings_schema.cart.cart_free_shipping_message.label",
         "default": "Faltam {valor} para o frete grátis",
-        "info": "Use {valor} onde o valor restante deve aparecer."
+        "info": "t:settings_schema.cart.cart_free_shipping_message.info"
       },
       {
         "type": "text",
         "id": "cart_free_shipping_success",
-        "label": "Mensagem ao atingir o frete grátis",
+        "label": "t:settings_schema.cart.cart_free_shipping_success.label",
         "default": "Você ganhou frete grátis!"
       },
       {
         "type": "header",
-        "content": "Observações do pedido"
+        "content": "t:settings_schema.cart.order_notes.content"
       },
       {
         "type": "checkbox",
         "id": "cart_notes",
-        "label": "Permitir observações do cliente",
-        "info": "Exibe um campo de observações no carrinho e no mini-carrinho.",
+        "label": "t:settings_schema.cart.cart_notes.label",
+        "info": "t:settings_schema.cart.cart_notes.info",
         "default": true
       }
     ]
   },
   {
-    "name": "Privacidade e Cookies (LGPD)",
+    "name": "t:settings_schema.privacy.name",
     "settings": [
       {
         "type": "paragraph",
-        "content": "Banner de consentimento de cookies. Integra-se automaticamente à API de Privacidade do Shopify quando disponível. Desative se você usa o banner nativo do Shopify ou um app de consentimento."
+        "content": "t:settings_schema.privacy.intro.content"
       },
       {
         "type": "checkbox",
         "id": "enable_cookie_banner",
-        "label": "Exibir banner de cookies",
+        "label": "t:settings_schema.privacy.enable_cookie_banner.label",
         "default": true
       },
       {
         "type": "color_scheme",
         "id": "cookie_color_scheme",
-        "label": "Esquema de cores do banner",
+        "label": "t:settings_schema.privacy.cookie_color_scheme.label",
         "default": "scheme-2"
       },
       {
         "type": "richtext",
         "id": "cookie_message",
-        "label": "Mensagem",
+        "label": "t:settings_schema.privacy.cookie_message.label",
         "default": "<p>Usamos cookies para melhorar sua experiência, personalizar conteúdo e analisar o tráfego. Ao continuar navegando, você concorda com o uso de cookies.</p>"
       },
       {
         "type": "text",
         "id": "cookie_accept_label",
-        "label": "Texto do botão aceitar",
+        "label": "t:settings_schema.privacy.cookie_accept_label.label",
         "default": "Aceitar"
       },
       {
         "type": "checkbox",
         "id": "cookie_show_decline",
-        "label": "Mostrar botão recusar",
+        "label": "t:settings_schema.privacy.cookie_show_decline.label",
         "default": true
       },
       {
         "type": "text",
         "id": "cookie_decline_label",
-        "label": "Texto do botão recusar",
+        "label": "t:settings_schema.privacy.cookie_decline_label.label",
         "default": "Recusar"
       },
       {
         "type": "url",
         "id": "cookie_privacy_link",
-        "label": "Link da política de privacidade"
+        "label": "t:settings_schema.privacy.cookie_privacy_link.label"
       },
       {
         "type": "text",
         "id": "cookie_privacy_label",
-        "label": "Texto do link da política",
+        "label": "t:settings_schema.privacy.cookie_privacy_label.label",
         "default": "Política de privacidade"
       }
     ]

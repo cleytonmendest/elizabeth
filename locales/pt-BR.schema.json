@@ -1947,6 +1947,88 @@
     }
   },
   "settings_schema": {
+    "cart": {
+      "name": "Carrinho",
+      "free_shipping": {
+        "content": "Frete grátis"
+      },
+      "cart_free_shipping_enabled": {
+        "label": "Mostrar barra de progresso de frete grátis"
+      },
+      "cart_free_shipping_threshold": {
+        "label": "Valor mínimo para frete grátis (R$)",
+        "info": "Usado na barra de progresso do carrinho e do mini-carrinho. Defina 0 para desativar."
+      },
+      "cart_free_shipping_message": {
+        "label": "Mensagem de progresso",
+        "info": "Use {valor} onde o valor restante deve aparecer."
+      },
+      "cart_free_shipping_success": {
+        "label": "Mensagem ao atingir o frete grátis"
+      },
+      "order_notes": {
+        "content": "Observações do pedido"
+      },
+      "cart_notes": {
+        "label": "Permitir observações do cliente",
+        "info": "Exibe um campo de observações no carrinho e no mini-carrinho."
+      }
+    },
+    "colors": {
+      "name": "Cores",
+      "intro": {
+        "content": "Configure esquemas de cores reutilizáveis. Cada seção pode escolher qual esquema usar."
+      },
+      "color_schemes": {
+        "background": {
+          "label": "Fundo"
+        },
+        "background_gradient": {
+          "label": "Gradiente de fundo",
+          "info": "Sobrepõe a cor de fundo se definido"
+        },
+        "text": {
+          "label": "Texto"
+        },
+        "button": {
+          "label": "Botão primário"
+        },
+        "button_label": {
+          "label": "Texto do botão primário"
+        },
+        "secondary_button_label": {
+          "label": "Texto do botão secundário"
+        },
+        "border": {
+          "label": "Bordas"
+        },
+        "shadow": {
+          "label": "Sombras"
+        },
+        "badge_background": {
+          "label": "Fundo de badge"
+        },
+        "badge_text": {
+          "label": "Texto de badge"
+        },
+        "success": {
+          "label": "Sucesso"
+        },
+        "error": {
+          "label": "Erro"
+        },
+        "warning": {
+          "label": "Alerta"
+        }
+      },
+      "customer_pages": {
+        "content": "Páginas de Cliente"
+      },
+      "customer_color_scheme": {
+        "label": "Esquema de cores das páginas de conta",
+        "info": "Aplica-se a login, cadastro, conta, pedidos e endereços"
+      }
+    },
     "design": {
       "name": "Design",
       "intro": "Estes controles valem para a loja inteira. Escolher um valor aqui mantém todas as seções coerentes entre si.",
@@ -1969,6 +2051,140 @@
           "large": "Grande",
           "xlarge": "Muito grande"
         }
+      }
+    },
+    "installments": {
+      "name": "Parcelamento (somente visual)",
+      "show_installments": {
+        "label": "Exibe informações de parcelamentos nos produtos?",
+        "info": "Caso desativado, não exibirá nenhuma informação de parcelamento. Nem nas prateleiras nem na Página de Produto"
+      },
+      "max_installments": {
+        "label": "Quantidade máxima de parcelamento",
+        "info": "Quantidade máxima de parcelas que a loja consegue, ex: 10. Isto quer dizer que pode parcelar até em 10x"
+      },
+      "min_value_installment": {
+        "label": "Valor mínimo de parcelas",
+        "info": "Valor mínimo por parcela, ex: 100. Se colocar o valor 100 só vai exibir o parcelamento no produto se o valor do produto for no minimo 200, fazendo R$200,00 em 2x = R$100,00 por parcela"
+      }
+    },
+    "layout": {
+      "name": "Layout",
+      "page_width": {
+        "label": "Largura máxima da Loja"
+      },
+      "spacing_sections": {
+        "label": "Espaçamento entre Seções"
+      },
+      "show_back_to_top": {
+        "label": "Botão \"Voltar ao topo\"",
+        "info": "Exibe um botão flutuante que retorna ao topo da página ao rolar."
+      }
+    },
+    "logo": {
+      "name": "Logo",
+      "logo": {
+        "label": "Logo Principal"
+      },
+      "logo_width": {
+        "label": "Largura máxima da Logo (Header)"
+      },
+      "favicon": {
+        "label": "Favicon",
+        "info": "Imagem que exibirá na Tab do navegador"
+      },
+      "logo_svg": {
+        "label": "Logo SVG (Header)",
+        "info": "Caso incluído, utilizará o svg inserido desconsiderando campo 'Logo principal'. Melhor para alterações de cores"
+      }
+    },
+    "privacy": {
+      "name": "Privacidade e Cookies (LGPD)",
+      "intro": {
+        "content": "Banner de consentimento de cookies. Integra-se automaticamente à API de Privacidade do Shopify quando disponível. Desative se você usa o banner nativo do Shopify ou um app de consentimento."
+      },
+      "enable_cookie_banner": {
+        "label": "Exibir banner de cookies"
+      },
+      "cookie_color_scheme": {
+        "label": "Esquema de cores do banner"
+      },
+      "cookie_message": {
+        "label": "Mensagem"
+      },
+      "cookie_accept_label": {
+        "label": "Texto do botão aceitar"
+      },
+      "cookie_show_decline": {
+        "label": "Mostrar botão recusar"
+      },
+      "cookie_decline_label": {
+        "label": "Texto do botão recusar"
+      },
+      "cookie_privacy_link": {
+        "label": "Link da política de privacidade"
+      },
+      "cookie_privacy_label": {
+        "label": "Texto do link da política"
+      }
+    },
+    "social": {
+      "name": "Redes Sociais",
+      "accounts": {
+        "content": "Contas de redes sociais"
+      },
+      "social_facebook_link": {
+        "label": "Facebook",
+        "placeholder": "https://facebook.com/shopify"
+      },
+      "social_instagram_link": {
+        "label": "Instagram",
+        "placeholder": "https://instagram.com/shopify"
+      },
+      "social_youtube_link": {
+        "label": "Youtube",
+        "placeholder": "https://www.youtube.com/shopify"
+      },
+      "social_tiktok_link": {
+        "label": "Tiktok",
+        "placeholder": "https://tiktok.com/@shopify"
+      },
+      "social_twitter_link": {
+        "label": "X / Twitter",
+        "placeholder": "https://x.com/shopify"
+      },
+      "social_snapchat_link": {
+        "label": "Snapchat",
+        "placeholder": "https://www.snapchat.com/add/shopify"
+      },
+      "social_pinterest_link": {
+        "label": "Pinterest",
+        "placeholder": "https://pinterest.com/shopify"
+      },
+      "social_tumblr_link": {
+        "label": "Tumblr",
+        "placeholder": "https://shopify.tumblr.com"
+      },
+      "social_vimeo_link": {
+        "label": "Vimeo",
+        "placeholder": "https://vimeo.com/shopify"
+      }
+    },
+    "typography": {
+      "name": "Tipografia",
+      "headings": {
+        "content": "Títulos"
+      },
+      "type_header_font": {
+        "label": "Fonte",
+        "info": "As fontes vêm da biblioteca da Shopify, servidas pelo CDN da loja. A escolha afeta a velocidade da página: uma família com muitos pesos custa mais para carregar."
+      },
+      "body": {
+        "content": "Corpo"
+      },
+      "type_body_font": {
+        "label": "Fonte",
+        "info": "As fontes vêm da biblioteca da Shopify, servidas pelo CDN da loja. A escolha afeta a velocidade da página: uma família com muitos pesos custa mais para carregar."
       }
     }
   }
