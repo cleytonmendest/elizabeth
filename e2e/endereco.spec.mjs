@@ -30,6 +30,36 @@ import { THEME_URL, MOTIVO, CLIENTE, MOTIVO_CLIENTE, SENHA_VITRINE } from './hel
 test.skip(!THEME_URL, MOTIVO);
 test.skip(!CLIENTE.email || !CLIENTE.senha, MOTIVO_CLIENTE);
 
+/**
+ * ⚠ FIXME — issue #64. Estes cinco testes estão CORRETOS e não passam.
+ *
+ * O login não sobrevive ao proxy do `shopify theme dev`: o POST em
+ * /account/login volta com a página de login redesenhada limpa — sem erro e
+ * sem sessão. Três execuções do CI estreitaram o diagnóstico até aqui:
+ *
+ *   1ª  "Received string: .../account/login" — verdadeiro e inútil
+ *   2ª  a loja não exibiu erro NENHUM, o que descarta credencial errada
+ *   3ª  a página é a do tema ("Conta – Elizabeth Estudos"), não a de senha
+ *
+ * Credencial inválida daria `form.errors`; válida daria 302 para /account. O
+ * que volta é uma página como se o POST não tivesse ocorrido. E o login à mão
+ * na vitrine funciona com as MESMAS credenciais.
+ *
+ * É a segunda vez que este proxy engole um caminho — a #51 é a busca
+ * preditiva, pelo mesmo motivo. A correção é estrutural (apontar a suíte para
+ * um tema empurrado, que é a vitrine de verdade) e está na #64.
+ *
+ * `fixme` e não `skip`: fixme aparece no relatório. Um `skip` silencioso
+ * deixaria cinco testes desaparecerem, e afrouxar a asserção até passar
+ * transformaria defeito real em verde — que é o que este repositório passou o
+ * dia removendo de outros lugares.
+ */
+test.fixme(
+  true,
+  'issue #64 — o login de cliente não completa através do proxy do `shopify theme dev`. ' +
+    'Os testes estão corretos; o caminho é que não chega. Mesma causa da #51.'
+);
+
 const CARIMBO = 'e2e-endereco';
 
 /**

@@ -111,11 +111,24 @@ Essa suíte tem duas metades, e a divisão é o ponto:
   secret configurado, eles rodam contra a loja de verdade a cada PR — foi assim
   que os seletores saídos do Liquid deixaram de ser suposição.
 
-Um teste está marcado como `test.fixme` apontando para a
-[issue #51](https://github.com/cleytonmendest/elizabeth/issues/51): a busca
-preditiva não responde através do proxy do `theme dev`, e afrouxar a asserção
-até passar transformaria defeito real em verde. `fixme` aparece no relatório;
-`skip` silencioso não apareceria.
+**O proxy do `theme dev` não é a vitrine**, e isso já custou dois grupos de
+teste marcados `test.fixme`:
+
+- [issue #51](https://github.com/cleytonmendest/elizabeth/issues/51) — a busca
+  preditiva não responde por ele (`/search/suggest.json`)
+- [issue #64](https://github.com/cleytonmendest/elizabeth/issues/64) — o login
+  de cliente não completa: o POST volta com a página de login redesenhada
+  limpa, sem erro e sem sessão, enquanto o mesmo login à mão na vitrine
+  funciona. Leva junto os cinco testes do formulário de endereço
+
+Não são dois bugs; é uma característica. O `theme dev` serve os arquivos locais
+e faz proxy do resto, e caminho autenticado ou dinâmico não atravessa. A #64
+propõe a correção estrutural: apontar a suíte para um tema EMPURRADO, que é a
+vitrine de verdade — o que provavelmente fecha a #51 junto.
+
+`fixme` e não `skip`: fixme aparece no relatório, e afrouxar a asserção até
+passar transformaria defeito real em verde. `skip` silencioso faria seis testes
+desaparecerem sem ninguém notar.
 
 **A catraca vale aqui também.** A primeira execução contra a loja encontrou
 `color-contrast` em sete páginas, quase toda causada pelo mesmo breadcrumb
