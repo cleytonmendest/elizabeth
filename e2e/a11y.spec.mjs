@@ -102,9 +102,15 @@ const PAGINAS = [
     // `templates/password.json` foi renderizado pelo `layout/theme.liquid`,
     // não pelo `layout/password.liquid`. O nó reprovado é o breadcrumb.
     //
-    // O `shopify theme dev` autentica a proteção por senha da vitrine, então
-    // por ele NUNCA se chega ao estado que usa o layout de senha: visitante
-    // sem sessão. Mesma família da #51 e da #64 — o proxy não é a vitrine.
+    // A #64 tirou o proxy do caminho e resolveu a #51 e o login de cliente,
+    // mas NÃO esta: quem atravessa a senha da vitrine agora é o
+    // `e2e/global-setup.mjs`, e a sessão que ele abre vale para toda a suíte.
+    // Autenticado, `/password` continua vindo pelo layout da vitrine.
+    //
+    // O caminho para fechar a #71 mudou de forma, e está escrito lá: um
+    // contexto SEM a sessão, com `?preview_theme_id=` na própria navegação.
+    // Não entrou aqui porque não dá para verificar sem a loja, e um teste
+    // especulativo no lugar de um fixme honesto é troca ruim.
     //
     // Registrar isso no baseline seria pior que deixar vermelho: gravaria a
     // medição de uma página que não é a que este teste diz medir, e o dia em

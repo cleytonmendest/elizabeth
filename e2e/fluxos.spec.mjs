@@ -150,7 +150,7 @@ test('carregar mais acrescenta produtos sem recarregar a página', async ({ page
 });
 
 test('busca preditiva responde enquanto a cliente digita', async ({ page }) => {
-  // ⚠ MARCADO COMO fixme — issue #51, não é o teste que está errado.
+  // ⚠ ERA fixme — issue #51, e a causa não era o teste.
   //
   // Medido quatro vezes no CI: o painel abre, o host ganha `is-searching`, e
   // `.search-results-content` fica VAZIO até 15s. Pelo código do componente
@@ -160,10 +160,12 @@ test('busca preditiva responde enquanto a cliente digita', async ({ page }) => {
   // `shopify theme dev`.
   //
   // Afrouxar a asserção até passar transformaria um defeito real em verde, que
-  // é exatamente o que este repositório existe para não fazer. Fica registrado
-  // e visível até alguém abrir o trace do artefato e ver o que a chamada
-  // devolveu.
-  test.fixme(true, 'issue #51 — /search/suggest.json não responde via shopify theme dev');
+  // é exatamente o que este repositório existe para não fazer — então ficou
+  // registrado, visível no relatório, até a causa ser removida.
+  //
+  // Foi removida na #64: a suíte não passa mais pelo proxy. Ela mede um tema
+  // EMPURRADO para a loja, onde `/search/suggest.json` é servido pela vitrine
+  // como para qualquer cliente. Ver ADR 0007.
 
   // ── O que este teste afirma, e o que ele deliberadamente NÃO afirma ──────
   //

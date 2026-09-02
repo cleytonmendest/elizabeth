@@ -144,30 +144,6 @@ const MUTANTES = [
     teste: 'tests/cart-extras.test.mjs',
   },
   {
-    // O defeito exato que a sonda anterior tinha: aprovar qualquer coisa que
-    // responda. É o mutante mais importante desta lista, porque a suíte que
-    // não o mata é a suíte que deixaria a tela de senha passar de novo.
-    porque: 'a sonda volta a aprovar qualquer página que responda 200',
-    arquivo: 'scripts/loja-no-ar.mjs',
-    de: "  return typeof html === 'string' && html.includes(MARCA_DO_TEMA);",
-    para: '  return true;',
-    teste: 'tests/loja-no-ar.test.mjs',
-  },
-  {
-    porque: 'a sonda reprova certo, mas o recado não diz mais o que fazer',
-    arquivo: 'scripts/loja-no-ar.mjs',
-    de: "    'O caso de longe mais comum é a loja estar atrás da proteção por senha da vitrine — a Shopify serve a tela de senha com 200, e ela não passa pelo nosso layout.',",
-    para: "    '',",
-    teste: 'tests/loja-no-ar.test.mjs',
-  },
-  {
-    porque: '"respondeu errado" volta a ser relatado como "ninguém respondeu"',
-    arquivo: 'scripts/loja-no-ar.mjs',
-    de: '      ultimaSemTema = {',
-    para: '      ultimaSemTema = ultimaSemTema ?? null; const _ignorado = {',
-    teste: 'tests/loja-no-ar.test.mjs',
-  },
-  {
     // O critério de aceite da issue #60, virado do avesso: o job fica verde e
     // comenta "preview pronto" com uma URL que não abre nada. Nenhuma execução
     // do CI mostraria isso — só um revisor clicando.
@@ -332,6 +308,26 @@ const MUTANTES = [
     de: "  return [...String(fonte ?? '').matchAll(/(--color-[a-z0-9-]+)\\s*:/g)].map((match) => match[1]);",
     para: "  return [...String(fonte ?? '').matchAll(/(--color-[a-z0-9-]+)/g)].map((match) => match[1]);",
     teste: 'tests/schemecontract.test.mjs',
+  },
+  {
+    // O desastre da #64, na forma exata em que ele aconteceria: usar a
+    // preview_url inteira como baseURL. `page.goto('/cart')` descarta a query,
+    // o tema PUBLICADO responde tudo com 200, e a suíte fica verde medindo a
+    // loja de produção enquanto o relatório diz que mediu o PR.
+    porque: 'a query da preview_url passa adiante e a suíte volta a medir o tema publicado',
+    arquivo: 'scripts/tema-de-teste.mjs',
+    de: '  return new URL(url).origin;',
+    para: '  return url;',
+    teste: 'tests/tema-de-teste.test.mjs',
+  },
+  {
+    // Sem id não há como fixar o tema na sessão. Deixar passar como se
+    // estivesse tudo bem é o mesmo silêncio, um passo antes.
+    porque: 'push sem preview_theme_id passa como se desse para medir a branch',
+    arquivo: 'scripts/tema-de-teste.mjs',
+    de: '  if (!id) {',
+    para: '  if (false) {',
+    teste: 'tests/tema-de-teste.test.mjs',
   },
   {
     // O defeito com que a regra `remotes` nasceu: espalhar um Map dá pares

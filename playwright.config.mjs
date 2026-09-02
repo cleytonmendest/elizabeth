@@ -12,14 +12,26 @@ import { defineConfig, devices } from '@playwright/test';
  * `e2e/gate.spec.mjs` não precisa de loja nenhuma: ele verifica que o próprio
  * verificador funciona, contra páginas montadas na hora. Roda sempre.
  *
- * O resto aponta para `THEME_URL` — um `shopify theme dev` autenticado. Sem
- * essa variável, esses testes se anunciam como não executados em vez de
- * passar em silêncio (ver scripts/e2e.mjs).
+ * O resto aponta para `THEME_URL` — a loja de verdade, com um tema EMPURRADO
+ * por `shopify theme push --development` (ADR 0007). Sem essa variável, esses
+ * testes se anunciam como não executados em vez de passar em silêncio (ver
+ * scripts/e2e.mjs).
+ *
+ * Até a #64 esta metade apontava para um `shopify theme dev` em :9292. O proxy
+ * dele não é a vitrine: engolia a busca preditiva (#51), o login de cliente
+ * (#64) e o estado sem sessão da página de senha (#71) — três caminhos, um
+ * defeito só. `globalSetup` abre a sessão uma vez e PROVA que ela ficou fixada
+ * no tema desta branch; sem essa prova, a suíte inteira mediria a loja
+ * publicada e ficaria verde.
  */
+import { ARQUIVO_DE_SESSAO } from './e2e/global-setup.mjs';
 
 export default defineConfig({
   testDir: 'e2e',
   fullyParallel: true,
+
+  // Abre a sessão da vitrine (senha + fixação do tema) uma vez, antes de tudo.
+  globalSetup: './e2e/global-setup.mjs',
 
   // `forbidOnly` impede que um `test.only` esquecido faça o CI passar tendo
   // rodado um teste só — o mesmo tipo de verde vazio que a catraca do baseline
@@ -37,6 +49,12 @@ export default defineConfig({
     baseURL: process.env.THEME_URL,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
+
+    // A sessão que o globalSetup abriu: cookie da senha da vitrine e a fixação
+    // do tema empurrado. O arquivo é sempre escrito — vazio quando não há loja
+    // —, para que `e2e/gate.spec.mjs`, que não precisa de nenhuma das duas
+    // coisas, continue rodando sem storefront.
+    storageState: ARQUIVO_DE_SESSAO,
 
     // O ambiente remoto do Claude Code já traz um Chromium, numa build que
     // pode não ser a que esta versão do Playwright baixaria (hoje: tem a 1194,

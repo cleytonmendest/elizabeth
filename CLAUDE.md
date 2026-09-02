@@ -65,7 +65,9 @@ no campo `total` que cada arquivo carrega.
 A única exceção: **melhorar a cobertura de um verificador** encontra violações
 que sempre existiram e não eram vistas. Isso é dívida escondida virando
 visível, não dívida nova. O CI libera o crescimento quando o diff toca
-`scripts/lint/rules/` (lint) ou `e2e/helpers/axe.mjs` (a11y) — e só aí.
+`scripts/lint/rules/` (lint) ou `e2e/helpers/axe.mjs` / `e2e/a11y.spec.mjs`
+(a11y) — e só aí. A lista que vale é a de `CATRACAS`, em `scripts/catraca.mjs`;
+esta linha é cópia dela.
 
 Violação legítima (cor de marca de terceiro, scrim de imagem, lightbox) vai
 para `scripts/lint/config/design-exceptions.json` **com justificativa escrita**
@@ -105,30 +107,35 @@ Essa suíte tem duas metades, e a divisão é o ponto:
   botão sem nome) e exige que o axe o encontre, e planta uma página correta e
   exige que ele fique quieto. Sem isso, um critério configurado errado faria
   toda página passar com a mesma cara de quando está tudo certo. Roda sempre.
-- **O resto aponta para `THEME_URL`**, um `shopify theme dev` autenticado. Sem
-  a variável, esses testes se declaram PULADOS com o motivo escrito, e
-  `scripts/e2e.mjs` avisa no resumo do CI que nenhuma página foi medida. Com o
-  secret configurado, eles rodam contra a loja de verdade a cada PR — foi assim
-  que os seletores saídos do Liquid deixaram de ser suposição.
+- **O resto aponta para `THEME_URL`**, a loja de verdade com um tema
+  **EMPURRADO** (`shopify theme push --development`). Sem a variável, esses
+  testes se declaram PULADOS com o motivo escrito, e `scripts/e2e.mjs` avisa no
+  resumo do CI que nenhuma página foi medida.
 
-**O proxy do `theme dev` não é a vitrine**, e isso já custou dois grupos de
-teste marcados `test.fixme`:
+**A suíte mediu um `shopify theme dev` até a #64, e isso custou três grupos de
+teste.** O proxy dele serve os arquivos locais e faz proxy do resto, e caminho
+que depende de SESSÃO não atravessa: a busca preditiva
+([#51](https://github.com/cleytonmendest/elizabeth/issues/51)), o login de
+cliente ([#64](https://github.com/cleytonmendest/elizabeth/issues/64)) e o
+estado sem sessão da página de senha
+([#71](https://github.com/cleytonmendest/elizabeth/issues/71)). Não eram três
+bugs; era uma característica, e ela tem uma forma só.
 
-- [issue #51](https://github.com/cleytonmendest/elizabeth/issues/51) — a busca
-  preditiva não responde por ele (`/search/suggest.json`)
-- [issue #64](https://github.com/cleytonmendest/elizabeth/issues/64) — o login
-  de cliente não completa: o POST volta com a página de login redesenhada
-  limpa, sem erro e sem sessão, enquanto o mesmo login à mão na vitrine
-  funciona. Leva junto os cinco testes do formulário de endereço
+Pior que o teste vermelho: o verificador passou a mentir sobre o que media. O
+teste de a11y da página de senha media OUTRA página, com header e breadcrumb, e
+teria continuado medindo se ninguém abrisse o screenshot do artefato.
 
-Não são dois bugs; é uma característica. O `theme dev` serve os arquivos locais
-e faz proxy do resto, e caminho autenticado ou dinâmico não atravessa. A #64
-propõe a correção estrutural: apontar a suíte para um tema EMPURRADO, que é a
-vitrine de verdade — o que provavelmente fecha a #51 junto.
+Hoje a suíte mede um tema empurrado — ver
+[ADR 0007](docs/adr/0007-suite-de-navegador-contra-tema-empurrado.md). O ponto
+delicado passou a ser outro, e ele está em `e2e/global-setup.mjs`: a Shopify
+fixa o tema por SESSÃO, não por URL. Se a fixação não pegar, cada `page.goto`
+mede o tema **publicado** e a suíte fica verde sobre a loja de produção. Por
+isso o setup exige `window.Shopify.theme.id` igual ao tema que empurramos, e
+não começa sem essa prova.
 
-`fixme` e não `skip`: fixme aparece no relatório, e afrouxar a asserção até
-passar transformaria defeito real em verde. `skip` silencioso faria seis testes
-desaparecerem sem ninguém notar.
+`fixme` e não `skip` continua valendo para o que sobrou (#68, #71): fixme
+aparece no relatório, e afrouxar a asserção até passar transformaria defeito
+real em verde. `skip` silencioso faria o teste desaparecer sem ninguém notar.
 
 **A catraca vale aqui também.** A primeira execução contra a loja encontrou
 `color-contrast` em sete páginas, quase toda causada pelo mesmo breadcrumb

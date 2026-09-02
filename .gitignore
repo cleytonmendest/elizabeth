@@ -8,3 +8,7 @@ memory/
 playwright-report/
 test-results/
 theme-dev.log
+
+# Sessão da vitrine que o e2e/global-setup.mjs abre (cookie da senha da loja).
+# Credencial de execução, não fonte: nunca entra no repositório.
+e2e/.auth/

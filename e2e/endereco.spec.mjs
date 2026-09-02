@@ -45,22 +45,17 @@ test.skip(!CLIENTE.email || !CLIENTE.senha, MOTIVO_CLIENTE);
  * que volta é uma página como se o POST não tivesse ocorrido. E o login à mão
  * na vitrine funciona com as MESMAS credenciais.
  *
- * É a segunda vez que este proxy engole um caminho — a #51 é a busca
- * preditiva, pelo mesmo motivo. A correção é estrutural (apontar a suíte para
- * um tema empurrado, que é a vitrine de verdade) e está na #64.
+ * ── Resolvido na #64 ──────────────────────────────────────────────────────
  *
- * `fixme` e não `skip`: fixme aparece no relatório. Um `skip` silencioso
- * deixaria cinco testes desaparecerem, e afrouxar a asserção até passar
- * transformaria defeito real em verde — que é o que este repositório passou o
- * dia removendo de outros lugares.
+ * Era a segunda vez que o proxy engolia um caminho (a #51 é a busca preditiva,
+ * pelo mesmo motivo), e a correção foi estrutural: a suíte deixou de medir o
+ * `shopify theme dev` e passa a medir um tema EMPURRADO para a loja — a
+ * vitrine de verdade, com cookies e sessão reais. Ver ADR 0007.
+ *
+ * O diagnóstico acima fica registrado porque ele é o argumento: os testes
+ * nunca estiveram errados, e afrouxar a asserção até passar teria escondido
+ * um defeito de ferramenta por tempo indeterminado.
  */
-const PROXY_ENGOLE_O_LOGIN = true; // ← vira false quando a #64 for resolvida.
-
-test.fixme(
-  PROXY_ENGOLE_O_LOGIN,
-  'issue #64 — o login de cliente não completa através do proxy do `shopify theme dev`. ' +
-    'Os testes estão corretos; o caminho é que não chega. Mesma causa da #51.'
-);
 
 const CARIMBO = 'e2e-endereco';
 
