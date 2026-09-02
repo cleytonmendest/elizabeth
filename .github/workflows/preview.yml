@@ -92,15 +92,24 @@ jobs:
           # repositório ao mudar um flag. Para subir, rode local com a nova antes.
           npm install -g @shopify/cli@4.7.0
 
-          # `--development-context` saiu de `shopify theme push --help`, não de
-          # memória: "Unique identifier for a development theme context (e.g.,
-          # PR number, branch name). Reuses an existing development theme with
-          # this context name, or creates one if none exists."
+          # `--development-context` saiu de `shopify theme push --help`: "Unique
+          # identifier for a development theme context (e.g., PR number, branch
+          # name). Reuses an existing development theme with this context name,
+          # or creates one if none exists."
           #
           # É esse reaproveitamento que importa. Sem ele, 20 pushes num PR
           # viram 20 temas na biblioteca da loja. (`theme share` também dá
           # link, mas cria um tema de nome aleatório a cada chamada.)
+          #
+          # `--development` junto NÃO está no texto do help — o help lista os
+          # dois como flags independentes. Quem disse foi o CLI, na primeira
+          # execução deste workflow: "All of the following must be provided when
+          # using --development-context: --development". É a segunda vez que
+          # este repositório aprende que o help deste CLI não basta e o binário
+          # é a autoridade (a primeira foi `--theme-editor-sync=false`, que o
+          # `theme dev` recusou por ser switch booleano).
           shopify theme push \
+            --development \
             --development-context "pr-${PR}" \
             --json \
             > tema.json
