@@ -32,15 +32,50 @@ test.skip(!CLIENTE.email || !CLIENTE.senha, MOTIVO_CLIENTE);
 
 const CARIMBO = 'e2e-endereco';
 
+/**
+ * Entra com a conta de teste — e, se não entrar, DIZ POR QUÊ.
+ *
+ * A primeira versão disto terminava num `expect(page).not.toHaveURL(/login/)`.
+ * Ele reprovou corretamente, e a mensagem foi "Received string:
+ * http://.../account/login" — verdadeira e inútil: não separa "a senha está
+ * errada" de "a conta nunca foi ativada" de "o formulário nem foi enviado".
+ *
+ * É a mesma forma de defeito que `scripts/loja-no-ar.mjs` corrigiu: um
+ * verificador que reprova sem informar manda a investigação para o lugar
+ * errado. A loja escreve o motivo num `[role="alert"]`; o teste passa a ler
+ * esse texto e a colocá-lo na falha.
+ */
 async function entrar(page) {
   await page.goto('/account/login');
-  await page.fill('input[name="customer[email]"]', CLIENTE.email);
-  await page.fill('input[name="customer[password]"]', CLIENTE.senha);
-  await page.locator('form[action*="/account/login"] button[type="submit"]').first().click();
 
-  // A conta pode cair em /account ou /account/addresses; o que precisa ser
-  // verdade é ter saído da tela de login.
-  await expect(page).not.toHaveURL(/\/account\/login/);
+  const formulario = page.locator('form[action*="/account/login"]').first();
+  await expect(formulario, 'a página de login não trouxe o formulário do tema').toBeVisible();
+
+  await formulario.locator('input[name="customer[email]"]').fill(CLIENTE.email);
+  await formulario.locator('input[name="customer[password]"]').fill(CLIENTE.senha);
+  await formulario.locator('button[type="submit"]').click();
+  await page.waitForLoadState('load');
+
+  if (!/\/account\/login/.test(page.url())) return;
+
+  const alerta = page.locator('[role="alert"]');
+  const dito = (await alerta.count())
+    ? (await alerta.first().innerText()).replace(/\s+/g, ' ').trim()
+    : '(a loja não exibiu erro nenhum — o formulário pode nem ter sido enviado)';
+
+  throw new Error(
+    [
+      'O login com a conta de teste não passou.',
+      `A loja respondeu: ${dito}`,
+      '',
+      'A causa mais comum não é a senha: cliente criado pela lojista no admin',
+      'nasce SEM senha e só passa a conseguir entrar depois de aceitar o convite',
+      'de ativação. Confirme entrando à mão em /account/login na vitrine — se',
+      'você também não entrar, o problema é a conta, não este teste.',
+      '',
+      'Os secrets são SHOPIFY_CUSTOMER_EMAIL e SHOPIFY_CUSTOMER_PASSWORD.',
+    ].join('\n')
+  );
 }
 
 async function abreFormularioNovo(page) {
