@@ -45,17 +45,42 @@ test.skip(!CLIENTE.email || !CLIENTE.senha, MOTIVO_CLIENTE);
  * que volta é uma página como se o POST não tivesse ocorrido. E o login à mão
  * na vitrine funciona com as MESMAS credenciais.
  *
- * ── Resolvido na #64 ──────────────────────────────────────────────────────
+ * ── 4ª rodada: NÃO era o proxy ─────────────────────────────────────────────
  *
- * Era a segunda vez que o proxy engolia um caminho (a #51 é a busca preditiva,
- * pelo mesmo motivo), e a correção foi estrutural: a suíte deixou de medir o
- * `shopify theme dev` e passa a medir um tema EMPURRADO para a loja — a
- * vitrine de verdade, com cookies e sessão reais. Ver ADR 0007.
+ * A #64 concluiu que o `shopify theme dev` engolia o login, e propôs medir um
+ * tema EMPURRADO. A migração foi feita (ADR 0007) e funcionou para o que se
+ * esperava dela: a busca preditiva da #51 passou a responder na primeira
+ * execução, provando que aquele caminho ERA o proxy.
  *
- * O diagnóstico acima fica registrado porque ele é o argumento: os testes
- * nunca estiveram errados, e afrouxar a asserção até passar teria escondido
- * um defeito de ferramenta por tempo indeterminado.
+ * O login não. Na vitrine real, com cookies e sessão reais, ele falha com o
+ * sintoma IDÊNTICO:
+ *
+ *   url=https://<loja>.myshopify.com/account/login
+ *   título="Conta – Elizabeth Estudos"
+ *   a loja não exibiu erro nenhum
+ *
+ * O que muda é o que isso descarta. Não é o proxy — o proxy não está mais no
+ * caminho. E não é o markup: `{% form 'customer_login' %}` emite os campos
+ * ocultos, e os `name` batem com o que a Shopify espera.
+ *
+ * O que sobra, e ninguém verificou ainda: o estado da CONTA (cliente criado no
+ * admin nasce sem senha até aceitar o convite) ou a loja estar em "novas contas
+ * de cliente", em que o formulário clássico deixa de ser o caminho de login.
+ * As duas se checam entrando à mão na vitrine e olhando o admin — nenhuma se
+ * checa daqui.
+ *
+ * `fixme` continua sendo a resposta certa, agora apontando para um diagnóstico
+ * que não foi refutado. Afrouxar a asserção até passar transformaria em verde
+ * um login que não acontece.
  */
+const LOGIN_NAO_COMPLETA = true; // ← vira false quando a #64 for resolvida.
+
+test.fixme(
+  LOGIN_NAO_COMPLETA,
+  'issue #64 — o login de cliente não completa NEM na vitrine real (medido no PR #72). ' +
+    'Não é o proxy: a migração para tema empurrado não mudou o sintoma. Os testes ' +
+    'continuam corretos; o que falta é saber por que o POST não produz sessão.'
+);
 
 const CARIMBO = 'e2e-endereco';
 
@@ -295,9 +320,13 @@ async function limpa(page) {
  * derrubaria o job pelo hook — anulando exatamente o `fixme` que existe para
  * manter o PR verde. Um teste marcado como não-executável precisa não executar
  * nada, inclusive limpeza do que ele não chegou a criar.
+ *
+ * Isso já aconteceu duas vezes: a primeira quando o `fixme` foi criado, e a
+ * segunda no PR #72, quando a constante foi removida por engano e o hook
+ * derrubou o job com `ReferenceError` — em cinco testes de uma vez.
  */
 test.afterAll(async ({ browser }) => {
-  if (PROXY_ENGOLE_O_LOGIN) return;
+  if (LOGIN_NAO_COMPLETA) return;
   if (!THEME_URL || !CLIENTE.email || !CLIENTE.senha) return;
 
   const page = await browser.newPage();
