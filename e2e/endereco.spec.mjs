@@ -54,8 +54,10 @@ test.skip(!CLIENTE.email || !CLIENTE.senha, MOTIVO_CLIENTE);
  * transformaria defeito real em verde — que é o que este repositório passou o
  * dia removendo de outros lugares.
  */
+const PROXY_ENGOLE_O_LOGIN = true; // ← vira false quando a #64 for resolvida.
+
 test.fixme(
-  true,
+  PROXY_ENGOLE_O_LOGIN,
   'issue #64 — o login de cliente não completa através do proxy do `shopify theme dev`. ' +
     'Os testes estão corretos; o caminho é que não chega. Mesma causa da #51.'
 );
@@ -290,7 +292,17 @@ async function limpa(page) {
   console.warn(`[${CARIMBO}] dez voltas e ainda há endereço marcado — limpeza incompleta.`);
 }
 
+/**
+ * A varredura final — e a guarda que faltava nela.
+ *
+ * `test.afterAll` roda mesmo quando TODOS os testes do arquivo estão `fixme`.
+ * Sem a primeira linha, este hook chamaria `entrar()`, que hoje não passa, e
+ * derrubaria o job pelo hook — anulando exatamente o `fixme` que existe para
+ * manter o PR verde. Um teste marcado como não-executável precisa não executar
+ * nada, inclusive limpeza do que ele não chegou a criar.
+ */
 test.afterAll(async ({ browser }) => {
+  if (PROXY_ENGOLE_O_LOGIN) return;
   if (!THEME_URL || !CLIENTE.email || !CLIENTE.senha) return;
 
   const page = await browser.newPage();
