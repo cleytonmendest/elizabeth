@@ -1,0 +1,121 @@
+name: Preview
+
+# Um link por PR que abre a loja com a mudança aplicada. Issue #60.
+#
+# ── Por que não é um job dentro do ci.yml ──────────────────────────────────
+#
+# O `ci.yml` declara na abertura que nenhum job dele escreve no repositório, e
+# comentar num PR exige `pull-requests: write`. Um arquivo separado mantém a
+# permissão larga confinada ao único job que precisa dela — em vez de a
+# conceder ao gate inteiro, que só lê, compila e mede.
+#
+# ── Por que só duas actions, ambas já em uso no ci.yml ─────────────────────
+#
+# O actionlint valida a sintaxe do YAML; ele NÃO vai à rede conferir se a tag
+# de uma action existe. Foi assim que `actions/add-to-project@v1` — uma tag que
+# nunca existiu — passou por revisão e deixou o board quebrado dois dias. Por
+# isso a publicação do comentário não usa `actions/github-script`: ela é
+# `fetch` dentro de `scripts/preview.mjs`, com a escolha do comentário testada.
+#
+# ── O que este workflow NÃO faz ────────────────────────────────────────────
+#
+# Não roda `npm run build`. O `assets/application.css` é compilado e vai no
+# commit, e o job `Lint, build e conformidade` reprova se estiver desatualizado.
+# Compilar aqui esconderia esse defeito: o preview mostraria um CSS que não é o
+# do commit, e o PR pareceria certo enquanto a loja publicada não ficaria. O
+# preview mostra o que está no repositório, não o que poderia estar.
+
+on:
+  pull_request:
+
+# Escrever comentário no PR é tudo que este workflow faz de escrita. `contents`
+# fica em leitura: ele não empurra commit nenhum.
+permissions:
+  contents: read
+  pull-requests: write
+
+# Rajada de pushes num PR não precisa de N previews: o último é o que vale, e
+# os anteriores só disputariam o mesmo comentário.
+concurrency:
+  group: preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Preview da loja
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      # ── Sem `if:` no job, de propósito ──────────────────────────────────
+      #
+      # Mesma decisão do job de navegador no ci.yml, pelo mesmo motivo já pago
+      # duas vezes aqui: job que só roda quando um secret existe é job cujas
+      # execuções verdes não provam nada. Ele roda sempre, e o que varia é
+      # quanto consegue fazer — visível no log.
+      #
+      # (O contexto `secrets` também não existe em `if:`. A primeira versão
+      # disso no ci.yml derrubou o workflow inteiro na validação.)
+      #
+      # Em PR vindo de fork o secret não chega ao runner: cai no mesmo caminho
+      # de "sem credencial", que é verde e explicado.
+      - name: Empurrar o tema para a loja
+        env:
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+          SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
+          # Nome diferente de propósito: o CLI lê SHOPIFY_FLAG_STORE_PASSWORD,
+          # e uma string VAZIA nele conta como "senha fornecida".
+          STORE_PASSWORD: ${{ secrets.SHOPIFY_STORE_PASSWORD }}
+          PR: ${{ github.event.number }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${SHOPIFY_CLI_THEME_TOKEN:-}" ] || [ -z "${SHOPIFY_FLAG_STORE:-}" ]; then
+            echo "Sem credencial da loja (SHOPIFY_STORE / SHOPIFY_CLI_THEME_TOKEN)."
+            echo "Nenhum tema.json será escrito; o passo seguinte diz isso e segue verde."
+            exit 0
+          fi
+
+          if [ -n "${STORE_PASSWORD:-}" ]; then
+            export SHOPIFY_FLAG_STORE_PASSWORD="$STORE_PASSWORD"
+          fi
+
+          # Versão TRAVADA, igual ao ci.yml: este CLI já quebrou um passo deste
+          # repositório ao mudar um flag. Para subir, rode local com a nova antes.
+          npm install -g @shopify/cli@4.7.0
+
+          # `--development-context` saiu de `shopify theme push --help`, não de
+          # memória: "Unique identifier for a development theme context (e.g.,
+          # PR number, branch name). Reuses an existing development theme with
+          # this context name, or creates one if none exists."
+          #
+          # É esse reaproveitamento que importa. Sem ele, 20 pushes num PR
+          # viram 20 temas na biblioteca da loja. (`theme share` também dá
+          # link, mas cria um tema de nome aleatório a cada chamada.)
+          shopify theme push \
+            --development-context "pr-${PR}" \
+            --json \
+            > tema.json
+
+      # Roda SEMPRE, inclusive quando o passo acima não empurrou nada — é o
+      # script que separa "não havia o que fazer" (verde) de "o push devolveu
+      # algo imprestável" (vermelho). Essa distinção tem teste em
+      # tests/preview.test.mjs; ela não mora aqui dentro justamente porque
+      # shell dentro de YAML não tem teste.
+      - name: Comentar o preview no PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node scripts/preview.mjs \
+            --json tema.json \
+            --repo "${{ github.repository }}" \
+            --pr "${{ github.event.number }}" \
+            --sha "${{ github.event.pull_request.head.sha }}"

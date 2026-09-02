@@ -168,6 +168,43 @@ const MUTANTES = [
     teste: 'tests/loja-no-ar.test.mjs',
   },
   {
+    // O critério de aceite da issue #60, virado do avesso: o job fica verde e
+    // comenta "preview pronto" com uma URL que não abre nada. Nenhuma execução
+    // do CI mostraria isso — só um revisor clicando.
+    porque: 'o comentário de preview é publicado mesmo sem preview_url utilizável',
+    arquivo: 'scripts/preview.mjs',
+    de: '  if (!/^https?:\\/\\//i.test(url)) {',
+    para: '  if (false) {',
+    teste: 'tests/preview.test.mjs',
+  },
+  {
+    // A lição da sonda da loja, na terceira vez que ela aparece: confundir
+    // "não havia o que fazer" com "deu errado" pinta de vermelho todo PR de
+    // fork, e um gate que reprova sem motivo é um gate que se aprende a ignorar.
+    porque: '"sem credencial" volta a ser relatado como falha do preview',
+    arquivo: 'scripts/preview.mjs',
+    de: '  if (bruto === null || bruto === undefined) {',
+    para: '  if (false) {',
+    teste: 'tests/preview.test.mjs',
+  },
+  {
+    // Casar o marcador em qualquer posição, em vez de só no início, faz o
+    // script adotar o comentário de OUTRA pessoa que tenha citado o preview —
+    // e reescrevê-lo. Nenhum erro aparece; só o texto de alguém sumindo.
+    porque: 'o marcador passa a casar no meio do texto, e o script sobrescreve comentário alheio',
+    arquivo: 'scripts/preview.mjs',
+    de: '&& c.body.startsWith(marcador));',
+    para: '&& c.body.includes(marcador));',
+    teste: 'tests/preview.test.mjs',
+  },
+  {
+    porque: 'espaço em volta da URL passa a fazer parte dela',
+    arquivo: 'scripts/preview.mjs',
+    de: "  const url = typeof tema.preview_url === 'string' ? tema.preview_url.trim() : '';",
+    para: "  const url = typeof tema.preview_url === 'string' ? tema.preview_url : '';",
+    teste: 'tests/preview.test.mjs',
+  },
+  {
     // O defeito com que a regra `remotes` nasceu: espalhar um Map dá pares
     // `[chave, valor]`, a alternância vira `settings.(logo_svg,textarea)`, e a
     // regra varre o tema inteiro sem achar nada. Ela passou verde assim.
