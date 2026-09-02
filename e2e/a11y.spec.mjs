@@ -91,12 +91,36 @@ const PAGINAS = [
   ['busca', '/search?q=vestido'],
   ['carrinho', '/cart'],
   ['404', '/esta-pagina-nao-existe-de-proposito'],
-  ['loja protegida por senha', '/password'],
+  [
+    'loja protegida por senha',
+    '/password',
+    // ⚠ fixme — issue #71, e o defeito NÃO é de acessibilidade.
+    //
+    // Medido: o axe acusou `color-contrast` no `.hover\:underline`, e o
+    // screenshot do artefato mostra por quê — a página veio com barra de
+    // anúncio, header, menu e o breadcrumb "Início /". Ou seja, o
+    // `templates/password.json` foi renderizado pelo `layout/theme.liquid`,
+    // não pelo `layout/password.liquid`. O nó reprovado é o breadcrumb.
+    //
+    // O `shopify theme dev` autentica a proteção por senha da vitrine, então
+    // por ele NUNCA se chega ao estado que usa o layout de senha: visitante
+    // sem sessão. Mesma família da #51 e da #64 — o proxy não é a vitrine.
+    //
+    // Registrar isso no baseline seria pior que deixar vermelho: gravaria a
+    // medição de uma página que não é a que este teste diz medir, e o dia em
+    // que o layout de senha ganhasse um defeito real ninguém veria.
+    'issue #71 — via `theme dev` a página de senha usa o layout da vitrine, não o layout/password.liquid',
+  ],
   ['style guide (todos os color schemes)', STYLEGUIDE_PATH],
 ];
 
-for (const [nome, caminho] of PAGINAS) {
+for (const [nome, caminho, motivoFixme] of PAGINAS) {
   test(`sem violação NOVA de WCAG AA: ${nome}`, async ({ page }) => {
+    // O terceiro item da tupla, quando existe, é a página que o proxy do
+    // `theme dev` não consegue servir como a vitrine serve. `fixme` e não
+    // `skip`: aparece no relatório, e a asserção continua sendo a correta.
+    if (motivoFixme) test.fixme(true, motivoFixme);
+
     await abrePaginaDoTema(page, caminho);
     await semViolacaoNova(page, nome);
   });
