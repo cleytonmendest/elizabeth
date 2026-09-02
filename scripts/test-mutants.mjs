@@ -264,6 +264,47 @@ const MUTANTES = [
     teste: 'tests/templates.test.mjs',
   },
   {
+    // O drawer e a página escutam o MESMO evento. O guarda é o que separa os
+    // dois; sem ele, `cart-update` passa a varrer a DOM do drawer procurando
+    // `.cart-item` por data-key e apaga o que não reconhece.
+    porque: 'o guarda da página cai e o evento passa a mexer na DOM do drawer',
+    arquivo: 'assets/cart-extras.js',
+    de: "    const page = document.querySelector('[data-cart-page]');",
+    para: "    const page = document.querySelector('[data-cart-page]') || document.body;",
+    teste: 'tests/cart-extras.test.mjs',
+  },
+  {
+    // Item removido em outra aba (ou pelo próprio drawer) continuaria na tela
+    // com preço e tudo — e o resumo ao lado já mostrando o total sem ele.
+    porque: 'o item que saiu do carrinho continua desenhado na página',
+    arquivo: 'assets/cart-extras.js',
+    de: '      if (key && keys.indexOf(key) === -1) el.remove();',
+    para: '      if (false) el.remove();',
+    teste: 'tests/cart-extras.test.mjs',
+  },
+  {
+    // O estado anterior da regra: ela confiava no `ignore` do Theme Check, que
+    // usa minimatch — e `**` não atravessa segmento que começa com ponto. Com a
+    // raiz em `.claude/worktrees/<nome>`, `node_modules/**` parava de casar e
+    // os fixtures de `@shopify/theme-graph` entravam como offense do tema. O
+    // mesmo commit ficava verde no CI e vermelho no worktree.
+    porque: 'os fixtures dentro de node_modules voltam a contar como arquivo do tema',
+    arquivo: 'scripts/lint/rules/themecheck.mjs',
+    de: '  return PASTAS_DO_TEMA.some((pasta) => caminho.startsWith(`${pasta}/`));',
+    para: '  return caminho.length > 0;',
+    teste: 'tests/themecheck.test.mjs',
+  },
+  {
+    // Casar o nome da pasta em qualquer posição faria
+    // `node_modules/.../fixtures/skeleton/sections/x.liquid` passar — que é
+    // exatamente o caminho que originou o defeito.
+    porque: 'a pasta de tema passa a valer no meio do caminho, e o fixture volta a entrar',
+    arquivo: 'scripts/lint/rules/themecheck.mjs',
+    de: '  return PASTAS_DO_TEMA.some((pasta) => caminho.startsWith(`${pasta}/`));',
+    para: '  return PASTAS_DO_TEMA.some((pasta) => caminho.includes(`${pasta}/`));',
+    teste: 'tests/themecheck.test.mjs',
+  },
+  {
     // O defeito com que a regra `remotes` nasceu: espalhar um Map dá pares
     // `[chave, valor]`, a alternância vira `settings.(logo_svg,textarea)`, e a
     // regra varre o tema inteiro sem achar nada. Ela passou verde assim.

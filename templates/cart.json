@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-cart",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "show_continue_shopping": true,
+        "show_notes": true,
+        "checkout_label": ""
+      }
+    }
+  },
+  "order": ["main"]
+}

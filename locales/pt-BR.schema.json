@@ -32,6 +32,26 @@
         }
       }
     },
+    "main_cart": {
+      "name": "Carrinho",
+      "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
+        "show_continue_shopping": {
+          "label": "Mostrar \"continuar comprando\"",
+          "info": "Vale para o carrinho com itens. No carrinho vazio o link continua aparecendo — lá ele é a única saída da página."
+        },
+        "show_notes": {
+          "label": "Mostrar observações do pedido nesta página",
+          "info": "Só tem efeito se \"Permitir observações do cliente\" estiver ligado nas configurações do tema. Desligue aqui para manter o campo apenas no mini-carrinho."
+        },
+        "checkout_label": {
+          "label": "Texto do botão de finalizar",
+          "info": "Deixe em branco para usar o texto traduzido do tema."
+        }
+      }
+    },
     "main_collection": {
       "name": "Página de Coleção",
       "settings": {
