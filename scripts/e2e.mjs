@@ -44,6 +44,20 @@ if (temLoja) {
   );
 }
 
+// A conta de cliente é uma terceira metade, e some com a mesma facilidade: a
+// loja pode estar no ar sem ela existir, e aí o formulário de endereço — que
+// mora atrás do login — não é medido por teste nenhum. Sem este aviso, o run
+// verde diria que a suíte de navegador passou, sem dizer que ela nem abriu a
+// página em questão.
+if (!process.env.SHOPIFY_CUSTOMER_EMAIL || !process.env.SHOPIFY_CUSTOMER_PASSWORD) {
+  avisar(
+    'A metade de CONTA não rodou: faltam SHOPIFY_CUSTOMER_EMAIL / ' +
+      'SHOPIFY_CUSTOMER_PASSWORD. O formulário de endereço fica atrás do login, ' +
+      'então nada dele foi medido neste run — nem que ele lista países, nem que ' +
+      'ele salva fora do Brasil.'
+  );
+}
+
 const { status } = spawnSync(PLAYWRIGHT, ['test', ...process.argv.slice(2)], {
   cwd: ROOT,
   stdio: 'inherit',

@@ -67,6 +67,6 @@
   {%- if article.tags.size > 0 -%}
   "keywords": {{ article.tags | join: ', ' | json }},
   {%- endif -%}
-  "inLanguage": "pt-BR"
+  "inLanguage": {{ request.locale.iso_code | json }}
 }
 </script>

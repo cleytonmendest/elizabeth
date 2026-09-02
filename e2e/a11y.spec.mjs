@@ -16,7 +16,7 @@
 import fs from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { violacoes, regras, relatorio } from './helpers/axe.mjs';
-import { THEME_URL, MOTIVO, STYLEGUIDE_PATH } from './helpers/loja.mjs';
+import { THEME_URL, MOTIVO, STYLEGUIDE_PATH, abrePaginaDoTema } from './helpers/loja.mjs';
 import { avaliar, resolvidas, carregar, impressao, ARQUIVO } from './helpers/baseline.mjs';
 
 test.skip(!THEME_URL, MOTIVO);
@@ -95,7 +95,7 @@ const PAGINAS = [
 
 for (const [nome, caminho] of PAGINAS) {
   test(`sem violação NOVA de WCAG AA: ${nome}`, async ({ page }) => {
-    await page.goto(caminho);
+    await abrePaginaDoTema(page, caminho);
     await semViolacaoNova(page, nome);
   });
 }
@@ -104,7 +104,7 @@ test('sem violação NOVA de WCAG AA: página de produto', async ({ page }) => {
   // O handle do produto depende do catálogo da loja, então chegamos nele pelo
   // caminho da cliente em vez de cravar uma URL que quebra quando o catálogo
   // muda.
-  await page.goto('/collections/all');
+  await abrePaginaDoTema(page, '/collections/all');
   await page.locator('a[href*="/products/"]').first().click();
   await expect(page).toHaveURL(/\/products\//);
   await semViolacaoNova(page, 'página de produto');
@@ -113,7 +113,7 @@ test('sem violação NOVA de WCAG AA: página de produto', async ({ page }) => {
 test('o drawer do carrinho aberto também passa', async ({ page }) => {
   // Estado que a auditoria manual esquece: o axe só vê o drawer quando ele
   // está aberto, e é ali que mora a armadilha de foco.
-  await page.goto('/');
+  await abrePaginaDoTema(page, '/');
   await page.locator('#minicart-button').click();
   await expect(page.locator('cart-drawer')).toHaveClass(/active/);
   await semViolacaoNova(page, 'drawer do carrinho');

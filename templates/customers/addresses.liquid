@@ -187,6 +187,7 @@
       </div>
 
       {% form 'customer_address', customer.new_address %}
+        <address-country>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
           <div>
@@ -229,19 +230,27 @@
 
           <div>
             <label for="address_zip_new" class="block text-sm font-medium text-foreground/70 mb-1">
-              {{ 'customer.addresses.zip' | t }} *
+              {%- comment -%}
+                "CEP" é palavra brasileira. O rótulo nasce genérico e vira CEP
+                quando o país é o Brasil — ver o componente `address-country`.
+              {%- endcomment -%}
+              <span data-br-text="{{ 'customer.addresses.zip_br' | t }}">{{ 'customer.addresses.zip' | t }}</span> *
             </label>
             <input
               type="text"
               id="address_zip_new"
               name="address[zip]"
               required
-              placeholder="00000-000"
-              maxlength="9"
+              {%- comment -%}
+                Sem `placeholder`/`maxlength` fixos: `maxlength="9"` é o tamanho
+                do CEP e cortava um ZIP+4 americano (12345-6789) na digitação.
+              {%- endcomment -%}
+              data-br-placeholder="00000-000"
+              data-br-maxlength="9"
               class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
               onblur="searchCEP('new')"
             >
-            <p class="mt-1 text-xs text-foreground/50">{{ 'customer.addresses.cep_hint' | t }}</p>
+            <p class="mt-1 text-xs text-foreground/50" data-br-only hidden>{{ 'customer.addresses.cep_hint' | t }}</p>
           </div>
 
           <div>
@@ -252,7 +261,7 @@
               type="tel"
               id="address_phone_new"
               name="address[phone]"
-              placeholder="(00) 00000-0000"
+              data-br-placeholder="(00) 00000-0000"
               class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
@@ -297,47 +306,6 @@
             >
           </div>
 
-          <div>
-            <label for="address_province_new" class="block text-sm font-medium text-foreground/70 mb-1">
-              {{ 'customer.addresses.province' | t }} *
-            </label>
-            <select
-              id="address_province_new"
-              name="address[province]"
-              required
-              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
-            >
-              <option value="">{{ 'customer.addresses.select_placeholder' | t }}</option>
-              <option value="AC">Acre</option>
-              <option value="AL">Alagoas</option>
-              <option value="AP">Amapá</option>
-              <option value="AM">Amazonas</option>
-              <option value="BA">Bahia</option>
-              <option value="CE">Ceará</option>
-              <option value="DF">Distrito Federal</option>
-              <option value="ES">Espírito Santo</option>
-              <option value="GO">Goiás</option>
-              <option value="MA">Maranhão</option>
-              <option value="MT">Mato Grosso</option>
-              <option value="MS">Mato Grosso do Sul</option>
-              <option value="MG">Minas Gerais</option>
-              <option value="PA">Pará</option>
-              <option value="PB">Paraíba</option>
-              <option value="PR">Paraná</option>
-              <option value="PE">Pernambuco</option>
-              <option value="PI">Piauí</option>
-              <option value="RJ">Rio de Janeiro</option>
-              <option value="RN">Rio Grande do Norte</option>
-              <option value="RS">Rio Grande do Sul</option>
-              <option value="RO">Rondônia</option>
-              <option value="RR">Roraima</option>
-              <option value="SC">Santa Catarina</option>
-              <option value="SP">São Paulo</option>
-              <option value="SE">Sergipe</option>
-              <option value="TO">Tocantins</option>
-            </select>
-          </div>
-
           <div class="sm:col-span-2">
             <label for="address_country_new" class="block text-sm font-medium text-foreground/70 mb-1">
               {{ 'customer.addresses.country' | t }} *
@@ -345,14 +313,43 @@
             <select
               id="address_country_new"
               name="address[country]"
+              data-address-country
+              {%- comment -%}
+                Endereço novo abre no país da LOJA, não num país fixo: é o
+                palpite certo para a maioria das clientes de qualquer lojista,
+                e acompanha quem mudar de mercado. Sem isto o formulário
+                abriria no primeiro país da lista em ordem alfabética.
+              {%- endcomment -%}
+              data-default="{{ shop.address.country }}"
               required
               class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
-              <option value="Brazil" selected>Brasil</option>
+              {{ all_country_option_tags }}
             </select>
           </div>
 
+          {%- comment -%}
+            O campo de estado nasce `hidden` e é o componente `address-country`
+            revela: a lista sai do `data-provinces` do país escolhido. Sem JS a
+            pessoa vê um formulário sem estado, em vez de um select vazio e
+            obrigatório que não deixa salvar e não explica por quê.
+          {%- endcomment -%}
+          <div data-address-province-field hidden>
+            <label for="address_province_new" class="block text-sm font-medium text-foreground/70 mb-1">
+              {{ 'customer.addresses.province' | t }} *
+            </label>
+            <select
+              id="address_province_new"
+              name="address[province]"
+              data-address-province
+              data-selected=""
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+            >
+              <option value="">{{ 'customer.addresses.select_placeholder' | t }}</option>
+            </select>
+          </div>
         </div>
+        </address-country>
 
         <div class="mt-6 flex items-center justify-end space-x-3">
           <button
@@ -401,6 +398,7 @@
       </div>
 
       {% form 'customer_address', address %}
+        <address-country>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
           <div>
@@ -446,7 +444,11 @@
 
           <div>
             <label for="address_zip_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
-              {{ 'customer.addresses.zip' | t }} *
+              {%- comment -%}
+                "CEP" é palavra brasileira. O rótulo nasce genérico e vira CEP
+                quando o país é o Brasil — ver o componente `address-country`.
+              {%- endcomment -%}
+              <span data-br-text="{{ 'customer.addresses.zip_br' | t }}">{{ 'customer.addresses.zip' | t }}</span> *
             </label>
             <input
               type="text"
@@ -454,8 +456,12 @@
               name="address[zip]"
               value="{{ address.zip }}"
               required
-              placeholder="00000-000"
-              maxlength="9"
+              {%- comment -%}
+                Sem `placeholder`/`maxlength` fixos: `maxlength="9"` é o tamanho
+                do CEP e cortava um ZIP+4 americano (12345-6789) na digitação.
+              {%- endcomment -%}
+              data-br-placeholder="00000-000"
+              data-br-maxlength="9"
               class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
               onblur="searchCEP('{{ address.id }}')"
             >
@@ -470,7 +476,7 @@
               id="address_phone_{{ address.id }}"
               name="address[phone]"
               value="{{ address.phone }}"
-              placeholder="(00) 00000-0000"
+              data-br-placeholder="(00) 00000-0000"
               class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
           </div>
@@ -518,47 +524,6 @@
             >
           </div>
 
-          <div>
-            <label for="address_province_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
-              {{ 'customer.addresses.province' | t }} *
-            </label>
-            <select
-              id="address_province_{{ address.id }}"
-              name="address[province]"
-              required
-              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
-            >
-              <option value="">{{ 'customer.addresses.select_placeholder' | t }}</option>
-              <option value="AC" {% if address.province_code == 'AC' %}selected{% endif %}>Acre</option>
-              <option value="AL" {% if address.province_code == 'AL' %}selected{% endif %}>Alagoas</option>
-              <option value="AP" {% if address.province_code == 'AP' %}selected{% endif %}>Amapá</option>
-              <option value="AM" {% if address.province_code == 'AM' %}selected{% endif %}>Amazonas</option>
-              <option value="BA" {% if address.province_code == 'BA' %}selected{% endif %}>Bahia</option>
-              <option value="CE" {% if address.province_code == 'CE' %}selected{% endif %}>Ceará</option>
-              <option value="DF" {% if address.province_code == 'DF' %}selected{% endif %}>Distrito Federal</option>
-              <option value="ES" {% if address.province_code == 'ES' %}selected{% endif %}>Espírito Santo</option>
-              <option value="GO" {% if address.province_code == 'GO' %}selected{% endif %}>Goiás</option>
-              <option value="MA" {% if address.province_code == 'MA' %}selected{% endif %}>Maranhão</option>
-              <option value="MT" {% if address.province_code == 'MT' %}selected{% endif %}>Mato Grosso</option>
-              <option value="MS" {% if address.province_code == 'MS' %}selected{% endif %}>Mato Grosso do Sul</option>
-              <option value="MG" {% if address.province_code == 'MG' %}selected{% endif %}>Minas Gerais</option>
-              <option value="PA" {% if address.province_code == 'PA' %}selected{% endif %}>Pará</option>
-              <option value="PB" {% if address.province_code == 'PB' %}selected{% endif %}>Paraíba</option>
-              <option value="PR" {% if address.province_code == 'PR' %}selected{% endif %}>Paraná</option>
-              <option value="PE" {% if address.province_code == 'PE' %}selected{% endif %}>Pernambuco</option>
-              <option value="PI" {% if address.province_code == 'PI' %}selected{% endif %}>Piauí</option>
-              <option value="RJ" {% if address.province_code == 'RJ' %}selected{% endif %}>Rio de Janeiro</option>
-              <option value="RN" {% if address.province_code == 'RN' %}selected{% endif %}>Rio Grande do Norte</option>
-              <option value="RS" {% if address.province_code == 'RS' %}selected{% endif %}>Rio Grande do Sul</option>
-              <option value="RO" {% if address.province_code == 'RO' %}selected{% endif %}>Rondônia</option>
-              <option value="RR" {% if address.province_code == 'RR' %}selected{% endif %}>Roraima</option>
-              <option value="SC" {% if address.province_code == 'SC' %}selected{% endif %}>Santa Catarina</option>
-              <option value="SP" {% if address.province_code == 'SP' %}selected{% endif %}>São Paulo</option>
-              <option value="SE" {% if address.province_code == 'SE' %}selected{% endif %}>Sergipe</option>
-              <option value="TO" {% if address.province_code == 'TO' %}selected{% endif %}>Tocantins</option>
-            </select>
-          </div>
-
           <div class="sm:col-span-2">
             <label for="address_country_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
               {{ 'customer.addresses.country' | t }} *
@@ -566,14 +531,37 @@
             <select
               id="address_country_{{ address.id }}"
               name="address[country]"
+              data-address-country
+              data-default="{{ address.country }}"
               required
               class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
             >
-              <option value="Brazil" {% if address.country == 'Brazil' %}selected{% endif %}>Brasil</option>
+              {{ all_country_option_tags }}
             </select>
           </div>
 
+          {%- comment -%}
+            O campo de estado nasce `hidden` e é o componente `address-country`
+            revela: a lista sai do `data-provinces` do país escolhido. Sem JS a
+            pessoa vê um formulário sem estado, em vez de um select vazio e
+            obrigatório que não deixa salvar e não explica por quê.
+          {%- endcomment -%}
+          <div data-address-province-field hidden>
+            <label for="address_province_{{ address.id }}" class="block text-sm font-medium text-foreground/70 mb-1">
+              {{ 'customer.addresses.province' | t }} *
+            </label>
+            <select
+              id="address_province_{{ address.id }}"
+              name="address[province]"
+              data-address-province
+              data-selected="{{ address.province_code }}"
+              class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+            >
+              <option value="">{{ 'customer.addresses.select_placeholder' | t }}</option>
+            </select>
+          </div>
         </div>
+        </address-country>
 
         <div class="mt-6 flex items-center justify-end space-x-3">
           <button
@@ -634,6 +622,8 @@
   </div>
 </div>
 
+<script src="{{ 'address-country.js' | asset_url }}" defer></script>
+
 <script>
 // Modal Functions
 function openAddressModal(modalId) {
@@ -669,8 +659,20 @@ function closeDeleteModal() {
 }
 
 // CEP Search (ViaCEP API)
+// O CEP e a máscara de telefone abaixo são regras BRASILEIRAS, e ficam atrás
+// desta pergunta pelo mesmo motivo que a lista de estados saiu do markup: o
+// formulário não pode presumir onde a cliente mora. Um telefone francês
+// reescrito como "(01) 2345-6789" é o mesmo defeito da lista fixa de países,
+// só que mais difícil de ver — ele estraga o que a pessoa digitou.
+function ehBrasil(elemento) {
+  const pais = elemento.closest('form')?.querySelector('[data-address-country]');
+  return !pais || pais.value === 'Brazil';
+}
+
 async function searchCEP(formId) {
   const cepInput = document.getElementById('address_zip_' + formId);
+  if (!ehBrasil(cepInput)) return;
+
   const cep = cepInput.value.replace(/\D/g, '');
 
   if (cep.length !== 8) return;
@@ -703,6 +705,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   cepInputs.forEach(input => {
     input.addEventListener('input', function(e) {
+      if (!ehBrasil(e.target)) return;
+
       let value = e.target.value.replace(/\D/g, '');
 
       if (value.length > 8) {
@@ -722,6 +726,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   phoneInputs.forEach(input => {
     input.addEventListener('input', function(e) {
+      if (!ehBrasil(e.target)) return;
+
       let value = e.target.value.replace(/\D/g, '');
 
       if (value.length > 11) {
