@@ -32,6 +32,45 @@ test('adicionar ao carrinho abre o drawer e atualiza a bolha', async ({ page }) 
   await expect(page.locator('#cart-empty')).toHaveClass(/hidden/);
 });
 
+test('a página do carrinho não repete o id que o drawer usa', async ({ page }) => {
+  // ⚠ MARCADO COMO fixme — issue #68, e o defeito é do TEMA, não do teste.
+  //
+  // O teste acima passa, e passa por sorte. `updateCartDrawer` (assets/cart.js)
+  // baixa a página INTEIRA do carrinho e copia uma div de lá para dentro do
+  // drawer:
+  //
+  //     const doc = parser.parseFromString(await (await fetch('/cart')).text(), 'text/html');
+  //     targetContainer.innerHTML = doc.querySelector('#cart-items-container').innerHTML;
+  //
+  // Só que `#cart-items-container` existe DUAS vezes no documento que ele
+  // acabou de baixar: o do drawer (snippets/cart-drawer.liquid, renderizado em
+  // theme.liquid:173) e o da página (theme.liquid:184, via content_for_layout).
+  // Dois elementos com o mesmo id é HTML inválido, e `querySelector` devolve o
+  // primeiro na ordem do documento — hoje o do drawer.
+  //
+  // Ou seja: funciona por ORDENAÇÃO, não por desenho. Mover
+  // `{% render 'cart-drawer' %}` para depois de `{{ content_for_layout }}` faz
+  // o seletor passar a ler a página do carrinho — sem erro no console, sem
+  // aviso no lint e sem um teste vermelho, porque os dois containers renderizam
+  // o mesmo `{% render 'cart-drawer-item' %}`. O dia em que divergirem é o dia
+  // em que o mini-carrinho mostra outra coisa.
+  //
+  // Não afrouxar até passar: a asserção é o comportamento correto, e é ela que
+  // vira verde quando a #68 for resolvida.
+  test.fixme(true, 'issue #68 — #cart-items-container existe no drawer E na página');
+
+  // O carrinho VAZIO esconde o defeito: o container da página só é renderizado
+  // com `cart.item_count > 0`, então sem item há um id só e a asserção passa.
+  // Por isso o produto entra antes.
+  await abrePDP(page);
+  await page.locator('add-to-cart button[name="add"]').first().click();
+  await expect(page.locator('cart-drawer')).toHaveClass(/active/);
+
+  await page.goto('/cart');
+
+  await expect(page.locator('#cart-items-container')).toHaveCount(1);
+});
+
 test('quick-add do card mantém o ícone e adiciona sem sair da coleção', async ({ page }) => {
   // A regressão que quase foi para produção: `_onResize` escrevia textContent
   // em TODO <add-to-cart>, apagando o SVG de cada card. tests/add-to-cart cobre
