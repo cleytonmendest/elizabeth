@@ -46,6 +46,21 @@ export default async function globalSetup() {
     return;
   }
 
+  // Com THEME_URL e sem id não existe caminho seguro: `paginaFixadora`
+  // montaria `preview_theme_id=undefined`, a Shopify ignoraria o parâmetro e
+  // serviria o tema PUBLICADO — que também emite `window.shopUrl`, porque
+  // também é este tema. A suíte inteira ficaria verde medindo produção.
+  // `scripts/tema-de-teste.mjs` já reprova esse caso no CI; aqui a checagem se
+  // repete porque este arquivo não confia na fixação nem quando a Shopify a
+  // confirma, e confiar no próprio ambiente seria a única exceção.
+  if (!id) {
+    throw new Error(
+      'THEME_URL existe e PREVIEW_THEME_ID não. Sem o id não há como fixar a ' +
+        'sessão no tema empurrado, e medir assim daria uma suíte verde sobre o ' +
+        'tema publicado. Ver ADR 0007.'
+    );
+  }
+
   const navegador = await chromium.launch(
     process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}
   );
@@ -82,7 +97,7 @@ export default async function globalSetup() {
       );
     }
 
-    if (id && String(respondeu.temaId) !== String(id)) {
+    if (String(respondeu.temaId) !== String(id)) {
       throw new Error(
         `A sessão NÃO ficou fixada no tema empurrado. Pedimos ${id} e quem respondeu ` +
           `foi ${respondeu.temaId} — provavelmente o tema publicado. Medir assim daria ` +

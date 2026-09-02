@@ -469,47 +469,82 @@ const red = (t) => paint('31', t);
 const green = (t) => paint('32', t);
 const dim = (t) => paint('2', t);
 
+/**
+ * O ambiente de um mutante — e por que o de navegador precisa ser PODADO.
+ *
+ * `e2e/gate.spec.mjs` não mede a loja: ele planta uma página com `setContent`
+ * e pergunta se o axe a reprova. Mas o `globalSetup` do Playwright é de
+ * config, roda em toda invocação, e com `THEME_URL` no ambiente ele sobe
+ * Chromium e abre sessão na loja — uma vez por mutante.
+ *
+ * O custo seria o de menos. O veredito aqui é `resultado.status !== 0`, então
+ * um `globalSetup` que estoura (sessão expirada, tema apagado, loja fora do
+ * ar) conta como mutante MORTO. Sairia "8 mutantes, 8 mortos" sem o axe ter
+ * rodado uma única vez — a exata forma de verde vazio que este script existe
+ * para encontrar, dentro do script que a procura.
+ *
+ * No CI o passo herda `THEME_URL` do `$GITHUB_ENV` que o passo "Onde medir"
+ * escreveu, então podar aqui protege a execução real, não só a hipótese.
+ */
+export function ambienteDoMutante(env, teste) {
+  if (!teste.startsWith('e2e/')) return env;
+  const { THEME_URL, PREVIEW_THEME_ID, ...resto } = env;
+  return resto;
+}
+
 const sobreviventes = [];
 
-for (const mutante of LISTA) {
-  const alvo = path.join(ROOT, mutante.arquivo);
-  const original = fs.readFileSync(alvo, 'utf8');
+function main() {
+  for (const mutante of LISTA) {
+    const alvo = path.join(ROOT, mutante.arquivo);
+    const original = fs.readFileSync(alvo, 'utf8');
 
-  const ocorrencias = original.split(mutante.de).length - 1;
-  if (ocorrencias !== 1) {
-    console.error(
-      red(`✖ ${mutante.arquivo}: o trecho a mutar aparece ${ocorrencias} vez(es), esperava 1.`)
+    const ocorrencias = original.split(mutante.de).length - 1;
+    if (ocorrencias !== 1) {
+      console.error(
+        red(`✖ ${mutante.arquivo}: o trecho a mutar aparece ${ocorrencias} vez(es), esperava 1.`)
+      );
+      console.error(dim(`  ${JSON.stringify(mutante.de)}`));
+      console.error(dim('  O arquivo mudou — atualize a lista em scripts/test-mutants.mjs.'));
+      process.exit(2);
+    }
+
+    let resultado;
+    try {
+      fs.writeFileSync(alvo, original.replace(mutante.de, mutante.para));
+      const navegador = mutante.teste.startsWith('e2e/');
+      resultado = navegador
+        ? spawnSync(PLAYWRIGHT, ['test', mutante.teste], {
+            cwd: ROOT,
+            encoding: 'utf8',
+            env: ambienteDoMutante(process.env, mutante.teste),
+          })
+        : spawnSync(VITEST, ['run', mutante.teste], { cwd: ROOT, encoding: 'utf8' });
+    } finally {
+      fs.writeFileSync(alvo, original);
+    }
+
+    const morreu = resultado.status !== 0;
+    console.log(
+      `${morreu ? green('morreu ') : red('SOBREVIVEU')}  ${mutante.porque}`,
+      dim(`(${mutante.arquivo} → ${mutante.teste})`)
     );
-    console.error(dim(`  ${JSON.stringify(mutante.de)}`));
-    console.error(dim('  O arquivo mudou — atualize a lista em scripts/test-mutants.mjs.'));
-    process.exit(2);
+    if (!morreu) sobreviventes.push(mutante);
   }
 
-  let resultado;
-  try {
-    fs.writeFileSync(alvo, original.replace(mutante.de, mutante.para));
-    const navegador = mutante.teste.startsWith('e2e/');
-    resultado = navegador
-      ? spawnSync(PLAYWRIGHT, ['test', mutante.teste], { cwd: ROOT, encoding: 'utf8' })
-      : spawnSync(VITEST, ['run', mutante.teste], { cwd: ROOT, encoding: 'utf8' });
-  } finally {
-    fs.writeFileSync(alvo, original);
+  console.log('');
+  if (sobreviventes.length) {
+    console.error(
+      red(`${sobreviventes.length} de ${LISTA.length} mutante(s) sobreviveram.`) +
+        ' A suíte ficou verde com o tema quebrado — esses testes não verificam o que dizem verificar.'
+    );
+    return 1;
   }
-
-  const morreu = resultado.status !== 0;
-  console.log(
-    `${morreu ? green('morreu ') : red('SOBREVIVEU')}  ${mutante.porque}`,
-    dim(`(${mutante.arquivo} → ${mutante.teste})`)
-  );
-  if (!morreu) sobreviventes.push(mutante);
+  console.log(green(`${LISTA.length} mutantes, ${LISTA.length} mortos.`));
+  return 0;
 }
 
-console.log('');
-if (sobreviventes.length) {
-  console.error(
-    red(`${sobreviventes.length} de ${LISTA.length} mutante(s) sobreviveram.`) +
-      ' A suíte ficou verde com o tema quebrado — esses testes não verificam o que dizem verificar.'
-  );
-  process.exit(1);
+// Só executa quando chamado direto; importar para teste não dispara nada.
+if (process.argv[1] && process.argv[1].endsWith('test-mutants.mjs')) {
+  process.exit(main());
 }
-console.log(green(`${LISTA.length} mutantes, ${LISTA.length} mortos.`));

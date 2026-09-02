@@ -155,7 +155,9 @@ jobs:
       # O contexto é `ci-pr-N`, separado do `pr-N` do preview.yml: dois
       # workflows empurrando para o MESMO tema ao mesmo tempo é corrida por
       # arquivo. `--development-context` reaproveita o tema entre execuções, então
-      # o custo é um tema por PR, não um por push.
+      # o custo é um tema por PR, não um por push — e `ci-main` para os pushes
+      # na main, que não têm número de PR. Ver o comentário do CONTEXTO abaixo:
+      # a primeira versão disto criava um tema por merge.
       #
       # Repare no que continua NÃO sendo feito aqui: o job inteiro não está
       # atrás de um `if:`. Job que só roda quando um secret existe é o bug que
@@ -174,7 +176,13 @@ jobs:
           # e uma string VAZIA nele conta como "senha fornecida", o que faria a
           # loja sem proteção falhar. Só vira a variável de verdade se existir.
           STORE_PASSWORD: ${{ secrets.SHOPIFY_STORE_PASSWORD }}
-          PR: ${{ github.event.number || github.run_id }}
+          # Em `pull_request` o número existe e o tema é reaproveitado entre
+          # as execuções da MESMA PR. Em `push` na main não existe número, e o
+          # fallback anterior era `github.run_id` — único por execução, o que
+          # criava um tema de desenvolvimento NOVO a cada merge, exatamente o
+          # oposto do que o comentário acima promete. A biblioteca de temas da
+          # loja é finita; `ci-main` é um contexto estável, reaproveitado.
+          CONTEXTO: ci-${{ github.event.number && format('pr-{0}', github.event.number) || 'main' }}
         run: |
           set -euo pipefail
 
@@ -204,7 +212,7 @@ jobs:
           # --development-context: --development".
           shopify theme push \
             --development \
-            --development-context "ci-pr-${PR}" \
+            --development-context "${CONTEXTO}" \
             --json \
             > tema.json
 
