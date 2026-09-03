@@ -5,7 +5,7 @@
  * A suíte tem duas metades. A de gate (`e2e/gate.spec.mjs`) verifica que o
  * verificador de acessibilidade sabe reprovar, e não precisa de loja: roda
  * sempre, em toda execução, em todo gatilho. A de storefront precisa de um
- * um tema EMPURRADO para a loja, em THEME_URL (ADR 0007).
+ * tema EMPURRADO para a loja, em THEME_URL (ADR 0007).
  *
  * O motivo deste script existir é uma linha só: quando a segunda metade não
  * roda, isso precisa APARECER. A alternativa óbvia — um job de CI com `if:`
@@ -37,8 +37,9 @@ if (temLoja) {
   console.log(`Loja: ${process.env.THEME_URL}`);
 } else {
   avisar(
-    'A metade de storefront NÃO rodou: falta THEME_URL (um tema empurrado com `shopify theme push --development` ' +
-      'autenticado). O que rodou foi só o gate de acessibilidade, que verifica o ' +
+    'A metade de storefront NÃO rodou: falta THEME_URL (um tema empurrado com ' +
+      '`shopify theme push --development`). O que rodou foi só o gate de ' +
+      'acessibilidade, que verifica o ' +
       'verificador. Enquanto este aviso aparecer, nenhuma página do tema foi ' +
       'medida por axe neste run — o verde abaixo não cobre acessibilidade real.'
   );

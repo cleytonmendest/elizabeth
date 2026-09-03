@@ -1,7 +1,9 @@
 /**
  * Os caminhos que a cliente percorre — os que, quebrados, custam venda.
  *
- * ⚠ NENHUM TESTE DESTE ARQUIVO JÁ RODOU (ver o cabeçalho de a11y.spec.mjs).
+ * Este arquivo já rodou contra a loja: a busca preditiva (#51) passou na
+ * primeira execução contra o tema empurrado — ver ADR 0007. O que continua
+ * sem rodar é o `test.fixme` da #68, e ele se anuncia no relatório.
  *
  * O que o Vitest cobre é o componente isolado: dado um evento, o que ele
  * escreve no DOM. O que falta é a costura — o Liquid renderizou o markup que o
@@ -10,12 +12,12 @@
  * escreveu o markup.
  */
 import { test, expect } from '@playwright/test';
-import { THEME_URL, MOTIVO } from './helpers/loja.mjs';
+import { THEME_URL, MOTIVO, abrePaginaDoTema } from './helpers/loja.mjs';
 
 test.skip(!THEME_URL, MOTIVO);
 
 async function abrePDP(page) {
-  await page.goto('/collections/all');
+  await abrePaginaDoTema(page, '/collections/all');
   await page.locator('a[href*="/products/"]').first().click();
   await expect(page).toHaveURL(/\/products\//);
 }
@@ -66,7 +68,7 @@ test('a página do carrinho não repete o id que o drawer usa', async ({ page })
   await page.locator('add-to-cart button[name="add"]').first().click();
   await expect(page.locator('cart-drawer')).toHaveClass(/active/);
 
-  await page.goto('/cart');
+  await abrePaginaDoTema(page, '/cart');
 
   await expect(page.locator('#cart-items-container')).toHaveCount(1);
 });
@@ -75,7 +77,7 @@ test('quick-add do card mantém o ícone e adiciona sem sair da coleção', asyn
   // A regressão que quase foi para produção: `_onResize` escrevia textContent
   // em TODO <add-to-cart>, apagando o SVG de cada card. tests/add-to-cart cobre
   // a lógica; só o navegador prova que o ícone continua desenhado na tela.
-  await page.goto('/collections/all');
+  await abrePaginaDoTema(page, '/collections/all');
 
   // `card-quick-add` só renderiza <add-to-cart> para produto de UMA variante;
   // com mais de uma, o card vira um link para a PDP. Num catálogo onde todo
@@ -127,7 +129,7 @@ test('trocar de variante muda preço e URL juntos', async ({ page }) => {
 });
 
 test('filtrar a coleção mantém a lista utilizável', async ({ page }) => {
-  await page.goto('/collections/all');
+  await abrePaginaDoTema(page, '/collections/all');
   const filtros = page.locator('[data-filters-panel] input[type="checkbox"]');
   test.skip((await filtros.count()) === 0, 'coleção sem filtros configurados');
 
@@ -138,7 +140,7 @@ test('filtrar a coleção mantém a lista utilizável', async ({ page }) => {
 });
 
 test('carregar mais acrescenta produtos sem recarregar a página', async ({ page }) => {
-  await page.goto('/collections/all');
+  await abrePaginaDoTema(page, '/collections/all');
   const botao = page.locator('[data-load-more]');
   test.skip(!(await botao.isVisible().catch(() => false)), 'coleção cabe numa página só');
 
@@ -183,7 +185,7 @@ test('busca preditiva responde enquanto a cliente digita', async ({ page }) => {
   //
   // Quando houver resultado, o teste aperta sozinho: as asserções condicionais
   // no fim verificam que o item é link para /products/.
-  await page.goto('/');
+  await abrePaginaDoTema(page, '/');
 
   // `search-component` é renderizado quatro vezes — três no header, uma por
   // breakpoint, e uma no menu mobile. Todas existem no DOM ao mesmo tempo e

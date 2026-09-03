@@ -76,8 +76,15 @@ export default async function globalSetup() {
       const campo = page.locator('input[name="password"]').first();
       if (await campo.count()) {
         await campo.fill(senha);
-        await campo.press('Enter');
-        await page.waitForLoadState('domcontentloaded');
+        // Esperar a NAVEGAÇÃO, não o estado do documento atual: um
+        // `waitForLoadState` volta na hora, porque a página que já está
+        // carregada já chegou nesse estado. O `goto` seguinte abortaria o POST
+        // em voo, a sessão nunca abriria, e o erro sairia lá embaixo falando de
+        // fixação de tema — mandando quem lê investigar o lugar errado.
+        await Promise.all([
+          page.waitForNavigation({ waitUntil: 'domcontentloaded' }).catch(() => {}),
+          campo.press('Enter'),
+        ]);
       }
     }
 
@@ -86,6 +93,7 @@ export default async function globalSetup() {
     const respondeu = await page.evaluate(() => ({
       temaId: window.Shopify?.theme?.id ?? null,
       ehNosso: 'shopUrl' in window,
+      naSenha: window.location.pathname.replace(/\/$/, '').endsWith('/password'),
       barraDePreview: Boolean(document.querySelector('#preview-bar-iframe')),
     }));
 
@@ -94,6 +102,23 @@ export default async function globalSetup() {
         `A loja respondeu, mas a página não é do tema: falta \`window.shopUrl\`. ` +
           `url=${page.url()} título="${await page.title()}". O caso mais comum é a ` +
           'proteção por senha da vitrine — confira o secret SHOPIFY_STORE_PASSWORD.'
+      );
+    }
+
+    // `ehNosso` NÃO responde "tem sessão". A #27 deu ao tema a sua própria
+    // página de senha, e ela emite `window.shopUrl` como qualquer outra — foi
+    // exatamente assim que a sonda antiga passou a aprovar loja trancada sem
+    // ninguém notar. Sem esta pergunta, uma senha errada (ou ausente numa loja
+    // protegida) chegaria como "a sessão não ficou fixada", que é verdade e é
+    // inútil: manda investigar a fixação quando o que falta é o secret.
+    if (respondeu.naSenha) {
+      throw new Error(
+        'A loja continua pedindo a senha da vitrine: quem respondeu foi a página ' +
+          `de senha DO TEMA (que também emite \`window.shopUrl\`). url=${page.url()}. ` +
+          (senha
+            ? 'SHOPIFY_STORE_PASSWORD chegou, então ela está errada ou o formulário ' +
+              'da vitrine mudou.'
+            : 'SHOPIFY_STORE_PASSWORD não chegou ao Playwright — é o secret que falta.')
       );
     }
 

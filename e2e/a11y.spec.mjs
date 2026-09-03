@@ -2,10 +2,14 @@
  * axe nas páginas do storefront — substitui a auditoria manual de a11y por um
  * gate de PR.
  *
- * ⚠ NENHUM TESTE DESTE ARQUIVO JÁ RODOU. Falta a loja (THEME_URL). Os
- * seletores e caminhos vieram do Liquid deste repositório, não de adivinhação,
- * mas só a primeira execução real diz se estão certos — espere ajustes nela, e
- * não trate este arquivo como cobertura até ele ter ficado verde uma vez.
+ * Este arquivo JÁ RODOU contra a loja: `e2e/a11y-baseline.json` só existe
+ * porque uma execução o produziu (ADR 0007). Ele mede o tema empurrado, e o
+ * que ele acha de novo reprova o PR.
+ *
+ * O aviso que estava aqui — "nenhum teste deste arquivo já rodou" — ficou
+ * falso e ninguém percebeu, porque nada o verificava. É a tese da ADR 0001
+ * batendo no próprio repositório: estado escrito à mão apodrece. O que vale é
+ * o baseline, que é medido; se ele existe, este arquivo rodou.
  *
  * Sobre os color schemes: o esquema de uma página é escolhido pela lojista no
  * admin, então não dá para alterná-lo pela URL. Quem cobre claro E escuro numa

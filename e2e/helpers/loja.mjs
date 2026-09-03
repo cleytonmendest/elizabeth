@@ -27,13 +27,19 @@
  *      deu ao tema a sua própria página de senha — que emite `window.shopUrl`
  *      como qualquer outra. Desde então uma loja trancada passava nela.
  *
- * Quem faz a pergunta forte agora é `e2e/global-setup.mjs`: ele exige
+ * Quem faz a pergunta forte é `e2e/global-setup.mjs`: ele exige
  * `window.Shopify.theme.id` igual ao tema que empurramos. Isso a sonda nunca
  * conseguiu perguntar, e é o que separa "é o nosso tema" de "é a nossa
  * BRANCH" — a diferença entre uma suíte verde e uma suíte verde medindo a loja
- * de produção.
+ * de produção. `abrePaginaDoTema` repete essa pergunta A CADA NAVEGAÇÃO, e o
+ * porquê está no cabeçalho dela.
+ *
+ * O valor é o NOME da propriedade, não a frase `window.shopUrl`: quem verifica
+ * e quem escreve a mensagem leem a mesma constante. Enquanto eram duas coisas,
+ * a verificação podia mudar sem a mensagem mudar junto — e mensagem que
+ * descreve outra verificação é pior que mensagem nenhuma.
  */
-export const MARCA_DO_TEMA = 'window.shopUrl';
+export const MARCA_DO_TEMA = 'shopUrl';
 
 export const THEME_URL = process.env.THEME_URL;
 
@@ -74,42 +80,76 @@ export const MOTIVO_CLIENTE =
 export const SENHA_VITRINE = process.env.SHOPIFY_STORE_PASSWORD;
 
 /**
- * Abre uma página E confirma que quem a serviu foi o nosso tema.
+ * Abre uma página E confirma que quem a serviu foi a nossa BRANCH.
  *
- * ── Por que isto não é paranoia ────────────────────────────────────────────
+ * ── Por que a pergunta fraca não bastava mais ──────────────────────────────
  *
- * `e2e/global-setup.mjs` já fez a pergunta forte uma vez, na abertura da
- * sessão: o tema que respondeu é o que empurramos? Aqui a pergunta é mais
- * fraca e mais frequente — esta página veio de um layout nosso?
+ * Até a #64, `baseURL` era `127.0.0.1:9292`: não existia produção alcançável,
+ * e perguntar "esta página veio de um layout nosso?" era suficiente. Hoje
+ * `baseURL` É a origem da loja, e o tema publicado É ESTE MESMO TEMA — emite
+ * `window.shopUrl` igualzinho. A pergunta fraca passou a ter a mesma resposta
+ * nos dois casos que ela precisava separar.
  *
- * Ela continua valendo depois da #64, mesmo sem proxy no caminho. Uma sessão
- * pode ser perdida (a senha da vitrine expira, um redirect leva para fora), e
- * quando isso acontece no meio da suíte o axe acusa `html-has-lang` — uma
- * mensagem que manda quem lê investigar o `theme.liquid`, que está correto.
- * Duas horas foi o que custou a primeira vez.
+ * E a fixação do tema é por SESSÃO, não por URL. Se ela cair no meio da suíte
+ * — cookie expirado, redirect para fora, o que for —, cada `page.goto`
+ * seguinte recebe 200 da vitrine PUBLICADA, e o desfecho é o que a ADR 0007
+ * chama de pior resultado possível: verde medindo produção.
+ *
+ * Por isso a prova não é feita uma vez, no `global-setup`, e sim a cada
+ * navegação: um verificador que confere na entrada e confia no resto do
+ * percurso não verifica o percurso.
+ *
+ * `window.Shopify.theme.id` vem do `{{ content_for_header }}`, que os três
+ * layouts emitem — onde há `shopUrl`, há id.
  *
  * A segunda tentativa cobre o caso transitório, e é anunciada em vez de
  * silenciosa: instabilidade é informação, não detalhe a esconder.
  */
 export async function abrePaginaDoTema(page, caminho) {
+  const esperado = process.env.PREVIEW_THEME_ID;
+  let visto;
+
   for (let tentativa = 1; tentativa <= 2; tentativa += 1) {
     await page.goto(caminho);
-    if (await page.evaluate(() => 'shopUrl' in window)) return;
+    visto = await page.evaluate(
+      (marca) => ({
+        ehNosso: marca in window,
+        temaId: window.Shopify?.theme?.id ?? null,
+      }),
+      MARCA_DO_TEMA
+    );
+
+    if (visto.ehNosso && String(visto.temaId) === String(esperado)) return;
 
     if (tentativa === 1) {
-      console.log(`  [loja] ${caminho} veio sem \`${MARCA_DO_TEMA}\` — tentando de novo`);
+      const sintoma = visto.ehNosso
+        ? `respondeu o tema ${visto.temaId}, e não o ${esperado}`
+        : `veio sem \`window.${MARCA_DO_TEMA}\``;
+      console.log(`  [loja] ${caminho} ${sintoma} — tentando de novo`);
     }
   }
 
   const lang = await page.getAttribute('html', 'lang');
   const titulo = await page.title().catch(() => '(sem título)');
+  const onde = `url=${page.url()} título="${titulo}" lang="${lang}"`;
+
+  // Duas causas, duas mensagens. Uma só mandaria metade das investigações
+  // para o lugar errado — que é o defeito que este arquivo inteiro combate.
+  if (!visto.ehNosso) {
+    throw new Error(
+      `A página ${caminho} NÃO foi servida pelo nosso tema em duas tentativas: falta ` +
+        `\`window.${MARCA_DO_TEMA}\`, que snippets/theme-head.liquid gera em toda página ` +
+        `nossa. ${onde}. Medir acessibilidade daqui reportaria defeito de uma página ` +
+        'que não é do tema — foi assim que uma tela de senha virou dez falhas de WCAG. ' +
+        'Se a sessão caiu, o culpado costuma ser a senha da vitrine: ver ' +
+        '`e2e/global-setup.mjs` e o secret SHOPIFY_STORE_PASSWORD.'
+    );
+  }
 
   throw new Error(
-    `A página ${caminho} NÃO foi servida pelo nosso tema em duas tentativas: falta ` +
-      `\`${MARCA_DO_TEMA}\`, que snippets/theme-head.liquid gera em toda página nossa. ` +
-      `título="${titulo}" lang="${lang}". Medir acessibilidade daqui reportaria ` +
-      'defeito de uma página que não é do tema — foi assim que uma tela de senha ' +
-      'virou dez falhas de WCAG. Se a sessão caiu, o culpado costuma ser a senha ' +
-      'da vitrine: ver `e2e/global-setup.mjs` e o secret SHOPIFY_STORE_PASSWORD.'
+    `A página ${caminho} é do nosso tema, mas do tema ERRADO: respondeu ` +
+      `${visto.temaId} e o empurrado é ${esperado}. A fixação é por SESSÃO e caiu no ` +
+      `meio da execução — daqui para a frente a suíte mediria a vitrine PUBLICADA e ` +
+      `ficaria verde sobre ela. ${onde}. Ver ADR 0007.`
   );
 }

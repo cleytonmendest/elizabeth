@@ -86,7 +86,18 @@ export function avaliar({ bruto }) {
       motivo: `O tema veio sem \`preview_url\` utilizável. Veio: ${resumo(tema)}`,
     };
   }
-  if (!/^https?:\/\//i.test(url)) {
+  // PARSEAR, não casar com regex. `^https?://` aprova "http://", e aí quem
+  // estoura é o `new URL()` de quem consome — com TypeError e stack, no lugar
+  // do `::error::` que este arquivo existe para produzir. Reprovaria de
+  // qualquer jeito, só que dizendo a coisa errada: é a forma exata de defeito
+  // descrita no cabeçalho, um passo antes.
+  let parseada;
+  try {
+    parseada = new URL(url);
+  } catch {
+    return { estado: 'invalido', motivo: `\`preview_url\` não é uma URL: ${url}` };
+  }
+  if (parseada.protocol !== 'http:' && parseada.protocol !== 'https:') {
     return { estado: 'invalido', motivo: `\`preview_url\` não é uma URL http: ${url}` };
   }
 

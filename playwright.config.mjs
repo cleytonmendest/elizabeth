@@ -47,6 +47,13 @@ export default defineConfig({
 
   use: {
     baseURL: process.env.THEME_URL,
+
+    // Diagnóstico só do que falhou. Desde a ADR 0007 estes artefatos carregam
+    // a sessão de uma loja REAL — cookie da senha da vitrine e da fixação do
+    // tema —, e não mais um localhost. Ficam 7 dias, no artefato de um run
+    // privado, e só quem tem acesso ao repositório os baixa; a senha da
+    // vitrine é de loja de desenvolvimento e rotaciona pelo secret. Vale
+    // saber ao anexar um trace num lugar mais público que o Actions.
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
 

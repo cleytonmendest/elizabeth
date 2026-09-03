@@ -47,6 +47,27 @@ describe('o id do tema a pré-visualizar', () => {
   });
 });
 
+describe('URL que passa no formato e não parseia', () => {
+  // `^https?://` aprova "http://", e aí quem estoura é o `new URL()` de quem
+  // consome — TypeError com stack, no lugar do `::error::` que o script existe
+  // para produzir. Reprovar não bastava: tinha que reprovar DIZENDO O QUÊ.
+  it('"http://" reprova como veredito, não como exceção', () => {
+    const { ok, recado } = decidir({ bruto: jsonDe({ ...TEMA, preview_url: 'http://' }) });
+
+    expect(ok).toBe(false);
+    expect(recado).toContain('não é uma URL');
+  });
+
+  it('protocolo que não é http também reprova sem estourar', () => {
+    const { ok, recado } = decidir({
+      bruto: jsonDe({ ...TEMA, preview_url: 'ftp://loja.myshopify.com/' }),
+    });
+
+    expect(ok).toBe(false);
+    expect(recado).toContain('não é uma URL http');
+  });
+});
+
 describe('o veredito', () => {
   it('push bem-sucedido vira as duas variáveis', () => {
     const { ok, medindo, linhas } = decidir({ bruto: jsonDe(TEMA) });

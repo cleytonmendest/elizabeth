@@ -149,8 +149,8 @@ const MUTANTES = [
     // do CI mostraria isso — só um revisor clicando.
     porque: 'o comentário de preview é publicado mesmo sem preview_url utilizável',
     arquivo: 'scripts/preview.mjs',
-    de: '  if (!/^https?:\\/\\//i.test(url)) {',
-    para: '  if (false) {',
+    de: "    parseada = new URL(url);",
+    para: "    parseada = { protocol: 'https:' };",
     teste: 'tests/preview.test.mjs',
   },
   {
@@ -390,6 +390,32 @@ const MUTANTES = [
     de: '  return [...registradas].filter((fingerprint) => !presentes.has(fingerprint)).sort();',
     para: '  return [];',
     teste: 'tests/catraca.test.mjs',
+  },
+  // ── A guarda de navegação (#64 / ADR 0007) ──────────────────────────────
+  //
+  // Alvo: o que separa a suíte de uma suíte verde medindo a loja PUBLICADA.
+  // Estes rodam em Vitest, contra um `page` falso, porque a decisão não
+  // depende de navegador — só de qual resposta a função aceita.
+  {
+    porque: 'a guarda volta a aceitar qualquer tema nosso — inclusive o publicado',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: 'if (visto.ehNosso && String(visto.temaId) === String(esperado)) return;',
+    para: 'if (visto.ehNosso) return;',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    porque: 'o retry vira três tentativas — o gasto some do relatório',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: 'for (let tentativa = 1; tentativa <= 2; tentativa += 1) {',
+    para: 'for (let tentativa = 1; tentativa <= 3; tentativa += 1) {',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    porque: 'as duas causas passam a dar a MESMA mensagem, e o diagnóstico some',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '  if (!visto.ehNosso) {',
+    para: '  if (false) {',
+    teste: 'tests/loja.test.mjs',
   },
 ];
 

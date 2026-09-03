@@ -28,7 +28,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
-import { THEME_URL, MOTIVO, STYLEGUIDE_PATH } from './helpers/loja.mjs';
+import { THEME_URL, MOTIVO, STYLEGUIDE_PATH, abrePaginaDoTema } from './helpers/loja.mjs';
 
 const BASELINE = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -50,7 +50,7 @@ test.skip(
 );
 
 test('a página inteira bate com a baseline', async ({ page }) => {
-  await page.goto(STYLEGUIDE_PATH);
+  await abrePaginaDoTema(page, STYLEGUIDE_PATH);
 
   // Sem isto, qualquer animação em curso vira diferença de pixel e o teste
   // oscila — e teste que oscila a gente aprende a ignorar.
