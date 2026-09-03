@@ -571,6 +571,26 @@ const dim = (t) => paint('2', t);
  * No CI o passo herda `THEME_URL` do `$GITHUB_ENV` que o passo "Onde medir"
  * escreveu, então podar aqui protege a execução real, não só a hipótese.
  */
+/**
+ * Onde o mutante de navegador escreve os artefatos DELE.
+ *
+ * Não é arrumação: o Playwright APAGA o diretório de saída no começo de cada
+ * execução. Com o padrão (`test-results/`), este passo — que roda depois da
+ * suíte, no mesmo job — levava junto screenshot, trace e a imagem gravada por
+ * uma baseline que faltava, e o `upload-artifact` subia um artefato sem as
+ * evidências da falha que ele existe para carregar.
+ *
+ * Medido no PR #75, e é o caso que torna isto concreto: a suíte reprovou
+ * gravando `styleguide-actual.png` (#74), o passo dos mutantes rodou em
+ * seguida, e o artefato subiu com 3 arquivos — nenhum deles a imagem que a
+ * mensagem de falha mandava olhar. O verificador tinha voltado a mentir sobre
+ * o que entregava.
+ *
+ * É o mesmo cuidado de `ambienteDoMutante`, um degrau adiante: o mutante mede
+ * o verificador, e não pode mexer em mais nada da execução real.
+ */
+export const SAIDA_DO_MUTANTE = 'test-results-mutantes';
+
 export function ambienteDoMutante(env, teste) {
   if (!teste.startsWith('e2e/')) return env;
   const { THEME_URL, PREVIEW_THEME_ID, ...resto } = env;
@@ -599,7 +619,7 @@ function main() {
       fs.writeFileSync(alvo, original.replace(mutante.de, mutante.para));
       const navegador = mutante.teste.startsWith('e2e/');
       resultado = navegador
-        ? spawnSync(PLAYWRIGHT, ['test', mutante.teste], {
+        ? spawnSync(PLAYWRIGHT, ['test', mutante.teste, `--output=${SAIDA_DO_MUTANTE}`], {
             cwd: ROOT,
             encoding: 'utf8',
             env: ambienteDoMutante(process.env, mutante.teste),
