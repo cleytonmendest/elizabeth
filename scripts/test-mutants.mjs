@@ -436,6 +436,46 @@ const MUTANTES = [
     para: '  const falha = null;',
     teste: 'tests/loja.test.mjs',
   },
+  // ── O resumo do que NÃO rodou (#74) ─────────────────────────────────────
+  {
+    // Um describe a mais e o pulo sumia do resumo — reconstruindo em silêncio
+    // exatamente o que o resumo existe para quebrar.
+    porque: 'o resumo para de descer em suíte aninhada e subnotifica os testes pulados',
+    arquivo: 'scripts/e2e.mjs',
+    de: '    for (const filha of suite?.suites ?? []) varre(filha);',
+    para: '    void suite;',
+    teste: 'tests/e2e.test.mjs',
+  },
+  {
+    // O outro lado: contar quem rodou. "23 testes não rodaram" numa execução
+    // em que todos rodaram ensina a ignorar o aviso na primeira leitura.
+    porque: 'o resumo passa a contar também os testes que rodaram',
+    arquivo: 'scripts/e2e.mjs',
+    de: "        if (teste.status !== 'skipped') continue;",
+    para: '        if (false) continue;',
+    teste: 'tests/e2e.test.mjs',
+  },
+  {
+    // A #73 exatamente como ela existia: a guarda cobria `page.goto` e a
+    // navegação por CLIQUE entrava sem prova nenhuma. É por clique que a PDP
+    // aparece — o começo de quase todo teste de carrinho, e a página que o axe
+    // mede na `a11y.spec.mjs`.
+    porque: 'a guarda do CLIQUE some, e a navegação por clique volta a poder medir o tema publicado',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '  const falhou = reprovacao({\n    visto: await olha(page),',
+    para: '  const falhou = null;\n  void ({\n    visto: await olha(page),',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    // O modo sutil de a guarda do clique não guardar nada: perguntar antes de
+    // o documento novo existir. A resposta viria da página ANTERIOR, que
+    // acabou de passar na guarda — verde sobre a página errada.
+    porque: 'o clique deixa de esperar o documento novo, e a guarda pergunta à página anterior',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '    await page.waitForURL((url) => url.href !== antes, {',
+    para: '    void antes;\n    void ({',
+    teste: 'tests/loja.test.mjs',
+  },
 ];
 
 

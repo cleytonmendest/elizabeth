@@ -25,6 +25,7 @@ import { defineConfig, devices } from '@playwright/test';
  * publicada e ficaria verde.
  */
 import { ARQUIVO_DE_SESSAO } from './e2e/global-setup.mjs';
+import { RELATORIO } from './scripts/e2e.mjs';
 
 export default defineConfig({
   testDir: 'e2e',
@@ -43,7 +44,14 @@ export default defineConfig({
   // mais o vê. Se um teste oscila, o teste é que está errado.
   retries: 0,
 
-  reporter: process.env.CI ? [['github'], ['list']] : [['list']],
+  // O `json` acompanha os outros dois SEMPRE, e não só no CI: é dele que
+  // `scripts/e2e.mjs` tira quais testes não rodaram e por quê. Sem ele, um
+  // teste que se pula por conta própria é indistinguível de um que passou —
+  // que foi exatamente o que a regressão visual do style guide fez a
+  // existência inteira dela (#74).
+  reporter: process.env.CI
+    ? [['github'], ['list'], ['json', { outputFile: RELATORIO }]]
+    : [['list'], ['json', { outputFile: RELATORIO }]],
 
   use: {
     baseURL: process.env.THEME_URL,
@@ -76,4 +84,12 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 
   snapshotPathTemplate: '{testDir}/__screenshots__/{arg}{ext}',
+
+  // Explícito porque é o contrato da regressão visual, não uma preferência:
+  // baseline que falta é GRAVADA e o run que a gravou REPROVA. Uma baseline
+  // que ninguém olhou não é referência — é o estado atual promovido a verdade,
+  // e é por isso que o run precisa ficar vermelho até alguém ver a imagem e
+  // commitá-la (#74). Hoje é também o padrão do Playwright; escrito aqui, ele
+  // para de depender disso continuar sendo verdade.
+  updateSnapshots: 'missing',
 });
