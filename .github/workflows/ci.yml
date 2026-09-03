@@ -236,7 +236,14 @@ jobs:
       # alvo da mutação não é o tema, é o VERIFICADOR de acessibilidade. Um
       # critério configurado errado deixaria toda página passar exibindo
       # "0 violações" com a mesma cara de quando está tudo certo.
+      # `!cancelled()` e não a ausência de `if:`: este passo NÃO depende da loja
+      # (o `ambienteDoMutante` poda THEME_URL do ambiente dele), então uma
+      # credencial vencida no passo acima não é motivo para o verificador do
+      # verificador deixar de rodar. Sem isto, o mesmo defeito que o
+      # `globalSetup` tinha se repetia um nível acima: a falha de storefront
+      # levava junto a metade que não precisa de storefront.
       - name: O gate de a11y consegue reprovar?
+        if: ${{ !cancelled() }}
         run: npm run test:mutants -- --e2e
 
       - uses: actions/upload-artifact@v4

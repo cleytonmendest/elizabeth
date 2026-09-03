@@ -20,6 +20,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { ARQUIVO_DE_FALHA } from '../e2e/helpers/sessao.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PLAYWRIGHT = path.join(ROOT, 'node_modules', '.bin', 'playwright');
@@ -63,4 +64,20 @@ const { status } = spawnSync(PLAYWRIGHT, ['test', ...process.argv.slice(2)], {
   cwd: ROOT,
   stdio: 'inherit',
 });
+
+// A terceira forma de "não mediu": THEME_URL existia, e a sessão não abriu.
+// O `globalSetup` grava o motivo em vez de estourar — estourar abortaria a
+// execução inteira e levaria junto o gate, que não precisa de loja. O preço
+// desse acerto é que a falha some do topo do log, atrás de N testes vermelhos
+// todos dizendo a mesma coisa. Este aviso a traz de volta para onde os outros
+// dois já estão: o resumo do CI.
+try {
+  const { motivo } = JSON.parse(fs.readFileSync(path.join(ROOT, ARQUIVO_DE_FALHA), 'utf8'));
+  avisar(
+    `A metade de storefront REPROVOU sem medir: a sessão da vitrine não abriu. ${motivo}`
+  );
+} catch {
+  // Sem arquivo, sem falha — é o caminho normal.
+}
+
 process.exit(status ?? 1);

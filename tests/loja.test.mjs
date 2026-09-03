@@ -13,8 +13,10 @@
  * decisão não precisa de navegador para estar certa ou errada. Um navegador de
  * verdade só provaria que a Shopify responde; ele está em `e2e/`.
  */
+import fs from 'node:fs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { abrePaginaDoTema } from '../e2e/helpers/loja.mjs';
+import { abrePaginaDoTema, falhaDeSessao } from '../e2e/helpers/loja.mjs';
+import { ARQUIVO_DE_FALHA } from '../e2e/helpers/sessao.mjs';
 
 const NOSSO = '158207180978';
 const PUBLICADO = '111111111';
@@ -46,16 +48,19 @@ function pageFalso(respostas) {
   };
 }
 
-const nossoTema = { ehNosso: true, temaId: NOSSO };
-const temaPublicado = { ehNosso: true, temaId: PUBLICADO };
-const outroLugar = { ehNosso: false, temaId: null };
+const nossoTema = { ehNosso: true, temaId: NOSSO, barraDePreview: false };
+const temaPublicado = { ehNosso: true, temaId: PUBLICADO, barraDePreview: false };
+const outroLugar = { ehNosso: false, temaId: null, barraDePreview: false };
+const comBarra = { ehNosso: true, temaId: NOSSO, barraDePreview: true };
 
 beforeEach(() => {
   process.env.PREVIEW_THEME_ID = NOSSO;
+  fs.rmSync(ARQUIVO_DE_FALHA, { force: true });
   vi.spyOn(console, 'log').mockImplementation(() => {});
 });
 
 afterEach(() => {
+  fs.rmSync(ARQUIVO_DE_FALHA, { force: true });
   vi.restoreAllMocks();
 });
 
@@ -107,5 +112,44 @@ describe('o que reprova — e com qual diagnóstico', () => {
     const page = pageFalso([temaPublicado, temaPublicado, nossoTema]);
     await expect(abrePaginaDoTema(page, '/')).rejects.toThrow();
     expect(page.visitou).toHaveLength(2);
+  });
+});
+
+describe('a barra de preview da Shopify', () => {
+  // `pb=0` é pedido UMA vez, na página fixadora do global-setup. Se ele valesse
+  // só para aquela navegação, tudo daqui para a frente traria markup que a
+  // vitrine publicada não tem — e o axe mediria outra página exibindo a mesma
+  // cara de quando está tudo certo.
+  it('barra presente reprova, mesmo sendo o tema certo', async () => {
+    const page = pageFalso([comBarra]);
+    const erro = await abrePaginaDoTema(page, '/').catch((e) => e);
+    expect(erro.message).toContain('#preview-bar-iframe');
+    expect(erro.message).not.toMatch(/tema ERRADO/);
+  });
+});
+
+describe('a sessão que não abriu', () => {
+  // O `globalSetup` GRAVA a falha em vez de estourar: estourar lá aborta a
+  // execução inteira e leva junto o `gate.spec.mjs`, que não precisa de loja.
+  // O preço é este — alguém precisa ler o registro e reprovar por ele.
+  it('reprova ANTES de navegar, com o motivo que o setup registrou', async () => {
+    fs.mkdirSync('e2e/.auth', { recursive: true });
+    fs.writeFileSync(ARQUIVO_DE_FALHA, JSON.stringify({ motivo: 'senha da vitrine recusada' }));
+
+    const page = pageFalso([nossoTema]);
+    const erro = await abrePaginaDoTema(page, '/').catch((e) => e);
+
+    expect(erro.message).toContain('senha da vitrine recusada');
+    expect(page.visitou).toEqual([]);
+  });
+
+  it('sem registro, não inventa falha', () => {
+    expect(falhaDeSessao()).toBeNull();
+  });
+
+  it('registro corrompido não vira falha fantasma', () => {
+    fs.mkdirSync('e2e/.auth', { recursive: true });
+    fs.writeFileSync(ARQUIVO_DE_FALHA, 'isto não é json');
+    expect(falhaDeSessao()).toBeNull();
   });
 });

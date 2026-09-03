@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import { ARQUIVO_DE_FALHA } from './sessao.mjs';
+
 /**
  * A guarda dos testes que precisam de uma loja.
  *
@@ -105,7 +108,34 @@ export const SENHA_VITRINE = process.env.SHOPIFY_STORE_PASSWORD;
  * A segunda tentativa cobre o caso transitório, e é anunciada em vez de
  * silenciosa: instabilidade é informação, não detalhe a esconder.
  */
+/**
+ * O motivo pelo qual a sessão não abriu, ou `null`.
+ *
+ * `e2e/global-setup.mjs` GRAVA a falha em vez de estourar, porque estourar num
+ * globalSetup aborta a execução inteira e leva junto `e2e/gate.spec.mjs`, que
+ * não precisa de loja nenhuma. A leitura é feita a cada chamada, e não uma vez
+ * no import, porque o import acontece na coleta — antes do setup ter escrito.
+ */
+export function falhaDeSessao() {
+  try {
+    return JSON.parse(fs.readFileSync(ARQUIVO_DE_FALHA, 'utf8')).motivo ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function abrePaginaDoTema(page, caminho) {
+  // Antes de navegar: se a sessão não abriu, navegar é pior que não navegar —
+  // a loja responde 200 com o tema PUBLICADO e a falha viria disfarçada de
+  // asserção de conteúdo, a três camadas do motivo real.
+  const falha = falhaDeSessao();
+  if (falha) {
+    throw new Error(
+      `A sessão da vitrine não abriu, então este teste não tem como medir esta ` +
+        `branch. Motivo registrado por e2e/global-setup.mjs:\n  ${falha}`
+    );
+  }
+
   const esperado = process.env.PREVIEW_THEME_ID;
   let visto;
 
@@ -115,16 +145,21 @@ export async function abrePaginaDoTema(page, caminho) {
       (marca) => ({
         ehNosso: marca in window,
         temaId: window.Shopify?.theme?.id ?? null,
+        barraDePreview: Boolean(document.querySelector('#preview-bar-iframe')),
       }),
       MARCA_DO_TEMA
     );
 
-    if (visto.ehNosso && String(visto.temaId) === String(esperado)) return;
+    if (visto.ehNosso && String(visto.temaId) === String(esperado) && !visto.barraDePreview) {
+      return;
+    }
 
     if (tentativa === 1) {
-      const sintoma = visto.ehNosso
-        ? `respondeu o tema ${visto.temaId}, e não o ${esperado}`
-        : `veio sem \`window.${MARCA_DO_TEMA}\``;
+      const sintoma = !visto.ehNosso
+        ? `veio sem \`window.${MARCA_DO_TEMA}\``
+        : visto.barraDePreview
+          ? 'veio com a barra de preview'
+          : `respondeu o tema ${visto.temaId}, e não o ${esperado}`;
       console.log(`  [loja] ${caminho} ${sintoma} — tentando de novo`);
     }
   }
@@ -143,6 +178,28 @@ export async function abrePaginaDoTema(page, caminho) {
         'que não é do tema — foi assim que uma tela de senha virou dez falhas de WCAG. ' +
         'Se a sessão caiu, o culpado costuma ser a senha da vitrine: ver ' +
         '`e2e/global-setup.mjs` e o secret SHOPIFY_STORE_PASSWORD.'
+    );
+  }
+
+  // A barra é markup que a Shopify injeta sobre tema de desenvolvimento, e que
+  // a vitrine publicada não tem. Medir acessibilidade com ela é medir outra
+  // página — e o `FORA_DO_TEMA` do axe não a exclui, de propósito: excluir
+  // ESCONDERIA o sintoma, quando o que ele indica é que a página inteira veio
+  // vestida de outra coisa.
+  //
+  // O `global-setup` já pede `pb=0` uma vez, na fixação, e a evidência da
+  // primeira execução diz que isso vale para a sessão toda (o baseline de a11y
+  // tem 8 entradas, nenhuma da barra — se ela estivesse nas páginas seguintes,
+  // o axe teria enchido o arquivo com ela). "Diz que vale" não é "verifica que
+  // vale": é o mesmo argumento que este arquivo faz para a fixação do tema, e
+  // ele custa uma propriedade no `evaluate` que já ia e voltava.
+  if (visto.barraDePreview) {
+    throw new Error(
+      `A página ${caminho} veio com a barra de preview da Shopify ` +
+        '(`#preview-bar-iframe`), que a vitrine publicada não tem — o axe mediria ' +
+        'elementos que o tema não controla. O `pb=0` da página fixadora deveria ' +
+        'valer para a sessão inteira; se a Shopify mudou isso, é aqui que aparece. ' +
+        'Ver `e2e/global-setup.mjs` e a ADR 0007.'
     );
   }
 

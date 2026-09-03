@@ -16,13 +16,30 @@
  *
  * Então aqui não se confia: exige-se a evidência. `window.Shopify.theme.id`
  * vem do `content_for_header`, é escrito pela Shopify e não pelo tema, e diz
- * QUAL tema respondeu. Se ele não for o que empurramos, a suíte não começa.
+ * QUAL tema respondeu. Se ele não for o que empurramos, a metade de storefront
+ * não roda.
+ *
+ * ── E o que este arquivo NÃO pode derrubar ────────────────────────────────
+ *
+ * `globalSetup` é de config: se ele ESTOURA, o Playwright aborta a execução
+ * inteira antes de coletar um teste — inclusive `e2e/gate.spec.mjs`, que não
+ * precisa de loja e que o CLAUDE.md promete rodar sempre. Uma senha rotacionada
+ * viraria uma run que não mediu NADA, quando devia virar uma run que mediu o
+ * verificador e disse em voz alta o que não conseguiu medir. Seria o contrato
+ * deste repositório quebrado pela guarda que existe para mantê-lo.
+ *
+ * Por isso a falha não sobe: ela é GRAVADA. `e2e/.auth/falha.json` registra o
+ * motivo, `abrePaginaDoTema` o transforma na primeira coisa que cada teste de
+ * storefront vê, e o gate roda normalmente. Reprovar continua sendo reprovar —
+ * a ADR 0007 já diz que token expirado derruba a metade de storefront —, mas
+ * agora derruba só ela.
  */
 import { chromium } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
+import { ARQUIVO_DE_SESSAO, ARQUIVO_DE_FALHA } from './helpers/sessao.mjs';
 
-export const ARQUIVO_DE_SESSAO = path.join('e2e', '.auth', 'vitrine.json');
+export { ARQUIVO_DE_SESSAO, ARQUIVO_DE_FALHA } from './helpers/sessao.mjs';
 
 /**
  * `pb=0` desliga a barra de preview que a Shopify desenha sobre temas de
@@ -32,6 +49,16 @@ export const ARQUIVO_DE_SESSAO = path.join('e2e', '.auth', 'vitrine.json');
  */
 export const paginaFixadora = (id) => `/?preview_theme_id=${encodeURIComponent(id)}&pb=0`;
 
+/**
+ * Grava o motivo e devolve. Quem chama já sabe que não há sessão; o que
+ * importa é que a mensagem sobreviva até o teste que vai precisar dela.
+ */
+function registraFalha(motivo) {
+  fs.writeFileSync(ARQUIVO_DE_SESSAO, JSON.stringify({ cookies: [], origins: [] }));
+  fs.writeFileSync(ARQUIVO_DE_FALHA, JSON.stringify({ motivo }, null, 2));
+  console.error(`[setup] A sessão NÃO abriu. A metade de storefront vai reprovar:\n  ${motivo}`);
+}
+
 export default async function globalSetup() {
   const base = process.env.THEME_URL;
   const id = process.env.PREVIEW_THEME_ID;
@@ -40,6 +67,10 @@ export default async function globalSetup() {
   // Sem loja não há sessão a abrir — e `e2e/gate.spec.mjs` não precisa de uma.
   // Escrever um estado vazio mantém o `storageState` do config sempre válido.
   fs.mkdirSync(path.dirname(ARQUIVO_DE_SESSAO), { recursive: true });
+  // Execução anterior não contamina esta: sem isto, uma falha gravada ontem
+  // reprovaria a suíte de hoje com um motivo que já não existe.
+  fs.rmSync(ARQUIVO_DE_FALHA, { force: true });
+
   if (!base) {
     fs.writeFileSync(ARQUIVO_DE_SESSAO, JSON.stringify({ cookies: [], origins: [] }));
     console.log('[setup] Sem THEME_URL — a metade de storefront vai se declarar pulada.');
@@ -54,11 +85,12 @@ export default async function globalSetup() {
   // repete porque este arquivo não confia na fixação nem quando a Shopify a
   // confirma, e confiar no próprio ambiente seria a única exceção.
   if (!id) {
-    throw new Error(
+    registraFalha(
       'THEME_URL existe e PREVIEW_THEME_ID não. Sem o id não há como fixar a ' +
         'sessão no tema empurrado, e medir assim daria uma suíte verde sobre o ' +
         'tema publicado. Ver ADR 0007.'
     );
+    return;
   }
 
   const navegador = await chromium.launch(
@@ -142,6 +174,11 @@ export default async function globalSetup() {
 
     await contexto.storageState({ path: ARQUIVO_DE_SESSAO });
     console.log(`[setup] Sessão aberta no tema ${respondeu.temaId}, em ${base}.`);
+  } catch (erro) {
+    // Tudo que pode dar errado aqui é do lado da loja: DNS, senha rotacionada,
+    // tema `ci-pr-N` expirado, fixação que não pegou. Nenhum deles é motivo
+    // para o `gate.spec.mjs` não rodar — ele nem sabe que existe uma loja.
+    registraFalha(erro.message);
   } finally {
     await navegador.close();
   }

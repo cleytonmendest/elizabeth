@@ -399,8 +399,8 @@ const MUTANTES = [
   {
     porque: 'a guarda volta a aceitar qualquer tema nosso — inclusive o publicado',
     arquivo: 'e2e/helpers/loja.mjs',
-    de: 'if (visto.ehNosso && String(visto.temaId) === String(esperado)) return;',
-    para: 'if (visto.ehNosso) return;',
+    de: 'if (visto.ehNosso && String(visto.temaId) === String(esperado) && !visto.barraDePreview) {',
+    para: 'if (visto.ehNosso) {',
     teste: 'tests/loja.test.mjs',
   },
   {
@@ -415,6 +415,25 @@ const MUTANTES = [
     arquivo: 'e2e/helpers/loja.mjs',
     de: '  if (!visto.ehNosso) {',
     para: '  if (false) {',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    // Mira a DECISÃO, não o `document.querySelector` de dentro do `evaluate`:
+    // aquele roda no navegador, e o `page` falso de tests/loja.test.mjs não o
+    // executa — um mutante ali sobreviveria por construção, dizendo "o teste
+    // não olha" quando o certo é "o teste não alcança". Que o seletor
+    // `#preview-bar-iframe` seja o nome certo, só a loja responde.
+    porque: 'a barra de preview deixa de reprovar a navegação (volta a valer só na fixação)',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: 'String(visto.temaId) === String(esperado) && !visto.barraDePreview) {',
+    para: 'String(visto.temaId) === String(esperado)) {',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    porque: 'a falha de sessão gravada pelo setup deixa de reprovar o teste',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '  const falha = falhaDeSessao();',
+    para: '  const falha = null;',
     teste: 'tests/loja.test.mjs',
   },
 ];
