@@ -4,10 +4,10 @@
  *
  * ── Por que isto não é um bloco de shell dentro do YAML ────────────────────
  *
- * Mesma razão de `scripts/catraca.mjs` e `scripts/loja-no-ar.mjs`: shell dentro
- * de YAML não tem teste, não roda na máquina de ninguém, e as duas vezes em que
- * este repositório escondeu lógica lá o resultado foi um verificador que sempre
- * passava. Aqui o risco é idêntico e tem nome — um comentário dizendo
+ * Mesma razão de `scripts/catraca.mjs` e `scripts/tema-de-teste.mjs`: shell
+ * dentro de YAML não tem teste, não roda na máquina de ninguém, e as duas
+ * vezes em que este repositório escondeu lógica lá o resultado foi um
+ * verificador que sempre passava. Aqui o risco é idêntico e tem nome — um comentário dizendo
  * "preview pronto" com a URL vazia é indistinguível de um preview que funciona,
  * até alguém clicar.
  *
@@ -86,7 +86,18 @@ export function avaliar({ bruto }) {
       motivo: `O tema veio sem \`preview_url\` utilizável. Veio: ${resumo(tema)}`,
     };
   }
-  if (!/^https?:\/\//i.test(url)) {
+  // PARSEAR, não casar com regex. `^https?://` aprova "http://", e aí quem
+  // estoura é o `new URL()` de quem consome — com TypeError e stack, no lugar
+  // do `::error::` que este arquivo existe para produzir. Reprovaria de
+  // qualquer jeito, só que dizendo a coisa errada: é a forma exata de defeito
+  // descrita no cabeçalho, um passo antes.
+  let parseada;
+  try {
+    parseada = new URL(url);
+  } catch {
+    return { estado: 'invalido', motivo: `\`preview_url\` não é uma URL: ${url}` };
+  }
+  if (parseada.protocol !== 'http:' && parseada.protocol !== 'https:') {
     return { estado: 'invalido', motivo: `\`preview_url\` não é uma URL http: ${url}` };
   }
 

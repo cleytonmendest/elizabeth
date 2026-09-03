@@ -7,4 +7,11 @@ memory/
 # essas são referência e precisam estar commitadas para haver comparação.
 playwright-report/
 test-results/
-theme-dev.log
+
+# O JSON do `shopify theme push` — os dois workflows escrevem no workspace.
+# (`theme-dev.log` saiu daqui junto com o `shopify theme dev`: ADR 0007.)
+tema.json
+
+# Sessão da vitrine que o e2e/global-setup.mjs abre (cookie da senha da loja).
+# Credencial de execução, não fonte: nunca entra no repositório.
+e2e/.auth/

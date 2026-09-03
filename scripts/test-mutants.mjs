@@ -144,37 +144,13 @@ const MUTANTES = [
     teste: 'tests/cart-extras.test.mjs',
   },
   {
-    // O defeito exato que a sonda anterior tinha: aprovar qualquer coisa que
-    // responda. É o mutante mais importante desta lista, porque a suíte que
-    // não o mata é a suíte que deixaria a tela de senha passar de novo.
-    porque: 'a sonda volta a aprovar qualquer página que responda 200',
-    arquivo: 'scripts/loja-no-ar.mjs',
-    de: "  return typeof html === 'string' && html.includes(MARCA_DO_TEMA);",
-    para: '  return true;',
-    teste: 'tests/loja-no-ar.test.mjs',
-  },
-  {
-    porque: 'a sonda reprova certo, mas o recado não diz mais o que fazer',
-    arquivo: 'scripts/loja-no-ar.mjs',
-    de: "    'O caso de longe mais comum é a loja estar atrás da proteção por senha da vitrine — a Shopify serve a tela de senha com 200, e ela não passa pelo nosso layout.',",
-    para: "    '',",
-    teste: 'tests/loja-no-ar.test.mjs',
-  },
-  {
-    porque: '"respondeu errado" volta a ser relatado como "ninguém respondeu"',
-    arquivo: 'scripts/loja-no-ar.mjs',
-    de: '      ultimaSemTema = {',
-    para: '      ultimaSemTema = ultimaSemTema ?? null; const _ignorado = {',
-    teste: 'tests/loja-no-ar.test.mjs',
-  },
-  {
     // O critério de aceite da issue #60, virado do avesso: o job fica verde e
     // comenta "preview pronto" com uma URL que não abre nada. Nenhuma execução
     // do CI mostraria isso — só um revisor clicando.
     porque: 'o comentário de preview é publicado mesmo sem preview_url utilizável',
     arquivo: 'scripts/preview.mjs',
-    de: '  if (!/^https?:\\/\\//i.test(url)) {',
-    para: '  if (false) {',
+    de: "    parseada = new URL(url);",
+    para: "    parseada = { protocol: 'https:' };",
     teste: 'tests/preview.test.mjs',
   },
   {
@@ -334,6 +310,26 @@ const MUTANTES = [
     teste: 'tests/schemecontract.test.mjs',
   },
   {
+    // O desastre da #64, na forma exata em que ele aconteceria: usar a
+    // preview_url inteira como baseURL. `page.goto('/cart')` descarta a query,
+    // o tema PUBLICADO responde tudo com 200, e a suíte fica verde medindo a
+    // loja de produção enquanto o relatório diz que mediu o PR.
+    porque: 'a query da preview_url passa adiante e a suíte volta a medir o tema publicado',
+    arquivo: 'scripts/tema-de-teste.mjs',
+    de: '  return new URL(url).origin;',
+    para: '  return url;',
+    teste: 'tests/tema-de-teste.test.mjs',
+  },
+  {
+    // Sem id não há como fixar o tema na sessão. Deixar passar como se
+    // estivesse tudo bem é o mesmo silêncio, um passo antes.
+    porque: 'push sem preview_theme_id passa como se desse para medir a branch',
+    arquivo: 'scripts/tema-de-teste.mjs',
+    de: '  if (!id) {',
+    para: '  if (false) {',
+    teste: 'tests/tema-de-teste.test.mjs',
+  },
+  {
     // O defeito com que a regra `remotes` nasceu: espalhar um Map dá pares
     // `[chave, valor]`, a alternância vira `settings.(logo_svg,textarea)`, e a
     // regra varre o tema inteiro sem achar nada. Ela passou verde assim.
@@ -394,6 +390,51 @@ const MUTANTES = [
     de: '  return [...registradas].filter((fingerprint) => !presentes.has(fingerprint)).sort();',
     para: '  return [];',
     teste: 'tests/catraca.test.mjs',
+  },
+  // ── A guarda de navegação (#64 / ADR 0007) ──────────────────────────────
+  //
+  // Alvo: o que separa a suíte de uma suíte verde medindo a loja PUBLICADA.
+  // Estes rodam em Vitest, contra um `page` falso, porque a decisão não
+  // depende de navegador — só de qual resposta a função aceita.
+  {
+    porque: 'a guarda volta a aceitar qualquer tema nosso — inclusive o publicado',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: 'if (visto.ehNosso && String(visto.temaId) === String(esperado) && !visto.barraDePreview) {',
+    para: 'if (visto.ehNosso) {',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    porque: 'o retry vira três tentativas — o gasto some do relatório',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: 'for (let tentativa = 1; tentativa <= 2; tentativa += 1) {',
+    para: 'for (let tentativa = 1; tentativa <= 3; tentativa += 1) {',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    porque: 'as duas causas passam a dar a MESMA mensagem, e o diagnóstico some',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '  if (!visto.ehNosso) {',
+    para: '  if (false) {',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    // Mira a DECISÃO, não o `document.querySelector` de dentro do `evaluate`:
+    // aquele roda no navegador, e o `page` falso de tests/loja.test.mjs não o
+    // executa — um mutante ali sobreviveria por construção, dizendo "o teste
+    // não olha" quando o certo é "o teste não alcança". Que o seletor
+    // `#preview-bar-iframe` seja o nome certo, só a loja responde.
+    porque: 'a barra de preview deixa de reprovar a navegação (volta a valer só na fixação)',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: 'String(visto.temaId) === String(esperado) && !visto.barraDePreview) {',
+    para: 'String(visto.temaId) === String(esperado)) {',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    porque: 'a falha de sessão gravada pelo setup deixa de reprovar o teste',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '  const falha = falhaDeSessao();',
+    para: '  const falha = null;',
+    teste: 'tests/loja.test.mjs',
   },
 ];
 
@@ -473,47 +514,82 @@ const red = (t) => paint('31', t);
 const green = (t) => paint('32', t);
 const dim = (t) => paint('2', t);
 
+/**
+ * O ambiente de um mutante — e por que o de navegador precisa ser PODADO.
+ *
+ * `e2e/gate.spec.mjs` não mede a loja: ele planta uma página com `setContent`
+ * e pergunta se o axe a reprova. Mas o `globalSetup` do Playwright é de
+ * config, roda em toda invocação, e com `THEME_URL` no ambiente ele sobe
+ * Chromium e abre sessão na loja — uma vez por mutante.
+ *
+ * O custo seria o de menos. O veredito aqui é `resultado.status !== 0`, então
+ * um `globalSetup` que estoura (sessão expirada, tema apagado, loja fora do
+ * ar) conta como mutante MORTO. Sairia "8 mutantes, 8 mortos" sem o axe ter
+ * rodado uma única vez — a exata forma de verde vazio que este script existe
+ * para encontrar, dentro do script que a procura.
+ *
+ * No CI o passo herda `THEME_URL` do `$GITHUB_ENV` que o passo "Onde medir"
+ * escreveu, então podar aqui protege a execução real, não só a hipótese.
+ */
+export function ambienteDoMutante(env, teste) {
+  if (!teste.startsWith('e2e/')) return env;
+  const { THEME_URL, PREVIEW_THEME_ID, ...resto } = env;
+  return resto;
+}
+
 const sobreviventes = [];
 
-for (const mutante of LISTA) {
-  const alvo = path.join(ROOT, mutante.arquivo);
-  const original = fs.readFileSync(alvo, 'utf8');
+function main() {
+  for (const mutante of LISTA) {
+    const alvo = path.join(ROOT, mutante.arquivo);
+    const original = fs.readFileSync(alvo, 'utf8');
 
-  const ocorrencias = original.split(mutante.de).length - 1;
-  if (ocorrencias !== 1) {
-    console.error(
-      red(`✖ ${mutante.arquivo}: o trecho a mutar aparece ${ocorrencias} vez(es), esperava 1.`)
+    const ocorrencias = original.split(mutante.de).length - 1;
+    if (ocorrencias !== 1) {
+      console.error(
+        red(`✖ ${mutante.arquivo}: o trecho a mutar aparece ${ocorrencias} vez(es), esperava 1.`)
+      );
+      console.error(dim(`  ${JSON.stringify(mutante.de)}`));
+      console.error(dim('  O arquivo mudou — atualize a lista em scripts/test-mutants.mjs.'));
+      process.exit(2);
+    }
+
+    let resultado;
+    try {
+      fs.writeFileSync(alvo, original.replace(mutante.de, mutante.para));
+      const navegador = mutante.teste.startsWith('e2e/');
+      resultado = navegador
+        ? spawnSync(PLAYWRIGHT, ['test', mutante.teste], {
+            cwd: ROOT,
+            encoding: 'utf8',
+            env: ambienteDoMutante(process.env, mutante.teste),
+          })
+        : spawnSync(VITEST, ['run', mutante.teste], { cwd: ROOT, encoding: 'utf8' });
+    } finally {
+      fs.writeFileSync(alvo, original);
+    }
+
+    const morreu = resultado.status !== 0;
+    console.log(
+      `${morreu ? green('morreu ') : red('SOBREVIVEU')}  ${mutante.porque}`,
+      dim(`(${mutante.arquivo} → ${mutante.teste})`)
     );
-    console.error(dim(`  ${JSON.stringify(mutante.de)}`));
-    console.error(dim('  O arquivo mudou — atualize a lista em scripts/test-mutants.mjs.'));
-    process.exit(2);
+    if (!morreu) sobreviventes.push(mutante);
   }
 
-  let resultado;
-  try {
-    fs.writeFileSync(alvo, original.replace(mutante.de, mutante.para));
-    const navegador = mutante.teste.startsWith('e2e/');
-    resultado = navegador
-      ? spawnSync(PLAYWRIGHT, ['test', mutante.teste], { cwd: ROOT, encoding: 'utf8' })
-      : spawnSync(VITEST, ['run', mutante.teste], { cwd: ROOT, encoding: 'utf8' });
-  } finally {
-    fs.writeFileSync(alvo, original);
+  console.log('');
+  if (sobreviventes.length) {
+    console.error(
+      red(`${sobreviventes.length} de ${LISTA.length} mutante(s) sobreviveram.`) +
+        ' A suíte ficou verde com o tema quebrado — esses testes não verificam o que dizem verificar.'
+    );
+    return 1;
   }
-
-  const morreu = resultado.status !== 0;
-  console.log(
-    `${morreu ? green('morreu ') : red('SOBREVIVEU')}  ${mutante.porque}`,
-    dim(`(${mutante.arquivo} → ${mutante.teste})`)
-  );
-  if (!morreu) sobreviventes.push(mutante);
+  console.log(green(`${LISTA.length} mutantes, ${LISTA.length} mortos.`));
+  return 0;
 }
 
-console.log('');
-if (sobreviventes.length) {
-  console.error(
-    red(`${sobreviventes.length} de ${LISTA.length} mutante(s) sobreviveram.`) +
-      ' A suíte ficou verde com o tema quebrado — esses testes não verificam o que dizem verificar.'
-  );
-  process.exit(1);
+// Só executa quando chamado direto; importar para teste não dispara nada.
+if (process.argv[1] && process.argv[1].endsWith('test-mutants.mjs')) {
+  process.exit(main());
 }
-console.log(green(`${LISTA.length} mutantes, ${LISTA.length} mortos.`));

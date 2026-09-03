@@ -47,3 +47,4 @@ Numeração sequencial, nunca reutilizada.
 | [0004](0004-o-que-ganha-um-toggle.md) | Um toggle é decisão de negócio, não preferência de layout | Aceito |
 | [0005](0005-escalas-de-tracking-z-index-e-proporcao.md) | Nomear as escalas de tracking, z-index e proporção a partir do que o código já fazia | Aceito |
 | [0006](0006-fonte-vem-da-biblioteca-da-shopify.md) | A tipografia vem da biblioteca da Shopify, e nenhum setting injeta markup | Aceito |
+| [0007](0007-suite-de-navegador-contra-tema-empurrado.md) | A suíte de navegador mede um tema EMPURRADO, não o proxy do `theme dev` | Aceito |

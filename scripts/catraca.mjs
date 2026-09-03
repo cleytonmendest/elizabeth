@@ -9,8 +9,9 @@
  * A catraca do lint morava num bloco de shell dentro do workflow, e o próprio
  * bloco contava, em comentário, que uma versão anterior dele comparava o total
  * CONSIGO MESMO e passava sem verificar nada. É a mesma forma de defeito da
- * sonda da loja: um verificador que não conseguia falhar. A sonda virou
- * `scripts/loja-no-ar.mjs` COM TESTE por essa razão; esta é a mesma mudança.
+ * sonda da loja: um verificador que não conseguia falhar. A sonda virou um
+ * script COM TESTE por essa razão, e `scripts/tema-de-teste.mjs` a sucedeu
+ * quando ela saiu (ADR 0007); esta é a mesma mudança.
  *
  * Shell dentro de YAML não tem teste, não roda na máquina de ninguém, e só é
  * exercitado no dia em que já está errado.

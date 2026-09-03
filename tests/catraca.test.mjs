@@ -1,7 +1,8 @@
 /**
  * A catraca consegue reprovar?
  *
- * Mesma pergunta que `tests/loja-no-ar.test.mjs` faz da sonda, e pela mesma
+ * Mesma pergunta que `tests/tema-de-teste.test.mjs` faz do script que escolhe
+ * onde medir, e pela mesma
  * razão: a versão anterior desta lógica vivia em shell dentro do `ci.yml`,
  * comparava o total consigo mesma e passava sem verificar nada. Um verificador
  * que sempre passa é indistinguível de um que funciona — até o dia em que

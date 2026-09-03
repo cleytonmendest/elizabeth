@@ -2,10 +2,14 @@
  * axe nas páginas do storefront — substitui a auditoria manual de a11y por um
  * gate de PR.
  *
- * ⚠ NENHUM TESTE DESTE ARQUIVO JÁ RODOU. Falta a loja (THEME_URL). Os
- * seletores e caminhos vieram do Liquid deste repositório, não de adivinhação,
- * mas só a primeira execução real diz se estão certos — espere ajustes nela, e
- * não trate este arquivo como cobertura até ele ter ficado verde uma vez.
+ * Este arquivo JÁ RODOU contra a loja: `e2e/a11y-baseline.json` só existe
+ * porque uma execução o produziu (ADR 0007). Ele mede o tema empurrado, e o
+ * que ele acha de novo reprova o PR.
+ *
+ * O aviso que estava aqui — "nenhum teste deste arquivo já rodou" — ficou
+ * falso e ninguém percebeu, porque nada o verificava. É a tese da ADR 0001
+ * batendo no próprio repositório: estado escrito à mão apodrece. O que vale é
+ * o baseline, que é medido; se ele existe, este arquivo rodou.
  *
  * Sobre os color schemes: o esquema de uma página é escolhido pela lojista no
  * admin, então não dá para alterná-lo pela URL. Quem cobre claro E escuro numa
@@ -102,23 +106,31 @@ const PAGINAS = [
     // `templates/password.json` foi renderizado pelo `layout/theme.liquid`,
     // não pelo `layout/password.liquid`. O nó reprovado é o breadcrumb.
     //
-    // O `shopify theme dev` autentica a proteção por senha da vitrine, então
-    // por ele NUNCA se chega ao estado que usa o layout de senha: visitante
-    // sem sessão. Mesma família da #51 e da #64 — o proxy não é a vitrine.
+    // A #64 tirou o proxy do caminho e resolveu a #51 — não esta, e não o
+    // login de cliente, que nunca dependeu do proxy. Aqui o motivo mudou de
+    // forma: quem atravessa a senha da vitrine agora é o
+    // `e2e/global-setup.mjs`, e a sessão que ele abre vale para toda a suíte.
+    // Autenticado, `/password` continua vindo pelo layout da vitrine.
+    //
+    // O caminho para fechar a #71 mudou de forma, e está escrito lá: um
+    // contexto SEM a sessão, com `?preview_theme_id=` na própria navegação.
+    // Não entrou aqui porque não dá para verificar sem a loja, e um teste
+    // especulativo no lugar de um fixme honesto é troca ruim.
     //
     // Registrar isso no baseline seria pior que deixar vermelho: gravaria a
     // medição de uma página que não é a que este teste diz medir, e o dia em
     // que o layout de senha ganhasse um defeito real ninguém veria.
-    'issue #71 — via `theme dev` a página de senha usa o layout da vitrine, não o layout/password.liquid',
+    'issue #71 — a sessão do global-setup atravessa a senha, e autenticado o /password ' +
+      'vem pelo layout da vitrine, não pelo layout/password.liquid',
   ],
   ['style guide (todos os color schemes)', STYLEGUIDE_PATH],
 ];
 
 for (const [nome, caminho, motivoFixme] of PAGINAS) {
   test(`sem violação NOVA de WCAG AA: ${nome}`, async ({ page }) => {
-    // O terceiro item da tupla, quando existe, é a página que o proxy do
-    // `theme dev` não consegue servir como a vitrine serve. `fixme` e não
-    // `skip`: aparece no relatório, e a asserção continua sendo a correta.
+    // O terceiro item da tupla, quando existe, é a página que a suíte ainda não
+    // alcança no estado que este teste diz medir. `fixme` e não `skip`:
+    // aparece no relatório, e a asserção continua sendo a correta.
     if (motivoFixme) test.fixme(true, motivoFixme);
 
     await abrePaginaDoTema(page, caminho);

@@ -33,33 +33,53 @@ test.skip(!CLIENTE.email || !CLIENTE.senha, MOTIVO_CLIENTE);
 /**
  * ⚠ FIXME — issue #64. Estes cinco testes estão CORRETOS e não passam.
  *
- * O login não sobrevive ao proxy do `shopify theme dev`: o POST em
- * /account/login volta com a página de login redesenhada limpa — sem erro e
- * sem sessão. Três execuções do CI estreitaram o diagnóstico até aqui:
+ * O POST em /account/login volta com a página de login redesenhada limpa —
+ * sem erro e sem sessão —, e o login à mão na vitrine funciona com as MESMAS
+ * credenciais. Quatro execuções de CI estreitaram o diagnóstico:
  *
  *   1ª  "Received string: .../account/login" — verdadeiro e inútil
  *   2ª  a loja não exibiu erro NENHUM, o que descarta credencial errada
  *   3ª  a página é a do tema ("Conta – Elizabeth Estudos"), não a de senha
+ *   4ª  o mesmo sintoma SEM o `theme dev` no caminho — ver abaixo
  *
  * Credencial inválida daria `form.errors`; válida daria 302 para /account. O
- * que volta é uma página como se o POST não tivesse ocorrido. E o login à mão
- * na vitrine funciona com as MESMAS credenciais.
+ * que volta é uma página como se o POST não tivesse ocorrido.
  *
- * É a segunda vez que este proxy engole um caminho — a #51 é a busca
- * preditiva, pelo mesmo motivo. A correção é estrutural (apontar a suíte para
- * um tema empurrado, que é a vitrine de verdade) e está na #64.
+ * ── 4ª rodada: NÃO era o proxy ─────────────────────────────────────────────
  *
- * `fixme` e não `skip`: fixme aparece no relatório. Um `skip` silencioso
- * deixaria cinco testes desaparecerem, e afrouxar a asserção até passar
- * transformaria defeito real em verde — que é o que este repositório passou o
- * dia removendo de outros lugares.
+ * A #64 concluiu que o `shopify theme dev` engolia o login, e propôs medir um
+ * tema EMPURRADO. A migração foi feita (ADR 0007) e funcionou para o que se
+ * esperava dela: a busca preditiva da #51 passou a responder na primeira
+ * execução, provando que aquele caminho ERA o proxy.
+ *
+ * O login não. Na vitrine real, com cookies e sessão reais, ele falha com o
+ * sintoma IDÊNTICO:
+ *
+ *   url=https://<loja>.myshopify.com/account/login
+ *   título="Conta – Elizabeth Estudos"
+ *   a loja não exibiu erro nenhum
+ *
+ * O que muda é o que isso descarta. Não é o proxy — o proxy não está mais no
+ * caminho. E não é o markup: `{% form 'customer_login' %}` emite os campos
+ * ocultos, e os `name` batem com o que a Shopify espera.
+ *
+ * O que sobra, e ninguém verificou ainda: o estado da CONTA (cliente criado no
+ * admin nasce sem senha até aceitar o convite) ou a loja estar em "novas contas
+ * de cliente", em que o formulário clássico deixa de ser o caminho de login.
+ * As duas se checam entrando à mão na vitrine e olhando o admin — nenhuma se
+ * checa daqui.
+ *
+ * `fixme` continua sendo a resposta certa, agora apontando para um diagnóstico
+ * que não foi refutado. Afrouxar a asserção até passar transformaria em verde
+ * um login que não acontece.
  */
-const PROXY_ENGOLE_O_LOGIN = true; // ← vira false quando a #64 for resolvida.
+const LOGIN_NAO_COMPLETA = true; // ← vira false quando a #64 for resolvida.
 
 test.fixme(
-  PROXY_ENGOLE_O_LOGIN,
-  'issue #64 — o login de cliente não completa através do proxy do `shopify theme dev`. ' +
-    'Os testes estão corretos; o caminho é que não chega. Mesma causa da #51.'
+  LOGIN_NAO_COMPLETA,
+  'issue #64 — o login de cliente não completa NEM na vitrine real (medido no PR #72). ' +
+    'Não é o proxy: a migração para tema empurrado não mudou o sintoma. Os testes ' +
+    'continuam corretos; o que falta é saber por que o POST não produz sessão.'
 );
 
 const CARIMBO = 'e2e-endereco';
@@ -72,9 +92,9 @@ const CARIMBO = 'e2e-endereco';
  * http://.../account/login" — verdadeira e inútil: não separa "a senha está
  * errada" de "a conta nunca foi ativada" de "o formulário nem foi enviado".
  *
- * É a mesma forma de defeito que `scripts/loja-no-ar.mjs` corrigiu: um
- * verificador que reprova sem informar manda a investigação para o lugar
- * errado. A loja escreve o motivo num `[role="alert"]`; o teste passa a ler
+ * É a mesma forma de defeito que `e2e/global-setup.mjs` evita ao dizer QUAL
+ * tema respondeu: um verificador que reprova sem informar manda a investigação
+ * para o lugar errado. A loja escreve o motivo num `[role="alert"]`; o teste passa a ler
  * esse texto e a colocá-lo na falha.
  */
 /**
@@ -91,8 +111,8 @@ async function atravessaSenhaDaVitrine(page) {
   if (!SENHA_VITRINE) {
     throw new Error(
       'A vitrine pediu a senha da loja e SHOPIFY_STORE_PASSWORD não chegou ao ' +
-        'Playwright. Ela existe no passo que sobe o `theme dev`; precisa existir ' +
-        'também no passo do Playwright, em .github/workflows/ci.yml.'
+        'Playwright. Ela existe no passo "Empurrar o tema de teste"; precisa ' +
+        'existir também no passo "Playwright", em .github/workflows/ci.yml.'
     );
   }
 
@@ -300,9 +320,13 @@ async function limpa(page) {
  * derrubaria o job pelo hook — anulando exatamente o `fixme` que existe para
  * manter o PR verde. Um teste marcado como não-executável precisa não executar
  * nada, inclusive limpeza do que ele não chegou a criar.
+ *
+ * Isso já aconteceu duas vezes: a primeira quando o `fixme` foi criado, e a
+ * segunda no PR #72, quando a constante foi removida por engano e o hook
+ * derrubou o job com `ReferenceError` — em cinco testes de uma vez.
  */
 test.afterAll(async ({ browser }) => {
-  if (PROXY_ENGOLE_O_LOGIN) return;
+  if (LOGIN_NAO_COMPLETA) return;
   if (!THEME_URL || !CLIENTE.email || !CLIENTE.senha) return;
 
   const page = await browser.newPage();

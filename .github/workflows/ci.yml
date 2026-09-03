@@ -126,25 +126,31 @@ jobs:
       - name: Instalar o Chromium
         run: npx playwright install --with-deps chromium
 
-      # ── O único bloco deste arquivo que nunca rodou ────────────────────────
+      # ── O tema que a suíte mede é EMPURRADO, não servido por proxy ───────
       #
-      # `shopify theme dev` precisa de uma loja autenticada. Enquanto os
-      # secrets não existirem, este passo não sobe nada e o passo seguinte roda
-      # só o gate de acessibilidade — avisando em alto e bom som que a metade
-      # de storefront ficou de fora (scripts/e2e.mjs).
+      # Era `shopify theme dev` numa porta local. O proxy dele não é a vitrine:
+      # engolia a busca preditiva (#51), o login de cliente (#64) e o estado
+      # sem sessão da página de senha (#71). Três caminhos, um defeito só —
+      # tudo que depende de sessão ficava fora do alcance da suíte. Ver ADR
+      # 0007.
       #
-      # Repare no que NÃO foi feito aqui: o job inteiro não está atrás de um
-      # `if:`. Um job que só roda quando um secret existe é o bug que este
-      # repositório corrigiu no board — `actions/add-to-project@v1` ficou
-      # quebrado dois dias porque o job dele só rodava em evento `issues`, e as
-      # execuções verdes eram todas dos outros gatilhos. Aqui o job roda
-      # sempre; o que varia é quanto ele consegue medir, e isso aparece.
+      # O contexto é `ci-pr-N`, separado do `pr-N` do preview.yml: dois
+      # workflows empurrando para o MESMO tema ao mesmo tempo é corrida por
+      # arquivo. `--development-context` reaproveita o tema entre execuções, então
+      # o custo é um tema por PR, não um por push — e `ci-main` para os pushes
+      # na main, que não têm número de PR. Ver o comentário do CONTEXTO abaixo:
+      # a primeira versão disto criava um tema por merge.
+      #
+      # Repare no que continua NÃO sendo feito aqui: o job inteiro não está
+      # atrás de um `if:`. Job que só roda quando um secret existe é o bug que
+      # este repositório já pagou no board — as execuções verdes não provavam
+      # nada. Aqui ele roda sempre, e o que varia é quanto consegue medir.
       #
       # Para ligar: Settings → Secrets and variables → Actions
       #   SHOPIFY_STORE              minha-loja.myshopify.com
       #   SHOPIFY_CLI_THEME_TOKEN    senha de app do Theme Access
       #                              (shopify.dev/docs/storefronts/themes/tools/theme-access)
-      - name: Subir a loja de desenvolvimento
+      - name: Empurrar o tema de teste
         env:
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
           SHOPIFY_FLAG_STORE: ${{ secrets.SHOPIFY_STORE }}
@@ -152,84 +158,57 @@ jobs:
           # e uma string VAZIA nele conta como "senha fornecida", o que faria a
           # loja sem proteção falhar. Só vira a variável de verdade se existir.
           STORE_PASSWORD: ${{ secrets.SHOPIFY_STORE_PASSWORD }}
+          # Em `pull_request` o número existe e o tema é reaproveitado entre
+          # as execuções da MESMA PR. Em `push` na main não existe número, e o
+          # fallback anterior era `github.run_id` — único por execução, o que
+          # criava um tema de desenvolvimento NOVO a cada merge, exatamente o
+          # oposto do que o comentário acima promete. A biblioteca de temas da
+          # loja é finita; `ci-main` é um contexto estável, reaproveitado.
+          CONTEXTO: ci-${{ github.event.number && format('pr-{0}', github.event.number) || 'main' }}
         run: |
           set -euo pipefail
 
-          # A decisão fica no shell, NÃO num `if:` do passo — por dois motivos.
-          #
-          # O primeiro é que não funciona: o contexto `secrets` não existe em
-          # `if:`, e a primeira versão disto derrubou o workflow INTEIRO na
-          # validação ("Unrecognized named-value: 'secrets'"), levando junto o
-          # gate e os testes unitários, que não têm nada a ver com a loja.
-          #
-          # O segundo é o motivo pelo qual a correção certa não era mover o
-          # `if:` para outro lugar: passo condicional é caminho que só roda em
-          # certas circunstâncias, e este repositório já perdeu dois dias com
-          # um desses. Aqui o passo roda sempre e o shell diz o que fez.
+          # A decisão fica no shell, NÃO num `if:` do passo: o contexto
+          # `secrets` não existe em `if:`, e a primeira versão disto derrubou o
+          # workflow INTEIRO na validação, levando junto o gate e os testes
+          # unitários, que não têm nada a ver com a loja.
           if [ -z "${SHOPIFY_CLI_THEME_TOKEN:-}" ] || [ -z "${SHOPIFY_FLAG_STORE:-}" ]; then
             echo "Sem credencial da loja (SHOPIFY_STORE / SHOPIFY_CLI_THEME_TOKEN)."
             echo "O passo seguinte roda só o gate de acessibilidade, e avisa."
             exit 0
           fi
 
-          # Loja protegida por senha de storefront: sem isto o CLI PERGUNTA a
-          # senha, e perguntar num runner sem terminal é morrer na hora.
-          # Loja sem proteção não precisa do secret e não passa por aqui.
           if [ -n "${STORE_PASSWORD:-}" ]; then
             export SHOPIFY_FLAG_STORE_PASSWORD="$STORE_PASSWORD"
             echo "Loja protegida por senha: usando SHOPIFY_STORE_PASSWORD."
           fi
 
-          # Versão TRAVADA, pelo mesmo motivo que existe package-lock.json e
-          # que o Node está fixo em 22. Sem o pin, toda execução puxava a
-          # última publicada — e o comentário logo abaixo conta que uma
-          # mudança de flag deste CLI já matou este passo. Era a única
-          # ferramenta solta no gate, e justamente a que já quebrou.
-          #
-          # Para subir: rode localmente com a versão nova antes de trocar aqui.
+          # Versão TRAVADA, pelo mesmo motivo que existe package-lock.json:
+          # este CLI já quebrou um passo deste repositório ao mudar um flag.
+          # Para subir, rode local com a nova antes de trocar aqui.
           npm install -g @shopify/cli@4.7.0
 
-          # Os flags saíram de `shopify theme dev --help`, não de memória — a
-          # primeira versão passava `--theme-editor-sync=false` e o CLI morria
-          # com "Unexpected argument: false", porque ele é um switch booleano
-          # (e já vem desligado, então some daqui).
-          #
-          # `--live-reload off` não é conveniência: o modo padrão INJETA um
-          # script de hot reload no HTML da vitrine. Esse script não existe na
-          # loja de verdade, e medir acessibilidade num DOM que só existe em
-          # desenvolvimento seria medir outra página.
-          #
-          # `--error-overlay silent` pela mesma razão: falha de upload
-          # desenha um overlay na página, e o axe acusaria problemas de um
-          # elemento que o tema não tem. A falha continua visível no log.
-          shopify theme dev \
-            --port 9292 \
-            --live-reload off \
-            --error-overlay silent \
-            > theme-dev.log 2>&1 &
-          dev_pid=$!
+          # `--development` junto de `--development-context` não está no texto
+          # do help — quem exigiu foi o binário, na primeira execução do
+          # preview.yml: "All of the following must be provided when using
+          # --development-context: --development".
+          shopify theme push \
+            --development \
+            --development-context "${CONTEXTO}" \
+            --json \
+            > tema.json
 
-          # A sonda vive em scripts/loja-no-ar.mjs, COM TESTE, e não mais aqui.
-          #
-          # A versão que morava neste bloco perguntava só
-          # `curl -sf -o /dev/null` e declarava "Loja no ar." — e a tela de
-          # senha da Shopify responde 200. No dia em que a loja voltou a
-          # exigir senha, o passo passou, exportou THEME_URL, e o Playwright
-          # mediu acessibilidade da tela de senha por 80 segundos, entregando
-          # o problema como 10 falhas de WCAG. Duas horas para descobrir que a
-          # loja estava trancada.
-          #
-          # O defeito era uma sonda que não conseguia falhar: afirmava "o tema
-          # está no ar" tendo verificado "alguma coisa respondeu". Agora ela
-          # exige `window.shopUrl`, que só existe em página servida pelo nosso
-          # layout, e o teste planta as duas páginas para provar que ela
-          # separa uma da outra.
-          node scripts/loja-no-ar.mjs \
-            --url http://127.0.0.1:9292/ \
-            --pid "$dev_pid" \
-            --log theme-dev.log
-
-          echo "THEME_URL=http://127.0.0.1:9292" >> "$GITHUB_ENV"
+      # Traduz o JSON do push em THEME_URL + PREVIEW_THEME_ID. Roda SEMPRE,
+      # inclusive quando o passo acima não empurrou nada: é o script que separa
+      # "não havia o que fazer" (verde, sem THEME_URL, suíte se declara pulada)
+      # de "o push devolveu algo imprestável" (vermelho). Essa distinção tem
+      # teste em tests/tema-de-teste.test.mjs.
+      #
+      # A origem e o id viajam SEPARADOS da preview_url de propósito — o
+      # cabeçalho do script explica por que usar a URL inteira como baseURL
+      # daria uma suíte verde medindo a loja publicada.
+      - name: Onde medir
+        run: node scripts/tema-de-teste.mjs --json tema.json >> "$GITHUB_ENV"
 
       # A conta de cliente é um secret À PARTE da credencial da loja, e a
       # separação tem consequência: a loja pode estar no ar sem a conta
@@ -257,7 +236,14 @@ jobs:
       # alvo da mutação não é o tema, é o VERIFICADOR de acessibilidade. Um
       # critério configurado errado deixaria toda página passar exibindo
       # "0 violações" com a mesma cara de quando está tudo certo.
+      # `!cancelled()` e não a ausência de `if:`: este passo NÃO depende da loja
+      # (o `ambienteDoMutante` poda THEME_URL do ambiente dele), então uma
+      # credencial vencida no passo acima não é motivo para o verificador do
+      # verificador deixar de rodar. Sem isto, o mesmo defeito que o
+      # `globalSetup` tinha se repetia um nível acima: a falha de storefront
+      # levava junto a metade que não precisa de storefront.
       - name: O gate de a11y consegue reprovar?
+        if: ${{ !cancelled() }}
         run: npm run test:mutants -- --e2e
 
       - uses: actions/upload-artifact@v4
