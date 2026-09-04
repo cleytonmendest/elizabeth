@@ -6,8 +6,8 @@
  * servidor pinta a primeira vez; este componente repinta assim que
  * `variations-selector` dispara `variant:change` — o que acontece já no
  * carregamento da PDP. Os dois PRECISAM concordar, senão o número muda sozinho
- * na frente da cliente. Há um teste abaixo que documenta onde eles não
- * concordam hoje.
+ * na frente da cliente. Há um teste abaixo que prova que eles concordam, na
+ * contagem e no valor, varrendo as fronteiras onde eles já divergiram (#48).
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { loadAsset, loadGlobalAsset } from './helpers/load-asset.mjs';
@@ -251,24 +251,34 @@ describe('concordância com o Liquid (issue #48)', () => {
    *   · a FRONTEIRA da contagem: os centavos em volta de `i × mínimo`, para
    *     todo i possível. É exatamente onde `floor` e `ceil` discordam sobre
    *     passar no mínimo — a metade original da #48.
-   *   · todo RESTO de divisão por i (`i × 3000 + r`, r de 0 a i-1): é onde o
-   *     valor pode divergir de um centavo, a outra metade.
+   *   · todo RESTO de divisão por i: `i × mínimo + r`, com r de 0 a i-1. O
+   *     `i × mínimo` não é enfeite — é o preço em que o laço escolhe
+   *     exatamente i parcelas (`floor(price / i) >= mv` vale para i e falha
+   *     para i+1), então cada r exercita um resto REAL da divisão que vai ser
+   *     impressa. Uma constante qualquer no lugar dele cairia quase toda em
+   *     1x/2x, e o comentário prometeria uma cobertura que o código não tem.
    *   · e uma varredura larga por cima, de 11 em 11 centavos, para pegar o que
    *     eu não pensei. Passo primo de propósito: passo redondo se alinha com
    *     os divisores e visita sempre o caso fácil.
+   *
+   * Devolve as duas listas separadas porque a asserção final conta cada uma:
+   * o largo é 30× maior, e sozinho ele esconderia o sumiço dos alvos.
    */
   function precosQuePodemDivergir({ mv, largo = false }) {
-    const precos = new Set();
+    const alvos = new Set();
 
     for (let i = 2; i <= MAX_PADRAO; i += 1) {
-      for (let d = -2; d <= 2; d += 1) precos.add(i * mv + d);
-      for (let r = 0; r < i; r += 1) precos.add(i * 3000 + r);
-    }
-    if (largo) {
-      for (let price = 1000; price <= 30000; price += 11) precos.add(price);
+      for (let d = -2; d <= 2; d += 1) alvos.add(i * mv + d);
+      for (let r = 0; r < i; r += 1) alvos.add(i * mv + r);
     }
 
-    return [...precos].filter((price) => price > 0);
+    const amplos = new Set();
+    if (largo) {
+      for (let price = 1000; price <= 30000; price += 11) amplos.add(price);
+    }
+
+    const positivos = (conjunto) => [...conjunto].filter((price) => price > 0);
+    return { alvos: positivos(alvos), amplos: positivos(amplos) };
   }
 
   // ⚠ A primeira versão varria os 29.001 preços de R$ 10,00 a R$ 300,00, de
@@ -286,12 +296,14 @@ describe('concordância com o Liquid (issue #48)', () => {
     // que a loja faz: a cliente troca de variante na MESMA página. Remontar o
     // DOM a cada preço custava 21s sozinho.
     const divergem = [];
+    let alvosVisitados = 0;
     let visitados = 0;
 
     for (const mv of [MIN_PADRAO, 2000]) {
       const { context, parcelas, valorParcela } = monta({ mv });
+      const { alvos, amplos } = precosQuePodemDivergir({ mv, largo: mv === MIN_PADRAO });
 
-      for (const price of precosQuePodemDivergir({ mv, largo: mv === MIN_PADRAO })) {
+      for (const price of [...alvos, ...amplos]) {
         trocaVariante(context, { price, compare_at_price: null });
         visitados += 1;
 
@@ -301,14 +313,24 @@ describe('concordância com o Liquid (issue #48)', () => {
           divergem.push({ price, mv, js: nosso, liquid: deles });
         }
       }
+
+      alvosVisitados += alvos.length;
     }
 
     expect(divergem).toEqual([]);
 
     // Uma varredura que não visitasse preço nenhum passaria vazia e verde — a
     // mesma mentira que a catraca contava ao comparar o total consigo mesma.
-    // O número é folgado de propósito: ele guarda contra a lista virar vazia,
-    // não contra ela mudar de tamanho.
+    //
+    // E são DUAS contagens porque uma só não guardava o que importa: dos 2.783
+    // preços visitados, 2.637 vêm do largo e 146 dos alvos. Apagar os dois
+    // laços de alvo — os que miram exatamente onde `floor` e `ceil`
+    // discordaram na #48 — deixaria o total acima de 2.000 e o teste verde,
+    // tendo perdido a única parte que prova alguma coisa.
+    //
+    // Os números são folgados de propósito: guardam contra as listas virarem
+    // vazias, não contra elas mudarem de tamanho.
+    expect(alvosVisitados).toBeGreaterThan(80);
     expect(visitados).toBeGreaterThan(2000);
   }, 20_000);
 });
