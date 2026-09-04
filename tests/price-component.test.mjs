@@ -6,12 +6,12 @@
  * servidor pinta a primeira vez; este componente repinta assim que
  * `variations-selector` dispara `variant:change` — o que acontece já no
  * carregamento da PDP. Os dois PRECISAM concordar, senão o número muda sozinho
- * na frente da cliente. Há um teste abaixo que documenta onde eles não
- * concordam hoje.
+ * na frente da cliente. Há um teste abaixo que prova que eles concordam, na
+ * contagem e no valor, varrendo as fronteiras onde eles já divergiram (#48).
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { loadAsset, loadGlobalAsset } from './helpers/load-asset.mjs';
-import { textOf } from './helpers/dom.mjs';
+import { textOf, normalizeCurrency } from './helpers/dom.mjs';
 
 // `price-component.js` chama `formatPrice` sem importar nada: no navegador ela
 // é global porque `cart.js` a declara no topo de um script clássico. Carregar
@@ -180,30 +180,159 @@ describe('parcelamento', () => {
   });
 });
 
-describe('divergência conhecida com o Liquid', () => {
-  it('R$ 99,99: o JS mostra 2x onde o servidor não mostra parcelamento', () => {
-    // ATENÇÃO: este teste registra um BUG (issue #48), não um contrato
-    // desejado.
-    //
-    // O Liquid usa `price | divided_by: i`, que é divisão INTEIRA (trunca):
-    //   9999 | divided_by: 2  →  4999   →  4999 >= 5000 é falso  →  1x
-    // O JS usa `Math.ceil(price / i)`, que arredonda para cima:
-    //   Math.ceil(9999 / 2) = 5000      →  5000 >= 5000 é verdade →  2x
-    //
-    // Resultado na loja: a PDP renderiza sem parcelamento e, no mesmo
-    // carregamento, `variations-selector` dispara `variant:change` e o texto
-    // vira "até 2x de R$ 50,00" — parcelas de R$ 49,995, abaixo do mínimo que
-    // a lojista configurou. E ",99" é o final de preço mais comum do varejo.
-    //
-    // Quando a issue #48 for corrigida (o caminho provável é o JS passar a
-    // usar Math.floor, alinhando-se aos DOIS arquivos Liquid), este teste vai
-    // falhar. Isso é o ponto: ele existe para não deixar o bug ser esquecido.
+describe('concordância com o Liquid (issue #48)', () => {
+  /**
+   * O que o servidor pinta, em Liquid, para o mesmo preço e a mesma config.
+   *
+   * `divided_by` é divisão INTEIRA, e o valor sai por `| money` a partir de
+   * centavos inteiros — os dois arquivos Liquid fazem exatamente isto. Esta
+   * função é a régua: se ela e o componente divergirem, o número muda sozinho
+   * na frente da cliente, no mesmo carregamento.
+   */
+  function comoOLiquidPinta(price, { mi = MAX_PADRAO, mv = MIN_PADRAO } = {}) {
+    let parcelas = 1;
+    if (price > 0 && mi > 1 && mv >= 0) {
+      for (let i = mi; i >= 2; i -= 1) {
+        if (Math.floor(price / i) >= mv) {
+          parcelas = i;
+          break;
+        }
+      }
+    }
+    return {
+      parcelas: `${parcelas}x`,
+      // `normalizeCurrency` pelo mesmo motivo que `textOf` a usa: o Intl separa
+      // "R$" do número com espaço NÃO-QUEBRÁVEL, e o lado do componente passa
+      // por essa normalização. Sem ela os dois valores IMPRIMEM igual e
+      // comparam diferente — a primeira versão desta régua acusou 29.001
+      // divergências que não existiam.
+      valor: normalizeCurrency(
+        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
+          Math.floor(price / parcelas) / 100
+        )
+      ),
+    };
+  }
+
+  // Este era o teste que registrava o bug: até a #48, o JS mostrava 2x de
+  // R$ 50,00 onde o servidor mostrava 1x. `Math.ceil(9999 / 2)` dava 5000 e
+  // passava no mínimo; `9999 | divided_by: 2` dá 4999 e não passa. As
+  // parcelas de R$ 49,995 ficavam abaixo do mínimo que a lojista pediu, e o
+  // arredondamento do `formatPrice` escondia isso.
+  it('R$ 99,99 com os padrões: 1x, como o servidor', () => {
     const { context, parcelas, valorParcela } = monta();
     trocaVariante(context, { price: 9999, compare_at_price: null });
 
-    expect(textOf(parcelas)).toBe('2x');
-    expect(textOf(valorParcela)).toBe('R$ 50,00');
+    expect(textOf(parcelas)).toBe('1x');
+    expect(textOf(valorParcela)).toBe('R$ 99,99');
+    expect({ parcelas: textOf(parcelas), valor: textOf(valorParcela) }).toEqual(
+      comoOLiquidPinta(9999)
+    );
   });
+
+  // A outra metade da divergência, e ela morde onde a contagem já estava
+  // certa: o VALOR. O Liquid imprime centavos inteiros; o JS dividia em ponto
+  // flutuante e deixava o `Intl` arredondar para cima.
+  it('R$ 59,99 em 2x: o valor da parcela é o do servidor, ao centavo', () => {
+    const { context, parcelas, valorParcela } = monta({ mv: 2000 });
+    trocaVariante(context, { price: 5999, compare_at_price: null });
+
+    expect(textOf(parcelas)).toBe('2x');
+    // 5999 / 2 = 2999,5 — o servidor trunca para 2999 e imprime R$ 29,99.
+    // Com a divisão em ponto flutuante saía R$ 30,00: um centavo a mais,
+    // aparecendo sozinho depois do carregamento.
+    expect(textOf(valorParcela)).toBe('R$ 29,99');
+    expect(textOf(valorParcela)).toBe(comoOLiquidPinta(5999, { mv: 2000 }).valor);
+  });
+
+  /**
+   * Os preços que PODEM divergir — escolhidos pelo que quebra, não a esmo.
+   *
+   *   · a FRONTEIRA da contagem: os centavos em volta de `i × mínimo`, para
+   *     todo i possível. É exatamente onde `floor` e `ceil` discordam sobre
+   *     passar no mínimo — a metade original da #48.
+   *   · todo RESTO de divisão por i: `i × mínimo + r`, com r de 0 a i-1. O
+   *     `i × mínimo` não é enfeite — é o preço em que o laço escolhe
+   *     exatamente i parcelas (`floor(price / i) >= mv` vale para i e falha
+   *     para i+1), então cada r exercita um resto REAL da divisão que vai ser
+   *     impressa. Uma constante qualquer no lugar dele cairia quase toda em
+   *     1x/2x, e o comentário prometeria uma cobertura que o código não tem.
+   *   · e uma varredura larga por cima, de 11 em 11 centavos, para pegar o que
+   *     eu não pensei. Passo primo de propósito: passo redondo se alinha com
+   *     os divisores e visita sempre o caso fácil.
+   *
+   * Devolve as duas listas separadas porque a asserção final conta cada uma:
+   * o largo é 30× maior, e sozinho ele esconderia o sumiço dos alvos.
+   */
+  function precosQuePodemDivergir({ mv, largo = false }) {
+    const alvos = new Set();
+
+    for (let i = 2; i <= MAX_PADRAO; i += 1) {
+      for (let d = -2; d <= 2; d += 1) alvos.add(i * mv + d);
+      for (let r = 0; r < i; r += 1) alvos.add(i * mv + r);
+    }
+
+    const amplos = new Set();
+    if (largo) {
+      for (let price = 1000; price <= 30000; price += 11) amplos.add(price);
+    }
+
+    const positivos = (conjunto) => [...conjunto].filter((price) => price > 0);
+    return { alvos: positivos(alvos), amplos: positivos(amplos) };
+  }
+
+  // ⚠ A primeira versão varria os 29.001 preços de R$ 10,00 a R$ 300,00, de
+  // centavo em centavo. Passava em 4s aqui e estourou o timeout de 5s no
+  // runner do CI, com 11,7s — um teste de CORREÇÃO reprovando por velocidade
+  // de máquina, que é o defeito que o comentário dentro dele dizia ter
+  // evitado. O custo é o `formatPrice`: ele constrói um `Intl.NumberFormat` a
+  // cada chamada, e são três por preço (~0,12ms aqui, o triplo no runner).
+  //
+  // O timeout explícito não está aqui para permitir lentidão — a varredura de
+  // hoje roda em fração de segundo. Está para que um runner ruim não
+  // transforme uma asserção de correção num vermelho sobre outra coisa.
+  it('nas fronteiras, nos restos e por cima da faixa, os dois concordam', () => {
+    // Uma montagem por configuração, e o evento disparado N vezes — que é o
+    // que a loja faz: a cliente troca de variante na MESMA página. Remontar o
+    // DOM a cada preço custava 21s sozinho.
+    const divergem = [];
+    let alvosVisitados = 0;
+    let visitados = 0;
+
+    for (const mv of [MIN_PADRAO, 2000]) {
+      const { context, parcelas, valorParcela } = monta({ mv });
+      const { alvos, amplos } = precosQuePodemDivergir({ mv, largo: mv === MIN_PADRAO });
+
+      for (const price of [...alvos, ...amplos]) {
+        trocaVariante(context, { price, compare_at_price: null });
+        visitados += 1;
+
+        const nosso = { parcelas: textOf(parcelas), valor: textOf(valorParcela) };
+        const deles = comoOLiquidPinta(price, { mv });
+        if (nosso.parcelas !== deles.parcelas || nosso.valor !== deles.valor) {
+          divergem.push({ price, mv, js: nosso, liquid: deles });
+        }
+      }
+
+      alvosVisitados += alvos.length;
+    }
+
+    expect(divergem).toEqual([]);
+
+    // Uma varredura que não visitasse preço nenhum passaria vazia e verde — a
+    // mesma mentira que a catraca contava ao comparar o total consigo mesma.
+    //
+    // E são DUAS contagens porque uma só não guardava o que importa: dos 2.783
+    // preços visitados, 2.637 vêm do largo e 146 dos alvos. Apagar os dois
+    // laços de alvo — os que miram exatamente onde `floor` e `ceil`
+    // discordaram na #48 — deixaria o total acima de 2.000 e o teste verde,
+    // tendo perdido a única parte que prova alguma coisa.
+    //
+    // Os números são folgados de propósito: guardam contra as listas virarem
+    // vazias, não contra elas mudarem de tamanho.
+    expect(alvosVisitados).toBeGreaterThan(80);
+    expect(visitados).toBeGreaterThan(2000);
+  }, 20_000);
 });
 
 describe('fora de um [product-context]', () => {
