@@ -49,6 +49,20 @@ describe('o ambiente de um mutante de navegador', () => {
     ambienteDoMutante(COM_LOJA, 'e2e/gate.spec.mjs');
     expect(COM_LOJA).toEqual(antes);
   });
+
+  // O `--output` desvia o `outputDir` e para um arquivo antes do fim: o
+  // relatório do reporter `json` sai por `outputFile`, que é do config, e
+  // continuava caindo em `test-results/` — sobrescrevendo, dentro do artefato,
+  // o relatório da execução que falhou. Achado na revisão do PR #75.
+  it('o relatório do mutante também vai para o diretório dele', () => {
+    const env = ambienteDoMutante(COM_LOJA, 'e2e/gate.spec.mjs');
+    expect(env.RELATORIO_E2E).toContain(SAIDA_DO_MUTANTE);
+    expect(env.RELATORIO_E2E).not.toMatch(/(^|\/)test-results\//);
+  });
+
+  it('o mutante de Vitest não ganha a variável: ele não roda Playwright', () => {
+    expect(ambienteDoMutante(COM_LOJA, 'tests/cart.test.mjs').RELATORIO_E2E).toBeUndefined();
+  });
 });
 
 describe('o runner usa a poda de verdade', () => {

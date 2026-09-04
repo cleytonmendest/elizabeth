@@ -25,7 +25,7 @@ import { defineConfig, devices } from '@playwright/test';
  * publicada e ficaria verde.
  */
 import { ARQUIVO_DE_SESSAO } from './e2e/global-setup.mjs';
-import { RELATORIO } from './scripts/e2e.mjs';
+import { ARQUIVO_DE_RELATORIO } from './e2e/helpers/sessao.mjs';
 
 export default defineConfig({
   testDir: 'e2e',
@@ -50,8 +50,8 @@ export default defineConfig({
   // que foi exatamente o que a regressão visual do style guide fez a
   // existência inteira dela (#74).
   reporter: process.env.CI
-    ? [['github'], ['list'], ['json', { outputFile: RELATORIO }]]
-    : [['list'], ['json', { outputFile: RELATORIO }]],
+    ? [['github'], ['list'], ['json', { outputFile: ARQUIVO_DE_RELATORIO }]]
+    : [['list'], ['json', { outputFile: ARQUIVO_DE_RELATORIO }]],
 
   use: {
     baseURL: process.env.THEME_URL,

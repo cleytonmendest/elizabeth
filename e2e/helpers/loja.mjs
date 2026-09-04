@@ -281,6 +281,24 @@ export async function abrePaginaDoTema(page, caminho) {
  * timeout do TESTE, e a falha chegava como "Test timeout of 30000ms exceeded"
  * — verdadeira e inútil, a mesma forma de defeito que `entrar()` corrigiu em
  * `e2e/endereco.spec.mjs`. Foi medido num navegador antes de virar esta linha.
+ *
+ * ── O alcance real da espera, dito por inteiro ─────────────────────────────
+ *
+ * O sinal aqui é A URL MUDOU, e ele é procuração para "chegou documento
+ * novo". As duas coincidem em todo call site de hoje, e não são a mesma coisa:
+ *
+ *   · Documento novo com a MESMA URL (form GET reenviado com os mesmos
+ *     parâmetros, POST que redireciona de volta) não satisfaz o predicado, e a
+ *     espera estoura — sobre uma página que existia para ser provada.
+ *   · `pushState` muda a URL sem documento novo, e a guarda aprova provando de
+ *     novo o documento que a entrada já provou. Inofensivo, mas quer dizer que
+ *     "passou pela clicaNoTema" não é sinônimo de "um documento foi provado".
+ *
+ * Fechar isso pede um sinal de documento — `framenavigated` no frame
+ * principal, ou uma marca em `window` que some com o documento. Não está aqui
+ * porque nenhum call site precisa, e porque a espera com timeout próprio já é
+ * a parte que faltava. O que NÃO é aceitável é a mensagem esconder a
+ * diferença: ela diz o que mediu, e nomeia as duas leituras possíveis.
  */
 
 /**
@@ -303,15 +321,25 @@ export async function clicaNoTema(page, locator, descricao) {
       waitUntil: 'domcontentloaded',
       timeout: ESPERA_DE_NAVEGACAO,
     });
-  } catch {
+  } catch (erro) {
+    // Só o estouro da espera vira a mensagem abaixo. `page` fechada, frame
+    // destruído, erro de rede: esses sobem como são. Um `catch` sem filtro
+    // faria qualquer um deles sair como "a URL não mudou em 15s", que seria
+    // falso — e mensagem falsa é o defeito que este arquivo inteiro combate.
+    if (erro?.name !== 'TimeoutError') throw erro;
+
     throw new Error(
-      `O clique em ${descricao} não trocou de URL em ${ESPERA_DE_NAVEGACAO}ms — a página ` +
-        `continua em ${antes}. \`clicaNoTema\` é para clique que NAVEGA: ele espera o ` +
-        'documento novo justamente para poder provar de que tema ele veio. Clique que não ' +
-        'navega (quick-add, "carregar mais", troca de variante por `pushState`) não traz ' +
-        'documento novo, não tem tema novo para provar, e deve ser chamado cru — o tema da ' +
-        'página em que ele acontece já foi provado na entrada. Se ele DEVIA navegar, então ' +
-        'o defeito é do tema, e é isto aqui que o teste está reportando.'
+      `O clique em ${descricao} não mudou a URL em ${ESPERA_DE_NAVEGACAO}ms — a página ` +
+        `continua em ${antes}. O que esta guarda espera é a URL mudar, como procuração ` +
+        'para "chegou documento novo", então há duas leituras.\n' +
+        '  1. O clique não navega mesmo (quick-add, "carregar mais", troca de variante por ' +
+        '`pushState`): chame-o CRU. Sem documento novo não há tema novo para provar, e o ' +
+        'desta página já foi provado na entrada.\n' +
+        '  2. O clique trouxe documento novo COM a mesma URL (form GET reenviado, POST que ' +
+        'redireciona de volta): aí a guarda precisa de um sinal de documento em vez de URL ' +
+        '— ver o cabeçalho de `clicaNoTema`.\n' +
+        'Se ele DEVIA levar a outra URL e não levou, o defeito é do tema, e é isto que o ' +
+        'teste está reportando.'
     );
   }
 

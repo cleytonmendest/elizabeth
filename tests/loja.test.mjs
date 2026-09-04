@@ -240,22 +240,40 @@ describe('a navegação por CLIQUE', () => {
     expect(erro.message).not.toMatch(/tema ERRADO/);
   });
 
+  /** O que o Playwright levanta quando a espera estoura — `name` inclusive. */
+  const timeout = () =>
+    Object.assign(new Error('Timeout 15000ms exceeded.'), { name: 'TimeoutError' });
+
   // Sem timeout próprio na espera, este caso morria no timeout do TESTE, com
   // "Test timeout of 30000ms exceeded" — verdadeiro e inútil. Medido num
   // navegador antes de virar código.
   it('clique que não navega reprova DIZENDO isso, em vez de morrer no timeout do teste', async () => {
     const page = pageComClique({ antesDoClique: nossoTema, depoisDoClique: nossoTema });
     page.waitForURL = async () => {
-      throw new Error('Timeout 15000ms exceeded.');
+      throw timeout();
     };
 
     const erro = await clicaNoTema(page, linkPara(page), 'um botão que não navega').catch((e) => e);
 
-    expect(erro.message).toContain('não trocou de URL');
-    expect(erro.message).toContain('deve ser chamado cru');
+    expect(erro.message).toContain('não mudou a URL');
+    expect(erro.message).toContain('chame-o CRU');
     // E não a mensagem de tema errado: o clique não chegou a produzir página
     // nenhuma para ter tema.
     expect(erro.message).not.toMatch(/tema ERRADO/);
+  });
+
+  // O `catch` era sem filtro, e qualquer erro da espera saía como "a URL não
+  // mudou" — falso, e justamente neste arquivo. Achado na revisão do PR #75.
+  it('erro que NÃO é timeout sobe como é, em vez de virar "a URL não mudou"', async () => {
+    const page = pageComClique({ antesDoClique: nossoTema, depoisDoClique: nossoTema });
+    page.waitForURL = async () => {
+      throw new Error('Target page, context or browser has been closed');
+    };
+
+    const erro = await clicaNoTema(page, linkPara(page), 'o primeiro produto').catch((e) => e);
+
+    expect(erro.message).toContain('has been closed');
+    expect(erro.message).not.toContain('não mudou a URL');
   });
 
   it('a barra de preview no destino do clique também reprova', async () => {

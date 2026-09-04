@@ -32,6 +32,19 @@
  * gate não verificava nada.
  *
  * O arquivo original é restaurado sempre, inclusive se o processo falhar.
+ *
+ * ── Um limite deste desenho: ele não muta a si mesmo ───────────────────────
+ *
+ * Cada `de` é um trecho literal, e o runner exige que ele apareça UMA vez no
+ * arquivo alvo. Como a lista mora aqui, qualquer trecho deste arquivo aparece
+ * duas vezes — no código e na entrada que o cita —, e o mutante reprova antes
+ * de rodar. Descoberto ao tentar cobrir `ambienteDoMutante`, na revisão do PR
+ * #75.
+ *
+ * O que garante essa função é `tests/test-mutants.test.mjs`, que a chama de
+ * verdade e ainda confere, lendo a fonte, que o runner a usa. Não é a mesma
+ * força de um mutante; é o que este desenho permite, e está escrito para não
+ * ser confundido com cobertura.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -467,6 +480,16 @@ const MUTANTES = [
     teste: 'tests/loja.test.mjs',
   },
   {
+    // O `catch` sem filtro que a revisão do PR #75 apontou: `page` fechada e
+    // frame destruído sairiam como "a URL não mudou em 15s", que é falso —
+    // neste arquivo, o pecado capital.
+    porque: 'qualquer erro da espera volta a sair como "a URL não mudou"',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: "    if (erro?.name !== 'TimeoutError') throw erro;",
+    para: '    void erro;',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
     // O modo sutil de a guarda do clique não guardar nada: perguntar antes de
     // o documento novo existir. A resposta viria da página ANTERIOR, que
     // acabou de passar na guarda — verde sobre a página errada.
@@ -586,6 +609,11 @@ const dim = (t) => paint('2', t);
  * mensagem de falha mandava olhar. O verificador tinha voltado a mentir sobre
  * o que entregava.
  *
+ * Ele cobre o `outputDir`, que é quase tudo — mas não o relatório do reporter
+ * `json`, que sai por `outputFile` e é do config. Essa metade se fecha em
+ * `ambienteDoMutante`, e as duas juntas é que significam "o mutante escreve
+ * só no diretório dele".
+ *
  * É o mesmo cuidado de `ambienteDoMutante`, um degrau adiante: o mutante mede
  * o verificador, e não pode mexer em mais nada da execução real.
  */
@@ -594,7 +622,17 @@ export const SAIDA_DO_MUTANTE = 'test-results-mutantes';
 export function ambienteDoMutante(env, teste) {
   if (!teste.startsWith('e2e/')) return env;
   const { THEME_URL, PREVIEW_THEME_ID, ...resto } = env;
-  return resto;
+
+  // A segunda metade do isolamento, e ela precisa existir aqui porque o
+  // `--output` não a alcança: ele desvia o `outputDir`, e o relatório do
+  // reporter `json` sai por `outputFile`, que é do CONFIG. Sem esta linha o
+  // mutante sobrescreve `test-results/relatorio.json` — o relatório da
+  // execução REAL, dentro do artefato —, e quem o abrisse para saber o que
+  // não rodou receberia a resposta dos 14 testes do gate.
+  //
+  // Medido: `playwright test e2e/gate.spec.mjs --output=test-results-mutantes`
+  // deixa `test-results/relatorio.json` escrito assim mesmo.
+  return { ...resto, RELATORIO_E2E: path.join(SAIDA_DO_MUTANTE, 'relatorio.json') };
 }
 
 const sobreviventes = [];

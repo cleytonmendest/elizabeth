@@ -31,14 +31,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
-import { ARQUIVO_DE_FALHA } from '../e2e/helpers/sessao.mjs';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { ARQUIVO_DE_FALHA, ARQUIVO_DE_RELATORIO } from '../e2e/helpers/sessao.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PLAYWRIGHT = path.join(ROOT, 'node_modules', '.bin', 'playwright');
-
-/** Onde o reporter `json` do playwright.config.mjs deixa o relatório. */
-export const RELATORIO = 'test-results/relatorio.json';
 
 function avisar(texto) {
   console.log(process.env.CI ? `::warning::${texto}` : texto);
@@ -169,7 +166,7 @@ function main() {
   // Playwright morre antes de escrever, e nesse caso o run já está vermelho
   // por outro motivo.
   try {
-    const relatorio = JSON.parse(fs.readFileSync(path.join(ROOT, RELATORIO), 'utf8'));
+    const relatorio = JSON.parse(fs.readFileSync(path.join(ROOT, ARQUIVO_DE_RELATORIO), 'utf8'));
     const resumo = resumoDePulos(relatorio);
     if (resumo) avisar(resumo);
   } catch {
@@ -179,6 +176,10 @@ function main() {
   return status ?? 1;
 }
 
-if (process.argv[1] && process.argv[1].endsWith('e2e.mjs')) {
+// `import.meta.url` contra o argv[1] resolvido, e não um `endsWith` do nome:
+// este arquivo é importado por `tests/e2e.test.mjs`, e um `main()` disparando
+// ali spawnaria o Playwright no meio do Vitest. O `endsWith('e2e.mjs')` da
+// primeira versão dava isso a qualquer entrypoint chamado `algum-e2e.mjs`.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   process.exit(main());
 }
