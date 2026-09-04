@@ -245,28 +245,72 @@ describe('concordância com o Liquid (issue #48)', () => {
     expect(textOf(valorParcela)).toBe(comoOLiquidPinta(5999, { mv: 2000 }).valor);
   });
 
-  // Uma faixa inteira em vez de um caso escolhido a dedo: se algum preço
-  // deste intervalo divergir, é aqui que aparece — e o relatório diz qual.
-  it('do R$ 10,00 ao R$ 300,00, de centavo em centavo, os dois concordam', () => {
-    // Uma montagem só, e o evento disparado 29.001 vezes — que é o que a loja
-    // faz: a cliente troca de variante na MESMA página. Remontar o DOM a cada
-    // preço custava 21s e estourava o timeout, medindo a velocidade do jsdom
-    // em vez do componente.
-    const { context, parcelas, valorParcela } = monta({ mv: 2000 });
+  /**
+   * Os preços que PODEM divergir — escolhidos pelo que quebra, não a esmo.
+   *
+   *   · a FRONTEIRA da contagem: os centavos em volta de `i × mínimo`, para
+   *     todo i possível. É exatamente onde `floor` e `ceil` discordam sobre
+   *     passar no mínimo — a metade original da #48.
+   *   · todo RESTO de divisão por i (`i × 3000 + r`, r de 0 a i-1): é onde o
+   *     valor pode divergir de um centavo, a outra metade.
+   *   · e uma varredura larga por cima, de 11 em 11 centavos, para pegar o que
+   *     eu não pensei. Passo primo de propósito: passo redondo se alinha com
+   *     os divisores e visita sempre o caso fácil.
+   */
+  function precosQuePodemDivergir({ mv, largo = false }) {
+    const precos = new Set();
+
+    for (let i = 2; i <= MAX_PADRAO; i += 1) {
+      for (let d = -2; d <= 2; d += 1) precos.add(i * mv + d);
+      for (let r = 0; r < i; r += 1) precos.add(i * 3000 + r);
+    }
+    if (largo) {
+      for (let price = 1000; price <= 30000; price += 11) precos.add(price);
+    }
+
+    return [...precos].filter((price) => price > 0);
+  }
+
+  // ⚠ A primeira versão varria os 29.001 preços de R$ 10,00 a R$ 300,00, de
+  // centavo em centavo. Passava em 4s aqui e estourou o timeout de 5s no
+  // runner do CI, com 11,7s — um teste de CORREÇÃO reprovando por velocidade
+  // de máquina, que é o defeito que o comentário dentro dele dizia ter
+  // evitado. O custo é o `formatPrice`: ele constrói um `Intl.NumberFormat` a
+  // cada chamada, e são três por preço (~0,12ms aqui, o triplo no runner).
+  //
+  // O timeout explícito não está aqui para permitir lentidão — a varredura de
+  // hoje roda em fração de segundo. Está para que um runner ruim não
+  // transforme uma asserção de correção num vermelho sobre outra coisa.
+  it('nas fronteiras, nos restos e por cima da faixa, os dois concordam', () => {
+    // Uma montagem por configuração, e o evento disparado N vezes — que é o
+    // que a loja faz: a cliente troca de variante na MESMA página. Remontar o
+    // DOM a cada preço custava 21s sozinho.
     const divergem = [];
+    let visitados = 0;
 
-    for (let price = 1000; price <= 30000; price += 1) {
-      trocaVariante(context, { price, compare_at_price: null });
+    for (const mv of [MIN_PADRAO, 2000]) {
+      const { context, parcelas, valorParcela } = monta({ mv });
 
-      const nosso = { parcelas: textOf(parcelas), valor: textOf(valorParcela) };
-      const deles = comoOLiquidPinta(price, { mv: 2000 });
-      if (nosso.parcelas !== deles.parcelas || nosso.valor !== deles.valor) {
-        divergem.push({ price, js: nosso, liquid: deles });
+      for (const price of precosQuePodemDivergir({ mv, largo: mv === MIN_PADRAO })) {
+        trocaVariante(context, { price, compare_at_price: null });
+        visitados += 1;
+
+        const nosso = { parcelas: textOf(parcelas), valor: textOf(valorParcela) };
+        const deles = comoOLiquidPinta(price, { mv });
+        if (nosso.parcelas !== deles.parcelas || nosso.valor !== deles.valor) {
+          divergem.push({ price, mv, js: nosso, liquid: deles });
+        }
       }
     }
 
     expect(divergem).toEqual([]);
-  });
+
+    // Uma varredura que não visitasse preço nenhum passaria vazia e verde — a
+    // mesma mentira que a catraca contava ao comparar o total consigo mesma.
+    // O número é folgado de propósito: ele guarda contra a lista virar vazia,
+    // não contra ela mudar de tamanho.
+    expect(visitados).toBeGreaterThan(2000);
+  }, 20_000);
 });
 
 describe('fora de um [product-context]', () => {
