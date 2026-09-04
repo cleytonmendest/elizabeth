@@ -282,7 +282,7 @@ export async function abrePaginaDoTema(page, caminho) {
  * — verdadeira e inútil, a mesma forma de defeito que `entrar()` corrigiu em
  * `e2e/endereco.spec.mjs`. Foi medido num navegador antes de virar esta linha.
  *
- * ── O alcance real da espera, dito por inteiro ─────────────────────────────
+ * ── O alcance real da espera, dito por inteiro (#76) ───────────────────────
  *
  * O sinal aqui é A URL MUDOU, e ele é procuração para "chegou documento
  * novo". As duas coincidem em todo call site de hoje, e não são a mesma coisa:
@@ -299,6 +299,12 @@ export async function abrePaginaDoTema(page, caminho) {
  * porque nenhum call site precisa, e porque a espera com timeout próprio já é
  * a parte que faltava. O que NÃO é aceitável é a mensagem esconder a
  * diferença: ela diz o que mediu, e nomeia as duas leituras possíveis.
+ *
+ * O que está escrito acima é DECISÃO: por que medimos URL, e por que não
+ * trocamos agora. O que falta fechar é PENDENTE, e pendente não mora em prosa
+ * — mora na issue #76, com os dois casos como critério de aceite verificável.
+ * Quando aparecer o primeiro call site que navega para a mesma URL, é para lá
+ * que se vai, sem depender de alguém reler este cabeçalho no dia certo.
  */
 
 /**
