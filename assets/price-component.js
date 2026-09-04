@@ -65,9 +65,16 @@ class PriceComponent extends HTMLElement {
         const maxInstallments = this.config.maxInstallments;
         const minValueCents = this.config.minValue;
 
+        // `Math.floor`, e não `Math.ceil`: o servidor pinta esta mesma linha
+        // com `price | divided_by: i` (snippets/price-v2.liquid e
+        // snippets/card-product-slider.liquid), e `divided_by` é divisão
+        // INTEIRA. Com ceil, R$ 99,99 dava 1x no HTML e 2x depois do JS, no
+        // mesmo carregamento — e as parcelas de R$ 49,995 ficavam abaixo do
+        // mínimo que a lojista configurou, escondidas pelo arredondamento do
+        // formatPrice. Issue #48.
         if (price > 0 && maxInstallments > 1 && minValueCents >= 0) {
             for (let i = maxInstallments; i >= 2; i--) {
-                const installmentValueCheck = Math.ceil(price / i)
+                const installmentValueCheck = Math.floor(price / i)
 
                 if (installmentValueCheck >= minValueCents) {
                     actualInstallments = i;
@@ -76,7 +83,11 @@ class PriceComponent extends HTMLElement {
             }
         }
 
-        finalInstallmentValue = price / actualInstallments;
+        // O mesmo `floor` no VALOR, pelo mesmo motivo: o Liquid imprime
+        // `final_installment_value | money` a partir de centavos inteiros. Sem
+        // isto, R$ 59,99 em 2x virava R$ 29,99 no servidor e R$ 30,00 no JS —
+        // um centavo, no mesmo texto, trocando sozinho depois do carregamento.
+        finalInstallmentValue = Math.floor(price / actualInstallments);
 
         this.installmentElement.textContent = `${actualInstallments}x`;
         this.installmentValueElement.textContent = formatPrice(finalInstallmentValue);
