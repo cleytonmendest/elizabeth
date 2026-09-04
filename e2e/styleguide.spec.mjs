@@ -1,11 +1,36 @@
 /**
  * Regressão visual da página de style guide.
  *
- * ⚠ NENHUM TESTE DESTE ARQUIVO JÁ RODOU, e ele não tem baseline commitada:
- * a primeira imagem só pode nascer de uma loja de verdade. Enquanto não
- * existir, o Playwright grava a baseline e REPROVA o run que a gravou — que é
- * o comportamento certo: uma baseline que ninguém olhou não é referência,
- * é só o estado atual promovido a verdade.
+ * ⚠ ESTE TESTE AINDA NÃO TEM BASELINE COMMITADA: a primeira imagem só pode
+ * nascer de uma loja de verdade. Enquanto não existir, o Playwright grava a
+ * baseline e REPROVA o run que a gravou — que é o comportamento certo: uma
+ * baseline que ninguém olhou não é referência, é só o estado atual promovido a
+ * verdade.
+ *
+ * ── O impasse que este arquivo teve, e como ele saiu (#74) ─────────────────
+ *
+ * Até a #74, o teste se declarava PULADO quando a baseline não existia, e a
+ * mensagem mandava baixar `styleguide-actual.png` do artefato do CI. Só que
+ * essa imagem é produzida pelo `toHaveScreenshot` — que não rodava, porque o
+ * teste estava pulado. Sem baseline não havia imagem; sem imagem não havia
+ * baseline. Resultado: desde que o arquivo foi escrito, a regressão visual
+ * nunca comparou nada, e o CI ficava verde porque pulo com motivo escrito é o
+ * que este repositório trata como aceitável.
+ *
+ * O pulo saiu. O que fica é o gravar-e-reprovar que este cabeçalho sempre
+ * prometeu — agora o código faz o que ele diz.
+ *
+ * ── Onde a imagem aparece (medido, não suposto) ────────────────────────────
+ *
+ * Sem baseline, o Playwright escreve em DOIS lugares:
+ *
+ *   e2e/__screenshots__/styleguide.png                       (a baseline)
+ *   test-results/<spec>-<teste>-chromium/styleguide-actual.png (a cópia)
+ *
+ * e reprova com "A snapshot doesn't exist at …, writing actual". O
+ * `upload-artifact` do `ci.yml` já sobe `test-results/` em `if: failure()`,
+ * então é de lá que a imagem se baixa. OLHE a imagem antes de commitar a
+ * baseline — é a única etapa desta mecânica que uma máquina não faz.
  *
  * ── Por que esta página, e não todas ───────────────────────────────────────
  *
@@ -18,36 +43,16 @@
  *
  * A issue #31 pede screenshot "nos 4 presets". Preset não é escolha da
  * visitante: ele vive em `config/settings_data.json` e só muda no admin ou
- * trocando o arquivo antes de subir o `shopify theme dev`. Ou seja, não dá
- * para cobrir os quatro numa execução só — precisa de uma matriz no CI que
- * suba o servidor uma vez por preset. Isso está registrado como próximo passo
- * em vez de fingido aqui: um teste que troca de preset sem trocar de servidor
+ * trocando o arquivo antes do `shopify theme push`. Ou seja, não dá para
+ * cobrir os quatro numa execução só — precisa de uma matriz no CI que empurre
+ * um tema por preset. Isso está registrado como próximo passo em vez de
+ * fingido aqui: um teste que troca de preset sem trocar de tema empurrado
  * mediria quatro vezes a mesma coisa.
  */
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
 import { THEME_URL, MOTIVO, STYLEGUIDE_PATH, abrePaginaDoTema } from './helpers/loja.mjs';
 
-const BASELINE = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  '__screenshots__',
-  'styleguide.png'
-);
-
 test.skip(!THEME_URL, MOTIVO);
-
-// Enquanto a imagem de referência não estiver commitada, este teste se declara
-// pulado com o motivo — e volta a rodar sozinho no instante em que o arquivo
-// aparecer. A alternativa (deixar o Playwright gravar a imagem e seguir) seria
-// promover o estado atual a verdade sem ninguém ter olhado, que é o oposto do
-// que uma baseline visual serve para fazer.
-test.skip(
-  !fs.existsSync(BASELINE),
-  'Sem baseline commitada. Baixe styleguide-actual.png do artefato do CI, ' +
-    'OLHE a imagem, e commite em e2e/__screenshots__/styleguide.png.'
-);
 
 test('a página inteira bate com a baseline', async ({ page }) => {
   await abrePaginaDoTema(page, STYLEGUIDE_PATH);

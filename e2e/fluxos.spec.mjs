@@ -12,19 +12,26 @@
  * escreveu o markup.
  */
 import { test, expect } from '@playwright/test';
-import { THEME_URL, MOTIVO, abrePaginaDoTema } from './helpers/loja.mjs';
+import { THEME_URL, MOTIVO, abrePaginaDoTema, clicaNoTema } from './helpers/loja.mjs';
 
 test.skip(!THEME_URL, MOTIVO);
 
+/**
+ * Quase todo teste de carrinho começa aqui, e por isso o clique daqui era o
+ * trecho mais caro a ficar fora da guarda de tema (#73): o `goto` provava a
+ * coleção, e a PDP — onde as asserções acontecem — entrava sem prova nenhuma.
+ */
 async function abrePDP(page) {
   await abrePaginaDoTema(page, '/collections/all');
-  await page.locator('a[href*="/products/"]').first().click();
+  await clicaNoTema(page, page.locator('a[href*="/products/"]').first(), 'o primeiro produto da coleção');
   await expect(page).toHaveURL(/\/products\//);
 }
 
 test('adicionar ao carrinho abre o drawer e atualiza a bolha', async ({ page }) => {
   await abrePDP(page);
 
+  // Clique CRU: adicionar ao carrinho é fetch, não navegação — a prova é o
+  // drawer abrindo NESTA página, logo abaixo.
   await page.locator('add-to-cart button[name="add"]').first().click();
 
   await expect(page.locator('cart-drawer')).toHaveClass(/active/);
@@ -65,6 +72,7 @@ test('a página do carrinho não repete o id que o drawer usa', async ({ page })
   // com `cart.item_count > 0`, então sem item há um id só e a asserção passa.
   // Por isso o produto entra antes.
   await abrePDP(page);
+  // Clique CRU, mesmo motivo do teste acima: sem documento novo.
   await page.locator('add-to-cart button[name="add"]').first().click();
   await expect(page.locator('cart-drawer')).toHaveClass(/active/);
 
@@ -97,6 +105,9 @@ test('quick-add do card mantém o ícone e adiciona sem sair da coleção', asyn
   const quickAdd = card.locator('button[name="add"]');
   await expect(quickAdd).toBeVisible();
   await expect(quickAdd.locator('svg')).toBeVisible();
+  // Clique CRU, e é o certo: o quick-add adiciona por fetch e a cliente
+  // continua na mesma página. Sem documento novo não há tema novo para provar
+  // — o desta página foi provado no `abrePaginaDoTema` acima.
   await quickAdd.click();
 
   await expect(page.locator('cart-drawer')).toHaveClass(/active/);
@@ -116,6 +127,9 @@ test('trocar de variante muda preço e URL juntos', async ({ page }) => {
   // intercepta o ponteiro. Quem a cliente clica é o label, e é o que o teste
   // tem que clicar também.
   const alvo = radios.nth(1);
+  // Clique CRU: a troca de variante reescreve a URL por `pushState`, no MESMO
+  // documento. A URL muda e o tema não pode mudar junto — é o único caso em
+  // que URL diferente não significa página nova.
   await page.locator(`label[for="${await alvo.getAttribute('id')}"]`).click();
 
   // A URL tem que acompanhar: é o que faz o link compartilhado abrir na
@@ -133,7 +147,13 @@ test('filtrar a coleção mantém a lista utilizável', async ({ page }) => {
   const filtros = page.locator('[data-filters-panel] input[type="checkbox"]');
   test.skip((await filtros.count()) === 0, 'coleção sem filtros configurados');
 
-  await filtros.first().check();
+  // O filtro auto-submete o form GET: este clique traz um DOCUMENTO novo, e
+  // portanto passa pela guarda de tema (#73) como qualquer outra navegação.
+  //
+  // `click` e não `check`: num filtro já marcado o `check` é no-op — não
+  // navega, e a guarda ficaria esperando uma navegação que ninguém pediu. Em
+  // `/collections/all` sem query nenhum filtro nasce ativo, então clicar marca.
+  await clicaNoTema(page, filtros.first(), 'o primeiro filtro da coleção');
 
   await expect(page).toHaveURL(/[?&]filter\./);
   await expect(page.locator('a[href*="/products/"]').first()).toBeVisible();
@@ -145,6 +165,9 @@ test('carregar mais acrescenta produtos sem recarregar a página', async ({ page
   test.skip(!(await botao.isVisible().catch(() => false)), 'coleção cabe numa página só');
 
   const antes = await page.locator('a[href*="/products/"]').count();
+  // Clique CRU: "carregar mais" busca a próxima página pela Section Rendering
+  // API e faz append no grid. A asserção logo abaixo é a prova de que ele NÃO
+  // navegou — a URL tem que continuar a mesma.
   await botao.click();
 
   await expect(page.locator('a[href*="/products/"]')).not.toHaveCount(antes);

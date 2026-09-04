@@ -8,6 +8,11 @@ memory/
 playwright-report/
 test-results/
 
+# Saída dos mutantes de a11y. Separada de `test-results/` porque o Playwright
+# apaga o diretório de saída ao começar, e este passo roda DEPOIS da suíte: com
+# o padrão, ele apagava as evidências da falha antes do upload do artefato.
+test-results-mutantes/
+
 # O JSON do `shopify theme push` — os dois workflows escrevem no workspace.
 # (`theme-dev.log` saiu daqui junto com o `shopify theme dev`: ADR 0007.)
 tema.json

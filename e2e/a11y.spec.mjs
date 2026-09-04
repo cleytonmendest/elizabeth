@@ -20,7 +20,13 @@
 import fs from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { violacoes, regras, relatorio } from './helpers/axe.mjs';
-import { THEME_URL, MOTIVO, STYLEGUIDE_PATH, abrePaginaDoTema } from './helpers/loja.mjs';
+import {
+  THEME_URL,
+  MOTIVO,
+  STYLEGUIDE_PATH,
+  abrePaginaDoTema,
+  clicaNoTema,
+} from './helpers/loja.mjs';
 import { avaliar, resolvidas, carregar, impressao, ARQUIVO } from './helpers/baseline.mjs';
 
 test.skip(!THEME_URL, MOTIVO);
@@ -142,8 +148,12 @@ test('sem violação NOVA de WCAG AA: página de produto', async ({ page }) => {
   // O handle do produto depende do catálogo da loja, então chegamos nele pelo
   // caminho da cliente em vez de cravar uma URL que quebra quando o catálogo
   // muda.
+  //
+  // O clique passa pela guarda de tema (#73): sem ela, o `goto` acima provava
+  // a coleção e o axe media uma PDP que podia ter vindo da vitrine PUBLICADA —
+  // e uma violação de lá entraria neste baseline como se fosse nossa.
   await abrePaginaDoTema(page, '/collections/all');
-  await page.locator('a[href*="/products/"]').first().click();
+  await clicaNoTema(page, page.locator('a[href*="/products/"]').first(), 'o primeiro produto da coleção');
   await expect(page).toHaveURL(/\/products\//);
   await semViolacaoNova(page, 'página de produto');
 });
@@ -152,6 +162,8 @@ test('o drawer do carrinho aberto também passa', async ({ page }) => {
   // Estado que a auditoria manual esquece: o axe só vê o drawer quando ele
   // está aberto, e é ali que mora a armadilha de foco.
   await abrePaginaDoTema(page, '/');
+  // Clique CRU: o mini-carrinho abre no mesmo documento, que o `goto` acima já
+  // provou ser desta branch.
   await page.locator('#minicart-button').click();
   await expect(page.locator('cart-drawer')).toHaveClass(/active/);
   await semViolacaoNova(page, 'drawer do carrinho');

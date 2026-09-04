@@ -19,7 +19,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ambienteDoMutante } from '../scripts/test-mutants.mjs';
+import { ambienteDoMutante, SAIDA_DO_MUTANTE } from '../scripts/test-mutants.mjs';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -49,6 +49,20 @@ describe('o ambiente de um mutante de navegador', () => {
     ambienteDoMutante(COM_LOJA, 'e2e/gate.spec.mjs');
     expect(COM_LOJA).toEqual(antes);
   });
+
+  // O `--output` desvia o `outputDir` e para um arquivo antes do fim: o
+  // relatório do reporter `json` sai por `outputFile`, que é do config, e
+  // continuava caindo em `test-results/` — sobrescrevendo, dentro do artefato,
+  // o relatório da execução que falhou. Achado na revisão do PR #75.
+  it('o relatório do mutante também vai para o diretório dele', () => {
+    const env = ambienteDoMutante(COM_LOJA, 'e2e/gate.spec.mjs');
+    expect(env.RELATORIO_E2E).toContain(SAIDA_DO_MUTANTE);
+    expect(env.RELATORIO_E2E).not.toMatch(/(^|\/)test-results\//);
+  });
+
+  it('o mutante de Vitest não ganha a variável: ele não roda Playwright', () => {
+    expect(ambienteDoMutante(COM_LOJA, 'tests/cart.test.mjs').RELATORIO_E2E).toBeUndefined();
+  });
 });
 
 describe('o runner usa a poda de verdade', () => {
@@ -58,6 +72,15 @@ describe('o runner usa a poda de verdade', () => {
   // chama — verde exibindo o mesmo silêncio do caso em que ela é chamada.
   it('o spawn do Playwright recebe o ambiente podado', () => {
     expect(fonte).toMatch(/env:\s*ambienteDoMutante\(process\.env,\s*mutante\.teste\)/);
+  });
+
+  // O Playwright APAGA o diretório de saída ao começar. Como este passo roda
+  // depois da suíte no mesmo job, escrever no `test-results/` padrão apagava
+  // as evidências da falha antes do `upload-artifact` — foi o que aconteceu no
+  // PR #75 com a imagem que a #74 acabara de gravar.
+  it('o spawn do Playwright escreve os artefatos FORA do diretório da suíte', () => {
+    expect(fonte).toMatch(/'test',\s*mutante\.teste,\s*`--output=\$\{SAIDA_DO_MUTANTE\}`/);
+    expect(SAIDA_DO_MUTANTE).not.toBe('test-results');
   });
 
   // A lista de mutantes de a11y roda contra `e2e/gate.spec.mjs`. Se um dia ela

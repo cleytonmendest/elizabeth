@@ -19,3 +19,23 @@ export const ARQUIVO_DE_SESSAO = path.join('e2e', '.auth', 'vitrine.json');
  * ninguém.
  */
 export const ARQUIVO_DE_FALHA = path.join('e2e', '.auth', 'falha.json');
+
+/**
+ * Onde o reporter `json` deixa o relatório da execução — a fonte do resumo de
+ * "o que NÃO rodou" que `scripts/e2e.mjs` imprime.
+ *
+ * Mora aqui pelo mesmo motivo que os dois acima: `playwright.config.mjs`
+ * (quem configura o reporter) e `scripts/e2e.mjs` (quem lê) precisam do mesmo
+ * caminho, e nenhum deveria importar o outro. Na primeira versão a constante
+ * morava no runner, e o config passou a importar o script que o executa — uma
+ * inversão que só se sustentava com um guard de entrypoint no runner.
+ *
+ * O override por ambiente existe porque `npm run test:mutants -- --e2e` roda
+ * um segundo Playwright DEPOIS da suíte, no mesmo job. O `--output` desvia o
+ * `outputDir` dele, mas não alcança o `outputFile` do reporter: medido, o
+ * relatório do mutante sobrescrevia o da execução real dentro do artefato, e
+ * quem abrisse o arquivo para saber o que não rodou recebia a resposta do
+ * mutante. Ver `ambienteDoMutante`, em scripts/test-mutants.mjs.
+ */
+export const ARQUIVO_DE_RELATORIO =
+  process.env.RELATORIO_E2E || path.join('test-results', 'relatorio.json');

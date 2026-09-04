@@ -32,6 +32,19 @@
  * gate não verificava nada.
  *
  * O arquivo original é restaurado sempre, inclusive se o processo falhar.
+ *
+ * ── Um limite deste desenho: ele não muta a si mesmo ───────────────────────
+ *
+ * Cada `de` é um trecho literal, e o runner exige que ele apareça UMA vez no
+ * arquivo alvo. Como a lista mora aqui, qualquer trecho deste arquivo aparece
+ * duas vezes — no código e na entrada que o cita —, e o mutante reprova antes
+ * de rodar. Descoberto ao tentar cobrir `ambienteDoMutante`, na revisão do PR
+ * #75.
+ *
+ * O que garante essa função é `tests/test-mutants.test.mjs`, que a chama de
+ * verdade e ainda confere, lendo a fonte, que o runner a usa. Não é a mesma
+ * força de um mutante; é o que este desenho permite, e está escrito para não
+ * ser confundido com cobertura.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -436,6 +449,56 @@ const MUTANTES = [
     para: '  const falha = null;',
     teste: 'tests/loja.test.mjs',
   },
+  // ── O resumo do que NÃO rodou (#74) ─────────────────────────────────────
+  {
+    // Um describe a mais e o pulo sumia do resumo — reconstruindo em silêncio
+    // exatamente o que o resumo existe para quebrar.
+    porque: 'o resumo para de descer em suíte aninhada e subnotifica os testes pulados',
+    arquivo: 'scripts/e2e.mjs',
+    de: '    for (const filha of suite?.suites ?? []) varre(filha);',
+    para: '    void suite;',
+    teste: 'tests/e2e.test.mjs',
+  },
+  {
+    // O outro lado: contar quem rodou. "23 testes não rodaram" numa execução
+    // em que todos rodaram ensina a ignorar o aviso na primeira leitura.
+    porque: 'o resumo passa a contar também os testes que rodaram',
+    arquivo: 'scripts/e2e.mjs',
+    de: "        if (teste.status !== 'skipped') continue;",
+    para: '        if (false) continue;',
+    teste: 'tests/e2e.test.mjs',
+  },
+  {
+    // A #73 exatamente como ela existia: a guarda cobria `page.goto` e a
+    // navegação por CLIQUE entrava sem prova nenhuma. É por clique que a PDP
+    // aparece — o começo de quase todo teste de carrinho, e a página que o axe
+    // mede na `a11y.spec.mjs`.
+    porque: 'a guarda do CLIQUE some, e a navegação por clique volta a poder medir o tema publicado',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '  const falhou = reprovacao({\n    visto: await olha(page),',
+    para: '  const falhou = null;\n  void ({\n    visto: await olha(page),',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    // O `catch` sem filtro que a revisão do PR #75 apontou: `page` fechada e
+    // frame destruído sairiam como "a URL não mudou em 15s", que é falso —
+    // neste arquivo, o pecado capital.
+    porque: 'qualquer erro da espera volta a sair como "a URL não mudou"',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: "    if (erro?.name !== 'TimeoutError') throw erro;",
+    para: '    void erro;',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    // O modo sutil de a guarda do clique não guardar nada: perguntar antes de
+    // o documento novo existir. A resposta viria da página ANTERIOR, que
+    // acabou de passar na guarda — verde sobre a página errada.
+    porque: 'o clique deixa de esperar o documento novo, e a guarda pergunta à página anterior',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '    await page.waitForURL((url) => url.href !== antes, {',
+    para: '    void antes;\n    void ({',
+    teste: 'tests/loja.test.mjs',
+  },
 ];
 
 
@@ -531,10 +594,45 @@ const dim = (t) => paint('2', t);
  * No CI o passo herda `THEME_URL` do `$GITHUB_ENV` que o passo "Onde medir"
  * escreveu, então podar aqui protege a execução real, não só a hipótese.
  */
+/**
+ * Onde o mutante de navegador escreve os artefatos DELE.
+ *
+ * Não é arrumação: o Playwright APAGA o diretório de saída no começo de cada
+ * execução. Com o padrão (`test-results/`), este passo — que roda depois da
+ * suíte, no mesmo job — levava junto screenshot, trace e a imagem gravada por
+ * uma baseline que faltava, e o `upload-artifact` subia um artefato sem as
+ * evidências da falha que ele existe para carregar.
+ *
+ * Medido no PR #75, e é o caso que torna isto concreto: a suíte reprovou
+ * gravando `styleguide-actual.png` (#74), o passo dos mutantes rodou em
+ * seguida, e o artefato subiu com 3 arquivos — nenhum deles a imagem que a
+ * mensagem de falha mandava olhar. O verificador tinha voltado a mentir sobre
+ * o que entregava.
+ *
+ * Ele cobre o `outputDir`, que é quase tudo — mas não o relatório do reporter
+ * `json`, que sai por `outputFile` e é do config. Essa metade se fecha em
+ * `ambienteDoMutante`, e as duas juntas é que significam "o mutante escreve
+ * só no diretório dele".
+ *
+ * É o mesmo cuidado de `ambienteDoMutante`, um degrau adiante: o mutante mede
+ * o verificador, e não pode mexer em mais nada da execução real.
+ */
+export const SAIDA_DO_MUTANTE = 'test-results-mutantes';
+
 export function ambienteDoMutante(env, teste) {
   if (!teste.startsWith('e2e/')) return env;
   const { THEME_URL, PREVIEW_THEME_ID, ...resto } = env;
-  return resto;
+
+  // A segunda metade do isolamento, e ela precisa existir aqui porque o
+  // `--output` não a alcança: ele desvia o `outputDir`, e o relatório do
+  // reporter `json` sai por `outputFile`, que é do CONFIG. Sem esta linha o
+  // mutante sobrescreve `test-results/relatorio.json` — o relatório da
+  // execução REAL, dentro do artefato —, e quem o abrisse para saber o que
+  // não rodou receberia a resposta dos 14 testes do gate.
+  //
+  // Medido: `playwright test e2e/gate.spec.mjs --output=test-results-mutantes`
+  // deixa `test-results/relatorio.json` escrito assim mesmo.
+  return { ...resto, RELATORIO_E2E: path.join(SAIDA_DO_MUTANTE, 'relatorio.json') };
 }
 
 const sobreviventes = [];
@@ -559,7 +657,7 @@ function main() {
       fs.writeFileSync(alvo, original.replace(mutante.de, mutante.para));
       const navegador = mutante.teste.startsWith('e2e/');
       resultado = navegador
-        ? spawnSync(PLAYWRIGHT, ['test', mutante.teste], {
+        ? spawnSync(PLAYWRIGHT, ['test', mutante.teste, `--output=${SAIDA_DO_MUTANTE}`], {
             cwd: ROOT,
             encoding: 'utf8',
             env: ambienteDoMutante(process.env, mutante.teste),

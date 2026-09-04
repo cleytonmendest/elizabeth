@@ -15,7 +15,7 @@
  */
 import fs from 'node:fs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { abrePaginaDoTema, falhaDeSessao } from '../e2e/helpers/loja.mjs';
+import { abrePaginaDoTema, clicaNoTema, falhaDeSessao, reprovacao } from '../e2e/helpers/loja.mjs';
 import { ARQUIVO_DE_FALHA } from '../e2e/helpers/sessao.mjs';
 
 const NOSSO = '158207180978';
@@ -151,5 +151,135 @@ describe('a sessão que não abriu', () => {
     fs.mkdirSync('e2e/.auth', { recursive: true });
     fs.writeFileSync(ARQUIVO_DE_FALHA, 'isto não é json');
     expect(falhaDeSessao()).toBeNull();
+  });
+});
+
+describe('a decisão, sem navegação nenhuma', () => {
+  // Ela era alcançável só por quem navegasse por URL — e foi por isso que a
+  // navegação por CLIQUE ficou fora da guarda por uma versão inteira (#73).
+  // Estes dois testes existem para que o critério tenha um lugar onde ser lido
+  // sem `page` nenhum, falso ou verdadeiro.
+  const alvo = 'A página /cart';
+
+  it('a nossa branch aprova', () => {
+    expect(reprovacao({ visto: nossoTema, esperado: NOSSO, alvo })).toBeNull();
+  });
+
+  it('o tema publicado reprova, e o motivo curto do log diz qual respondeu', () => {
+    const falhou = reprovacao({ visto: temaPublicado, esperado: NOSSO, alvo });
+    expect(falhou.curto).toContain(PUBLICADO);
+    expect(falhou.mensagem).toMatch(/tema ERRADO/);
+  });
+});
+
+describe('a navegação por CLIQUE', () => {
+  /**
+   * Um `page` que só troca de documento quando a espera de navegação acontece.
+   *
+   * É essa troca que dá sentido ao teste: se a guarda perguntar ANTES de
+   * esperar, ela pergunta à página que já estava aberta — a que passou na
+   * guarda um instante atrás — e responde "está tudo certo" sobre um documento
+   * que o teste nem vai medir. Com este falso, esquecer a espera fica vermelho.
+   */
+  function pageComClique({ antesDoClique, depoisDoClique }) {
+    let atual = antesDoClique;
+    return {
+      cliques: 0,
+      esperas: 0,
+      url() {
+        return 'https://loja.myshopify.com/collections/all';
+      },
+      async waitForURL() {
+        this.esperas += 1;
+        atual = depoisDoClique;
+      },
+      async evaluate() {
+        return atual;
+      },
+      async getAttribute() {
+        return 'pt-BR';
+      },
+      async title() {
+        return 'Elizabeth Estudos';
+      },
+    };
+  }
+
+  const linkPara = (page) => ({
+    async click() {
+      page.cliques += 1;
+    },
+  });
+
+  it('clique que continua na nossa branch: segue', async () => {
+    const page = pageComClique({ antesDoClique: nossoTema, depoisDoClique: nossoTema });
+    await expect(clicaNoTema(page, linkPara(page), 'o primeiro produto')).resolves.toBeUndefined();
+    expect(page.cliques).toBe(1);
+    expect(page.esperas).toBe(1);
+  });
+
+  // O defeito da #73 na forma exata em que ele aconteceria: a coleção é nossa,
+  // a fixação cai, e a PDP — onde as asserções moram — vem da vitrine
+  // publicada respondendo 200.
+  it('clique que cai no tema PUBLICADO reprova, e o erro nomeia os dois ids', async () => {
+    const page = pageComClique({ antesDoClique: nossoTema, depoisDoClique: temaPublicado });
+    const erro = await clicaNoTema(page, linkPara(page), 'o primeiro produto').catch((e) => e);
+
+    expect(erro.message).toMatch(/tema ERRADO/);
+    expect(erro.message).toContain(PUBLICADO);
+    expect(erro.message).toContain(NOSSO);
+    // E diz por onde se chegou lá: "A página /cart" não serviria aqui.
+    expect(erro.message).toContain('clique em o primeiro produto');
+  });
+
+  it('clique que sai do tema reprova com a OUTRA mensagem', async () => {
+    const page = pageComClique({ antesDoClique: nossoTema, depoisDoClique: outroLugar });
+    const erro = await clicaNoTema(page, linkPara(page), 'o primeiro filtro').catch((e) => e);
+
+    expect(erro.message).toContain('window.shopUrl');
+    expect(erro.message).not.toMatch(/tema ERRADO/);
+  });
+
+  /** O que o Playwright levanta quando a espera estoura — `name` inclusive. */
+  const timeout = () =>
+    Object.assign(new Error('Timeout 15000ms exceeded.'), { name: 'TimeoutError' });
+
+  // Sem timeout próprio na espera, este caso morria no timeout do TESTE, com
+  // "Test timeout of 30000ms exceeded" — verdadeiro e inútil. Medido num
+  // navegador antes de virar código.
+  it('clique que não navega reprova DIZENDO isso, em vez de morrer no timeout do teste', async () => {
+    const page = pageComClique({ antesDoClique: nossoTema, depoisDoClique: nossoTema });
+    page.waitForURL = async () => {
+      throw timeout();
+    };
+
+    const erro = await clicaNoTema(page, linkPara(page), 'um botão que não navega').catch((e) => e);
+
+    expect(erro.message).toContain('não mudou a URL');
+    expect(erro.message).toContain('chame-o CRU');
+    // E não a mensagem de tema errado: o clique não chegou a produzir página
+    // nenhuma para ter tema.
+    expect(erro.message).not.toMatch(/tema ERRADO/);
+  });
+
+  // O `catch` era sem filtro, e qualquer erro da espera saía como "a URL não
+  // mudou" — falso, e justamente neste arquivo. Achado na revisão do PR #75.
+  it('erro que NÃO é timeout sobe como é, em vez de virar "a URL não mudou"', async () => {
+    const page = pageComClique({ antesDoClique: nossoTema, depoisDoClique: nossoTema });
+    page.waitForURL = async () => {
+      throw new Error('Target page, context or browser has been closed');
+    };
+
+    const erro = await clicaNoTema(page, linkPara(page), 'o primeiro produto').catch((e) => e);
+
+    expect(erro.message).toContain('has been closed');
+    expect(erro.message).not.toContain('não mudou a URL');
+  });
+
+  it('a barra de preview no destino do clique também reprova', async () => {
+    const page = pageComClique({ antesDoClique: nossoTema, depoisDoClique: comBarra });
+    const erro = await clicaNoTema(page, linkPara(page), 'o primeiro produto').catch((e) => e);
+
+    expect(erro.message).toContain('#preview-bar-iframe');
   });
 });
