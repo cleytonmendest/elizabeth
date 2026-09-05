@@ -321,7 +321,7 @@
         <div>
           <p class="text-xs uppercase tracking-widest text-foreground/50 mb-3">price-v2</p>
           {%- if sample_product -%}
-            {% render 'price-v2', product: sample_product, use_variant: true, pdp: true, show_installments: true %}
+            {% render 'price-v2', product: sample_product, use_variant: true, pdp: true %}
           {%- else -%}
             <p class="text-sm text-foreground/50">Sem produto na loja para amostrar.</p>
           {%- endif -%}

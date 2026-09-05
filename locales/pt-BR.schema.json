@@ -129,13 +129,6 @@
         "enable_load_more": {
           "label": "Botão \"Carregar mais\"",
           "info": "Substitui a paginação numerada por um botão que carrega mais produtos na mesma página. Sem JavaScript, a paginação numerada continua funcionando."
-        },
-        "product_header": {
-          "content": "Produto"
-        },
-        "show_installments": {
-          "label": "Mostrar opção de parcelamento",
-          "info": "Mostra 3x sem juros para produtos acima de R$ 100"
         }
       }
     },
@@ -1011,9 +1004,6 @@
         },
         "show_quick_add": {
           "label": "Mostrar botão de compra rápida"
-        },
-        "show_installments": {
-          "label": "Mostrar opção de parcelamento"
         }
       },
       "presets": {
@@ -1753,9 +1743,6 @@
         },
         "show_quick_add": {
           "label": "Mostrar botão de compra rápida"
-        },
-        "show_installments": {
-          "label": "Mostrar opção de parcelamento"
         }
       },
       "presets": {
@@ -1808,9 +1795,6 @@
         },
         "show_quick_add": {
           "label": "Mostrar botão de compra rápida"
-        },
-        "show_installments": {
-          "label": "Mostrar opção de parcelamento"
         }
       },
       "presets": {
@@ -2144,21 +2128,6 @@
           "large": "Grande",
           "xlarge": "Muito grande"
         }
-      }
-    },
-    "installments": {
-      "name": "Parcelamento (somente visual)",
-      "show_installments": {
-        "label": "Exibe informações de parcelamentos nos produtos?",
-        "info": "Caso desativado, não exibirá nenhuma informação de parcelamento. Nem nas prateleiras nem na Página de Produto"
-      },
-      "max_installments": {
-        "label": "Quantidade máxima de parcelamento",
-        "info": "Quantidade máxima de parcelas que a loja consegue, ex: 10. Isto quer dizer que pode parcelar até em 10x"
-      },
-      "min_value_installment": {
-        "label": "Valor mínimo de parcelas",
-        "info": "Valor mínimo por parcela, ex: 100. Se colocar o valor 100 só vai exibir o parcelamento no produto se o valor do produto for no minimo 200, fazendo R$200,00 em 2x = R$100,00 por parcela"
       }
     },
     "layout": {

@@ -6,7 +6,6 @@
   - show_second_image: Mostrar segunda imagem no hover (default: true)
   - show_badges: Mostrar badges de esgotado e desconto (default: true)
   - show_swatches: Mostrar amostras de cor das variantes (default: true; some se não houver)
-  - show_installments: Mostrar parcelamento (default: true; some se não aplicável)
   - show_quick_add: Botão "Adicionar" no hover (desktop) (default: true)
   - lazy_load: Usar lazy loading (default: true)
   - remove_padding: Remove o padding horizontal do card (default: false)
@@ -17,7 +16,6 @@
   assign show_second_image = show_second_image | default: true
   assign show_badges = show_badges | default: true
   assign show_swatches = show_swatches | default: true
-  assign show_installments = show_installments | default: true
   assign show_quick_add = show_quick_add | default: true
   assign lazy_load = lazy_load | default: true
   assign loading_attr = 'lazy'
@@ -29,25 +27,6 @@
   if card_product.compare_at_price > card_product.price
     assign has_discount = true
     assign discount_percent = card_product.compare_at_price | minus: card_product.price | times: 100 | divided_by: card_product.compare_at_price | round
-  endif
-
-  comment
-    Parcelamento a partir das configurações globais (mesma lógica do price-v2).
-  endcomment
-  assign max_installment = settings.max_installments | default: 1
-  assign min_value = settings.min_value_installment | times: 100
-  assign show_inst_global = settings.show_installments | default: true
-  assign actual_installments = 1
-  assign final_installment_value = card_product.price
-  if card_product.price > 0 and max_installment > 1 and min_value >= 0
-    for i in (2..max_installment) reversed
-      assign installment_check = card_product.price | divided_by: i
-      if installment_check >= min_value
-        assign actual_installments = i
-        assign final_installment_value = installment_check
-        break
-      endif
-    endfor
   endif
 
   assign color_option = null
@@ -188,12 +167,6 @@
         <span class="text-xs text-foreground/60 line-through">{{ card_product.compare_at_price | money }}</span>
       {%- endif -%}
     </div>
-    {%- if show_installments and show_inst_global and actual_installments > 1 -%}
-      {%- assign installment_price = final_installment_value | money -%}
-      <p class="text-xs text-foreground/70 mt-0.5">
-        {{ 'product.installments.card' | t: count: actual_installments, price: installment_price }}
-      </p>
-    {%- endif -%}
   </div>
 
   {%- comment -%} Mobile: botão Adicionar estático (não há hover no toque) {%- endcomment -%}
