@@ -1,17 +1,17 @@
 {
   "$comment": "Dívida técnica conhecida. Gerado por \"npm run lint:baseline\". Só deve encolher — nunca adicione entradas à mão para silenciar uma violação nova.",
-  "generated": "2026-09-02",
+  "generated": "2026-09-05",
   "counts": {
     "boundaries": 2,
     "editable": 7,
-    "i18n": 119,
+    "i18n": 114,
     "remotes": 1,
     "schemecontract": 1,
     "settings": 7,
     "similarity": 6,
     "tokens": 92
   },
-  "total": 235,
+  "total": 230,
   "fingerprints": [
     "boundaries|assets/cart.js|storefront-routes",
     "boundaries|assets/search-component.js|storefront-routes",
@@ -119,11 +119,6 @@
     "i18n|locales/pt-BR.json|orphan:product.general.type",
     "i18n|locales/pt-BR.json|orphan:product.general.unit_price",
     "i18n|locales/pt-BR.json|orphan:product.general.vendor",
-    "i18n|locales/pt-BR.json|orphan:product.installments.in",
-    "i18n|locales/pt-BR.json|orphan:product.installments.interest_free",
-    "i18n|locales/pt-BR.json|orphan:product.installments.or",
-    "i18n|locales/pt-BR.json|orphan:product.installments.per_month",
-    "i18n|locales/pt-BR.json|orphan:product.installments.times",
     "i18n|locales/pt-BR.json|orphan:product.media.open_media",
     "i18n|locales/pt-BR.json|orphan:product.media.zoom",
     "i18n|locales/pt-BR.json|orphan:product.variant.select_option",

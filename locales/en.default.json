@@ -188,16 +188,6 @@
       "open_media": "Open media {{ index }} in modal",
       "zoom": "Zoom image"
     },
-    "installments": {
-      "or": "or",
-      "interest_free": "interest-free",
-      "per_month": "/month",
-      "in": "in",
-      "up_to": "Up to",
-      "of": "of",
-      "times": "{{ count }}x",
-      "card": "in {{ count }}x of {{ price }}"
-    },
     "recommendations": {
       "title": "You may also like"
     },

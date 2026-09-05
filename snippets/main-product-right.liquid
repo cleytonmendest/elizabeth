@@ -36,7 +36,7 @@
 
       {%- when 'price' -%}
         <div role="status" {{ block.shopify_attributes }}>
-          {%- render 'price-v2', product: product, use_variant: true, pdp: true, show_installments: true -%}
+          {%- render 'price-v2', product: product, use_variant: true, pdp: true -%}
         </div>
 
       {%- when 'inventory' -%}

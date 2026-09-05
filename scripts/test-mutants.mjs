@@ -87,33 +87,6 @@ const MUTANTES = [
     teste: 'tests/add-to-cart.test.mjs',
   },
   {
-    porque: 'o mínimo por parcela deixa de ser inclusivo',
-    arquivo: 'assets/price-component.js',
-    de: 'if (installmentValueCheck >= minValueCents) {',
-    para: 'if (installmentValueCheck > minValueCents) {',
-    teste: 'tests/price-component.test.mjs',
-  },
-  {
-    // A issue #48 na forma exata em que ela existia: `ceil` no JS contra
-    // `divided_by` (inteira) no Liquid. R$ 99,99 virava 1x no HTML e 2x
-    // milissegundos depois, com parcelas abaixo do mínimo configurado.
-    porque: 'a contagem de parcelas volta a divergir do Liquid (ceil contra divisão inteira)',
-    arquivo: 'assets/price-component.js',
-    de: 'const installmentValueCheck = Math.floor(price / i)',
-    para: 'const installmentValueCheck = Math.ceil(price / i)',
-    teste: 'tests/price-component.test.mjs',
-  },
-  {
-    // A outra metade da mesma issue, e a que morde onde a contagem já estava
-    // certa: o Liquid imprime centavos inteiros, e a divisão em ponto
-    // flutuante deixava o Intl arredondar um centavo para cima.
-    porque: 'o valor da parcela volta a divergir do Liquid por um centavo',
-    arquivo: 'assets/price-component.js',
-    de: 'finalInstallmentValue = Math.floor(price / actualInstallments);',
-    para: 'finalInstallmentValue = price / actualInstallments;',
-    teste: 'tests/price-component.test.mjs',
-  },
-  {
     porque: 'o preço riscado aparece justamente quando não há desconto',
     arquivo: 'assets/price-component.js',
     de: "classList.toggle('hidden', !listingPrice)",

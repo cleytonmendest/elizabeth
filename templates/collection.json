@@ -19,8 +19,7 @@
         "show_collection_description": true,
         "enable_filtering": true,
         "enable_price_filter": true,
-        "enable_sorting": true,
-        "show_installments": true
+        "enable_sorting": true
       }
     }
   },

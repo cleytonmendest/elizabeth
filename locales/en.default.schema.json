@@ -132,10 +132,6 @@
         },
         "product_header": {
           "content": "Product"
-        },
-        "show_installments": {
-          "label": "Show installment option",
-          "info": "Shows 3x interest-free for products over R$ 100"
         }
       }
     },
@@ -1011,9 +1007,6 @@
         },
         "show_quick_add": {
           "label": "Show quick add button"
-        },
-        "show_installments": {
-          "label": "Show installment option"
         }
       },
       "presets": {
@@ -1753,9 +1746,6 @@
         },
         "show_quick_add": {
           "label": "Show quick add button"
-        },
-        "show_installments": {
-          "label": "Show installment option"
         }
       },
       "presets": {
@@ -1808,9 +1798,6 @@
         },
         "show_quick_add": {
           "label": "Show quick add button"
-        },
-        "show_installments": {
-          "label": "Show installment option"
         }
       },
       "presets": {
@@ -2144,21 +2131,6 @@
           "large": "Large",
           "xlarge": "Extra large"
         }
-      }
-    },
-    "installments": {
-      "name": "Installments (display only)",
-      "show_installments": {
-        "label": "Show installment information on products?",
-        "info": "When off, no installment information appears — neither in product grids nor on the product page."
-      },
-      "max_installments": {
-        "label": "Maximum number of installments",
-        "info": "The largest number of installments the store accepts — e.g. 10 means the price can be split into up to 10 payments."
-      },
-      "min_value_installment": {
-        "label": "Minimum amount per installment",
-        "info": "The smallest amount an installment may have — e.g. 100 means installments only appear on products of 200 or more, so that 200 in 2 payments is 100 each."
       }
     },
     "layout": {

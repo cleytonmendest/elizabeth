@@ -40,32 +40,6 @@
     ]
   },
   {
-    "name": "t:settings_schema.installments.name",
-    "settings": [
-      {
-        "type": "checkbox",
-        "id": "show_installments",
-        "label": "t:settings_schema.installments.show_installments.label",
-        "info": "t:settings_schema.installments.show_installments.info",
-        "default": true
-      },
-      {
-        "type": "number",
-        "label": "t:settings_schema.installments.max_installments.label",
-        "info": "t:settings_schema.installments.max_installments.info",
-        "default": 10,
-        "id": "max_installments"
-      },
-      {
-        "type": "number",
-        "label": "t:settings_schema.installments.min_value_installment.label",
-        "info": "t:settings_schema.installments.min_value_installment.info",
-        "id": "min_value_installment",
-        "default": 50
-      }
-    ]
-  },
-  {
     "name": "t:settings_schema.colors.name",
     "settings": [
       {

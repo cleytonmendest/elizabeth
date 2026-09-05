@@ -6,6 +6,10 @@
   - use_variant: {Boolean} Renders selected or first variant price instead of overall product pricing (optional)
   Usage:
   {% render 'price', product: product %}
+
+  Não renderiza parcelamento: o tema não tem os dados para calculá-lo. Ver
+  docs/adr/0008-o-tema-nao-calcula-dinheiro-que-o-checkout-nao-produz.md — a
+  informação de parcelamento é texto do lojista, no bloco `payment_icons`.
 {% endcomment %}
 {%- liquid
   if use_variant
@@ -17,32 +21,11 @@
   assign compare_at_price = target.compare_at_price
   assign price = target.price | default: 1999
   assign money_price = price | money
-  assign min_value = settings.min_value_installment | times: 100
-  assign max_installment = settings.max_installments | default: 1
-
-  assign show_installments_settings = settings.show_installments | default: true
-  assign actual_installments = 1
-  assign final_installment_value = 0
-
-  if price > 0 and max_installment > 1 and min_value >= 0
-    for i in (2..max_installment) reversed
-      assign installment_value_check = price | divided_by: i
-      if installment_value_check >= min_value
-        assign actual_installments = i
-        assign final_installment_value = installment_value_check
-        break
-      endif
-    endfor
-  endif
-
-  assign final_installment_value = price | divided_by: actual_installments
 -%}
 
 <price-component
   class="flex flex-col"
   id="{{ product.id }}"
-  data-mv="{{ min_value }}"
-  data-mi="{{ max_installment }}"
 >
   <div class="flex gap-2 items-baseline">
     <span class="listing-price line-through {% if compare_at_price > price %}{% else %} hidden {%- endif -%} {% if pdp %} text-base {% else %} text-sm {% endif %} text-foreground/40 font-light">
@@ -52,14 +35,4 @@
       {{ money_price }}
     </span>
   </div>
-  {%- if show_installments and show_installments_settings %}
-    <div>
-      <p class="instalment-container {% if pdp %} text-xs text-foreground/55 mt-1.5 {% endif %}">
-        {{ 'product.installments.up_to' | t }}
-        <span class="installment-value {% if pdp %} font-medium text-foreground {% endif %}">{{ actual_installments }}x</span>
-        {{ 'product.installments.of' | t }}
-        <span class="installment-price-value {% if pdp %} font-medium text-foreground {% endif %}">{{ final_installment_value | money }}</span>
-      </p>
-    </div>
-  {%- endif %}
 </price-component>

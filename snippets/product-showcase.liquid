@@ -12,7 +12,7 @@
     columns          (int 2–4)             — colunas no desktop / itens por tela no slider
     section_id       (string)              — para a navegação do slider
     limit            (int)                 — opcional, limita a quantidade
-    show_second_image, show_installments, show_quick_add (bool)
+    show_second_image, show_quick_add (bool)
 {%- endcomment -%}
 
 {%- liquid
@@ -32,7 +32,6 @@
           card_product: product,
           show_second_image: show_second_image,
           show_badges: true,
-          show_installments: show_installments,
           show_quick_add: show_quick_add,
           lazy_load: true,
           remove_padding: true
@@ -59,7 +58,6 @@
             card_product: product,
             show_second_image: show_second_image,
             show_badges: true,
-            show_installments: show_installments,
             show_quick_add: show_quick_add,
             lazy_load: true,
             remove_padding: true
