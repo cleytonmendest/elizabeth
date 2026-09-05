@@ -4,8 +4,12 @@
   Accepts:
   - product: {Object} Product Liquid object (optional)
   - use_variant: {Boolean} Renders selected or first variant price instead of overall product pricing (optional)
+  - pdp: {Boolean} Escala de página de produto (preço maior) em vez da de prateleira (optional)
   Usage:
   {% render 'price', product: product %}
+
+  `block` no elemento não é decorativo: <price-component> é custom element e
+  não tem regra de CSS no tema, então sem display declarado ele seria inline.
 
   Não renderiza parcelamento: o tema não tem os dados para calculá-lo. Ver
   docs/adr/0008-o-tema-nao-calcula-dinheiro-que-o-checkout-nao-produz.md — a
@@ -24,7 +28,7 @@
 -%}
 
 <price-component
-  class="flex flex-col"
+  class="block"
   id="{{ product.id }}"
 >
   <div class="flex gap-2 items-baseline">

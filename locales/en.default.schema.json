@@ -129,9 +129,6 @@
         "enable_load_more": {
           "label": "\"Load more\" button",
           "info": "Replaces numbered pagination with a button that loads more products on the same page. Without JavaScript, numbered pagination still works."
-        },
-        "product_header": {
-          "content": "Product"
         }
       }
     },
