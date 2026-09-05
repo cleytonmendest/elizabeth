@@ -101,16 +101,14 @@
       "type": "product-recommendations",
       "settings": {
         "products_to_show": 4,
-        "show_second_image": true,
-        "show_installments": true
+        "show_second_image": true
       }
     },
     "recently_viewed_Rv8kQ2": {
       "type": "recently-viewed",
       "settings": {
         "products_to_show": 4,
-        "show_second_image": true,
-        "show_installments": true
+        "show_second_image": true
       }
     },
     "177177795783edd889": {
