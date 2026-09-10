@@ -8,6 +8,11 @@ on:
   pull_request:
   push:
     branches: [main]
+  # Rodar o gate sem ter o que commitar. O caso que pediu isto: a baseline
+  # visual da #74 nasce de uma execução contra a loja, e sem este gatilho a
+  # única forma de disparar uma era um commit — vazio, se não houvesse
+  # mudança, que é justamente o que não se faz aqui.
+  workflow_dispatch:
 
 # Nenhum job daqui escreve no repositório: eles leem, compilam e medem. O
 # default do repo pode ser mais largo que isso, e um default largo é permissão
@@ -164,9 +169,20 @@ jobs:
           # criava um tema de desenvolvimento NOVO a cada merge, exatamente o
           # oposto do que o comentário acima promete. A biblioteca de temas da
           # loja é finita; `ci-main` é um contexto estável, reaproveitado.
-          CONTEXTO: ci-${{ github.event.number && format('pr-{0}', github.event.number) || 'main' }}
+          #
+          # O `workflow_dispatch` abriu um terceiro caso: ele também não tem
+          # número, mas pode ser disparado de QUALQUER branch. Cair no
+          # `ci-main` ali empurraria o código de um branch para o tema que a
+          # main usa — e quem fosse olhar aquele tema veria código que não está
+          # na main, sem nada dizendo isso. Por isso o dispatch fora da main
+          # ganha contexto próprio.
+          CONTEXTO: ci-${{ github.event.number && format('pr-{0}', github.event.number) || github.ref_name == 'main' && 'main' || format('manual-{0}', github.ref_name) }}
         run: |
           set -euo pipefail
+
+          # `claude/minha-branch` vira `claude-minha-branch`: o contexto é um
+          # identificador, e a barra não sobrevive a ele.
+          CONTEXTO="${CONTEXTO//\//-}"
 
           # A decisão fica no shell, NÃO num `if:` do passo: o contexto
           # `secrets` não existe em `if:`, e a primeira versão disto derrubou o
