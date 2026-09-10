@@ -208,6 +208,23 @@ jobs:
           # do help — quem exigiu foi o binário, na primeira execução do
           # preview.yml: "All of the following must be provided when using
           # --development-context: --development".
+          # O `.shopifyignore` existe para o style guide não ir ao tema PUBLICADO:
+          # ele é página de desenvolvimento e não faz parte do que a Theme Store
+          # recebe. Mas o CLI o respeita em TODO push, e não só no de produção —
+          # então o tema de desenvolvimento nascia sem a section e sem o
+          # template, e a página `/pages/styleguide` caía no fallback de
+          # `page.json`: título, conteúdo vazio, nenhum componente.
+          #
+          # Foi assim que a #74 chegou a ter uma baseline candidata de uma
+          # página que não existia no tema medido — e atribuir o template no
+          # admin não mudou nada, porque o problema nunca esteve lá.
+          #
+          # Aqui o push é de DESENVOLVIMENTO e o runner é efêmero: o arquivo do
+          # repositório não muda, e todo push manual ou para produção segue
+          # protegido pelo `.shopifyignore` como antes.
+          sed -i -e '/^sections\/main-styleguide\.liquid$/d' \
+                 -e '/^templates\/page\.styleguide\.json$/d' .shopifyignore
+
           shopify theme push \
             --development \
             --development-context "${CONTEXTO}" \

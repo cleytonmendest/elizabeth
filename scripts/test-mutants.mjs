@@ -243,6 +243,27 @@ const MUTANTES = [
     teste: 'tests/dinheiro.test.mjs',
   },
   {
+    // A #74 passou DUAS idas ao admin achando que faltava atribuir o template.
+    // Faltava isto: o `.shopifyignore` tira a página do tema em TODO push, e
+    // o tema de desenvolvimento que a suíte mede nascia sem ela. A regressão
+    // visual fotografava o fallback de `page.json` e chamava de style guide.
+    porque: 'o CI para de devolver o template do style guide ao tema empurrado',
+    arquivo: '.github/workflows/ci.yml',
+    de: "                 -e '/^templates\\/page\\.styleguide\\.json$/d' .shopifyignore",
+    para: '                 .shopifyignore',
+    teste: 'tests/styleguide-no-tema.test.mjs',
+  },
+  {
+    // O `preview.yml` empurra pelo mesmo caminho e tinha o mesmo defeito. Um
+    // teste que só olhasse o `ci.yml` deixaria o preview publicar um link para
+    // um tema sem a página que ele existe para mostrar.
+    porque: 'o preview volta a publicar um tema sem o style guide',
+    arquivo: '.github/workflows/preview.yml',
+    de: "                 -e '/^templates\\/page\\.styleguide\\.json$/d' .shopifyignore",
+    para: '                 .shopifyignore',
+    teste: 'tests/styleguide-no-tema.test.mjs',
+  },
+  {
     // O defeito da #84 em pessoa: a regra nasceu olhando só o operando, e
     // `settings.f | times: price` — a MESMA conta de `price | times: settings.f`
     // — passava limpa. Restaurar a assimetria é restaurar o buraco.
