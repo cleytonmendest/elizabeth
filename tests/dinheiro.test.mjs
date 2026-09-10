@@ -11,6 +11,17 @@
  * outro lado estão os vizinhos que a regra não pode acusar — os treze
  * `divided_by` que o tema usa hoje, e a barra de frete grátis, que deriva
  * dinheiro de um setting e está CERTA.
+ *
+ * ── A lição da #84, para quem mexer nesta regra ────────────────────────────
+ *
+ * A primeira versão plantava todos os defeitos com o dinheiro da Shopify no
+ * SUJEITO, que era a forma em que o parcelamento real estava. `times` e `plus`
+ * são comutativos, então `settings.f | times: price` é a mesma conta que
+ * `price | times: settings.f` — e passava. Os três mutantes morriam todos:
+ * eles protegiam o que a regra fazia, não o que ela deixava de fazer.
+ *
+ * Regra de bolso ao mexer aqui: **plante a mesma conta nas duas ordens** e
+ * exija o mesmo veredito. O `describe` "a ordem dos lados" abaixo faz isso.
  */
 import { describe, it, expect } from 'vitest';
 import { analisar, partirExpressao, identificadores } from '../scripts/lint/rules/dinheiro.mjs';
@@ -165,6 +176,61 @@ describe('o que a regra NÃO pode acusar', () => {
     it('centavos do JSON-LD: sai por `| json`, não por `| money`', () => {
       expect(analisar('{{ selected_variant.price | divided_by: 100.0 | json }}')).toEqual([]);
     });
+  });
+});
+
+describe('a ordem dos lados — #84', () => {
+  /**
+   * `times` e `plus` são comutativos: a leitura "coisa / ajuste" que salva o
+   * frete grátis não significa nada neles. Escrever os fatores na outra ordem
+   * não pode furar a regra.
+   */
+  const AMBAS = [
+    ['times', 'cart.total_price | times: settings.fator', 'settings.fator | times: cart.total_price'],
+    ['plus', 'cart.total_price | plus: settings.taxa', 'settings.taxa | plus: cart.total_price'],
+  ];
+
+  for (const [filtro, ordemA, ordemB] of AMBAS) {
+    it(`\`${filtro}\` reprova nas DUAS ordens — é a mesma conta`, () => {
+      const a = analisar(`{%- assign x = ${ordemA} -%}{{ x | money }}`);
+      const b = analisar(`{%- assign x = ${ordemB} -%}{{ x | money }}`);
+      expect(a).toHaveLength(1);
+      expect(b, 'a ordem trocada furava a regra — ver #84').toHaveLength(1);
+    });
+  }
+
+  /**
+   * O contrapeso: a comutatividade não pode transformar conversão de unidade
+   * em violação. `settings.limiar | times: 100` é reais → centavos, e é o que
+   * `cart-free-shipping.liquid` faz na primeira linha.
+   */
+  it('setting vezes CONSTANTE continua passando — é conversão de unidade', () => {
+    expect(analisar("{%- assign t = settings.limiar | times: 100 -%}{{ t | money }}")).toEqual([]);
+    expect(analisar("{%- assign t = settings.limiar | times: 100.0 -%}{{ t | money }}")).toEqual([]);
+    expect(analisar("{%- assign t = settings.limiar | plus: 500 -%}{{ t | money }}")).toEqual([]);
+  });
+
+  it('preço da Shopify vezes constante também passa', () => {
+    expect(analisar('{%- assign x = product.price | times: 2 -%}{{ x | money }}')).toEqual([]);
+  });
+
+  /**
+   * `minus` e `divided_by` NÃO são comutativos, e é neles que a assimetria
+   * sujeito/operando é o que separa o frete grátis do parcelamento. Trocar os
+   * lados ali muda a conta, então os dois lados seguem tendo vereditos
+   * diferentes — de propósito.
+   */
+  it('em `minus`, o lado ainda decide: o frete grátis passa', () => {
+    const frete = `
+      {%- assign t = settings.cart_free_shipping_threshold | default: 0 | times: 100 -%}
+      {%- assign r = t | minus: cart.total_price -%}
+      {{ r | money }}`;
+    expect(analisar(frete)).toEqual([]);
+  });
+
+  it('em `minus`, dinheiro da Shopify menos setting reprova', () => {
+    const errado = '{%- assign r = cart.total_price | minus: settings.desconto -%}{{ r | money }}';
+    expect(analisar(errado)).toHaveLength(1);
   });
 });
 
