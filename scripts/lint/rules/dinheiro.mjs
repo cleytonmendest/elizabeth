@@ -76,6 +76,26 @@ const ARITMETICOS = new Set([
   'at_most',
 ]);
 
+/**
+ * Aqueles em que trocar os lados não muda o resultado — e por isso a leitura
+ * "coisa / ajuste" que vale para `minus` e `divided_by` NÃO vale para eles.
+ * `price | times: settings.f` e `settings.f | times: price` são a mesma conta;
+ * a primeira versão desta regra reprovava só a primeira. Ver #84.
+ */
+const COMUTATIVOS = new Set(['times', 'plus']);
+
+/**
+ * Uma constante escrita no markup: `100`, `100.0`, `'texto'`.
+ *
+ * É o que separa `settings.limiar | times: 100` (conversão de unidade, legítima)
+ * de `settings.fator | times: cart.total_price` (dinheiro da loja alterado por
+ * palpite). Perguntar "é literal?" em vez de "é dinheiro da Shopify?" evita a
+ * lista de fontes que a #84 considerou: medidas, são vinte, e boa parte são
+ * variáveis de `for` (`item`, `line_item`, `card_product`, `hp`) — uma lista
+ * dessas nasce desatualizada no próximo snippet.
+ */
+const EH_LITERAL = (trecho) => /^\s*(-?\d+(?:\.\d+)?|'[^']*'|"[^"]*")\s*$/.test(trecho);
+
 /** `money`, `money_with_currency`, `money_without_currency`, `money_without_trailing_zeros`. */
 const EH_MONEY = (nome) => nome === 'money' || nome.startsWith('money_');
 
@@ -217,12 +237,31 @@ export function analisar(fonte) {
     }
   }
 
-  /** Um filtro aritmético cujo operando deriva de settings. */
-  const operandoSujo = (filtros) => {
+  const derivaDeSetting = (trecho) =>
+    identificadores(trecho).find((id) => EH_SETTING(id) || sujo.has(raiz(id)));
+
+  /**
+   * A aritmética que mistura dinheiro com configuração do lojista.
+   *
+   * Em `minus`, `divided_by` e afins só o OPERANDO conta: `a | minus: b` lê-se
+   * "a menos b", e o que a regra proíbe é mexer no dinheiro da Shopify — não
+   * exibir o valor que a lojista digitou, que é o caso legítimo do
+   * `cart-free-shipping.liquid`.
+   *
+   * Em `times` e `plus` o lado não significa nada, então basta um dos dois vir
+   * de setting e o outro não ser constante literal.
+   */
+  const misturaSuja = ({ sujeito, filtros }) => {
+    const sujeitoSujo = derivaDeSetting(sujeito);
+
     for (const { nome, args } of filtros) {
       if (!ARITMETICOS.has(nome)) continue;
-      for (const id of identificadores(args)) {
-        if (EH_SETTING(id) || sujo.has(raiz(id))) return { filtro: nome, operando: id };
+
+      const operando = derivaDeSetting(args);
+      if (operando) return { filtro: nome, operando };
+
+      if (COMUTATIVOS.has(nome) && sujeitoSujo && !EH_LITERAL(args)) {
+        return { filtro: nome, operando: args.trim() };
       }
     }
     return null;
@@ -249,13 +288,13 @@ export function analisar(fonte) {
     if (!filtros.some((f) => EH_MONEY(f.nome))) return;
 
     // A operação suja pode estar na própria linha do money…
-    const aqui = operandoSujo(filtros);
+    const aqui = misturaSuja({ sujeito, filtros });
     if (aqui) return guardar(variavel ?? sujeito, aqui, index);
 
     // …ou em qualquer ponto da cadeia que produziu o sujeito.
     for (const id of identificadores(sujeito)) {
       for (const passo of derivacao(raiz(id))) {
-        const culpa = operandoSujo(partirExpressao(passo).filtros);
+        const culpa = misturaSuja(partirExpressao(passo));
         if (culpa) return guardar(raiz(id), culpa, index);
       }
     }

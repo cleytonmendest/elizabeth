@@ -243,6 +243,26 @@ const MUTANTES = [
     teste: 'tests/dinheiro.test.mjs',
   },
   {
+    // O defeito da #84 em pessoa: a regra nasceu olhando só o operando, e
+    // `settings.f | times: price` — a MESMA conta de `price | times: settings.f`
+    // — passava limpa. Restaurar a assimetria é restaurar o buraco.
+    porque: 'a comutatividade some, e a mesma conta com os fatores trocados fura a regra',
+    arquivo: 'scripts/lint/rules/dinheiro.mjs',
+    de: '      if (COMUTATIVOS.has(nome) && sujeitoSujo && !EH_LITERAL(args)) {',
+    para: '      if (false) {',
+    teste: 'tests/dinheiro.test.mjs',
+  },
+  {
+    // O contrapeso do mutante acima. Sem a guarda do literal, a comutatividade
+    // passa a acusar `settings.limiar | times: 100` — conversão de reais para
+    // centavos, que é a primeira linha do cart-free-shipping.liquid.
+    porque: 'conversão de unidade passa a contar como dinheiro derivado, e o frete grátis reprova',
+    arquivo: 'scripts/lint/rules/dinheiro.mjs',
+    de: 'const EH_LITERAL = (trecho) =>',
+    para: 'const EH_LITERAL = (trecho) => false && ',
+    teste: 'tests/dinheiro.test.mjs',
+  },
+  {
     // `money_with_currency` e `money_without_currency` exibem dinheiro tanto
     // quanto `money`. Reconhecer só o nome exato deixa a reincidência passar
     // trocando um filtro por outro que faz a mesma coisa.
