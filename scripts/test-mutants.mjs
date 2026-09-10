@@ -222,6 +222,37 @@ const MUTANTES = [
     teste: 'tests/mercado.test.mjs',
   },
   {
+    // O parcelamento não dividia por um setting: dividia por `i`, e `i` só era
+    // suspeito porque o teto do range vinha de `settings.max_installments`.
+    // Sem atravessar o `for`, a regra fica verde exatamente sobre o código que
+    // ela existe para impedir — e verde por não ter olhado.
+    porque: 'o rastreio para de atravessar o `for`, e o parcelamento real escapa',
+    arquivo: 'scripts/lint/rules/dinheiro.mjs',
+    de: '  for (const { nome, expr } of ranges) registrar(nome, expr);',
+    para: '  void ranges;',
+    teste: 'tests/dinheiro.test.mjs',
+  },
+  {
+    // `| default: settings.x` é fallback e `| replace:` é texto. Contá-los como
+    // aritmética faz a regra acusar markup correto, que é como uma regra vira
+    // ruído e é desligada na primeira semana.
+    porque: 'qualquer filtro passa a contar como aritmética, e a regra acusa fallback',
+    arquivo: 'scripts/lint/rules/dinheiro.mjs',
+    de: '      if (!ARITMETICOS.has(nome)) continue;',
+    para: '      if (false) continue;',
+    teste: 'tests/dinheiro.test.mjs',
+  },
+  {
+    // `money_with_currency` e `money_without_currency` exibem dinheiro tanto
+    // quanto `money`. Reconhecer só o nome exato deixa a reincidência passar
+    // trocando um filtro por outro que faz a mesma coisa.
+    porque: 'só o filtro `money` exato conta, e as variantes deixam de ser dinheiro',
+    arquivo: 'scripts/lint/rules/dinheiro.mjs',
+    de: "const EH_MONEY = (nome) => nome === 'money' || nome.startsWith('money_');",
+    para: "const EH_MONEY = (nome) => nome === 'money';",
+    teste: 'tests/dinheiro.test.mjs',
+  },
+  {
     porque: 'a regra `mercado` para de olhar o JSON-LD e só vê o formulário',
     arquivo: 'scripts/lint/rules/mercado.mjs',
     de: "  for (const campo of CAMPOS_JSONLD) {",
