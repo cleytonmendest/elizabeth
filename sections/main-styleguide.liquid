@@ -106,10 +106,17 @@
               <a href="#styleguide" class="color-link text-sm underline">Link</a>
             </div>
 
+            {%- comment -%}
+              Amostra de `.color-input` dentro do scheme, sem <label> visível
+              de propósito — o rótulo aqui seria ruído. Então o nome acessível
+              vem do `aria-label`, senão o axe reprova (e com razão: campo sem
+              nome é campo que o leitor de tela não sabe apresentar).
+            {%- endcomment -%}
             <input
               type="text"
               value="Campo de texto"
               readonly
+              aria-label="Amostra de campo de texto"
               class="color-input w-full mt-3 rounded-theme border border-border px-3 py-2 text-sm"
             >
           </div>
@@ -227,7 +234,12 @@
         <button type="button" disabled class="color-button rounded-theme px-6 py-3 text-xs uppercase tracking-widest opacity-50">
           Desabilitado
         </button>
-        <button type="button" class="color-button rounded-full flex items-center justify-center w-11 h-11">
+        {%- comment -%}
+          Botão só com ícone: sem `aria-label` o leitor de tela anuncia
+          "botão" e nada mais. Vale para a vitrine tanto quanto para o tema —
+          e foi o axe medindo esta página pela primeira vez que apontou.
+        {%- endcomment -%}
+        <button type="button" aria-label="Carrinho" class="color-button rounded-full flex items-center justify-center w-11 h-11">
           {% render 'icon-cart', size: 18 %}
         </button>
         <a href="#styleguide" class="color-link text-sm underline">Link de texto</a>
