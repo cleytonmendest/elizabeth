@@ -243,6 +243,16 @@ const MUTANTES = [
     teste: 'tests/dinheiro.test.mjs',
   },
   {
+    // O banner é `position: fixed`: numa captura fullPage ele cai onde o
+    // scroll deixar, não no rodapé. Sem o `display:none`, a baseline visual
+    // grava um banner numa posição que a próxima execução não repete.
+    porque: 'o banner de cookies volta a entrar na foto da regressão visual',
+    arquivo: 'e2e/styleguide.spec.mjs',
+    de: '      [data-cookie-banner]{display:none!important}',
+    para: '      /* mutante */',
+    teste: 'tests/styleguide-no-tema.test.mjs',
+  },
+  {
     // A #74 passou DUAS idas ao admin achando que faltava atribuir o template.
     // Faltava isto: o `.shopifyignore` tira a página do tema em TODO push, e
     // o tema de desenvolvimento que a suíte mede nascia sem ela. A regressão

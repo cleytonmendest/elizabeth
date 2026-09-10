@@ -86,3 +86,28 @@ describe('mas o tema de DESENVOLVIMENTO recebe a página', () => {
     });
   }
 });
+
+describe('e o banner de cookies não entra na foto', () => {
+  /**
+   * `snippets/cookie-banner.liquid` é `position: fixed`, e numa captura
+   * `fullPage` a posição de um elemento fixo depende de scroll e timing — na
+   * primeira execução com a página renderizando, ele saiu por cima do bloco
+   * `scheme-1`, não no rodapé. `e2e/styleguide.spec.mjs` o esconde por CSS,
+   * e esse CSS depende do atributo continuar existindo no markup.
+   *
+   * Renomear o hook não quebra nada visível: o CSS simplesmente deixa de
+   * casar, o banner volta para a foto, e a baseline passa a reprovar por um
+   * motivo que ninguém liga ao rename.
+   */
+  const HOOK = 'data-cookie-banner';
+
+  it(`o snippet do banner expõe \`${HOOK}\``, () => {
+    expect(leia('snippets/cookie-banner.liquid')).toContain(HOOK);
+  });
+
+  it(`o teste de screenshot esconde \`${HOOK}\``, () => {
+    const spec = leia('e2e/styleguide.spec.mjs');
+    expect(spec).toContain(HOOK);
+    expect(spec, 'esconder, não só mencionar').toMatch(/\[data-cookie-banner\][^`]*display\s*:\s*none/);
+  });
+});

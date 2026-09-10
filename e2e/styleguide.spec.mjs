@@ -59,8 +59,25 @@ test('a página inteira bate com a baseline', async ({ page }) => {
 
   // Sem isto, qualquer animação em curso vira diferença de pixel e o teste
   // oscila — e teste que oscila a gente aprende a ignorar.
+  //
+  // O banner de cookies entra pelo MESMO motivo, e é o caso mais grave dos
+  // dois. Ele é `position: fixed`, e numa captura `fullPage` a posição em que
+  // um elemento fixo "cai" depende de scroll e de quando o Playwright compõe
+  // a imagem: na primeira execução com a página renderizando de verdade, ele
+  // saiu por cima do bloco `scheme-1` da seção Color schemes, e não no rodapé
+  // onde a visitante o vê. Some com isso a decisão de consentimento, que vive
+  // em `Shopify.customerPrivacy` com fallback no localStorage — estado que o
+  // contexto do Playwright não garante igual entre execuções.
+  //
+  // Esconder, e não dispensar clicando: clicar grava consentimento e muda o
+  // estado da loja para o resto da suíte. O banner não é objeto desta página
+  // (ela existe para os componentes do design system), e a acessibilidade
+  // dele é medida em `e2e/a11y.spec.mjs`, nas páginas onde ele é conteúdo.
   await page.addStyleTag({
-    content: '*,*::before,*::after{animation:none!important;transition:none!important}',
+    content: `
+      *,*::before,*::after{animation:none!important;transition:none!important}
+      [data-cookie-banner]{display:none!important}
+    `,
   });
   await page.waitForLoadState('networkidle');
 
