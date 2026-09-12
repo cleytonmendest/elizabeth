@@ -5,14 +5,14 @@
  *
  * Os assets do tema são scripts CLÁSSICOS: o Liquid os injeta com
  * `<script src="…" defer>`, sem `type="module"`. Eles não exportam nada, e
- * `price-component.js` depende de `formatPrice` ser uma variável GLOBAL
- * criada por `cart.js`. Transformá-los em módulos ES só para poder testá-los
+ * `price-component.js` depende de `formatMoney` ser uma variável GLOBAL
+ * criada por `money.js`. Transformá-los em módulos ES só para poder testá-los
  * mudaria o que está em produção para agradar o teste — e o teste passaria a
  * medir outro programa.
  *
  * Então o carregador reproduz a semântica de script clássico: o fonte é
  * avaliado em modo não-estrito, e o que ele declara no topo pode ser promovido
- * a global (`loadGlobalAsset`), exatamente como `window.formatPrice` no
+ * a global (`loadGlobalAsset`), exatamente como `window.formatMoney` no
  * navegador. O que se testa é o arquivo que vai para a loja, byte a byte.
  *
  * O epílogo `return {…}` é o único acréscimo: sem ele não haveria como o teste
@@ -51,7 +51,7 @@ export function loadAsset(file, names = []) {
 /**
  * Igual ao anterior, mas também publica os nomes no objeto global — que é o
  * que uma `function` declarada no topo de um script clássico faz sozinha.
- * É assim que `price-component.js` enxerga `formatPrice`.
+ * É assim que `price-component.js` enxerga `formatMoney`.
  */
 export function loadGlobalAsset(file, names = []) {
   const exported = loadAsset(file, names);
