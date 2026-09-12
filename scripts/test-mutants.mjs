@@ -243,6 +243,17 @@ const MUTANTES = [
     teste: 'tests/dinheiro.test.mjs',
   },
   {
+    // A seção "Componentes reais" renderiza um produto de VERDADE. Sem
+    // escondê-la, a baseline passa a depender do catálogo: uma promoção na
+    // loja reprova um PR que não tocou em nada visual, e o time aprende que
+    // o vermelho da regressão visual às vezes não quer dizer nada.
+    porque: 'as amostras de catálogo voltam para a foto, e a loja passa a reprovar PRs',
+    arquivo: 'e2e/styleguide.spec.mjs',
+    de: '      [data-amostra-de-catalogo]{display:none!important}',
+    para: '      /* mutante */',
+    teste: 'tests/styleguide-no-tema.test.mjs',
+  },
+  {
     // O banner é `position: fixed`: numa captura fullPage ele cai onde o
     // scroll deixar, não no rodapé. Sem o `display:none`, a baseline visual
     // grava um banner numa posição que a próxima execução não repete.

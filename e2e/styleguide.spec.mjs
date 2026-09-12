@@ -73,10 +73,28 @@ test('a página inteira bate com a baseline', async ({ page }) => {
   // estado da loja para o resto da suíte. O banner não é objeto desta página
   // (ela existe para os componentes do design system), e a acessibilidade
   // dele é medida em `e2e/a11y.spec.mjs`, nas páginas onde ele é conteúdo.
+  // E as amostras de catálogo saem pelo terceiro motivo, que é o mais sutil:
+  // a seção "Componentes reais" renderiza `collections.all.products.first`, ou
+  // seja, PREÇO, TÍTULO e IMAGEM de um produto de verdade. Isso muda quando a
+  // LOJA muda — promoção, produto novo, foto trocada — sem ninguém ter tocado
+  // no tema, e a baseline reprovaria um PR de carrinho por causa de uma
+  // liquidação.
+  //
+  // Esconder, e não mascarar: `mask` do Playwright pinta por cima mas não
+  // altera o layout. Um título mais longo deixa o card mais alto, tudo abaixo
+  // desloca, e a comparação estoura a tolerância mesmo com a região pintada.
+  // Só tirando do fluxo a altura fica determinística.
+  //
+  // O que se perde: `price-v2` e `card-product-slider` renderizados com dados
+  // reais não entram na foto. Os tokens que eles usam — `color-badge`,
+  // `rounded-theme`, a escala de texto — continuam vigiados nas seções de
+  // Color schemes, Raio e Tipografia, que são estáveis por construção.
+  // `payment-icons` fica na foto: vem de settings, não de produto.
   await page.addStyleTag({
     content: `
       *,*::before,*::after{animation:none!important;transition:none!important}
       [data-cookie-banner]{display:none!important}
+      [data-amostra-de-catalogo]{display:none!important}
     `,
   });
   await page.waitForLoadState('networkidle');

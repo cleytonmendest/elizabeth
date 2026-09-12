@@ -317,7 +317,19 @@
           {% render 'payment-icons', show_title: false %}
         </div>
 
-        <div>
+        {%- comment -%}
+          `data-amostra-de-catalogo` marca o que depende do PRODUTO, e não do
+          tema: preço, título e imagem vêm de `collections.all.products.first`,
+          que muda quando a loja muda — promoção, produto novo, foto trocada.
+
+          A regressão visual esconde estes blocos, senão a baseline reprovaria
+          por uma mudança no catálogo, sem ninguém ter tocado no código. Ver o
+          cabeçalho de `e2e/styleguide.spec.mjs`.
+
+          O `payment-icons` acima NÃO leva a marca de propósito: ele vem de
+          settings, não de produto, e é estável entre execuções.
+        {%- endcomment -%}
+        <div data-amostra-de-catalogo>
           <p class="text-xs uppercase tracking-widest text-foreground/50 mb-3">price-v2</p>
           {%- if sample_product -%}
             {% render 'price-v2', product: sample_product, use_variant: true, pdp: true %}
@@ -326,7 +338,7 @@
           {%- endif -%}
         </div>
 
-        <div>
+        <div data-amostra-de-catalogo>
           <p class="text-xs uppercase tracking-widest text-foreground/50 mb-3">card-product-slider</p>
           {%- if sample_product -%}
             <div class="max-w-xs">
