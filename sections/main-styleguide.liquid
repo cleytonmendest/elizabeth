@@ -122,19 +122,6 @@
           </div>
         {%- endfor -%}
       </div>
-
-      <div class="mt-6 rounded-theme border border-border p-4">
-        <p class="text-xs uppercase tracking-widest text-foreground/50 mb-2">Classe conhecida por estar quebrada</p>
-        <div class="color-background-secondary rounded-theme-sm border border-border p-4">
-          <p class="text-sm">
-            Este bloco usa <code class="text-xs">.color-background-secondary</code>, que consome
-            <code class="text-xs">--color-card-background</code> — uma variável que o
-            <code class="text-xs">layout/theme.liquid</code> nunca gera. Se ele parece
-            igual ao fundo da página, é porque a regra CSS inteira foi descartada
-            pelo navegador. É a issue #34, visível a olho nu.
-          </p>
-        </div>
-      </div>
     </section>
 
     {%- comment -%} ═══ 2. Tipografia ══════════════════════════════════ {%- endcomment -%}
