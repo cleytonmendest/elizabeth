@@ -1,26 +1,28 @@
 {% assign media_size = section.settings.media_size %}
 {% assign media_position = section.settings.media_position %}
 
-<div class="page-width color-{{ section.settings.color_scheme }}">
-  {% comment %}
-    {%- comment -%} Breadcrumb {%- endcomment -%}
-    {% render 'breadcrumb' %}
-  {% endcomment %}
+<div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  <div class="page-width">
+    {% comment %}
+      {%- comment -%} Breadcrumb {%- endcomment -%}
+      {% render 'breadcrumb' %}
+    {% endcomment %}
 
-  <div
-    product-context
-    class="flex flex-col gap-5 {% if media_position == 'left' %} lg:flex-row {% else %} lg:flex-row-reverse {% endif %}"
-  >
     <div
-      class="overflow-hidden {% if media_size == 'small' or media_size == 'medium' %} lg:flex-1 {% elsif media_size == 'large' %} lg:flex-[2] {% endif %}"
+      product-context
+      class="flex flex-col gap-5 {% if media_position == 'left' %} lg:flex-row {% else %} lg:flex-row-reverse {% endif %}"
     >
-      {% render 'main-product-left' %}
-    </div>
-    <div class="{% if media_size == 'medium' or media_size == 'large' %} lg:flex-1 {% elsif media_size == 'small' %} lg:flex-[2] {% endif %}">
-      {% render 'main-product-right', blocks: section.blocks %}
+      <div
+        class="overflow-hidden {% if media_size == 'small' or media_size == 'medium' %} lg:flex-1 {% elsif media_size == 'large' %} lg:flex-[2] {% endif %}"
+      >
+        {% render 'main-product-left' %}
+      </div>
+      <div class="{% if media_size == 'medium' or media_size == 'large' %} lg:flex-1 {% elsif media_size == 'small' %} lg:flex-[2] {% endif %}">
+        {% render 'main-product-right', blocks: section.blocks %}
 
-      {%- comment -%} Barra fixa de comprar (desktop e mobile) {%- endcomment -%}
-      {% render 'sticky-add-to-cart', product: product %}
+        {%- comment -%} Barra fixa de comprar (desktop e mobile) {%- endcomment -%}
+        {% render 'sticky-add-to-cart', product: product %}
+      </div>
     </div>
   </div>
 </div>
