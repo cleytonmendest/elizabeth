@@ -49,7 +49,7 @@
     </header>
 
     {%- comment -%} ═══ 1. Color schemes ═══════════════════════════════ {%- endcomment -%}
-    <section class="mb-16">
+    <section data-secao="color-schemes" class="mb-16">
       <h2 class="text-2xl font-light tracking-title mb-2">Color schemes</h2>
       <p class="text-sm text-foreground/60 mb-6">
         Cada bloco abaixo está dentro da sua própria classe <code class="text-xs">.color-scheme-N</code>.
@@ -122,23 +122,10 @@
           </div>
         {%- endfor -%}
       </div>
-
-      <div class="mt-6 rounded-theme border border-border p-4">
-        <p class="text-xs uppercase tracking-widest text-foreground/50 mb-2">Classe conhecida por estar quebrada</p>
-        <div class="color-background-secondary rounded-theme-sm border border-border p-4">
-          <p class="text-sm">
-            Este bloco usa <code class="text-xs">.color-background-secondary</code>, que consome
-            <code class="text-xs">--color-card-background</code> — uma variável que o
-            <code class="text-xs">layout/theme.liquid</code> nunca gera. Se ele parece
-            igual ao fundo da página, é porque a regra CSS inteira foi descartada
-            pelo navegador. É a issue #34, visível a olho nu.
-          </p>
-        </div>
-      </div>
     </section>
 
     {%- comment -%} ═══ 2. Tipografia ══════════════════════════════════ {%- endcomment -%}
-    <section class="mb-16">
+    <section data-secao="tipografia" class="mb-16">
       <h2 class="text-2xl font-light tracking-title mb-2">Tipografia</h2>
       <p class="text-sm text-foreground/60 mb-6">
         A escala inteira é multiplicada por <code class="text-xs">settings.font_scale</code>
@@ -187,7 +174,7 @@
     </section>
 
     {%- comment -%} ═══ 3. Raio ════════════════════════════════════════ {%- endcomment -%}
-    <section class="mb-16">
+    <section data-secao="raio" class="mb-16">
       <h2 class="text-2xl font-light tracking-title mb-2">Raio</h2>
       <p class="text-sm text-foreground/60 mb-6">
         O valor vem de <code class="text-xs">settings.radius_style</code> (Design → Arredondamento).
@@ -221,7 +208,7 @@
     </section>
 
     {%- comment -%} ═══ 4. Botões e ações ══════════════════════════════ {%- endcomment -%}
-    <section class="mb-16">
+    <section data-secao="botoes" class="mb-16">
       <h2 class="text-2xl font-light tracking-title mb-6">Botões e ações</h2>
 
       <div class="flex flex-wrap items-center gap-4">
@@ -251,7 +238,7 @@
     </section>
 
     {%- comment -%} ═══ 5. Formulário ══════════════════════════════════ {%- endcomment -%}
-    <section class="mb-16">
+    <section data-secao="formulario" class="mb-16">
       <h2 class="text-2xl font-light tracking-title mb-6">Formulário</h2>
 
       <div class="grid gap-6 md:grid-cols-2 max-w-3xl">
@@ -287,7 +274,7 @@
     </section>
 
     {%- comment -%} ═══ 6. Feedback ════════════════════════════════════ {%- endcomment -%}
-    <section class="mb-16">
+    <section data-secao="feedback" class="mb-16">
       <h2 class="text-2xl font-light tracking-title mb-6">Feedback</h2>
 
       <div class="flex flex-wrap gap-3 mb-6">
@@ -305,7 +292,7 @@
     </section>
 
     {%- comment -%} ═══ 7. Sombras ═════════════════════════════════════ {%- endcomment -%}
-    <section class="mb-16">
+    <section data-secao="sombras" class="mb-16">
       <h2 class="text-2xl font-light tracking-title mb-6">Sombras</h2>
 
       <div class="grid grid-cols-2 gap-6 md:grid-cols-4">
@@ -317,7 +304,7 @@
     </section>
 
     {%- comment -%} ═══ 8. Componentes reais ═══════════════════════════ {%- endcomment -%}
-    <section class="mb-16">
+    <section data-secao="componentes-reais" class="mb-16">
       <h2 class="text-2xl font-light tracking-title mb-2">Componentes reais</h2>
       <p class="text-sm text-foreground/60 mb-6">
         Renderizados com <code class="text-xs">render</code> de verdade, não recriados aqui.
@@ -353,7 +340,7 @@
     </section>
 
     {%- comment -%} ═══ 9. Estados ═════════════════════════════════════ {%- endcomment -%}
-    <section class="mb-16">
+    <section data-secao="estados" class="mb-16">
       <h2 class="text-2xl font-light tracking-title mb-6">Estados</h2>
 
       <div class="grid gap-4 md:grid-cols-3">
@@ -370,7 +357,7 @@
     </section>
 
     {%- comment -%} ═══ 10. Ícones ═════════════════════════════════════ {%- endcomment -%}
-    <section id="styleguide">
+    <section data-secao="icones" id="styleguide">
       <h2 class="text-2xl font-light tracking-title mb-2">Ícones</h2>
       <p class="text-sm text-foreground/60 mb-6">
         Todos herdam <code class="text-xs">currentColor</code>, então seguem o scheme.

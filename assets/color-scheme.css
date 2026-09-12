@@ -31,10 +31,6 @@
   background-color: rgb(var(--color-background));
 }
 
-.color-background-secondary {
-  background-color: rgb(var(--color-card-background));
-}
-
 /* ========== TEXT ========== */
 
 .color-text {
