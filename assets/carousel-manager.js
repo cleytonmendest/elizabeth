@@ -8,15 +8,80 @@
  * <announcement-bar> -> marquee em CSS, com um preenchimento via JS que clona
  *                      o conteúdo até preencher a viewport (evita o "buraco"
  *                      quando o conteúdo é menor que a tela).
+ *
+ * ── O Swiper é buscado sob demanda (issue #32) ─────────────────────────────
+ *
+ * O bundle são 151 KB de JS e 18 KB de CSS, e o `theme.liquid` os carregava em
+ * TODA página — carrinho, conta, políticas, 404, PDP. Nenhuma tem carrossel.
+ * Agora quem pede o download é o próprio <my-slider>, no `connectedCallback`:
+ * página sem slider não baixa byte nenhum, e página com seis sliders baixa uma
+ * vez só.
  */
+
+/**
+ * O cache do download mora no `window`, e não numa variável deste arquivo,
+ * porque o que ele impede é o bundle ser baixado duas vezes — e duas cópias
+ * deste arquivo na mesma página (uma section co-locando o que o layout já
+ * carrega) teriam duas variáveis, cada uma se achando a primeira.
+ */
+function carregarSwiper() {
+  if (typeof window.Swiper !== 'undefined') return Promise.resolve();
+  if (window.swiperCarregando) return window.swiperCarregando;
+
+  const { js, css } = urlsDoSwiper();
+  if (!js) {
+    return Promise.reject(
+      new Error('MySlider: a tag de carousel-manager.js não trouxe data-swiper-js — o Swiper não tem de onde vir.')
+    );
+  }
+
+  // A folha vai para a página ANTES do bundle, e sem ser esperada: os dois
+  // downloads começam no mesmo instante, e o CSS (18 KB) chega muito antes do
+  // JS (151 KB) da mesma origem. Esperar o `load` do <link> trocaria um salto
+  // que na prática não acontece por um carrossel que nunca inicializa se a
+  // folha for bloqueada sem disparar `error`.
+  injetarCss(css);
+
+  window.swiperCarregando = new Promise((resolve, reject) => {
+    const tag = document.createElement('script');
+    tag.src = js;
+    tag.addEventListener('load', () => resolve());
+    tag.addEventListener('error', () => {
+      // Deixa uma próxima tentativa acontecer em vez de congelar o cache num erro.
+      window.swiperCarregando = null;
+      reject(new Error(`MySlider: falha ao carregar ${js}.`));
+    });
+    document.head.appendChild(tag);
+  });
+
+  return window.swiperCarregando;
+}
+
+/**
+ * As URLs vêm do Liquid, por data-attribute na tag que carrega este arquivo:
+ * um asset `.js` não tem como resolver `asset_url` da CDN da Shopify, e
+ * hardcodar o caminho quebraria no primeiro deploy.
+ *
+ * A busca é pelo ATRIBUTO e não por `document.currentScript` porque
+ * `currentScript` só existe durante a avaliação do arquivo — aqui a leitura
+ * acontece depois, quando um <my-slider> conecta.
+ */
+function urlsDoSwiper() {
+  const tag = document.querySelector('script[data-swiper-js]');
+  return { js: tag?.dataset.swiperJs || '', css: tag?.dataset.swiperCss || '' };
+}
+
+function injetarCss(href) {
+  if (!href || document.querySelector(`link[href="${href}"]`)) return;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = href;
+  document.head.appendChild(link);
+}
 
 class MySlider extends HTMLElement {
   connectedCallback() {
-    if (this.swiper) return; // evita dupla inicialização se reconectado
-    if (typeof Swiper === 'undefined') {
-      console.warn('MySlider: Swiper não encontrado.');
-      return;
-    }
+    if (this.swiper || this.carregando) return; // evita dupla inicialização se reconectado
 
     this.container = this.querySelector('.my-slider__container');
     if (!this.container) {
@@ -25,9 +90,23 @@ class MySlider extends HTMLElement {
     }
 
     const items = parseInt(this.dataset.items, 10) || 0;
-    // Não inicia o slider se não houver itens suficientes.
+    // Não inicia o slider se não houver itens suficientes — e, por isso mesmo,
+    // não baixa o Swiper.
     if (items < 2) return;
 
+    this.carregando = carregarSwiper()
+      .then(() => {
+        this.carregando = null;
+        if (this.isConnected) this.iniciar(items);
+      })
+      .catch((error) => {
+        this.carregando = null;
+        console.warn(error.message);
+      });
+  }
+
+  /** Só roda com `window.Swiper` já na página. */
+  iniciar(items) {
     const loop = this.dataset.loop === 'true';
     const dots = this.dataset.dot === 'true';
     const autoplay = this.dataset.autoplay === 'true';
@@ -83,7 +162,7 @@ class MySlider extends HTMLElement {
       },
     };
 
-    this.swiper = new Swiper(this.container, config);
+    this.swiper = new window.Swiper(this.container, config);
   }
 
   /** Mantém `inert` em sincronia com aria-hidden nos slides (acessibilidade). */

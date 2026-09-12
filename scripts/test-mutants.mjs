@@ -574,6 +574,26 @@ const MUTANTES = [
     para: '    void antes;\n    void ({',
     teste: 'tests/loja.test.mjs',
   },
+  {
+    // A advertência da issue #32 em pessoa: o cache do download cai, e uma
+    // home com seis carrosséis baixa 151 KB seis vezes. Nada quebra na tela —
+    // os sliders funcionam —, então isso só aparece na aba Network de alguém.
+    porque: 'o cache do download cai, e cada <my-slider> baixa o bundle de novo',
+    arquivo: 'assets/carousel-manager.js',
+    de: '  if (window.swiperCarregando) return window.swiperCarregando;',
+    para: '  if (false) return window.swiperCarregando;',
+    teste: 'tests/carousel-manager.test.mjs',
+  },
+  {
+    // Slider com menos de dois itens não vira slider — e é justamente onde o
+    // download não se paga. Baixar 151 KB para não inicializar nada é o pior
+    // dos dois mundos, e continua invisível na tela.
+    porque: 'o slider que não inicializa passa a baixar o Swiper assim mesmo',
+    arquivo: 'assets/carousel-manager.js',
+    de: '    if (items < 2) return;',
+    para: '    if (false) return;',
+    teste: 'tests/carousel-manager.test.mjs',
+  },
 ];
 
 

@@ -5,8 +5,10 @@
  * (renderizado dentro da section que o usa) não conta, porque só pesa onde é
  * necessário — esse é o padrão do tema e o linter existe para preservá-lo.
  *
- * Motivação: `swiper-bundle.min.js` são 151 KB carregados em toda página,
- * incluindo PDP, carrinho e conta, que não têm carrossel nenhum.
+ * Motivação: `swiper-bundle.min.js` eram 151 KB carregados em toda página,
+ * incluindo PDP, carrinho e conta, que não têm carrossel nenhum. A #32 tirou o
+ * bundle do layout — quem o baixa agora é o próprio <my-slider>, sob demanda —
+ * e o teto desceu junto. Esta regra é o que impede que ele volte.
  */
 import { bytes, offense, read } from '../lib.mjs';
 import { readConfig } from '../exceptions.mjs';
