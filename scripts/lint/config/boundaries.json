@@ -29,6 +29,15 @@
       "guidance": "Chamar publish()/subscribe() de qualquer arquivo é livre e encorajado — o que não pode é DEFINIR outra versão. Se o barramento precisa de recurso novo, estenda o de cart.js."
     },
     {
+      "capability": "money-format",
+      "pattern": "Intl\\.NumberFormat",
+      "files": ["assets/*.js"],
+      "owners": ["assets/money.js"],
+      "severity": "error",
+      "reason": "Toda formatação de preço em JS passa por assets/money.js, que lê a moeda e o idioma ATIVOS de window.Shopify. Havia três cópias disto (cart.js, cart-extras.js, search-component.js), escritas independentemente: elas discordavam sobre dividir por 100 e as três cravavam pt-BR e BRL. O Liquid não tinha esse defeito — `| money` acompanha o seletor de moeda do rodapé —, então bastava a cliente trocar de moeda para o carrinho, o mini-carrinho e a busca preditiva continuarem em reais. Ver issue #39 e ADR 0009.",
+      "guidance": "Use formatMoney(centavos) de assets/money.js, que respeita a moeda ativa da loja; para valor vindo de JSON da Shopify, converta antes com moneyToCents(). Se o que falta é outro formato (sem símbolo, sem centavos), acrescente a opção em money.js em vez de montar um Intl.NumberFormat aqui."
+    },
+    {
       "capability": "section-rendering",
       "pattern": "section_id=",
       "files": ["assets/*.js", "sections/*.liquid", "snippets/*.liquid"],

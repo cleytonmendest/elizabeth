@@ -1,3 +1,8 @@
+/*
+ * `formatMoney` é global e vem de `assets/money.js`, carregado antes deste no
+ * `layout/theme.liquid`. Uma quarta cópia dela aqui reprova a fronteira
+ * `money-format` (scripts/lint/config/boundaries.json).
+ */
 const ON_CHANGE_DEBOUNCE_TIMER = 300;
 
 /**
@@ -22,13 +27,6 @@ const PUB_SUB_EVENTS = {
     variantChange: 'variant-change',
     cartError: 'cart-error',
 };
-
-function formatPrice(value) {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(value / 100);
-}
 
 function fetchConfig(type = 'json') {
     return {
@@ -192,7 +190,7 @@ class CartDrawer extends HTMLElement {
         const itemElement = this.querySelector(`[data-index="${line}"]`);
         const priceElement = itemElement.querySelector('.item-total-price');
         if (priceElement) {
-            priceElement.textContent = formatPrice(newPrice);
+            priceElement.textContent = formatMoney(newPrice);
         }
     }
 
@@ -204,11 +202,11 @@ class CartDrawer extends HTMLElement {
 
         const { items_subtotal_price, total_discount, total_price } = cart;
 
-        itemsSubtotalPriceElement.textContent = formatPrice(items_subtotal_price);
+        itemsSubtotalPriceElement.textContent = formatMoney(items_subtotal_price);
         if (totalDiscountElement) {
-            totalDiscountElement.textContent = `-${formatPrice(total_discount)}`;
+            totalDiscountElement.textContent = `-${formatMoney(total_discount)}`;
         }
-        totalPriceElement.textContent = formatPrice(total_price);
+        totalPriceElement.textContent = formatMoney(total_price);
     }
 
     updateQtdBubble(newQtd) {

@@ -6,13 +6,13 @@
  *   2. Na página de carrinho ([data-cart-page]), reflete linhas/resumo/estado-vazio
  *      sem depender da DOM do drawer.
  * Carregado globalmente junto do cart.js (via cart-drawer.liquid).
+ *
+ * `formatMoney` é global e vem de `assets/money.js` — a única formatação de
+ * moeda do tema (fronteira `money-format`). Este arquivo tinha a sua, chamada
+ * `formatBRL`, que cravava real e português. Ver issue #39.
  */
 (function () {
   const EVENTS = ['cart-update', 'quantity-update'];
-
-  function formatBRL(cents) {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
-  }
 
   // ---- Barra de frete grátis -------------------------------------------------
   function updateFreeShippingBars(cart) {
@@ -39,7 +39,7 @@
           msg.innerHTML = bar.dataset.msgSuccess ?? '';
         } else {
           const tmpl = bar.dataset.msgProgress ?? '';
-          msg.innerHTML = tmpl.replace('{valor}', '<strong>' + formatBRL(remaining) + '</strong>');
+          msg.innerHTML = tmpl.replace('{valor}', '<strong>' + formatMoney(remaining) + '</strong>');
         }
       }
     });
@@ -67,7 +67,7 @@
       if (!el) return;
       el.setAttribute('data-index', idx + 1);
       const price = el.querySelector('.item-total-price');
-      if (price) price.textContent = formatBRL(item.final_line_price);
+      if (price) price.textContent = formatMoney(item.final_line_price);
     });
 
     // Resumo.
@@ -75,9 +75,9 @@
     const total = page.querySelector('[data-cart-total]');
     const discount = page.querySelector('[data-cart-discount]');
     const discountRow = page.querySelector('[data-cart-discount-row]');
-    if (sub) sub.textContent = formatBRL(cart.items_subtotal_price);
-    if (total) total.textContent = formatBRL(cart.total_price);
-    if (discount) discount.textContent = '-' + formatBRL(cart.total_discount);
+    if (sub) sub.textContent = formatMoney(cart.items_subtotal_price);
+    if (total) total.textContent = formatMoney(cart.total_price);
+    if (discount) discount.textContent = '-' + formatMoney(cart.total_discount);
     if (discountRow) discountRow.classList.toggle('hidden', cart.total_discount <= 0);
   }
 

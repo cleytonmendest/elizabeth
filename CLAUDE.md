@@ -80,10 +80,12 @@ existe, que o asset referenciado existe. Nada disso olha o que o componente
 faz quando a cliente clica. É o que `tests/` cobre, em jsdom.
 
 Os alvos são scripts clássicos: o Liquid os injeta com `<script src defer>`,
-eles não exportam nada, e `price-component.js` depende de `formatPrice` ser
-global — criada por `cart.js`. `tests/helpers/load-asset.mjs` reproduz essa
-semântica em vez de convertê-los em módulos ES: transformar o código de
-produção para agradar o teste faria o teste medir outro programa.
+eles não exportam nada, e `cart.js`, `cart-extras.js`, `price-component.js` e
+`search-component.js` dependem de `formatMoney` ser global — criada por
+`money.js`, que o layout carrega antes de todos eles ([ADR 0009](docs/adr/0009-moeda-em-js-vem-do-window-shopify.md)).
+`tests/helpers/load-asset.mjs` reproduz essa semântica em vez de convertê-los
+em módulos ES: transformar o código de produção para agradar o teste faria o
+teste medir outro programa.
 
 **`npm run test:mutants` é a parte que não se pula.** Ele quebra o tema de
 propósito, uma quebra por vez, e exige que a suíte fique vermelha. Uma suíte

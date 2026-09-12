@@ -12,10 +12,16 @@
  * verificada em vez de escrita.
  */
 import { describe, it, expect, afterEach } from 'vitest';
-import { loadAsset } from './helpers/load-asset.mjs';
+import { loadAsset, loadGlobalAsset } from './helpers/load-asset.mjs';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { textOf } from './helpers/dom.mjs';
+import { textOf, installShopify } from './helpers/dom.mjs';
+
+// `cart-extras.js` formata preço com a `formatMoney` global de `money.js`, que
+// por sua vez lê moeda e idioma de `window.Shopify` — a vitrine escreve os
+// dois, o jsdom não escreve nenhum.
+loadGlobalAsset('money.js', ['formatMoney']);
+installShopify();
 
 const LIMIAR = 19900; // frete grátis a partir de R$ 199,00
 

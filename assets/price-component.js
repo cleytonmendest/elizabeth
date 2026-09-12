@@ -35,13 +35,13 @@ class PriceComponent extends HTMLElement {
     _updatePriceDisplay(price, compare_at_price) {
         //Altera preço
         if (!this.sellingPriceElement) return;
-        this.sellingPriceElement.textContent = formatPrice(price);
+        this.sellingPriceElement.textContent = formatMoney(price);
 
         //Altera compare_at_price
         if (!this.listingPriceElement) return;
         const listingPrice = compare_at_price > price
         this.listingPriceElement.classList.toggle('hidden', !listingPrice)
-        this.listingPriceElement.textContent = formatPrice(compare_at_price);
+        this.listingPriceElement.textContent = formatMoney(compare_at_price);
     };
 }
 
