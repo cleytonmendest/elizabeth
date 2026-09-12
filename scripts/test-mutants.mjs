@@ -268,13 +268,44 @@ const MUTANTES = [
     teste: 'tests/styleguide-no-tema.test.mjs',
   },
   {
-    // O banner é `position: fixed`: numa captura fullPage ele cai onde o
-    // scroll deixar, não no rodapé. Sem o `display:none`, a baseline visual
-    // grava um banner numa posição que a próxima execução não repete.
-    porque: 'o banner de cookies volta a entrar na foto da regressão visual',
+    // Elemento `position: fixed` vive na VIEWPORT: numa captura por seção ele
+    // cai onde o scroll deixar. Sem a varredura, a baseline grava um botão numa
+    // posição que a próxima execução não repete — e foi assim que o "voltar ao
+    // topo" entrou em `botoes` e `feedback` e não em `color-schemes`.
+    porque: 'a varredura para de achar fixo, e o scroll volta a entrar na foto',
     arquivo: 'e2e/styleguide.spec.mjs',
-    de: '      [data-cookie-banner]{display:none!important}',
-    para: '      /* mutante */',
+    de: "    (el) => getComputedStyle(el).position === 'fixed'",
+    para: '    (el) => Boolean(el) && false',
+    teste: 'tests/styleguide-no-tema.test.mjs',
+  },
+  {
+    // Varrer DEPOIS de fotografar não esconde nada, e o teste de presença da
+    // varredura passaria igual: o código está lá, só que tarde. Ordem é o tipo
+    // de defeito que não deixa marca nenhuma no diff.
+    porque: 'a varredura some do corpo do teste e as fotos saem antes de esconder',
+    arquivo: 'e2e/styleguide.spec.mjs',
+    de: '  await page.evaluate(ESCONDE_FIXOS);',
+    para: '  await page.evaluate(() => {});',
+    teste: 'tests/styleguide-no-tema.test.mjs',
+  },
+  {
+    // A conferência é o que separa "a varredura funcionou" de "a varredura
+    // rodou". Sem ela, uma varredura que parasse de casar exibiria o mesmo
+    // silêncio de uma que funciona, e envenenaria as nove baselines de uma vez.
+    porque: 'o spec para de conferir o próprio resultado e confia na varredura',
+    arquivo: 'e2e/styleguide.spec.mjs',
+    de: "      return estilo.position === 'fixed' && estilo.display !== 'none';",
+    para: '      return Boolean(estilo) && false;',
+    teste: 'tests/styleguide-no-tema.test.mjs',
+  },
+  {
+    // O remendo que este arquivo existe para impedir: esconder o fixo da vez
+    // por hook, um `data-*` de cada vez. Foi uma lista assim que deixou o botão
+    // de topo passar — se a varredura não pegou, o conserto é na varredura.
+    porque: 'volta o esconde-por-hook, que é a lista que já falhou uma vez',
+    arquivo: 'e2e/styleguide.spec.mjs',
+    de: '    content: `*,*::before,*::after{animation:none!important;transition:none!important}`,',
+    para: '    content: `*,*::before,*::after{animation:none!important}[data-back-to-top]{display:none!important}`,',
     teste: 'tests/styleguide-no-tema.test.mjs',
   },
   {

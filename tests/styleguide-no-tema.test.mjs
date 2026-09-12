@@ -32,17 +32,21 @@
  * Uma foto só serve de referência se o que ela mostra depender do TEMA. Dois
  * pedaços desta página não dependiam, e cada um mordeu de um jeito:
  *
- *   · o banner de cookies é `position: fixed`, e numa captura ele cai onde o
- *     scroll deixar — foi visto por uma pessoa, em cima do scheme-1
+ *   · elementos `position: fixed` vivem na VIEWPORT, não no documento, então
+ *     caem onde o scroll deixar — o banner de cookies apareceu em cima do
+ *     scheme-1, e o botão "voltar ao topo" saiu em `botoes` e `feedback` e não
+ *     em `color-schemes`, diferença produzida só por scroll
  *   · a seção "Componentes reais" renderiza `collections.all.products.first`,
  *     então preço, título e imagem vêm da LOJA: uma promoção reprovaria um PR
  *     que não tocou em nada visual
  *
- * O banner é escondido por CSS. A seção de catálogo é resolvida de outro jeito
- * desde que a foto passou a ser por SEÇÃO: ela simplesmente não é fotografada,
- * e `FORA`, em `e2e/styleguide.spec.mjs`, diz isso com o motivo escrito ao
- * lado. Esconder deixou de ser necessário — o que a foto não enquadra não
- * precisa sumir da página.
+ * Cada um tem a sua forma de correção, e a forma importa mais que o elemento:
+ *
+ *   · o fixo é VARRIDO, não listado. Esconder por hook resolveu o banner e
+ *     deixou passar o botão de topo, porque ninguém o listou. `ESCONDE_FIXOS`,
+ *     em `e2e/styleguide.spec.mjs`, pergunta ao navegador quem é fixo.
+ *   · a seção de catálogo simplesmente não é fotografada, e `FORA` diz isso
+ *     com o motivo escrito ao lado.
  *
  * A pergunta a fazer antes de pôr qualquer coisa nova nesta página: **isto
  * muda quando o TEMA muda, ou quando a LOJA muda?** Se for a segunda, a seção
@@ -109,28 +113,70 @@ describe('mas o tema de DESENVOLVIMENTO recebe a página', () => {
   }
 });
 
-describe('e o banner de cookies não entra na foto', () => {
+describe('e nada de `position: fixed` entra na foto', () => {
   /**
-   * `snippets/cookie-banner.liquid` é `position: fixed`, e numa captura
-   * `fullPage` a posição de um elemento fixo depende de scroll e timing — na
-   * primeira execução com a página renderizando, ele saiu por cima do bloco
-   * `scheme-1`, não no rodapé. `e2e/styleguide.spec.mjs` o esconde por CSS,
-   * e esse CSS depende do atributo continuar existindo no markup.
+   * ── O defeito que custou nove baselines ──────────────────────────────────
    *
-   * Renomear o hook não quebra nada visível: o CSS simplesmente deixa de
-   * casar, o banner volta para a foto, e a baseline passa a reprovar por um
-   * motivo que ninguém liga ao rename.
+   * A primeira versão escondia `[data-cookie-banner]` por CSS, um hook por
+   * elemento. Resolveu o banner. Deixou passar `snippets/back-to-top.liquid`,
+   * que é `fixed bottom-6 right-6` e ganha `is-visible` com `scrollY > 400`:
+   * ele saiu em `botoes` e `feedback` e não em `color-schemes` — diferença
+   * produzida inteiramente por scroll, não pelas seções.
+   *
+   * Quem viu foi uma pessoa, olhando as imagens antes de commitar. Nenhum
+   * verificador viu, porque o verificador cobria a lista, e o problema era a
+   * lista. Este arquivo já tinha registrado o mesmo padrão duas vezes (a
+   * página que não existia no tema, a baseline que media outra página); a
+   * correção certa nunca é acrescentar o item que faltou.
+   *
+   * Por isso os testes abaixo não citam elemento nenhum: eles exigem que a
+   * varredura EXISTA, que ela rode ANTES das fotos, e que o spec confira o
+   * próprio resultado. Elemento fixo novo passa a ser coberto sem ninguém
+   * lembrar de nada — que é a regra deste repositório.
    */
-  const HOOK = 'data-cookie-banner';
+  const spec = leia('e2e/styleguide.spec.mjs');
 
-  it(`o snippet do banner expõe \`${HOOK}\``, () => {
-    expect(leia('snippets/cookie-banner.liquid')).toContain(HOOK);
+  it('o spec varre o que o NAVEGADOR resolve como fixo', () => {
+    expect(
+      spec,
+      'sem perguntar ao navegador, a cobertura vira uma lista escrita à mão — ' +
+        'e foi uma lista que deixou o botão de topo entrar em duas baselines'
+    ).toMatch(/getComputedStyle\(\w+\)\.position === 'fixed'/);
   });
 
-  it(`o teste de screenshot esconde \`${HOOK}\``, () => {
-    const spec = leia('e2e/styleguide.spec.mjs');
-    expect(spec).toContain(HOOK);
-    expect(spec, 'esconder, não só mencionar').toMatch(/\[data-cookie-banner\][^`]*display\s*:\s*none/);
+  it('a varredura roda ANTES do laço de fotos', () => {
+    // Ordem é um defeito real e silencioso: varrer depois esconde os fixos
+    // para ninguém, e o teste de presença acima passaria igual.
+    const varre = spec.indexOf('page.evaluate(ESCONDE_FIXOS)');
+    const fotografa = spec.indexOf('for (const secao of SECOES)');
+    expect(varre, 'a varredura sumiu do corpo do teste').toBeGreaterThan(-1);
+    expect(fotografa, 'o laço de fotos sumiu').toBeGreaterThan(-1);
+    expect(varre, 'varrer depois de fotografar não esconde nada').toBeLessThan(fotografa);
+  });
+
+  it('o spec confere o próprio resultado, e reprova duro se sobrar fixo', () => {
+    // A mesma ideia de `e2e/gate.spec.mjs`: o verificador é testado, não
+    // acreditado. Sem esta conferência, uma varredura que parasse de casar
+    // exibiria o mesmo silêncio de uma que funciona — e envenenaria as nove
+    // baselines de uma vez.
+    expect(spec).toMatch(/estilo\.position === 'fixed' && estilo\.display !== 'none'/);
+    expect(
+      spec,
+      'a conferência precisa reprovar, não avisar: com fixo sobrando nenhuma ' +
+        'foto da execução presta, então `soft` aqui seria mentira'
+    ).toMatch(/expect\(\s*await page\.evaluate\(FIXOS_QUE_SOBRARAM\)/);
+  });
+
+  it('e ninguém voltou a esconder fixo por hook', () => {
+    // Um `display:none` por `data-*` de volta no spec é o sintoma de que a
+    // varredura parou de dar conta e alguém remendou o caso da vez — que é
+    // como esta seção do arquivo nasceu.
+    const porHook = spec.match(/\[data-[a-z-]+\][^`\n]*display\s*:\s*none/g) || [];
+    expect(
+      porHook,
+      `${porHook.join(', ')} — esconder elemento a elemento é a lista que falhou; ` +
+        'se a varredura não pegou, conserte a varredura'
+    ).toEqual([]);
   });
 });
 

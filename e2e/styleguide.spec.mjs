@@ -93,22 +93,71 @@ const FORA = {
     'LOJA, então uma promoção reprovaria um PR que não tocou em nada visual',
 };
 
+/**
+ * Tudo que o NAVEGADOR resolve como `position: fixed`, escondido.
+ *
+ * Um elemento fixo vive na VIEWPORT, não no documento. O Playwright rola cada
+ * seção para dentro da tela antes de fotografar, então onde o elemento fixo cai
+ * dentro do recorte depende da altura da página e do offset da seção. Um
+ * componente novo em QUALQUER lugar acima muda as duas coisas — e reprova uma
+ * seção que não mudou. É o alarme falso que a foto por seção existe para
+ * eliminar, entrando pela porta dos fundos.
+ *
+ * ── Por que varrer, e não listar ───────────────────────────────────────────
+ *
+ * A primeira versão escondia `[data-cookie-banner]` por hook. Funcionou para o
+ * banner e deixou passar o botão "voltar ao topo", que é
+ * `fixed bottom-6 right-6` e só ganha `is-visible` com `scrollY > 400`. Ele
+ * saiu em `botoes` e `feedback` e NÃO em `color-schemes` — diferença produzida
+ * inteiramente por scroll, não pelas seções. Uma pessoa viu nas imagens antes
+ * do commit; nenhum verificador viu.
+ *
+ * Lista escrita à mão não acompanha o que a põe ali: `class` pode vir de
+ * `{{ settings }}`, do CSS compilado ou de um app de terceiro na mesma página.
+ * A varredura pergunta ao navegador, que é quem sabe.
+ *
+ * Limite conhecido: `body *` não atravessa shadow DOM, e um elemento fixo
+ * criado por script DEPOIS da varredura escapa dela. Os componentes deste tema
+ * são light DOM, e a conferência logo abaixo roda no mesmo tick.
+ */
+const ESCONDE_FIXOS = () => {
+  const alvos = [...document.querySelectorAll('body *')].filter(
+    (el) => getComputedStyle(el).position === 'fixed'
+  );
+  for (const el of alvos) el.style.setProperty('display', 'none', 'important');
+};
+
+/** O que continuou fixo E visível — deveria ser lista vazia. */
+const FIXOS_QUE_SOBRARAM = () =>
+  [...document.querySelectorAll('body *')]
+    .filter((el) => {
+      const estilo = getComputedStyle(el);
+      return estilo.position === 'fixed' && estilo.display !== 'none';
+    })
+    .map((el) => `<${el.tagName.toLowerCase()} class="${el.getAttribute('class') ?? ''}">`);
+
 test('cada seção bate com a sua baseline', async ({ page }) => {
   await abrePaginaDoTema(page, STYLEGUIDE_PATH);
 
   // Sem isto, qualquer animação em curso vira diferença de pixel e o teste
   // oscila — e teste que oscila a gente aprende a ignorar.
-  //
-  // O banner de cookies entra pelo mesmo motivo: é `position: fixed`, então
-  // ele aparece por cima de qualquer seção que esteja na viewport na hora da
-  // captura — e qual é depende de scroll e de timing.
   await page.addStyleTag({
-    content: `
-      *,*::before,*::after{animation:none!important;transition:none!important}
-      [data-cookie-banner]{display:none!important}
-    `,
+    content: `*,*::before,*::after{animation:none!important;transition:none!important}`,
   });
   await page.waitForLoadState('networkidle');
+
+  await page.evaluate(ESCONDE_FIXOS);
+
+  // Conferir o VERIFICADOR, e não confiar nele. Se a varredura deixar passar
+  // um fixo, a falha aparece AQUI, com o elemento nomeado — em vez de sair
+  // caladamente dentro de nove baselines, que é como o botão de topo chegou a
+  // ser fotografado. `expect` duro de propósito: sem varredura limpa, nenhuma
+  // foto desta execução presta.
+  expect(
+    await page.evaluate(FIXOS_QUE_SOBRARAM),
+    'sobrou elemento fixo na página — ele vive na viewport, então desloca com o ' +
+      'scroll e reprova seções que não mudaram'
+  ).toEqual([]);
 
   // `soft` para que uma seção quebrada não esconda as outras: o relatório traz
   // TODAS as que divergiram, e não só a primeira.
