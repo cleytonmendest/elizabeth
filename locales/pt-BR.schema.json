@@ -135,6 +135,9 @@
     "main_search": {
       "name": "Página de Busca",
       "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
         "layout_header": {
           "content": "Layout"
         },
@@ -1078,6 +1081,9 @@
     "highlighted_product": {
       "name": "Produto Destaque",
       "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
         "product": {
           "label": "Produto"
         },
@@ -1205,6 +1211,9 @@
     "blog_posts": {
       "name": "Posts do Blog",
       "settings": {
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
         "content_header": {
           "content": "Conteúdo"
         },

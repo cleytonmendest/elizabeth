@@ -135,6 +135,9 @@
     "main_search": {
       "name": "Search Page",
       "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
         "layout_header": {
           "content": "Layout"
         },
@@ -1078,6 +1081,9 @@
     "highlighted_product": {
       "name": "Highlighted Product",
       "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
         "product": {
           "label": "Product"
         },
@@ -1205,6 +1211,9 @@
     "blog_posts": {
       "name": "Blog Posts",
       "settings": {
+        "color_scheme": {
+          "label": "Color scheme"
+        },
         "content_header": {
           "content": "Content"
         },
