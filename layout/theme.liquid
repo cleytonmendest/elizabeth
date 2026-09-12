@@ -28,8 +28,10 @@
       {% comment %}theme-check-enable AssetPreload{% endcomment %}
     {%- endunless -%}
 
-    {%- comment -%} CSS que só a vitrine usa — o carrossel. {%- endcomment -%}
-    {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
+    {%- comment -%}
+      CSS que só a vitrine usa — o carrossel. O do Swiper NÃO entra aqui: ele é
+      injetado junto com o bundle, quando um <my-slider> pede (issue #32).
+    {%- endcomment -%}
     {{ 'carousel-style.css' | asset_url | stylesheet_tag }}
 
     {%- comment -%} `window.shopUrl` vem de `theme-head`: é marca, não rota. {%- endcomment -%}
@@ -73,8 +75,18 @@
     {%- endif -%}
 
     <!-- JS Imports -->
-    <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
-    <script src="{{ 'carousel-manager.js' | asset_url }}" defer></script>
+    {%- comment -%}
+      O bundle do Swiper (151 KB) não é carregado aqui: `carousel-manager.js` o
+      busca sob demanda, e só quando a página tem um <my-slider> (issue #32).
+      As URLs viajam por data-attribute porque um asset `.js` não resolve
+      `asset_url` — hardcodar o caminho da CDN quebraria no primeiro deploy.
+    {%- endcomment -%}
+    <script
+      src="{{ 'carousel-manager.js' | asset_url }}"
+      data-swiper-js="{{ 'swiper-bundle.min.js' | asset_url }}"
+      data-swiper-css="{{ 'swiper-bundle.min.css' | asset_url }}"
+      defer
+    ></script>
     <script src="{{ 'search-component.js' | asset_url }}" defer></script>
     <script src="{{ 'price-component.js' | asset_url }}" defer></script>
     <script src="{{ 'variations-selector.js' | asset_url }}" defer></script>

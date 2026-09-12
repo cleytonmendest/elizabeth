@@ -231,14 +231,21 @@ shopify theme push    # deploy
 - `assets/` — CSS compilado, Web Components, Swiper
 - `src/tailwind.css` → `assets/application.css` (gerado; nunca editar à mão)
 
-**Carregamento de assets — duas estratégias, e a escolha importa:**
+**Carregamento de assets — três estratégias, e a escolha importa:**
 - **Global** (`theme.liquid`, `defer`): só o que roda em toda página.
 - **Co-locado** (renderizado dentro da section/snippet que usa): o padrão
   preferido — o asset só pesa onde é necessário.
+- **Em runtime, pelo componente** (o custom element injeta a tag no
+  `connectedCallback`): para dependência PESADA que várias sections dividem.
+  Hoje só o Swiper — ver [ADR 0009](docs/adr/0009-asset-pesado-e-baixado-pelo-componente-que-precisa-dele.md).
+  O Liquid não deduplica entre sections; o JS sim, e o cache mora no `window`
+  para valer por página e não por cópia do arquivo.
 
 `npm run lint -- --rules=budget` reprova se o peso global passar do teto em
 `scripts/lint/config/perf-budget.json`. Ao adicionar script novo, co-locar é a
-opção padrão; global exige justificativa.
+opção padrão; global exige justificativa. E repare no que o teto NÃO alcança:
+asset baixado em runtime some da conta por construção, então quem garante que
+ele é baixado uma vez só — e não antes da hora — é teste, não linter.
 
 **Componentes:** Web Components (`<variant-selects>`, `<my-slider>`,
 `<countdown-timer>`…). Sempre `if (!customElements.get('nome'))` antes de

@@ -48,3 +48,4 @@ Numeração sequencial, nunca reutilizada.
 | [0005](0005-escalas-de-tracking-z-index-e-proporcao.md) | Nomear as escalas de tracking, z-index e proporção a partir do que o código já fazia | Aceito |
 | [0006](0006-fonte-vem-da-biblioteca-da-shopify.md) | A tipografia vem da biblioteca da Shopify, e nenhum setting injeta markup | Aceito |
 | [0007](0007-suite-de-navegador-contra-tema-empurrado.md) | A suíte de navegador mede um tema EMPURRADO, não o proxy do `theme dev` | Aceito |
+| [0009](0009-asset-pesado-e-baixado-pelo-componente-que-precisa-dele.md) | Asset pesado é baixado pelo componente que precisa dele, não pelo layout | Aceito |

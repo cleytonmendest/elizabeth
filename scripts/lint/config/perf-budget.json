@@ -1,10 +1,12 @@
 {
-  "$comment": "Teto de peso dos assets carregados em TODA página — o layout e os snippets que ele renderiza. Asset co-locado (renderizado dentro da section que o usa) não conta e é o padrão preferido do tema. Os valores são o estado atual + margem: servem para impedir piora, e devem ser BAIXADOS conforme o Swiper virar carregamento condicional.",
+  "$comment": "Teto de peso dos assets carregados em TODA página — o layout e os snippets que ele renderiza. Asset co-locado (renderizado dentro da section que o usa) não conta e é o padrão preferido do tema. Os valores são o estado atual + margem: servem para impedir piora.",
   "$comment_teto": "Os tetos subiram na #27, e nenhum byte novo chegou ao navegador. A regra lia só o layout/theme.liquid, então nunca via os assets que o snippet cart-drawer carrega — cart.js, cart-extras.js e cart.css, 24 KB que estão em toda página desde sempre e que o próprio CLAUDE.md documenta como globais. Ao passar a seguir os {% render %}, a medição foi de 185 para 208 KB de JS. É dívida escondida virando visível, não dívida nova: comparar contra o teto antigo seria comparar duas medições diferentes.",
+  "$comment_swiper": "E na #32 desceram de verdade: o Swiper saiu do layout e passou a ser baixado pelo próprio <my-slider>, sob demanda. JS global foi de 209,2 KB para 58,2 KB e CSS de 73,1 KB para 55,1 KB — 151 KB de JS e 18 KB de CSS que páginas sem carrossel (carrinho, conta, políticas, 404) deixaram de baixar. O teto acompanhou a melhoria: teto que não desce depois de uma economia deixa de ser teto e vira enfeite.",
   "global": {
-    "js": 215000,
-    "css": 78000
+    "js": 62000,
+    "css": 58000
   },
+  "$comment_perasset": "O teto por arquivo continua valendo mesmo para asset sob demanda: ele existe para uma lib nova (ou uma versão maior da mesma lib) não entrar sem discussão.",
   "perAsset": {
     "swiper-bundle.min.js": 160000
   }
