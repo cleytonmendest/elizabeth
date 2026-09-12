@@ -30,10 +30,16 @@
   <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
 {%- endif -%}
 
+{%- comment -%}
+  O sufixo do título passa pelo locale. `tags` precisa do `join` ANTES do
+  filtro `t`: encadear `| t: tags: current_tags | join: ', '` aplicaria o
+  `join` ao texto já traduzido, não à lista.
+{%- endcomment -%}
+{%- assign meta_tags = current_tags | join: ', ' -%}
 <title>
   {{ page_title }}
-  {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
-  {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+  {%- if current_tags %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags }}{% endif -%}
+  {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif -%}
   {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
 </title>
 
