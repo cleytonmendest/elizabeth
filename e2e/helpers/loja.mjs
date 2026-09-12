@@ -251,7 +251,7 @@ export async function abrePaginaDoTema(page, caminho) {
 /**
  * Clica em algo que NAVEGA, e refaz a mesma pergunta na página que chegou.
  *
- * ── Por que a guarda por URL não cobria isto (#73) ─────────────────────────
+ * ── Por que a guarda do `goto` não cobria isto (#73) ──────────────────────
  *
  * `abrePaginaDoTema` prova o tema a cada `page.goto`. Só que metade das
  * páginas que a suíte mede não entra por `goto`: entra por clique — a PDP a
@@ -275,36 +275,49 @@ export async function abrePaginaDoTema(page, caminho) {
  *    não. Recarregar não seria repetir o clique — seria navegar por URL, que é
  *    a outra porta, com a outra guarda.
  *
- * Serve para clique que muda de URL. Num clique que não navega (quick-add,
- * "carregar mais", troca de variante por `pushState`) ele reprova DIZENDO
- * isso, e não é detalhe de ergonomia: sem timeout próprio, a espera ia até o
+ * Serve para clique que TRAZ DOCUMENTO NOVO. Num clique que não traz
+ * (quick-add, "carregar mais", troca de variante por `pushState`) ele reprova
+ * DIZENDO isso, e não é detalhe de ergonomia: sem timeout próprio, a espera ia até o
  * timeout do TESTE, e a falha chegava como "Test timeout of 30000ms exceeded"
  * — verdadeira e inútil, a mesma forma de defeito que `entrar()` corrigiu em
  * `e2e/endereco.spec.mjs`. Foi medido num navegador antes de virar esta linha.
  *
- * ── O alcance real da espera, dito por inteiro (#76) ───────────────────────
+ * ── O sinal é o DOCUMENTO, e não a URL (#76) ───────────────────────────────
  *
- * O sinal aqui é A URL MUDOU, e ele é procuração para "chegou documento
- * novo". As duas coincidem em todo call site de hoje, e não são a mesma coisa:
+ * A primeira versão esperava a URL mudar, como procuração para "chegou
+ * documento novo". As duas coincidiam em todo call site de então, e não são a
+ * mesma coisa — nos dois sentidos:
  *
  *   · Documento novo com a MESMA URL (form GET reenviado com os mesmos
- *     parâmetros, POST que redireciona de volta) não satisfaz o predicado, e a
- *     espera estoura — sobre uma página que existia para ser provada.
- *   · `pushState` muda a URL sem documento novo, e a guarda aprova provando de
- *     novo o documento que a entrada já provou. Inofensivo, mas quer dizer que
- *     "passou pela clicaNoTema" não é sinônimo de "um documento foi provado".
+ *     parâmetros, POST que redireciona de volta, filtro clicado quando já
+ *     estava na query) não satisfazia o predicado: a espera estourava em 15s
+ *     sobre uma página que existia para ser provada. O call site parecia
+ *     guardado e não guardava nada — a #73 de novo, entregue pela mão do
+ *     verificador.
+ *   · `pushState` muda a URL sem documento novo, e a guarda APROVAVA, provando
+ *     de novo o documento que a entrada já tinha provado. "Passou pela
+ *     `clicaNoTema`" não implicava "um documento foi provado".
  *
- * Fechar isso pede um sinal de documento — `framenavigated` no frame
- * principal, ou uma marca em `window` que some com o documento. Não está aqui
- * porque nenhum call site precisa, e porque a espera com timeout próprio já é
- * a parte que faltava. O que NÃO é aceitável é a mensagem esconder a
- * diferença: ela diz o que mediu, e nomeia as duas leituras possíveis.
+ * Hoje o sinal é o próprio documento: a guarda CARIMBA `window` antes do
+ * clique e espera o carimbo sumir. Carimbo é propriedade de um `window`, e
+ * `window` morre com o documento — então a ausência dele não é indício de
+ * documento novo, é o documento novo. Mesma URL passa; `pushState` reprova
+ * dizendo que não houve documento.
  *
- * O que está escrito acima é DECISÃO: por que medimos URL, e por que não
- * trocamos agora. O que falta fechar é PENDENTE, e pendente não mora em prosa
- * — mora na issue #76, com os dois casos como critério de aceite verificável.
- * Quando aparecer o primeiro call site que navega para a mesma URL, é para lá
- * que se vai, sem depender de alguém reler este cabeçalho no dia certo.
+ * ── O que o carimbo NÃO prova, dito antes que alguém confie demais ─────────
+ *
+ * Ele prova "o documento é outro", não "este clique foi quem o trouxe": um
+ * redirect em cadeia, um `<meta refresh>` ou um timer da própria página
+ * também apagam o carimbo. Para o que esta guarda decide — de que tema veio o
+ * documento que o teste vai medir — a diferença não importa: quem responde é
+ * a página que ficou.
+ *
+ * E ele não alcança o clique que abre OUTRA ABA (`target=_blank`, botão do
+ * meio): ali o documento novo nasce noutra `page`, o carimbo desta continua
+ * onde estava, e a guarda reprova dizendo que não veio documento — verdade
+ * sobre esta aba, e o recado certo é que a aba nova precisa da guarda dela.
+ * Nenhum call site abre aba; quando o primeiro aparecer, é uma função nova,
+ * não um `if` aqui dentro.
  */
 
 /**
@@ -318,33 +331,77 @@ export async function abrePaginaDoTema(page, caminho) {
  */
 const ESPERA_DE_NAVEGACAO = 15_000;
 
+/**
+ * O carimbo que a guarda deixa no documento ANTES do clique.
+ *
+ * O nome começa com `__` e diz o que é: ele é escrito numa página de loja de
+ * desenvolvimento, e um dia vai aparecer no `window` de alguém que estiver
+ * depurando. Que essa pessoa consiga descobrir de onde ele veio faz parte do
+ * trabalho.
+ *
+ * É uma constante exportada pelo mesmo motivo que `MARCA_DO_TEMA`: quem
+ * carimba, quem espera e quem escreve a mensagem de erro leem a MESMA string.
+ * Enquanto fossem três literais, dois poderiam mudar e o terceiro continuar
+ * descrevendo a versão anterior.
+ */
+export const MARCA_DO_DOCUMENTO = '__documentoAntesDoClique';
+
+/**
+ * Carimba o documento atual.
+ *
+ * O carimbo é propriedade de um `window`, e `window` morre com o documento.
+ * É essa morte que é o sinal — não a URL, que muda sem documento novo
+ * (`pushState`) e fica igual com documento novo (form GET reenviado).
+ */
+const carimba = (page) =>
+  page.evaluate((marca) => {
+    window[marca] = true;
+  }, MARCA_DO_DOCUMENTO);
+
+/**
+ * Espera o carimbo sumir: a prova de que o documento é OUTRO.
+ *
+ * `waitForFunction` reinstala o predicado no contexto novo a cada navegação,
+ * que é justamente o que faz esta pergunta ser respondível: no documento
+ * anterior ela é sempre falsa, e o primeiro documento em que ela é verdadeira
+ * é o documento novo. Só ele pode responder de que tema veio.
+ */
+const esperaDocumentoNovo = (page) =>
+  page.waitForFunction((marca) => !(marca in window), MARCA_DO_DOCUMENTO, {
+    timeout: ESPERA_DE_NAVEGACAO,
+  });
+
 export async function clicaNoTema(page, locator, descricao) {
   const antes = page.url();
+  // Carimbar ANTES do clique, e não depois: depois já seria tarde para uma
+  // navegação que termina durante o próprio `click()` — o carimbo cairia no
+  // documento novo e a espera nunca acabaria, sobre a página certa.
+  await carimba(page);
   await locator.click();
 
   try {
-    await page.waitForURL((url) => url.href !== antes, {
-      waitUntil: 'domcontentloaded',
-      timeout: ESPERA_DE_NAVEGACAO,
-    });
+    await esperaDocumentoNovo(page);
   } catch (erro) {
     // Só o estouro da espera vira a mensagem abaixo. `page` fechada, frame
     // destruído, erro de rede: esses sobem como são. Um `catch` sem filtro
-    // faria qualquer um deles sair como "a URL não mudou em 15s", que seria
+    // faria qualquer um deles sair como "não veio documento novo", que seria
     // falso — e mensagem falsa é o defeito que este arquivo inteiro combate.
     if (erro?.name !== 'TimeoutError') throw erro;
 
+    const agora = page.url();
     throw new Error(
-      `O clique em ${descricao} não mudou a URL em ${ESPERA_DE_NAVEGACAO}ms — a página ` +
-        `continua em ${antes}. O que esta guarda espera é a URL mudar, como procuração ` +
-        'para "chegou documento novo", então há duas leituras.\n' +
-        '  1. O clique não navega mesmo (quick-add, "carregar mais", troca de variante por ' +
-        '`pushState`): chame-o CRU. Sem documento novo não há tema novo para provar, e o ' +
+      `O clique em ${descricao} não trouxe DOCUMENTO NOVO em ${ESPERA_DE_NAVEGACAO}ms: o ` +
+        `carimbo \`window.${MARCA_DO_DOCUMENTO}\`, que esta guarda deixou antes do clique, ` +
+        'continua onde estava.\n' +
+        (agora === antes
+          ? `A página continua em ${antes}.\n`
+          : `A URL até MUDOU (${antes} → ${agora}) e o documento não: isto é navegação de ` +
+            'mesmo documento (`history.pushState`), e é o caso em que medir a URL diria ' +
+            '"cheguei" sem ninguém ter chegado.\n') +
+        'Se o clique não traz documento mesmo (quick-add, "carregar mais", troca de variante ' +
+        'por `pushState`): chame-o CRU. Sem documento novo não há tema novo para provar, e o ' +
         'desta página já foi provado na entrada.\n' +
-        '  2. O clique trouxe documento novo COM a mesma URL (form GET reenviado, POST que ' +
-        'redireciona de volta): aí a guarda precisa de um sinal de documento em vez de URL ' +
-        '— ver o cabeçalho de `clicaNoTema`.\n' +
-        'Se ele DEVIA levar a outra URL e não levou, o defeito é do tema, e é isto que o ' +
+        'Se ele DEVIA trazer outra página e não trouxe, o defeito é do tema, e é isto que o ' +
         'teste está reportando.'
     );
   }

@@ -558,7 +558,7 @@ const MUTANTES = [
     // O `catch` sem filtro que a revisão do PR #75 apontou: `page` fechada e
     // frame destruído sairiam como "a URL não mudou em 15s", que é falso —
     // neste arquivo, o pecado capital.
-    porque: 'qualquer erro da espera volta a sair como "a URL não mudou"',
+    porque: 'qualquer erro da espera volta a sair como "não trouxe documento novo"',
     arquivo: 'e2e/helpers/loja.mjs',
     de: "    if (erro?.name !== 'TimeoutError') throw erro;",
     para: '    void erro;',
@@ -570,8 +570,38 @@ const MUTANTES = [
     // acabou de passar na guarda — verde sobre a página errada.
     porque: 'o clique deixa de esperar o documento novo, e a guarda pergunta à página anterior',
     arquivo: 'e2e/helpers/loja.mjs',
-    de: '    await page.waitForURL((url) => url.href !== antes, {',
-    para: '    void antes;\n    void ({',
+    de: '    await esperaDocumentoNovo(page);',
+    para: '    void page;',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    // A #76 na forma exata em que ela existia: o sinal era a URL, procuração
+    // para "chegou documento novo". Documento novo com a MESMA URL estourava a
+    // espera, e `pushState` — URL nova, documento velho — passava sem que
+    // documento nenhum fosse provado.
+    //
+    // Ele roda contra o navegador de mentira de tests/loja.test.mjs, que
+    // guarda um `waitForURL` que a produção não usa mais SÓ para este mutante
+    // ter o que executar. O que esse falso não prova é o comportamento do
+    // navegador; isso é o mutante gêmeo, logo abaixo em MUTANTES_E2E.
+    porque: 'o sinal do clique volta a ser a URL, e documento e URL se separam de novo',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '    await esperaDocumentoNovo(page);',
+    para:
+      '    await page.waitForURL((url) => url.href !== antes, ' +
+      '{ timeout: ESPERA_DE_NAVEGACAO });',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    // Sem o carimbo, o predicado já é verdadeiro no documento ANTERIOR: a
+    // espera devolve na hora e a guarda prova a página que já estava aberta.
+    // É o mesmo defeito de não esperar, com outra cara — e some com a mesma
+    // facilidade numa refatoração que "limpa" um `evaluate` aparentemente
+    // inútil antes do clique.
+    porque: 'o carimbo some, e a espera termina no documento anterior',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '  await carimba(page);',
+    para: '  void carimba;',
     teste: 'tests/loja.test.mjs',
   },
 ];
@@ -617,6 +647,22 @@ const MUTANTES_E2E = [
     de: '    em: ${onde}${resto}',
     para: '    em: ???',
     teste: 'e2e/gate.spec.mjs',
+  },
+  {
+    // O gêmeo do mutante de mesmo nome na lista unitária, e a razão de existir
+    // um par: lá o alvo é o navegador de mentira, que separa documento de URL
+    // porque foi escrito para separar; aqui é o Chromium servindo duas rotas
+    // de verdade. "Trocar de documento apaga o `window`, e `history.pushState`
+    // não" é uma afirmação sobre o NAVEGADOR — nenhum falso pode prová-la, e
+    // um falso que concorda com quem o escreveu é o gênero de verde que este
+    // script existe para encontrar.
+    porque: 'o sinal do clique volta a ser a URL — agora medido contra um navegador',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '    await esperaDocumentoNovo(page);',
+    para:
+      '    await page.waitForURL((url) => url.href !== antes, ' +
+      '{ timeout: ESPERA_DE_NAVEGACAO });',
+    teste: 'e2e/guarda-do-clique.spec.mjs',
   },
   {
     porque: 'a catraca passa a tratar TODA violação como dívida conhecida',

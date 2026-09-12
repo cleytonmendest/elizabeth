@@ -83,12 +83,29 @@ describe('o runner usa a poda de verdade', () => {
     expect(SAIDA_DO_MUTANTE).not.toBe('test-results');
   });
 
-  // A lista de mutantes de a11y roda contra `e2e/gate.spec.mjs`. Se um dia ela
-  // apontar para um spec que MEDE a loja, a poda deixaria de ser correta e
-  // este teste é onde isso aparece.
-  it('todo mutante de navegador roda contra o gate, que não precisa de loja', () => {
-    const alvos = [...fonte.matchAll(/teste:\s*'(e2e\/[^']+)'/g)].map((m) => m[1]);
+  /**
+   * Os specs que medem VERIFICADORES, e não a loja.
+   *
+   * São os únicos alvos legítimos de um mutante de navegador. Um mutante
+   * apontado para um spec que MEDE a loja se declararia PULADO com a poda de
+   * `THEME_URL`, o Playwright sairia 0, e o mutante contaria como SOBREVIVENTE
+   * sem nada ter sido medido — a forma de verde vazio que este script existe
+   * para encontrar, dentro do script que a procura.
+   */
+  const SEM_LOJA = ['e2e/gate.spec.mjs', 'e2e/guarda-do-clique.spec.mjs'];
+
+  it('todo mutante de navegador roda contra um spec que não precisa de loja', () => {
+    const alvos = [...new Set([...fonte.matchAll(/teste:\s*'(e2e\/[^']+)'/g)].map((m) => m[1]))];
     expect(alvos.length).toBeGreaterThan(0);
-    expect([...new Set(alvos)]).toEqual(['e2e/gate.spec.mjs']);
+    expect(alvos.filter((alvo) => !SEM_LOJA.includes(alvo))).toEqual([]);
+  });
+
+  // E a lista acima não é palavra dada: ela é conferida contra o que os specs
+  // fazem. Sem esta metade, bastaria acrescentar um nome ali em cima para o
+  // teste de novo aprovar um mutante que não mede nada.
+  it('e esses specs realmente não dependem da loja', () => {
+    for (const spec of SEM_LOJA) {
+      expect(fs.readFileSync(path.join(RAIZ, spec), 'utf8')).not.toMatch(/THEME_URL/);
+    }
   });
 });
