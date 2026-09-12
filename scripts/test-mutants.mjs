@@ -243,14 +243,28 @@ const MUTANTES = [
     teste: 'tests/dinheiro.test.mjs',
   },
   {
-    // A seção "Componentes reais" renderiza um produto de VERDADE. Sem
-    // escondê-la, a baseline passa a depender do catálogo: uma promoção na
-    // loja reprova um PR que não tocou em nada visual, e o time aprende que
-    // o vermelho da regressão visual às vezes não quer dizer nada.
-    porque: 'as amostras de catálogo voltam para a foto, e a loja passa a reprovar PRs',
+    // A seção "Componentes reais" renderiza um produto de VERDADE, e por isso
+    // mora em `FORA` — a foto por seção resolve o problema não enquadrando
+    // ela. Errar a chave desfaz a exclusão em silêncio: a seção volta a ser
+    // candidata a foto, a baseline passa a depender do catálogo, e uma promoção
+    // na loja reprova um PR que não tocou em nada visual — que é como o time
+    // aprende que o vermelho da regressão visual às vezes não quer dizer nada.
+    porque: 'a seção de catálogo entra na foto, e a loja passa a reprovar PRs',
     arquivo: 'e2e/styleguide.spec.mjs',
-    de: '      [data-amostra-de-catalogo]{display:none!important}',
-    para: '      /* mutante */',
+    de: "  'componentes-reais':",
+    para: "  'componentes-irreais':",
+    teste: 'tests/styleguide-no-tema.test.mjs',
+  },
+  {
+    // O outro lado da mesma junta: seção do markup que ninguém pôs em lista
+    // nenhuma simplesmente não é fotografada — e o verde de "não coberto" é
+    // igual ao verde de "tudo certo". Renomear uma seção existente produz os
+    // dois defeitos de uma vez: uma órfã no markup e uma entrada fantasma no
+    // spec, apontando para baseline que nunca mais será comparada.
+    porque: 'seção sem entrada no spec deixa de ser fotografada, e nada fica vermelho',
+    arquivo: 'sections/main-styleguide.liquid',
+    de: '<section data-secao="botoes"',
+    para: '<section data-secao="botoes-renomeado"',
     teste: 'tests/styleguide-no-tema.test.mjs',
   },
   {

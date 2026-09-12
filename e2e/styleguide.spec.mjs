@@ -24,13 +24,26 @@
  *
  * Sem baseline, o Playwright escreve em DOIS lugares:
  *
- *   e2e/__screenshots__/styleguide.png                       (a baseline)
- *   test-results/<spec>-<teste>-chromium/styleguide-actual.png (a cópia)
+ *   e2e/__screenshots__/<secao>.png                       (a baseline)
+ *   test-results/<spec>-<teste>-chromium/<secao>-actual.png (a cópia)
  *
  * e reprova com "A snapshot doesn't exist at …, writing actual". O
  * `upload-artifact` do `ci.yml` já sobe `test-results/` em `if: failure()`,
  * então é de lá que a imagem se baixa. OLHE a imagem antes de commitar a
  * baseline — é a única etapa desta mecânica que uma máquina não faz.
+ *
+ * ── Uma foto por SEÇÃO, e não uma da página ────────────────────────────────
+ *
+ * A primeira versão fotografava a página inteira. Funciona, e cobra caro num
+ * tema em desenvolvimento: componente novo muda a altura da página, tudo
+ * abaixo desloca, e a foto única reprova — invalidando de uma vez a vigilância
+ * sobre TODOS os outros componentes, que não mudaram. Na prática isso vira
+ * regravar a baseline a cada feature, e baseline que se regrava por hábito
+ * deixa de ser referência.
+ *
+ * Uma foto por seção troca isso por: componente novo gera a própria foto e não
+ * toca nas outras; um botão alterado reprova só `botoes.png`, que é a
+ * informação útil. O custo é mais arquivos em `__screenshots__/`.
  *
  * ── Por que esta página, e não todas ───────────────────────────────────────
  *
@@ -54,55 +67,58 @@ import { THEME_URL, MOTIVO, STYLEGUIDE_PATH, abrePaginaDoTema } from './helpers/
 
 test.skip(!THEME_URL, MOTIVO);
 
-test('a página inteira bate com a baseline', async ({ page }) => {
+/**
+ * As seções fotografadas, uma baseline cada.
+ *
+ * `FORA` declara o que NÃO é fotografado, com o motivo ao lado — porque
+ * "esqueceram de incluir" e "decidiram excluir" precisam ser distinguíveis, e
+ * `tests/styleguide-no-tema.test.mjs` exige que toda seção do markup esteja
+ * numa das duas listas.
+ */
+const SECOES = [
+  'color-schemes',
+  'tipografia',
+  'raio',
+  'botoes',
+  'formulario',
+  'feedback',
+  'sombras',
+  'estados',
+  'icones',
+];
+
+const FORA = {
+  'componentes-reais':
+    'renderiza collections.all.products.first — preço, título e imagem vêm da ' +
+    'LOJA, então uma promoção reprovaria um PR que não tocou em nada visual',
+};
+
+test('cada seção bate com a sua baseline', async ({ page }) => {
   await abrePaginaDoTema(page, STYLEGUIDE_PATH);
 
   // Sem isto, qualquer animação em curso vira diferença de pixel e o teste
   // oscila — e teste que oscila a gente aprende a ignorar.
   //
-  // O banner de cookies entra pelo MESMO motivo, e é o caso mais grave dos
-  // dois. Ele é `position: fixed`, e numa captura `fullPage` a posição em que
-  // um elemento fixo "cai" depende de scroll e de quando o Playwright compõe
-  // a imagem: na primeira execução com a página renderizando de verdade, ele
-  // saiu por cima do bloco `scheme-1` da seção Color schemes, e não no rodapé
-  // onde a visitante o vê. Some com isso a decisão de consentimento, que vive
-  // em `Shopify.customerPrivacy` com fallback no localStorage — estado que o
-  // contexto do Playwright não garante igual entre execuções.
-  //
-  // Esconder, e não dispensar clicando: clicar grava consentimento e muda o
-  // estado da loja para o resto da suíte. O banner não é objeto desta página
-  // (ela existe para os componentes do design system), e a acessibilidade
-  // dele é medida em `e2e/a11y.spec.mjs`, nas páginas onde ele é conteúdo.
-  // E as amostras de catálogo saem pelo terceiro motivo, que é o mais sutil:
-  // a seção "Componentes reais" renderiza `collections.all.products.first`, ou
-  // seja, PREÇO, TÍTULO e IMAGEM de um produto de verdade. Isso muda quando a
-  // LOJA muda — promoção, produto novo, foto trocada — sem ninguém ter tocado
-  // no tema, e a baseline reprovaria um PR de carrinho por causa de uma
-  // liquidação.
-  //
-  // Esconder, e não mascarar: `mask` do Playwright pinta por cima mas não
-  // altera o layout. Um título mais longo deixa o card mais alto, tudo abaixo
-  // desloca, e a comparação estoura a tolerância mesmo com a região pintada.
-  // Só tirando do fluxo a altura fica determinística.
-  //
-  // O que se perde: `price-v2` e `card-product-slider` renderizados com dados
-  // reais não entram na foto. Os tokens que eles usam — `color-badge`,
-  // `rounded-theme`, a escala de texto — continuam vigiados nas seções de
-  // Color schemes, Raio e Tipografia, que são estáveis por construção.
-  // `payment-icons` fica na foto: vem de settings, não de produto.
+  // O banner de cookies entra pelo mesmo motivo: é `position: fixed`, então
+  // ele aparece por cima de qualquer seção que esteja na viewport na hora da
+  // captura — e qual é depende de scroll e de timing.
   await page.addStyleTag({
     content: `
       *,*::before,*::after{animation:none!important;transition:none!important}
       [data-cookie-banner]{display:none!important}
-      [data-amostra-de-catalogo]{display:none!important}
     `,
   });
   await page.waitForLoadState('networkidle');
 
-  await expect(page).toHaveScreenshot('styleguide.png', {
-    fullPage: true,
-    // Antialiasing de fonte varia entre máquinas; 1% absorve isso sem esconder
-    // uma mudança de token, que move área muito maior.
-    maxDiffPixelRatio: 0.01,
-  });
+  // `soft` para que uma seção quebrada não esconda as outras: o relatório traz
+  // TODAS as que divergiram, e não só a primeira.
+  for (const secao of SECOES) {
+    await expect
+      .soft(page.locator(`[data-secao="${secao}"]`))
+      .toHaveScreenshot(`${secao}.png`, {
+        // Antialiasing de fonte varia entre máquinas; 1% absorve isso sem
+        // esconder uma mudança de token, que move área muito maior.
+        maxDiffPixelRatio: 0.01,
+      });
+  }
 });
