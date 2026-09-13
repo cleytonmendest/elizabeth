@@ -297,6 +297,30 @@ async function entrar(page) {
   const formulario = page.locator('form[action*="/account/login"]').first();
   await expect(formulario, 'a página de login não trouxe o formulário do tema').toBeVisible();
 
+  // ── O hCaptcha está na página? Então não há login a medir ─────────────────
+  //
+  // A detecção é pela PRESENÇA do script, e não pelo `preventDefault()` que ele
+  // chama. A primeira versão fazia o contrário — clicava, esperava 15s, e lia a
+  // pilha de quem cancelou — e o resultado foi um teste que às vezes pula e às
+  // vezes falha: na execução de `799e62a`, QUATRO dos cinco pularam e um caiu
+  // como falha, porque `clicaNoTema` estourou antes de o cancelamento
+  // acontecer e a pilha ficou nula.
+  //
+  // Oscilar assim é pior que qualquer um dos dois estados: um gate que muda de
+  // cor sem o código mudar é um gate que se aprende a ignorar.
+  //
+  // O script estar carregado é fato estável sobre a CONFIGURAÇÃO da loja, não
+  // sobre o que aconteceu num clique. Se ele está lá, navegador automatizado
+  // não completa o desafio e o POST não sai — não há o que medir, e dizer isso
+  // antes de tentar economiza 15s de timeout por teste.
+  const temCaptcha = await page.evaluate(
+    (marca) =>
+      [...document.scripts].some((s) => s.src.includes(marca)) ||
+      performance.getEntriesByType('resource').some((r) => r.name.includes(marca)),
+    CAPTCHA_DA_SHOPIFY
+  );
+  if (temCaptcha) test.skip(true, MOTIVO_CAPTCHA);
+
   await formulario.locator('input[name="customer[email]"]').fill(CLIENTE.email);
   await formulario.locator('input[name="customer[password]"]').fill(CLIENTE.senha);
   // ── A escuta que faltava à #64 ────────────────────────────────────────────
