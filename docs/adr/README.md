@@ -51,3 +51,4 @@ Numeração sequencial, nunca reutilizada.
 | [0008](0008-o-tema-nao-calcula-dinheiro-que-o-checkout-nao-produz.md) | O tema não calcula dinheiro que o checkout não produz | Aceito |
 | [0009](0009-a-guarda-prova-o-documento-nao-a-url.md) | A guarda do clique prova o DOCUMENTO, e a suíte ganha um servidor local para medir isso | Aceito |
 | [0010](0010-moeda-em-js-vem-do-window-shopify.md) | A moeda do JS vem do `window.Shopify`, e existe um único formatador | Aceito |
+| [0011](0011-asset-pesado-e-baixado-pelo-componente-que-precisa-dele.md) | Asset pesado é baixado pelo componente que precisa dele, não pelo layout | Aceito |
