@@ -10,71 +10,73 @@
 
 <div
   data-section-id="{{ section.id }}"
-  class="color-{{ section.settings.color_scheme }} page-width"
+  class="color-{{ section.settings.color_scheme }} color-background color-text"
 >
-  {% if section.settings.title != blank or nav %}
-    <div class="flex items-end mt-4 lg:mt-8 {% if section.settings.title == blank and nav %}justify-end{% else %}justify-between{% endif %}">
-      {% if section.settings.title != blank %}
-        <h2 class="text-2xl md:text-3xl font-light tracking-title text-foreground">{{ section.settings.title }}</h2>
-      {% endif %}
-      {% if nav %}
-        <div class="flex gap-2 shrink-0">
-          <button
-            onclick="sliderPrev('{{ section.id }}')"
-            aria-label="{{ 'sections.slider.previous' | t }}"
-            class="w-9 h-9 flex items-center justify-center rounded-full border border-border text-foreground hover:bg-foreground hover:text-background transition-colors"
-          >
-            {% render 'icon-angle-left', size: 18 %}
-          </button>
-          <button
-            onclick="sliderNext('{{ section.id }}')"
-            aria-label="{{ 'sections.slider.next' | t }}"
-            class="w-9 h-9 flex items-center justify-center rounded-full border border-border text-foreground hover:bg-foreground hover:text-background transition-colors"
-          >
-            {% render 'icon-angle-right', size: 18 %}
-          </button>
-        </div>
-      {% endif %}
-    </div>
-  {% endif %}
-  <my-slider
-    class="block w-full overflow-hidden mt-4 lg:mt-8"
-    data-section-id="{{ section.id }}"
-    data-loop="{{ loop }}"
-    data-nav-arrows="{{ nav }}"
-    data-qty-desk="{{ qty_desk }}"
-    data-qty-tab="{{ qty_tab }}"
-    data-qty-mob="{{ qty_mob }}"
-    data-autoplay="{{ autoplay }}"
-    data-ap-time="{{ play_time }}"
-    data-pause-hover="{{ pause_hover }}"
-    data-dot="{{ dot }}"
-    data-peek="{{ section.settings.peek }}"
-    data-items="{{ section.blocks.size }}"
-  >
-    {% comment %} OBRIGATORIO TER A DIV "my-slider__container" PARA O CORRETO FUNCIONAMENTO {% endcomment %}
-    <div class="my-slider__container">
-      {%- for block in section.blocks -%}
-        <div class="item px-3">
-          <a href="{{ block.settings.link }}" class="group block relative overflow-hidden rounded-theme">
-            {%- if block.settings.image != blank -%}
-              {{
-                block.settings.image
-                | image_url: width: 600
-                | image_tag: alt: block.settings.title, class: 'w-full aspect-portrait object-cover transition-transform duration-500 ease-out group-hover:scale-105', loading: 'lazy'
-              }}
-            {%- else -%}
-              <div class="w-full aspect-portrait bg-foreground/5"></div>
-            {%- endif -%}
-            <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(0deg, rgba(0,0,0,.5) 0%, transparent 45%)"></div>
-            <h3 class="absolute bottom-4 left-0 right-0 text-center text-white text-sm uppercase tracking-[0.16em]">
-              {{ block.settings.title }}
-            </h3>
-          </a>
-        </div>
-      {%- endfor -%}
-    </div>
-  </my-slider>
+  <div class="page-width">
+    {% if section.settings.title != blank or nav %}
+      <div class="flex items-end mt-4 lg:mt-8 {% if section.settings.title == blank and nav %}justify-end{% else %}justify-between{% endif %}">
+        {% if section.settings.title != blank %}
+          <h2 class="text-2xl md:text-3xl font-light tracking-title text-foreground">{{ section.settings.title }}</h2>
+        {% endif %}
+        {% if nav %}
+          <div class="flex gap-2 shrink-0">
+            <button
+              onclick="sliderPrev('{{ section.id }}')"
+              aria-label="{{ 'sections.slider.previous' | t }}"
+              class="w-9 h-9 flex items-center justify-center rounded-full border border-border text-foreground hover:bg-foreground hover:text-background transition-colors"
+            >
+              {% render 'icon-angle-left', size: 18 %}
+            </button>
+            <button
+              onclick="sliderNext('{{ section.id }}')"
+              aria-label="{{ 'sections.slider.next' | t }}"
+              class="w-9 h-9 flex items-center justify-center rounded-full border border-border text-foreground hover:bg-foreground hover:text-background transition-colors"
+            >
+              {% render 'icon-angle-right', size: 18 %}
+            </button>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+    <my-slider
+      class="block w-full overflow-hidden mt-4 lg:mt-8"
+      data-section-id="{{ section.id }}"
+      data-loop="{{ loop }}"
+      data-nav-arrows="{{ nav }}"
+      data-qty-desk="{{ qty_desk }}"
+      data-qty-tab="{{ qty_tab }}"
+      data-qty-mob="{{ qty_mob }}"
+      data-autoplay="{{ autoplay }}"
+      data-ap-time="{{ play_time }}"
+      data-pause-hover="{{ pause_hover }}"
+      data-dot="{{ dot }}"
+      data-peek="{{ section.settings.peek }}"
+      data-items="{{ section.blocks.size }}"
+    >
+      {% comment %} OBRIGATORIO TER A DIV "my-slider__container" PARA O CORRETO FUNCIONAMENTO {% endcomment %}
+      <div class="my-slider__container">
+        {%- for block in section.blocks -%}
+          <div class="item px-3">
+            <a href="{{ block.settings.link }}" class="group block relative overflow-hidden rounded-theme">
+              {%- if block.settings.image != blank -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 600
+                  | image_tag: alt: block.settings.title, class: 'w-full aspect-portrait object-cover transition-transform duration-500 ease-out group-hover:scale-105', loading: 'lazy'
+                }}
+              {%- else -%}
+                <div class="w-full aspect-portrait bg-foreground/5"></div>
+              {%- endif -%}
+              <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(0deg, rgba(0,0,0,.5) 0%, transparent 45%)"></div>
+              <h3 class="absolute bottom-4 left-0 right-0 text-center text-white text-sm uppercase tracking-[0.16em]">
+                {{ block.settings.title }}
+              </h3>
+            </a>
+          </div>
+        {%- endfor -%}
+      </div>
+    </my-slider>
+  </div>
 </div>
 
 {% schema %}

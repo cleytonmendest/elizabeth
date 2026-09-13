@@ -18,7 +18,7 @@
   endif
 -%}
 
-<section class="blog-posts-section py-16 md:py-20" style="background-color: {{ section.settings.background_color }};">
+<section class="blog-posts-section color-{{ section.settings.color_scheme }} color-background color-text py-16 md:py-20">
   <div class="container mx-auto px-4 md:px-6 lg:px-8">
 
     {%- comment -%} Header da Seção {%- endcomment -%}
@@ -85,6 +85,12 @@
   "tag": "section",
   "class": "section-blog-posts",
   "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.blog_posts.settings.color_scheme.label",
+      "default": "scheme-1"
+    },
     {
       "type": "header",
       "content": "t:sections.blog_posts.settings.content_header.content"
