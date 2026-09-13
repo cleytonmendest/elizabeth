@@ -145,13 +145,29 @@ mede o tema **publicado** e a suíte fica verde sobre a loja de produção. Por
 isso o setup exige `window.Shopify.theme.id` igual ao tema que empurramos, e
 não começa sem essa prova.
 
-`fixme` e não `skip` continua valendo para o que sobrou — #64 (os cinco testes
-de endereço), #68 e #71: fixme aparece no relatório, e afrouxar a asserção até
-passar transformaria defeito real em verde. `skip` silencioso faria o teste
-desaparecer sem ninguém notar. A lista que vale é a do código:
+**`fixme` para DEFEITO, `skip` para CONSTRAINT** — e a diferença não é de
+ergonomia. `fixme` diz "isto devia passar e não passa": afrouxar a asserção até
+passar transformaria defeito real em verde, então ele fica vermelho no
+relatório até alguém consertar. É o caso de #68 e #71.
+
+`skip` diz "não dá para medir aqui" — e só é honesto **com o motivo escrito**,
+porque `scripts/e2e.mjs` imprime cada pulado com o motivo no resumo do CI. Sem
+essa impressão o teste sumiria sem ninguém notar, que é o perigo real.
+
+A #64 mudou de lado, e ela é o exemplo de por que a distinção importa. Passou
+três semanas em `fixme` como se fosse defeito do tema; medir provou que é o
+**hCaptcha da Shopify** interceptando o submit de todo formulário de vitrine.
+Não há linha de Liquid para corrigir — navegador automatizado não completa o
+desafio, ponto. `fixme` ali prometia um conserto que não existe.
+
+A detecção é pela PILHA, e não por configuração: se a proteção contra spam for
+desligada na loja, os cinco voltam a rodar sozinhos. Um env var registraria o
+que alguém LEMBROU de declarar; a pilha registra o que o navegador fez.
+
+A lista que vale é sempre a do código:
 
 ```bash
-grep -rn "test.fixme" e2e/
+grep -rn "test.fixme\|test.skip" e2e/
 ```
 
 **A catraca vale aqui também.** A primeira execução contra a loja encontrou
