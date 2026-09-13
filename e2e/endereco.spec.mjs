@@ -84,13 +84,43 @@ test.skip(!CLIENTE.email || !CLIENTE.senha, MOTIVO_CLIENTE);
  * Este arquivo não usava, em três lugares — o login, a tela de senha da
  * vitrine e a exclusão de endereço.
  *
- * ── O que isto ainda não prova ─────────────────────────────────────────────
+ * ── A resposta, em cinco medições ──────────────────────────────────────────
  *
- * Que o login passa. O `fixme` sai porque a hipótese precisa ser MEDIDA, e
- * medir exige rodar. Se estes cinco continuarem vermelhos, a mensagem de falha
- * passa a vir de um documento que existe, e as duas hipóteses que sobravam na
- * #64 — conta sem senha (convite de ativação não aceito) e loja em "novas
- * contas de cliente" — voltam à mesa com uma evidência a mais, não a menos.
+ * Tirar o `fixme` foi o que destravou: hipótese precisa ser MEDIDA, e medir
+ * exige rodar. Cada execução matou uma explicação:
+ *
+ *   1. não é o teste olhando a página velha — não há navegação NENHUMA
+ *   2. nenhum POST sai do navegador — logo é o cliente, não a loja
+ *   3. não é a validação — novalidate=true, checkValidity()=true, um submit
+ *   4. o submit DISPARA e é CANCELADO — alguém chama preventDefault()
+ *   5. a pilha nomeia quem:
+ *
+ *        at HTMLFormElement.<anonymous>
+ *          (cdn.shopify.com/shopifycloud/storefront-forms-hcaptcha/…)
+ *
+ * É o hCaptcha da própria Shopify, que protege todo formulário de vitrine
+ * contra bot. Ele intercepta o submit, cancela, roda o desafio e só então
+ * reenvia. Navegador automatizado não completa o desafio, e o POST nunca sai.
+ *
+ * ── O que isso muda ────────────────────────────────────────────────────────
+ *
+ * NÃO é defeito do tema. O markup está correto, a conta está correta, e o
+ * login à mão funciona — porque uma pessoa passa no captcha. Não há linha de
+ * Liquid para consertar, e a #64 deixa de ser bloqueador de Theme Store.
+ *
+ * É constraint de AMBIENTE, da mesma família de "falta THEME_URL": por isso
+ * estes cinco viram PULADO COM MOTIVO em vez de falha, e a detecção é pela
+ * PILHA, não por configuração. Se a lojista desligar a proteção contra spam,
+ * ou a Shopify trocar de mecanismo, eles voltam a rodar sozinhos — um env var
+ * diria o que alguém LEMBROU de declarar; a pilha diz o que o navegador fez.
+ *
+ * ── Por que a busca no código nunca acharia ────────────────────────────────
+ *
+ * `addEventListener('submit'` aparece em seis lugares do repositório, e nenhum
+ * alcança esta página. O culpado não está no repositório: a Shopify o injeta
+ * na vitrine. Três semanas de #64 procuraram no lugar onde não estava, porque
+ * o sintoma — tela parada, sem erro — é igual para causas que moram em
+ * camadas diferentes.
  *
  * O que não se faz é afrouxar a asserção até passar: isso transformaria em
  * verde um login que não acontece.
@@ -157,6 +187,22 @@ async function ondeEstou(page) {
     pedeSenhaDaLoja ? ' · A PÁGINA PEDE A SENHA DA VITRINE' : ''
   }`;
 }
+
+/**
+ * O script que a Shopify injeta em TODO formulário de vitrine para barrar bot.
+ *
+ * O nome do arquivo é a impressão digital, e não a versão: ele já está em
+ * `v1.5.3` e vai mudar. O que não muda é o caminho
+ * `shopifycloud/storefront-forms-hcaptcha`.
+ */
+const CAPTCHA_DA_SHOPIFY = 'storefront-forms-hcaptcha';
+
+const MOTIVO_CAPTCHA =
+  'issue #64 — o hCaptcha da Shopify (storefront-forms-hcaptcha) intercepta o submit do ' +
+  'login e chama preventDefault(). Navegador automatizado não completa o desafio, então o ' +
+  'POST nunca sai. NÃO é defeito do tema: o login à mão funciona, e não há nada no Liquid ' +
+  'para corrigir. Para medir estes cinco, a proteção contra spam da loja precisa estar ' +
+  'desligada — aí a detecção cai sozinha e eles voltam a rodar.';
 
 /**
  * O que a REDE diz quando o clique no submit não navega.
@@ -372,6 +418,22 @@ async function entrar(page) {
     // Só dá para ler isto porque a página NÃO navegou — `window` morre com o
     // documento. No caminho de sucesso não há nada que ler, e nem faz falta.
     const diag = await page.evaluate(() => window.__diagLogin).catch(() => null);
+
+    // ── O fim da #64 ──────────────────────────────────────────────────────
+    //
+    // Se quem cancelou o submit foi o hCaptcha da Shopify, estes testes não
+    // têm como passar — e não há nada no tema para consertar. É constraint do
+    // ambiente, da mesma família de "falta THEME_URL", e por isso vira PULADO
+    // COM MOTIVO em vez de falha.
+    //
+    // A detecção é pela PILHA, não por configuração: se a lojista desligar a
+    // proteção contra spam, ou a Shopify mudar de mecanismo, os testes voltam
+    // a rodar sozinhos. Um env var diria o que alguém LEMBROU de declarar; a
+    // pilha diz o que o navegador fez.
+    if (diag?.pilha?.includes(CAPTCHA_DA_SHOPIFY)) {
+      test.skip(true, MOTIVO_CAPTCHA);
+    }
+
     throw new Error(`${erro.message}\n\n${veredito(respostas, form, diag)}`);
   } finally {
     page.off('response', anota);
