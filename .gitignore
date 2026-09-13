@@ -20,3 +20,8 @@ tema.json
 # Sessão da vitrine que o e2e/global-setup.mjs abre (cookie da senha da loja).
 # Credencial de execução, não fonte: nunca entra no repositório.
 e2e/.auth/
+
+# Registro do mutante em curso (scripts/test-mutants.mjs). Existe só enquanto um
+# arquivo está mutado; se sobrar, a execução seguinte restaura o arquivo e avisa.
+# Nunca deve ser commitado: ele carrega o conteúdo original de um arquivo do tema.
+.mutante-em-curso.json
