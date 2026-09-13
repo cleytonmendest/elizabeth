@@ -120,9 +120,9 @@ function main() {
   } else {
     avisar(
       'A metade de storefront NÃO rodou: falta THEME_URL (um tema empurrado com ' +
-        '`shopify theme push --development`). O que rodou foi só o gate de ' +
-        'acessibilidade, que verifica o ' +
-        'verificador. Enquanto este aviso aparecer, nenhuma página do tema foi ' +
+        '`shopify theme push --development`). O que rodou foi só a metade que ' +
+        'verifica os VERIFICADORES — o gate de acessibilidade e a guarda do clique. ' +
+        'Enquanto este aviso aparecer, nenhuma página do tema foi ' +
         'medida por axe neste run — o verde abaixo não cobre acessibilidade real.'
     );
   }
