@@ -7,35 +7,18 @@
  * visível na tela — quebrar uma delas dá um carrinho que falha em silêncio.
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { loadAsset } from './helpers/load-asset.mjs';
-import { normalizeCurrency } from './helpers/dom.mjs';
+import { loadAsset, loadGlobalAsset } from './helpers/load-asset.mjs';
 
-const { formatPrice, fetchConfig, publish, debounce, PUB_SUB_EVENTS, CartManager } = loadAsset(
+// `updateCartSummary` chama `formatMoney` sem importar nada: no navegador ela
+// é global, declarada por `assets/money.js`, que o layout carrega antes. A
+// formatação em si é verificada em `tests/money.test.mjs` — aqui ela só
+// precisa EXISTIR, como existe na loja.
+loadGlobalAsset('money.js', ['formatMoney']);
+
+const { fetchConfig, publish, debounce, PUB_SUB_EVENTS, CartManager } = loadAsset(
   'cart.js',
-  ['formatPrice', 'fetchConfig', 'publish', 'debounce', 'PUB_SUB_EVENTS', 'CartManager']
+  ['fetchConfig', 'publish', 'debounce', 'PUB_SUB_EVENTS', 'CartManager']
 );
-
-const brl = (cents) => normalizeCurrency(formatPrice(cents));
-
-describe('formatPrice', () => {
-  it('converte centavos em BRL', () => {
-    // A API da Shopify devolve centavos inteiros; a vitrine mostra reais.
-    expect(brl(1999)).toBe('R$ 19,99');
-    expect(brl(99999)).toBe('R$ 999,99');
-    expect(brl(0)).toBe('R$ 0,00');
-  });
-
-  it('formata desconto negativo com o sinal antes do símbolo', () => {
-    // `updateCartSummary` ainda prefixa um "-" próprio nos descontos, então
-    // um valor já negativo apareceria como "--R$". Quem chama passa positivo.
-    expect(brl(-500)).toBe('-R$ 5,00');
-  });
-
-  it('arredonda a fração de centavo em vez de vazar decimal', () => {
-    // 1999 / 3 = 666,333… centavos. Sem arredondamento sairia "R$ 6,663333".
-    expect(brl(1999 / 3)).toBe('R$ 6,66');
-  });
-});
 
 describe('fetchConfig', () => {
   it('POSTa JSON por padrão', () => {

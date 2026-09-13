@@ -50,3 +50,4 @@ Numeração sequencial, nunca reutilizada.
 | [0007](0007-suite-de-navegador-contra-tema-empurrado.md) | A suíte de navegador mede um tema EMPURRADO, não o proxy do `theme dev` | Aceito |
 | [0008](0008-o-tema-nao-calcula-dinheiro-que-o-checkout-nao-produz.md) | O tema não calcula dinheiro que o checkout não produz | Aceito |
 | [0009](0009-a-guarda-prova-o-documento-nao-a-url.md) | A guarda do clique prova o DOCUMENTO, e a suíte ganha um servidor local para medir isso | Aceito |
+| [0010](0010-moeda-em-js-vem-do-window-shopify.md) | A moeda do JS vem do `window.Shopify`, e existe um único formatador | Aceito |

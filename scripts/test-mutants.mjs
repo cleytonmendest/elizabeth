@@ -59,11 +59,40 @@ const comE2E = process.argv.includes('--e2e');
 
 const MUTANTES = [
   {
-    porque: 'formatPrice deixa de converter centavos em reais',
-    arquivo: 'assets/cart.js',
-    de: '.format(value / 100)',
-    para: '.format(value)',
-    teste: 'tests/cart.test.mjs',
+    porque: 'formatMoney deixa de converter centavos em unidades da moeda',
+    arquivo: 'assets/money.js',
+    de: '.format(cents / 100)',
+    para: '.format(cents)',
+    teste: 'tests/money.test.mjs',
+  },
+  {
+    // O defeito que a issue #39 removeu, e o único que um teste brasileiro não
+    // vê: com a loja em BRL as duas versões imprimem "R$ 19,99". Só um caso
+    // que TROCA de moeda separa "lê a loja" de "crava o Brasil".
+    porque: 'a moeda volta a ser cravada no código em vez de vir da loja',
+    arquivo: 'assets/money.js',
+    de: "return (shopify.currency && shopify.currency.active) || null;",
+    para: "return 'BRL';",
+    teste: 'tests/money.test.mjs',
+  },
+  {
+    // `/search/suggest.json` responde "179.90"; sem o ×100 a busca preditiva
+    // volta a exibir R$ 1,79 — a outra metade da divergência da #39.
+    porque: 'moneyToCents trata unidades da moeda como se já fossem centavos',
+    arquivo: 'assets/money.js',
+    de: 'return Math.round(parseFloat(value) * 100);',
+    para: 'return Math.round(parseFloat(value));',
+    teste: 'tests/money.test.mjs',
+  },
+  {
+    // Os três formatadores viviam nos consumidores; a fronteira `money-format`
+    // é o que impede o quarto. Se ela parar de vigiar `assets/*.js`, o linter
+    // fica verde sobre a duplicação que esta issue acabou de remover.
+    porque: 'a fronteira money-format deixa de vigiar os consumidores',
+    arquivo: 'scripts/lint/config/boundaries.json',
+    de: '"pattern": "Intl\\\\.NumberFormat"',
+    para: '"pattern": "Intl\\\\.NaoExisteNumberFormat"',
+    teste: 'tests/boundaries.test.mjs',
   },
   {
     porque: 'updateQuantity para de avisar o erro para quem escuta',
