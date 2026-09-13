@@ -109,10 +109,20 @@ test.skip(!CLIENTE.email || !CLIENTE.senha, MOTIVO_CLIENTE);
  * Liquid para consertar, e a #64 deixa de ser bloqueador de Theme Store.
  *
  * É constraint de AMBIENTE, da mesma família de "falta THEME_URL": por isso
- * estes cinco viram PULADO COM MOTIVO em vez de falha, e a detecção é pela
- * PILHA, não por configuração. Se a lojista desligar a proteção contra spam,
- * ou a Shopify trocar de mecanismo, eles voltam a rodar sozinhos — um env var
- * diria o que alguém LEMBROU de declarar; a pilha diz o que o navegador fez.
+ * estes cinco viram PULADO COM MOTIVO em vez de falha.
+ *
+ * A detecção é pela PRESENÇA do script na página, não por configuração e não
+ * pela pilha. A primeira versão lia a pilha de quem chamou `preventDefault()`
+ * durante o clique, e isso OSCILOU: na execução de `799e62a`, quatro dos cinco
+ * pularam e um caiu como falha, porque `clicaNoTema` estourou antes de o
+ * cancelamento acontecer e a pilha ficou nula. Um teste que às vezes pula e às
+ * vezes falha, sem o código mudar, é pior que qualquer um dos dois estados.
+ *
+ * O script estar carregado é fato sobre a configuração da LOJA; a pilha era
+ * fato sobre o que aconteceu num clique. Se a lojista desligar a proteção
+ * contra spam, ou a Shopify trocar de mecanismo, os cinco voltam a rodar
+ * sozinhos — um env var diria o que alguém LEMBROU de declarar; a página diz o
+ * que a loja realmente carrega.
  *
  * ── Por que a busca no código nunca acharia ────────────────────────────────
  *
@@ -443,17 +453,17 @@ async function entrar(page) {
     // documento. No caminho de sucesso não há nada que ler, e nem faz falta.
     const diag = await page.evaluate(() => window.__diagLogin).catch(() => null);
 
-    // ── O fim da #64 ──────────────────────────────────────────────────────
+    // A rede de segurança do skip, e não mais a porta dele.
     //
-    // Se quem cancelou o submit foi o hCaptcha da Shopify, estes testes não
-    // têm como passar — e não há nada no tema para consertar. É constraint do
-    // ambiente, da mesma família de "falta THEME_URL", e por isso vira PULADO
-    // COM MOTIVO em vez de falha.
+    // A porta é a checagem de PRESENÇA do script, lá em cima, antes do clique.
+    // Esta condição só é alcançada se o captcha cancelou o submit SEM o script
+    // ter sido detectado na página — carregado tarde, por exemplo. Nesse caso
+    // continua sendo o mesmo constraint, e continua sem nada para consertar no
+    // tema.
     //
-    // A detecção é pela PILHA, não por configuração: se a lojista desligar a
-    // proteção contra spam, ou a Shopify mudar de mecanismo, os testes voltam
-    // a rodar sozinhos. Um env var diria o que alguém LEMBROU de declarar; a
-    // pilha diz o que o navegador fez.
+    // Ela sozinha oscilava (ver o cabeçalho): depende de o cancelamento
+    // acontecer naquele clique. Como segunda linha, o custo dessa instabilidade
+    // é zero — se não bater, o caminho de falha abaixo ainda nomeia o culpado.
     if (diag?.pilha?.includes(CAPTCHA_DA_SHOPIFY)) {
       test.skip(true, MOTIVO_CAPTCHA);
     }
