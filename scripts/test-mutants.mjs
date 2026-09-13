@@ -715,8 +715,8 @@ const MUTANTES = [
     // Tudo que se perguntar depois é respondido pela página de ANTES do envio.
     porque: 'o login volta a ser clique cru, e o teste mede a página de antes do POST',
     arquivo: 'e2e/endereco.spec.mjs',
-    de: "  await clicaNoTema(page, formulario.locator('button[type=\"submit\"]'), 'Entrar, no login');",
-    para: "  await formulario.locator('button[type=\"submit\"]').click();\n  await page.waitForLoadState('load');",
+    de: "    await clicaNoTema(page, formulario.locator('button[type=\"submit\"]'), 'Entrar, no login');",
+    para: "    await formulario.locator('button[type=\"submit\"]').click();\n    await page.waitForLoadState('load');",
     teste: 'tests/clique-que-navega.test.mjs',
   },
   {

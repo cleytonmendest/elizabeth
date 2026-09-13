@@ -158,6 +158,32 @@ async function ondeEstou(page) {
   }`;
 }
 
+/**
+ * O que a REDE diz quando o clique no submit não navega.
+ *
+ * As duas metades levam a lugares opostos, e é por isso que a mensagem precisa
+ * escolher uma em vez de descrever as duas: "pode ser A ou B" é o formato de
+ * diagnóstico que a #64 teve por três semanas.
+ */
+function veredito(respostas) {
+  if (respostas.length) {
+    return (
+      `O POST SAIU, e a loja respondeu: ${respostas.join(' · ')}\n` +
+      'Resposta que não navega é da LOJA, não do tema — 204, 4xx sem corpo, ou um 200 ' +
+      'servido como se fosse XHR. Olhe o status acima ANTES de mexer no Liquid.'
+    );
+  }
+  return (
+    'NENHUM POST para /account/login saiu do navegador: o formulário não foi enviado, ' +
+    'e a causa está no cliente.\n' +
+    'Suspeito principal, no próprio `templates/customers/login.liquid`: o listener de ' +
+    '`invalid` chama `preventDefault()`, o que esconde a bolha do navegador e deixa a ' +
+    'recusa MUDA — um campo `required` inválido barra o envio sem dizer nada. Depois ' +
+    'dele: algum listener de `submit`, ou o botão não pertencer ao form.\n' +
+    'O trace.zip do artefato mostra se houve requisição — é a prova, não o palpite.'
+  );
+}
+
 async function entrar(page) {
   await page.goto('/account/login');
 
@@ -170,12 +196,39 @@ async function entrar(page) {
 
   await formulario.locator('input[name="customer[email]"]').fill(CLIENTE.email);
   await formulario.locator('input[name="customer[password]"]').fill(CLIENTE.senha);
+  // ── A escuta que faltava à #64 ────────────────────────────────────────────
+  //
+  // O PR #100 mediu que o clique no submit não produz documento novo NEM muda
+  // a URL, em 15s. Isso separa duas causas que este teste não distinguia, e que
+  // pedem correções opostas:
+  //
+  //   · o POST nunca SAIU do navegador   → a causa está no cliente
+  //   · o POST saiu e não navegou        → a causa está na loja
+  //
+  // Nenhuma se deduz da página: as duas deixam a mesma tela parada, que é
+  // exatamente por que a #64 passou três semanas com o diagnóstico errado.
+  // Quem responde é a REDE, e ninguém estava olhando para ela.
+  const respostas = [];
+  const anota = (res) => {
+    const req = res.request();
+    if (req.method() !== 'POST' || !/\/account\/login/.test(req.url())) return;
+    const destino = res.headers().location ?? '(sem Location)';
+    respostas.push(`${res.status()} ${res.statusText()} → ${destino}`);
+  };
+  page.on('response', anota);
+
   // A porta guardada, e não um clique cru: `clicaNoTema` carimba o documento
   // ANTES do clique e espera o carimbo morrer — a prova de que o documento é
   // OUTRO. Vale exatamente no caso deste POST, em que a URL pode voltar IGUAL
   // (login recusado volta para /account/login com `form.errors`), e medir a
   // URL diria "não saí do lugar" sobre uma página que chegou.
-  await clicaNoTema(page, formulario.locator('button[type="submit"]'), 'Entrar, no login');
+  try {
+    await clicaNoTema(page, formulario.locator('button[type="submit"]'), 'Entrar, no login');
+  } catch (erro) {
+    throw new Error(`${erro.message}\n\n${veredito(respostas)}`);
+  } finally {
+    page.off('response', anota);
+  }
 
   // O POST pode ter caído na tela de senha da vitrine: atravessa e confere de
   // novo antes de declarar que o login falhou.
