@@ -46,7 +46,7 @@ npm run lint:baseline                 # regrava a dívida (só depois de reduzi-
 npm test          # Vitest nos Web Components (jsdom)
 npm run test:mutants                  # os testes conseguem falhar?
 npm run test:e2e                      # Playwright: axe + fluxos
-npm run test:e2e:gate                 # só o gate de a11y (não precisa de loja)
+npm run test:e2e:gate                 # os verificadores que não precisam de loja
 npm run test:e2e:baseline             # regrava a dívida de a11y (depois de reduzi-la)
 ```
 
@@ -80,10 +80,12 @@ existe, que o asset referenciado existe. Nada disso olha o que o componente
 faz quando a cliente clica. É o que `tests/` cobre, em jsdom.
 
 Os alvos são scripts clássicos: o Liquid os injeta com `<script src defer>`,
-eles não exportam nada, e `price-component.js` depende de `formatPrice` ser
-global — criada por `cart.js`. `tests/helpers/load-asset.mjs` reproduz essa
-semântica em vez de convertê-los em módulos ES: transformar o código de
-produção para agradar o teste faria o teste medir outro programa.
+eles não exportam nada, e `cart.js`, `cart-extras.js`, `price-component.js` e
+`search-component.js` dependem de `formatMoney` ser global — criada por
+`money.js`, que o layout carrega antes de todos eles ([ADR 0010](docs/adr/0010-moeda-em-js-vem-do-window-shopify.md)).
+`tests/helpers/load-asset.mjs` reproduz essa semântica em vez de convertê-los
+em módulos ES: transformar o código de produção para agradar o teste faria o
+teste medir outro programa.
 
 **`npm run test:mutants` é a parte que não se pula.** Ele quebra o tema de
 propósito, uma quebra por vez, e exige que a suíte fique vermelha. Uma suíte
@@ -107,6 +109,11 @@ Essa suíte tem duas metades, e a divisão é o ponto:
   botão sem nome) e exige que o axe o encontre, e planta uma página correta e
   exige que ele fique quieto. Sem isso, um critério configurado errado faria
   toda página passar com a mesma cara de quando está tudo certo. Roda sempre.
+- **`e2e/guarda-do-clique.spec.mjs` também não.** Mesmo princípio, outro
+  verificador: ele serve duas rotas num servidor HTTP local
+  (`e2e/helpers/servidor.mjs`) e exige que a guarda de navegação aprove um
+  documento novo que chegou na MESMA URL e reprove um `history.pushState`, que
+  muda a URL sem trazer documento. Ver [ADR 0009](docs/adr/0009-a-guarda-prova-o-documento-nao-a-url.md).
 - **O resto aponta para `THEME_URL`**, a loja de verdade com um tema
   **EMPURRADO** (`shopify theme push --development`). Sem a variável, esses
   testes se declaram PULADOS com o motivo escrito, e `scripts/e2e.mjs` avisa no
@@ -237,7 +244,7 @@ shopify theme push    # deploy
   preferido — o asset só pesa onde é necessário.
 - **Em runtime, pelo componente** (o custom element injeta a tag no
   `connectedCallback`): para dependência PESADA que várias sections dividem.
-  Hoje só o Swiper — ver [ADR 0009](docs/adr/0009-asset-pesado-e-baixado-pelo-componente-que-precisa-dele.md).
+  Hoje só o Swiper — ver [ADR 0011](docs/adr/0011-asset-pesado-e-baixado-pelo-componente-que-precisa-dele.md).
   O Liquid não deduplica entre sections; o JS sim, e o cache mora no `window`
   para valer por página e não por cópia do arquivo.
 

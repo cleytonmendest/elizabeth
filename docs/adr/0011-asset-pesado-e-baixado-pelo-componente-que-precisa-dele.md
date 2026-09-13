@@ -1,4 +1,4 @@
-# 9. Asset pesado é baixado pelo COMPONENTE que precisa dele, não pelo layout
+# 11. Asset pesado é baixado pelo COMPONENTE que precisa dele, não pelo layout
 
 - **Status:** Aceito
 - **Data:** 2026-09-12
