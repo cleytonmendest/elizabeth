@@ -190,7 +190,7 @@ jobs:
           # unitários, que não têm nada a ver com a loja.
           if [ -z "${SHOPIFY_CLI_THEME_TOKEN:-}" ] || [ -z "${SHOPIFY_FLAG_STORE:-}" ]; then
             echo "Sem credencial da loja (SHOPIFY_STORE / SHOPIFY_CLI_THEME_TOKEN)."
-            echo "O passo seguinte roda só o gate de acessibilidade, e avisa."
+            echo "O passo seguinte roda só os verificadores que não precisam de loja, e avisa."
             exit 0
           fi
 
