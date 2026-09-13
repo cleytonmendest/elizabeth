@@ -6,9 +6,13 @@
  * dos três existe num item. A bolha mostrava `undefined` e o resumo, "R$ NaN".
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { loadAsset } from './helpers/load-asset.mjs';
-import { textOf } from './helpers/dom.mjs';
+import { loadAsset, loadGlobalAsset } from './helpers/load-asset.mjs';
+import { textOf, installShopify } from './helpers/dom.mjs';
 
+// O resumo do drawer é escrito por `formatMoney` (assets/money.js), global no
+// navegador, que lê a moeda ativa de `window.Shopify`.
+loadGlobalAsset('money.js', ['formatMoney']);
+installShopify();
 loadAsset('cart.js');
 
 const CARRINHO = {

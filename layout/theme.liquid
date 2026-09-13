@@ -43,6 +43,13 @@
       };
     </script>
 
+    {%- comment -%}
+      No `<head>`, e não junto dos outros: `defer` executa na ordem do
+      documento, e `cart.js` (linha 51, via `cart-drawer`) e a busca preditiva
+      chamam `formatMoney`. Carregar aqui é o que garante que ela já exista.
+    {%- endcomment -%}
+    <script src="{{ 'money.js' | asset_url }}" defer></script>
+
     {%- comment -%} SEO: Organization Schema {%- endcomment -%}
     {% render 'schema-organization' %}
   </head>

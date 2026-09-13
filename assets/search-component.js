@@ -158,7 +158,11 @@ class Search extends HTMLElement {
             }
 
             if (price) {
-                price.textContent = this._formatPrice(product.price);
+                // `/search/suggest.json` devolve o preço como STRING em unidades
+                // da moeda ("179.90") — diferente de `/cart.js`, que devolve
+                // número em centavos. `moneyToCents` é quem conhece essa
+                // diferença, e `e2e/moeda.spec.mjs` é quem a mede. Ver #39.
+                price.textContent = formatMoney(moneyToCents(product.price));
             }
 
             // Badge de disponibilidade
@@ -232,15 +236,6 @@ class Search extends HTMLElement {
         if (this.loadingState) {
             this.loadingState.classList.add('hidden');
         }
-    }
-
-    _formatPrice(price) {
-        // A API do Shopify retorna o preço já em centavos (17990 = R$ 179,90)
-        // Não dividimos por 100, apenas formatamos direto
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-        }).format(price);
     }
 
     _highlightQuery(text, query) {

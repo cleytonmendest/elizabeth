@@ -59,11 +59,40 @@ const comE2E = process.argv.includes('--e2e');
 
 const MUTANTES = [
   {
-    porque: 'formatPrice deixa de converter centavos em reais',
-    arquivo: 'assets/cart.js',
-    de: '.format(value / 100)',
-    para: '.format(value)',
-    teste: 'tests/cart.test.mjs',
+    porque: 'formatMoney deixa de converter centavos em unidades da moeda',
+    arquivo: 'assets/money.js',
+    de: '.format(cents / 100)',
+    para: '.format(cents)',
+    teste: 'tests/money.test.mjs',
+  },
+  {
+    // O defeito que a issue #39 removeu, e o único que um teste brasileiro não
+    // vê: com a loja em BRL as duas versões imprimem "R$ 19,99". Só um caso
+    // que TROCA de moeda separa "lê a loja" de "crava o Brasil".
+    porque: 'a moeda volta a ser cravada no código em vez de vir da loja',
+    arquivo: 'assets/money.js',
+    de: "return (shopify.currency && shopify.currency.active) || null;",
+    para: "return 'BRL';",
+    teste: 'tests/money.test.mjs',
+  },
+  {
+    // `/search/suggest.json` responde "179.90"; sem o ×100 a busca preditiva
+    // volta a exibir R$ 1,79 — a outra metade da divergência da #39.
+    porque: 'moneyToCents trata unidades da moeda como se já fossem centavos',
+    arquivo: 'assets/money.js',
+    de: 'return Math.round(parseFloat(value) * 100);',
+    para: 'return Math.round(parseFloat(value));',
+    teste: 'tests/money.test.mjs',
+  },
+  {
+    // Os três formatadores viviam nos consumidores; a fronteira `money-format`
+    // é o que impede o quarto. Se ela parar de vigiar `assets/*.js`, o linter
+    // fica verde sobre a duplicação que esta issue acabou de remover.
+    porque: 'a fronteira money-format deixa de vigiar os consumidores',
+    arquivo: 'scripts/lint/config/boundaries.json',
+    de: '"pattern": "Intl\\\\.NumberFormat"',
+    para: '"pattern": "Intl\\\\.NaoExisteNumberFormat"',
+    teste: 'tests/boundaries.test.mjs',
   },
   {
     porque: 'updateQuantity para de avisar o erro para quem escuta',
@@ -243,13 +272,69 @@ const MUTANTES = [
     teste: 'tests/dinheiro.test.mjs',
   },
   {
-    // O banner é `position: fixed`: numa captura fullPage ele cai onde o
-    // scroll deixar, não no rodapé. Sem o `display:none`, a baseline visual
-    // grava um banner numa posição que a próxima execução não repete.
-    porque: 'o banner de cookies volta a entrar na foto da regressão visual',
+    // A seção "Componentes reais" renderiza um produto de VERDADE, e por isso
+    // mora em `FORA` — a foto por seção resolve o problema não enquadrando
+    // ela. Errar a chave desfaz a exclusão em silêncio: a seção volta a ser
+    // candidata a foto, a baseline passa a depender do catálogo, e uma promoção
+    // na loja reprova um PR que não tocou em nada visual — que é como o time
+    // aprende que o vermelho da regressão visual às vezes não quer dizer nada.
+    porque: 'a seção de catálogo entra na foto, e a loja passa a reprovar PRs',
     arquivo: 'e2e/styleguide.spec.mjs',
-    de: '      [data-cookie-banner]{display:none!important}',
-    para: '      /* mutante */',
+    de: "  'componentes-reais':",
+    para: "  'componentes-irreais':",
+    teste: 'tests/styleguide-no-tema.test.mjs',
+  },
+  {
+    // O outro lado da mesma junta: seção do markup que ninguém pôs em lista
+    // nenhuma simplesmente não é fotografada — e o verde de "não coberto" é
+    // igual ao verde de "tudo certo". Renomear uma seção existente produz os
+    // dois defeitos de uma vez: uma órfã no markup e uma entrada fantasma no
+    // spec, apontando para baseline que nunca mais será comparada.
+    porque: 'seção sem entrada no spec deixa de ser fotografada, e nada fica vermelho',
+    arquivo: 'sections/main-styleguide.liquid',
+    de: '<section data-secao="botoes"',
+    para: '<section data-secao="botoes-renomeado"',
+    teste: 'tests/styleguide-no-tema.test.mjs',
+  },
+  {
+    // Elemento `position: fixed` vive na VIEWPORT: numa captura por seção ele
+    // cai onde o scroll deixar. Sem a varredura, a baseline grava um botão numa
+    // posição que a próxima execução não repete — e foi assim que o "voltar ao
+    // topo" entrou em `botoes` e `feedback` e não em `color-schemes`.
+    porque: 'a varredura para de achar fixo, e o scroll volta a entrar na foto',
+    arquivo: 'e2e/styleguide.spec.mjs',
+    de: "    (el) => getComputedStyle(el).position === 'fixed'",
+    para: '    (el) => Boolean(el) && false',
+    teste: 'tests/styleguide-no-tema.test.mjs',
+  },
+  {
+    // Varrer DEPOIS de fotografar não esconde nada, e o teste de presença da
+    // varredura passaria igual: o código está lá, só que tarde. Ordem é o tipo
+    // de defeito que não deixa marca nenhuma no diff.
+    porque: 'a varredura some do corpo do teste e as fotos saem antes de esconder',
+    arquivo: 'e2e/styleguide.spec.mjs',
+    de: '  await page.evaluate(ESCONDE_FIXOS);',
+    para: '  await page.evaluate(() => {});',
+    teste: 'tests/styleguide-no-tema.test.mjs',
+  },
+  {
+    // A conferência é o que separa "a varredura funcionou" de "a varredura
+    // rodou". Sem ela, uma varredura que parasse de casar exibiria o mesmo
+    // silêncio de uma que funciona, e envenenaria as nove baselines de uma vez.
+    porque: 'o spec para de conferir o próprio resultado e confia na varredura',
+    arquivo: 'e2e/styleguide.spec.mjs',
+    de: "      return estilo.position === 'fixed' && estilo.display !== 'none';",
+    para: '      return Boolean(estilo) && false;',
+    teste: 'tests/styleguide-no-tema.test.mjs',
+  },
+  {
+    // O remendo que este arquivo existe para impedir: esconder o fixo da vez
+    // por hook, um `data-*` de cada vez. Foi uma lista assim que deixou o botão
+    // de topo passar — se a varredura não pegou, o conserto é na varredura.
+    porque: 'volta o esconde-por-hook, que é a lista que já falhou uma vez',
+    arquivo: 'e2e/styleguide.spec.mjs',
+    de: '    content: `*,*::before,*::after{animation:none!important;transition:none!important}`,',
+    para: '    content: `*,*::before,*::after{animation:none!important}[data-back-to-top]{display:none!important}`,',
     teste: 'tests/styleguide-no-tema.test.mjs',
   },
   {
@@ -558,7 +643,7 @@ const MUTANTES = [
     // O `catch` sem filtro que a revisão do PR #75 apontou: `page` fechada e
     // frame destruído sairiam como "a URL não mudou em 15s", que é falso —
     // neste arquivo, o pecado capital.
-    porque: 'qualquer erro da espera volta a sair como "a URL não mudou"',
+    porque: 'qualquer erro da espera volta a sair como "não trouxe documento novo"',
     arquivo: 'e2e/helpers/loja.mjs',
     de: "    if (erro?.name !== 'TimeoutError') throw erro;",
     para: '    void erro;',
@@ -570,8 +655,38 @@ const MUTANTES = [
     // acabou de passar na guarda — verde sobre a página errada.
     porque: 'o clique deixa de esperar o documento novo, e a guarda pergunta à página anterior',
     arquivo: 'e2e/helpers/loja.mjs',
-    de: '    await page.waitForURL((url) => url.href !== antes, {',
-    para: '    void antes;\n    void ({',
+    de: '    await esperaDocumentoNovo(page);',
+    para: '    void page;',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    // A #76 na forma exata em que ela existia: o sinal era a URL, procuração
+    // para "chegou documento novo". Documento novo com a MESMA URL estourava a
+    // espera, e `pushState` — URL nova, documento velho — passava sem que
+    // documento nenhum fosse provado.
+    //
+    // Ele roda contra o navegador de mentira de tests/loja.test.mjs, que
+    // guarda um `waitForURL` que a produção não usa mais SÓ para este mutante
+    // ter o que executar. O que esse falso não prova é o comportamento do
+    // navegador; isso é o mutante gêmeo, logo abaixo em MUTANTES_E2E.
+    porque: 'o sinal do clique volta a ser a URL, e documento e URL se separam de novo',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '    await esperaDocumentoNovo(page);',
+    para:
+      '    await page.waitForURL((url) => url.href !== antes, ' +
+      '{ timeout: ESPERA_DE_NAVEGACAO });',
+    teste: 'tests/loja.test.mjs',
+  },
+  {
+    // Sem o carimbo, o predicado já é verdadeiro no documento ANTERIOR: a
+    // espera devolve na hora e a guarda prova a página que já estava aberta.
+    // É o mesmo defeito de não esperar, com outra cara — e some com a mesma
+    // facilidade numa refatoração que "limpa" um `evaluate` aparentemente
+    // inútil antes do clique.
+    porque: 'o carimbo some, e a espera termina no documento anterior',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '  await carimba(page);',
+    para: '  void carimba;',
     teste: 'tests/loja.test.mjs',
   },
 ];
@@ -617,6 +732,22 @@ const MUTANTES_E2E = [
     de: '    em: ${onde}${resto}',
     para: '    em: ???',
     teste: 'e2e/gate.spec.mjs',
+  },
+  {
+    // O gêmeo do mutante de mesmo nome na lista unitária, e a razão de existir
+    // um par: lá o alvo é o navegador de mentira, que separa documento de URL
+    // porque foi escrito para separar; aqui é o Chromium servindo duas rotas
+    // de verdade. "Trocar de documento apaga o `window`, e `history.pushState`
+    // não" é uma afirmação sobre o NAVEGADOR — nenhum falso pode prová-la, e
+    // um falso que concorda com quem o escreveu é o gênero de verde que este
+    // script existe para encontrar.
+    porque: 'o sinal do clique volta a ser a URL — agora medido contra um navegador',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: '    await esperaDocumentoNovo(page);',
+    para:
+      '    await page.waitForURL((url) => url.href !== antes, ' +
+      '{ timeout: ESPERA_DE_NAVEGACAO });',
+    teste: 'e2e/guarda-do-clique.spec.mjs',
   },
   {
     porque: 'a catraca passa a tratar TODA violação como dívida conhecida',

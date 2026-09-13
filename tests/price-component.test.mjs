@@ -14,13 +14,20 @@
  */
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { loadAsset, loadGlobalAsset } from './helpers/load-asset.mjs';
-import { textOf } from './helpers/dom.mjs';
+import { textOf, installShopify } from './helpers/dom.mjs';
 
-// `price-component.js` chama `formatPrice` sem importar nada: no navegador ela
-// é global porque `cart.js` a declara no topo de um script clássico. Carregar
-// o cart.js de verdade reproduz esse acoplamento em vez de escondê-lo.
-loadGlobalAsset('cart.js', ['formatPrice']);
+// `price-component.js` chama `formatMoney` sem importar nada: no navegador ela
+// é global porque `money.js` a declara no topo de um script clássico, e o
+// layout o carrega antes. Carregar o arquivo de verdade reproduz esse
+// acoplamento em vez de escondê-lo. Até a issue #39 quem a declarava era o
+// `cart.js`, com o nome `formatPrice` — o componente de PREÇO dependia do
+// arquivo do CARRINHO para exibir preço.
+loadGlobalAsset('money.js', ['formatMoney']);
 loadAsset('price-component.js');
+
+// `formatMoney` lê moeda e idioma de `window.Shopify`, que a vitrine escreve e
+// o jsdom não tem. As asserções abaixo são em reais porque a loja do teste é.
+installShopify();
 
 function monta() {
   document.body.innerHTML = `
