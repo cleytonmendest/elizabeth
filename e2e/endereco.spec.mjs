@@ -165,7 +165,7 @@ async function ondeEstou(page) {
  * escolher uma em vez de descrever as duas: "pode ser A ou B" é o formato de
  * diagnóstico que a #64 teve por três semanas.
  */
-function veredito(respostas) {
+function veredito(respostas, form) {
   if (respostas.length) {
     return (
       `O POST SAIU, e a loja respondeu: ${respostas.join(' · ')}\n` +
@@ -173,13 +173,28 @@ function veredito(respostas) {
       'servido como se fosse XHR. Olhe o status acima ANTES de mexer no Liquid.'
     );
   }
+
+  // A validação nativa é o suspeito número um, e ela é MUDA aqui: o listener de
+  // `invalid` em `templates/customers/login.liquid` chama `preventDefault()`,
+  // que esconde a bolha do navegador sem desbloquear o envio. Um campo
+  // `required` inválido barra o submit sem deixar rastro na tela — e sem
+  // `novalidate` no form nada impede isso de acontecer.
+  const barrado = !form.novalidate && !form.valido;
+
   return (
     'NENHUM POST para /account/login saiu do navegador: o formulário não foi enviado, ' +
-    'e a causa está no cliente.\n' +
-    'Suspeito principal, no próprio `templates/customers/login.liquid`: o listener de ' +
-    '`invalid` chama `preventDefault()`, o que esconde a bolha do navegador e deixa a ' +
-    'recusa MUDA — um campo `required` inválido barra o envio sem dizer nada. Depois ' +
-    'dele: algum listener de `submit`, ou o botão não pertencer ao form.\n' +
+    'e a causa está no CLIENTE — é bug de tema, não da loja nem da conta.\n' +
+    `O form: action=${form.action} · novalidate=${form.novalidate} · ` +
+    `checkValidity()=${form.valido} · submits=${form.submits}\n` +
+    (form.invalidos.length ? `Campos inválidos: ${form.invalidos.join(' · ')}\n` : '') +
+    (barrado
+      ? 'DIAGNÓSTICO: a validação nativa está barrando o envio, e o listener de `invalid` ' +
+        'do template engole a mensagem com `preventDefault()`. Corrija o campo acima, ou ' +
+        'faça o `novalidate` chegar ao HTML — hoje ele é passado ao `{% form %}` e não ' +
+        'está no elemento.\n'
+      : 'A validação nativa NÃO é a causa (o form passa em checkValidity, ou tem ' +
+        'novalidate). Sobra um listener de `submit` interceptando, ou o botão não ' +
+        'pertencer ao form.\n') +
     'O trace.zip do artefato mostra se houve requisição — é a prova, não o palpite.'
   );
 }
@@ -217,6 +232,26 @@ async function entrar(page) {
   };
   page.on('response', anota);
 
+  // E o estado do form ANTES do clique, colhido do navegador. Quando o POST não
+  // sai, é isto que diz POR QUE: validação nativa barrando (e qual campo), ou
+  // não. Perguntar depois do clique não serve — se a página tivesse navegado,
+  // o form já não existiria.
+  const form = await formulario.evaluate((f) => ({
+    action: f.getAttribute('action'),
+    novalidate: f.hasAttribute('novalidate'),
+    valido: f.checkValidity(),
+    submits: f.querySelectorAll('button[type="submit"]').length,
+    // O valor vai MASCARADO. O log do CI é público, e um campo inválido aqui
+    // é, metade das vezes, o de senha — imprimir `el.value` publicaria o
+    // secret `SHOPIFY_CUSTOMER_PASSWORD` em texto puro. O comprimento e o tipo
+    // já bastam para diagnosticar (campo vazio, espaço sobrando, e-mail sem @).
+    invalidos: [...f.querySelectorAll('input:invalid, select:invalid, textarea:invalid')].map(
+      (el) =>
+        `${el.name || el.id || el.tagName} [type=${el.type}, ${el.value.length} caracteres] — ` +
+        `${el.validationMessage || 'sem mensagem'}`
+    ),
+  }));
+
   // A porta guardada, e não um clique cru: `clicaNoTema` carimba o documento
   // ANTES do clique e espera o carimbo morrer — a prova de que o documento é
   // OUTRO. Vale exatamente no caso deste POST, em que a URL pode voltar IGUAL
@@ -225,7 +260,7 @@ async function entrar(page) {
   try {
     await clicaNoTema(page, formulario.locator('button[type="submit"]'), 'Entrar, no login');
   } catch (erro) {
-    throw new Error(`${erro.message}\n\n${veredito(respostas)}`);
+    throw new Error(`${erro.message}\n\n${veredito(respostas, form)}`);
   } finally {
     page.off('response', anota);
   }
