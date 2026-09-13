@@ -1,4 +1,4 @@
-# 9. A moeda do JS vem do `window.Shopify`, e existe um único formatador
+# 10. A moeda do JS vem do `window.Shopify`, e existe um único formatador
 
 - **Status:** Aceito
 - **Data:** 2026-09-12

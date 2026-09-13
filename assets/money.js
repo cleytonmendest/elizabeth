@@ -4,7 +4,7 @@
  *
  * Havia três cópias disto, com três nomes, discordando sobre dividir por 100 e
  * cravando `pt-BR`/`BRL` — enquanto o `| money` do Liquid acompanhava o
- * seletor de moeda do rodapé. Issue #39; o porquê da forma está na ADR 0009.
+ * seletor de moeda do rodapé. Issue #39; o porquê da forma está na ADR 0010.
  *
  * Este arquivo é curto de propósito: ele vai para o navegador em TODA página e
  * conta no teto de `npm run lint -- --rules=budget`.
