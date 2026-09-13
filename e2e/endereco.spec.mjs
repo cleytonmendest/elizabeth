@@ -226,8 +226,12 @@ function ondeParou(diag) {
   if (diag.prevenido) {
     return (
       'O `submit` DISPAROU e foi CANCELADO: `defaultPrevented` é true quando o evento ' +
-      'chega ao document. O culpado é um listener entre o form e o document — procure ' +
-      'por `preventDefault()` em listener de `submit` que alcance este form.\n'
+      'chega ao document.\n' +
+      (diag.pilha
+        ? `Quem chamou preventDefault(), com endereço:\n${diag.pilha}\n`
+        : 'A pilha não foi capturada — quem cancelou não passou por ' +
+          '`Event.prototype.preventDefault` (pode ter usado `returnValue = false`, ou ' +
+          'rodado antes da instrumentação).\n')
     );
   }
   return (
@@ -313,6 +317,27 @@ async function entrar(page) {
       submitCapturado: false,
       submitBorbulhou: false,
       prevenido: null,
+      pilha: null,
+    };
+
+    // ── Quem chama `preventDefault`, com nome e linha ────────────────────────
+    //
+    // A execução de `8c69614` provou que o submit é CANCELADO, e a busca
+    // estática não encontra o culpado: não há listener de `submit` em nenhum
+    // arquivo que chegue a esta página. Ou a busca está cega, ou quem cancela
+    // não veio do repositório — script da própria Shopify, app de terceiro
+    // injetado na vitrine, extensão. As três hipóteses pedem respostas
+    // diferentes e nenhuma se resolve lendo mais código nosso.
+    //
+    // Interceptar o método é o que dá ENDEREÇO em vez de categoria: a pilha
+    // nomeia o arquivo e a linha de quem chamou. É diagnóstico de teste, não
+    // de produção — vive só nesta página, nesta execução.
+    const original = Event.prototype.preventDefault;
+    Event.prototype.preventDefault = function interceptado() {
+      if (this.type === 'submit' && !window.__diagLogin.pilha) {
+        window.__diagLogin.pilha = new Error('preventDefault() num evento submit').stack;
+      }
+      return original.apply(this, arguments);
     };
     document.addEventListener(
       'click',
