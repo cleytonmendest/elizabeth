@@ -160,9 +160,17 @@ três semanas em `fixme` como se fosse defeito do tema; medir provou que é o
 Não há linha de Liquid para corrigir — navegador automatizado não completa o
 desafio, ponto. `fixme` ali prometia um conserto que não existe.
 
-A detecção é pela PILHA, e não por configuração: se a proteção contra spam for
-desligada na loja, os cinco voltam a rodar sozinhos. Um env var registraria o
-que alguém LEMBROU de declarar; a pilha registra o que o navegador fez.
+A detecção é pela PRESENÇA do script na página, e não por configuração: se a
+proteção contra spam for desligada na loja, os cinco voltam a rodar sozinhos.
+Um env var registraria o que alguém LEMBROU de declarar; a página registra o
+que a loja realmente carrega.
+
+Esta linha dizia "a detecção é pela PILHA" até o commit seguinte ao que a
+escreveu. Era verdade por meia hora: a primeira versão lia a pilha de quem
+chamou `preventDefault()` durante o clique, e isso OSCILAVA — quatro dos cinco
+pulavam e um caía, porque a pilha só existe se o cancelamento acontecer naquela
+tentativa. Teste que muda de cor sem o código mudar é pior que vermelho fixo.
+A pilha continua no arquivo, como diagnóstico; ela deixou de ser a porta.
 
 A lista que vale é sempre a do código:
 
