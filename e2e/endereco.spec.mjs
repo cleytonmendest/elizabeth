@@ -165,7 +165,7 @@ async function ondeEstou(page) {
  * escolher uma em vez de descrever as duas: "pode ser A ou B" é o formato de
  * diagnóstico que a #64 teve por três semanas.
  */
-function veredito(respostas, form) {
+function veredito(respostas, form, diag) {
   if (respostas.length) {
     return (
       `O POST SAIU, e a loja respondeu: ${respostas.join(' · ')}\n` +
@@ -193,9 +193,47 @@ function veredito(respostas, form) {
         'faça o `novalidate` chegar ao HTML — hoje ele é passado ao `{% form %}` e não ' +
         'está no elemento.\n'
       : 'A validação nativa NÃO é a causa (o form passa em checkValidity, ou tem ' +
-        'novalidate). Sobra um listener de `submit` interceptando, ou o botão não ' +
-        'pertencer ao form.\n') +
+        'novalidate).\n') +
+    ondeParou(diag) +
     'O trace.zip do artefato mostra se houve requisição — é a prova, não o palpite.'
+  );
+}
+
+/**
+ * Em que degrau o envio morreu: clique → submit → navegação.
+ *
+ * A ordem importa porque cada degrau acusa um culpado diferente, e a mensagem
+ * precisa apontar UM. Sem isto sobra "algum listener intercepta", que é onde a
+ * #64 empacou — verdadeiro e sem endereço.
+ */
+function ondeParou(diag) {
+  if (!diag) return 'Sem diagnóstico do navegador (a página pode ter navegado).\n';
+
+  if (!diag.clique) {
+    return (
+      'O CLIQUE não chegou ao botão de submit. Algo cobre o botão, ou o seletor pega ' +
+      'outro elemento — o defeito é do teste, não do tema.\n'
+    );
+  }
+  if (!diag.submitCapturado) {
+    return (
+      'O clique CHEGOU e o evento `submit` NUNCA disparou. O botão não está submetendo ' +
+      'o form: um listener de `click` com `preventDefault()`, ou o botão não pertencer ' +
+      'ao form que ele parece pertencer (atributo `form=`, ou markup aninhado que o ' +
+      'navegador reparou movendo o botão para fora).\n'
+    );
+  }
+  if (diag.prevenido) {
+    return (
+      'O `submit` DISPAROU e foi CANCELADO: `defaultPrevented` é true quando o evento ' +
+      'chega ao document. O culpado é um listener entre o form e o document — procure ' +
+      'por `preventDefault()` em listener de `submit` que alcance este form.\n'
+    );
+  }
+  return (
+    'O `submit` disparou e NÃO foi cancelado, e ainda assim nenhum POST saiu. O ' +
+    'navegador recusou o envio por conta própria — form sem `action` resolvível, ' +
+    'ou já em envio.\n'
   );
 }
 
@@ -252,6 +290,52 @@ async function entrar(page) {
     ),
   }));
 
+  // ── Os três sinais que fecham a árvore de causas ──────────────────────────
+  //
+  // A execução de `590ebae` descartou a validação: o form tem `novalidate`,
+  // passa em `checkValidity()`, a action está certa e há um só submit. Sobrou
+  // "alguém intercepta", e a busca estática não achou ninguém — nenhum listener
+  // global de `submit` nem de `click`; os três componentes que escutam `submit`
+  // escopam ao próprio custom element.
+  //
+  // Procurar mais no código seria adivinhar. Estes três listeners respondem a
+  // árvore inteira numa execução:
+  //
+  //   clique não capturado          → o clique não chegou ao botão
+  //   clique sim, submit não        → o clique não disparou o envio
+  //   submit capturado, prevenido   → alguém no meio cancelou (e o capture
+  //                                   roda ANTES de todo listener normal, então
+  //                                   o culpado está entre ele e o document)
+  //   submit não prevenido          → o navegador recusou por conta própria
+  await page.evaluate(() => {
+    window.__diagLogin = {
+      clique: false,
+      submitCapturado: false,
+      submitBorbulhou: false,
+      prevenido: null,
+    };
+    document.addEventListener(
+      'click',
+      (e) => {
+        if (e.target instanceof Element && e.target.closest('button[type="submit"]')) {
+          window.__diagLogin.clique = true;
+        }
+      },
+      true
+    );
+    // Capture: roda antes de qualquer listener de borbulha, então registra que
+    // o envio COMEÇOU mesmo que alguém o cancele logo depois.
+    document.addEventListener('submit', () => {
+      window.__diagLogin.submitCapturado = true;
+    }, true);
+    // Borbulha no document: o último a rodar. Se `defaultPrevented` for true
+    // aqui, o cancelamento veio de um listener entre o form e o document.
+    document.addEventListener('submit', (e) => {
+      window.__diagLogin.submitBorbulhou = true;
+      window.__diagLogin.prevenido = e.defaultPrevented;
+    });
+  });
+
   // A porta guardada, e não um clique cru: `clicaNoTema` carimba o documento
   // ANTES do clique e espera o carimbo morrer — a prova de que o documento é
   // OUTRO. Vale exatamente no caso deste POST, em que a URL pode voltar IGUAL
@@ -260,7 +344,10 @@ async function entrar(page) {
   try {
     await clicaNoTema(page, formulario.locator('button[type="submit"]'), 'Entrar, no login');
   } catch (erro) {
-    throw new Error(`${erro.message}\n\n${veredito(respostas, form)}`);
+    // Só dá para ler isto porque a página NÃO navegou — `window` morre com o
+    // documento. No caminho de sucesso não há nada que ler, e nem faz falta.
+    const diag = await page.evaluate(() => window.__diagLogin).catch(() => null);
+    throw new Error(`${erro.message}\n\n${veredito(respostas, form, diag)}`);
   } finally {
     page.off('response', anota);
   }
