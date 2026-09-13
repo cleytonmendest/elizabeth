@@ -31,7 +31,11 @@
  * com a página cheia de violações. O gate verificava o gate — e o teste do
  * gate não verificava nada.
  *
- * O arquivo original é restaurado sempre, inclusive se o processo falhar.
+ * O arquivo original é restaurado por `finally` (erro e exceção) e por handler
+ * de SIGINT, SIGTERM e SIGHUP (Ctrl-C, `kill`, timeout de ferramenta). Esta
+ * linha dizia "restaurado sempre, inclusive se o processo falhar" e cobria só
+ * o primeiro caso; o segundo é o mais provável, e deixava o arquivo MUTADO no
+ * disco. Ver o comentário no laço, e o PR #100, onde isso quase foi commitado.
  *
  * ── Um limite deste desenho: ele não muta a si mesmo ───────────────────────
  *
@@ -54,6 +58,55 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const VITEST = path.join(ROOT, 'node_modules', '.bin', 'vitest');
 const PLAYWRIGHT = path.join(ROOT, 'node_modules', '.bin', 'playwright');
+
+/**
+ * O registro do mutante EM CURSO, gravado antes de o arquivo ser tocado.
+ *
+ * Existe só enquanto um arquivo está mutado. Se ele estiver aqui no início de
+ * uma execução, a anterior morreu no meio e deixou o mutante no disco.
+ */
+const SENTINELA = path.join(ROOT, '.mutante-em-curso.json');
+
+/**
+ * Desfaz o que uma execução interrompida deixou para trás.
+ *
+ * Roda ANTES de qualquer mutação, e grita. Silêncio aqui seria pior que o
+ * defeito: a pessoa precisa saber que a árvore dela esteve suja, porque ela
+ * pode ter rodado testes — ou commitado — nesse intervalo.
+ */
+function resgataMutanteOrfao() {
+  if (!fs.existsSync(SENTINELA)) return;
+
+  let registro;
+  try {
+    registro = JSON.parse(fs.readFileSync(SENTINELA, 'utf8'));
+  } catch {
+    console.error(
+      red('A sentinela existe e está ilegível.') +
+        ` Apague ${path.relative(ROOT, SENTINELA)} e confira \`git status\` à mão.`
+    );
+    process.exit(2);
+  }
+
+  const alvo = path.join(ROOT, registro.arquivo);
+  const atual = fs.existsSync(alvo) ? fs.readFileSync(alvo, 'utf8') : null;
+
+  if (atual === registro.original) {
+    // O `finally` chegou a rodar e só a sentinela sobrou. Nada a desfazer.
+    fs.rmSync(SENTINELA, { force: true });
+    return;
+  }
+
+  fs.writeFileSync(alvo, registro.original);
+  fs.rmSync(SENTINELA, { force: true });
+  console.error(
+    red('⚠ Uma execução anterior foi interrompida e deixou um MUTANTE no disco.') +
+      `\n  ${registro.arquivo} foi restaurado agora.` +
+      '\n  Se você rodou testes ou commitou desde então, confira: o arquivo estava' +
+      '\n  quebrado de propósito, e qualquer resultado daquele intervalo mediu outro' +
+      '\n  programa.\n'
+  );
+}
 
 const comE2E = process.argv.includes('--e2e');
 
@@ -709,6 +762,26 @@ const MUTANTES = [
     para: '    if (false) return;',
     teste: 'tests/carousel-manager.test.mjs',
   },
+  {
+    // O par que custou três semanas de `fixme` na #64: o clique dispara o POST
+    // e `waitForLoadState('load')` resolve na hora, contra o documento velho.
+    // Tudo que se perguntar depois é respondido pela página de ANTES do envio.
+    porque: 'o login volta a ser clique cru, e o teste mede a página de antes do POST',
+    arquivo: 'e2e/endereco.spec.mjs',
+    de: "    await clicaNoTema(page, formulario.locator('button[type=\"submit\"]'), 'Entrar, no login');",
+    para: "    await formulario.locator('button[type=\"submit\"]').click();\n    await page.waitForLoadState('load');",
+    teste: 'tests/clique-que-navega.test.mjs',
+  },
+  {
+    // A varredura passa verde com todos os specs limpos mesmo se o regex
+    // quebrar — o mesmo silêncio que a #64 sofreu um nível acima. Quem mata
+    // este mutante é o defeito PLANTADO, não a varredura dos arquivos reais.
+    porque: 'a varredura para de reconhecer um clique, e passa verde sem procurar nada',
+    arquivo: 'tests/clique-que-navega.test.mjs',
+    de: '    if (ehComentario(linha) || !/\\.click\\(\\s*\\)/.test(linha)) return;',
+    para: '    if (ehComentario(linha) || true) return;',
+    teste: 'tests/clique-que-navega.test.mjs',
+  },
 ];
 
 
@@ -864,6 +937,8 @@ export function ambienteDoMutante(env, teste) {
 const sobreviventes = [];
 
 function main() {
+  resgataMutanteOrfao();
+
   for (const mutante of LISTA) {
     const alvo = path.join(ROOT, mutante.arquivo);
     const original = fs.readFileSync(alvo, 'utf8');
@@ -879,7 +954,34 @@ function main() {
     }
 
     let resultado;
+    // ── Por que uma SENTINELA em disco, e não um handler de sinal ───────────
+    //
+    // O `finally` abaixo cobre erro e exceção. Não cobre o processo MORRER
+    // entre a escrita do mutante e a restauração — e aí o arquivo mutado fica
+    // no disco, esperando alguém commitar.
+    //
+    // Não é hipótese: aconteceu no PR #100. Uma execução interrompida deixou
+    // `abrePaginaDoTema` com `tentativa <= 3` na árvore, e o commit seguinte
+    // quase levou o mutante para a main. Quem pegou foi `tests/loja.test.mjs`
+    // — o teste que aquele mutante existe para exercitar. Sorte.
+    //
+    // A correção óbvia seria `process.on('SIGINT'|'SIGTERM')`. Foi tentada e
+    // MEDIDA: não funciona. `spawnSync` bloqueia o event loop, então o handler
+    // só rodaria depois que o teste filho terminasse — que é justamente o que
+    // não acontece quando alguém interrompe. Matar o processo deixou DOIS
+    // arquivos mutados mesmo com os handlers registrados.
+    //
+    // A sentinela não depende de rodar código na hora da morte: o registro já
+    // está no disco ANTES de o arquivo ser tocado, e a próxima execução o
+    // encontra. Sobrevive a SIGKILL, a `npm` morrendo sem repassar o sinal, e
+    // a queda de energia.
+    const restaura = () => {
+      fs.writeFileSync(alvo, original);
+      fs.rmSync(SENTINELA, { force: true });
+    };
+
     try {
+      fs.writeFileSync(SENTINELA, JSON.stringify({ arquivo: mutante.arquivo, original }));
       fs.writeFileSync(alvo, original.replace(mutante.de, mutante.para));
       const navegador = mutante.teste.startsWith('e2e/');
       resultado = navegador
@@ -890,7 +992,7 @@ function main() {
           })
         : spawnSync(VITEST, ['run', mutante.teste], { cwd: ROOT, encoding: 'utf8' });
     } finally {
-      fs.writeFileSync(alvo, original);
+      restaura();
     }
 
     const morreu = resultado.status !== 0;

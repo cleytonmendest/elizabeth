@@ -25,62 +25,116 @@
  * ler a página.
  */
 import { test, expect } from '@playwright/test';
-import { THEME_URL, MOTIVO, CLIENTE, MOTIVO_CLIENTE, SENHA_VITRINE } from './helpers/loja.mjs';
+import {
+  THEME_URL,
+  MOTIVO,
+  CLIENTE,
+  MOTIVO_CLIENTE,
+  SENHA_VITRINE,
+  clicaNoTema,
+} from './helpers/loja.mjs';
 
 test.skip(!THEME_URL, MOTIVO);
 test.skip(!CLIENTE.email || !CLIENTE.senha, MOTIVO_CLIENTE);
 
 /**
- * ⚠ FIXME — issue #64. Estes cinco testes estão CORRETOS e não passam.
+ * ── A #64: por que estes cinco testes ficaram três semanas em `fixme` ──────
  *
- * O POST em /account/login volta com a página de login redesenhada limpa —
- * sem erro e sem sessão —, e o login à mão na vitrine funciona com as MESMAS
- * credenciais. Quatro execuções de CI estreitaram o diagnóstico:
- *
- *   1ª  "Received string: .../account/login" — verdadeiro e inútil
- *   2ª  a loja não exibiu erro NENHUM, o que descarta credencial errada
- *   3ª  a página é a do tema ("Conta – Elizabeth Estudos"), não a de senha
- *   4ª  o mesmo sintoma SEM o `theme dev` no caminho — ver abaixo
- *
- * Credencial inválida daria `form.errors`; válida daria 302 para /account. O
- * que volta é uma página como se o POST não tivesse ocorrido.
- *
- * ── 4ª rodada: NÃO era o proxy ─────────────────────────────────────────────
- *
- * A #64 concluiu que o `shopify theme dev` engolia o login, e propôs medir um
- * tema EMPURRADO. A migração foi feita (ADR 0007) e funcionou para o que se
- * esperava dela: a busca preditiva da #51 passou a responder na primeira
- * execução, provando que aquele caminho ERA o proxy.
- *
- * O login não. Na vitrine real, com cookies e sessão reais, ele falha com o
- * sintoma IDÊNTICO:
+ * O sintoma relatado, em quatro execuções de CI:
  *
  *   url=https://<loja>.myshopify.com/account/login
  *   título="Conta – Elizabeth Estudos"
  *   a loja não exibiu erro nenhum
  *
- * O que muda é o que isso descarta. Não é o proxy — o proxy não está mais no
- * caminho. E não é o markup: `{% form 'customer_login' %}` emite os campos
- * ocultos, e os `name` batem com o que a Shopify espera.
+ * Foi lido como "o POST não produz sessão", e esse diagnóstico sobreviveu a
+ * duas hipóteses reprovadas. A primeira dizia que o proxy do `shopify theme
+ * dev` engolia o login; medir provou o contrário — a migração para tema
+ * empurrado (ADR 0007) fez a busca preditiva da #51 passar na primeira
+ * execução e não mudou nada aqui. A segunda dizia que era o markup; também
+ * não: `{% form 'customer_login' %}` emite os campos ocultos e os `name`
+ * batem com o que a Shopify espera.
  *
- * O que sobra, e ninguém verificou ainda: o estado da CONTA (cliente criado no
- * admin nasce sem senha até aceitar o convite) ou a loja estar em "novas contas
- * de cliente", em que o formulário clássico deixa de ser o caminho de login.
- * As duas se checam entrando à mão na vitrine e olhando o admin — nenhuma se
- * checa daqui.
+ * ── A terceira leitura: o teste olhava a página de ANTES do POST ───────────
  *
- * `fixme` continua sendo a resposta certa, agora apontando para um diagnóstico
- * que não foi refutado. Afrouxar a asserção até passar transformaria em verde
- * um login que não acontece.
+ * O submit era um clique CRU seguido de `page.waitForLoadState('load')`. Essa
+ * espera resolve na hora quando o documento atual já está carregado — e no
+ * instante do clique ele está: é a página de login, que acabou de ser medida.
+ * O POST sai, a navegação ainda não começou, a espera volta imediatamente, e
+ * tudo que se perguntar depois é respondido pelo documento velho.
+ *
+ * As três observações passam a dizer a mesma coisa, e não é a que se pensava:
+ *
+ *   url=/account/login        → a URL de ANTES da navegação
+ *   título do tema            → a página de login, pré-POST
+ *   "não exibiu erro nenhum"  → claro: é a página de antes de enviar
+ *
+ * E explica o fato que mais incomodava — à mão funciona com as MESMAS
+ * credenciais. Uma pessoa espera a página trocar; `waitForLoadState('load')`
+ * não esperava.
+ *
+ * ── A correção estava no repositório, sem ser usada aqui ───────────────────
+ *
+ * `clicaNoTema`, em `helpers/loja.mjs`, é a porta guardada para clique que
+ * traz documento novo: ela carimba o documento ANTES do clique e espera o
+ * carimbo morrer — o carimbo vive num `window`, e `window` morre com o
+ * documento. Esse é o sinal certo aqui, porque a URL não é: login recusado
+ * volta para `/account/login` com `form.errors`, mesma URL e documento novo.
+ *
+ * `a11y.spec.mjs`, `fluxos.spec.mjs` e `guarda-do-clique.spec.mjs` já a usam.
+ * Este arquivo não usava, em três lugares — o login, a tela de senha da
+ * vitrine e a exclusão de endereço.
+ *
+ * ── A resposta, em cinco medições ──────────────────────────────────────────
+ *
+ * Tirar o `fixme` foi o que destravou: hipótese precisa ser MEDIDA, e medir
+ * exige rodar. Cada execução matou uma explicação:
+ *
+ *   1. não é o teste olhando a página velha — não há navegação NENHUMA
+ *   2. nenhum POST sai do navegador — logo é o cliente, não a loja
+ *   3. não é a validação — novalidate=true, checkValidity()=true, um submit
+ *   4. o submit DISPARA e é CANCELADO — alguém chama preventDefault()
+ *   5. a pilha nomeia quem:
+ *
+ *        at HTMLFormElement.<anonymous>
+ *          (cdn.shopify.com/shopifycloud/storefront-forms-hcaptcha/…)
+ *
+ * É o hCaptcha da própria Shopify, que protege todo formulário de vitrine
+ * contra bot. Ele intercepta o submit, cancela, roda o desafio e só então
+ * reenvia. Navegador automatizado não completa o desafio, e o POST nunca sai.
+ *
+ * ── O que isso muda ────────────────────────────────────────────────────────
+ *
+ * NÃO é defeito do tema. O markup está correto, a conta está correta, e o
+ * login à mão funciona — porque uma pessoa passa no captcha. Não há linha de
+ * Liquid para consertar, e a #64 deixa de ser bloqueador de Theme Store.
+ *
+ * É constraint de AMBIENTE, da mesma família de "falta THEME_URL": por isso
+ * estes cinco viram PULADO COM MOTIVO em vez de falha.
+ *
+ * A detecção é pela PRESENÇA do script na página, não por configuração e não
+ * pela pilha. A primeira versão lia a pilha de quem chamou `preventDefault()`
+ * durante o clique, e isso OSCILOU: na execução de `799e62a`, quatro dos cinco
+ * pularam e um caiu como falha, porque `clicaNoTema` estourou antes de o
+ * cancelamento acontecer e a pilha ficou nula. Um teste que às vezes pula e às
+ * vezes falha, sem o código mudar, é pior que qualquer um dos dois estados.
+ *
+ * O script estar carregado é fato sobre a configuração da LOJA; a pilha era
+ * fato sobre o que aconteceu num clique. Se a lojista desligar a proteção
+ * contra spam, ou a Shopify trocar de mecanismo, os cinco voltam a rodar
+ * sozinhos — um env var diria o que alguém LEMBROU de declarar; a página diz o
+ * que a loja realmente carrega.
+ *
+ * ── Por que a busca no código nunca acharia ────────────────────────────────
+ *
+ * `addEventListener('submit'` aparece em seis lugares do repositório, e nenhum
+ * alcança esta página. O culpado não está no repositório: a Shopify o injeta
+ * na vitrine. Três semanas de #64 procuraram no lugar onde não estava, porque
+ * o sintoma — tela parada, sem erro — é igual para causas que moram em
+ * camadas diferentes.
+ *
+ * O que não se faz é afrouxar a asserção até passar: isso transformaria em
+ * verde um login que não acontece.
  */
-const LOGIN_NAO_COMPLETA = true; // ← vira false quando a #64 for resolvida.
-
-test.fixme(
-  LOGIN_NAO_COMPLETA,
-  'issue #64 — o login de cliente não completa NEM na vitrine real (medido no PR #72). ' +
-    'Não é o proxy: a migração para tema empurrado não mudou o sintoma. Os testes ' +
-    'continuam corretos; o que falta é saber por que o POST não produz sessão.'
-);
 
 const CARIMBO = 'e2e-endereco';
 
@@ -118,7 +172,14 @@ async function atravessaSenhaDaVitrine(page) {
 
   await campo.first().fill(SENHA_VITRINE);
   await page.locator('form[action*="/password"] button[type="submit"]').first().click();
-  await page.waitForLoadState('load');
+  // Esperar o CAMPO sumir, e não `waitForLoadState('load')`: com o documento
+  // velho ainda carregado, aquela espera resolve na hora, e quem pergunta
+  // depois pergunta à página de ANTES do POST. Ver a nota da #64 no cabeçalho.
+  //
+  // `clicaNoTema` não serve aqui: ela prova de que TEMA veio o documento, e a
+  // resposta da tela de senha é da Shopify, não nossa. O sinal certo é o campo
+  // de senha ter deixado de existir.
+  await page.waitForSelector('input[name="password"]', { state: 'detached', timeout: 15000 });
   return true;
 }
 
@@ -137,6 +198,105 @@ async function ondeEstou(page) {
   }`;
 }
 
+/**
+ * O script que a Shopify injeta em TODO formulário de vitrine para barrar bot.
+ *
+ * O nome do arquivo é a impressão digital, e não a versão: ele já está em
+ * `v1.5.3` e vai mudar. O que não muda é o caminho
+ * `shopifycloud/storefront-forms-hcaptcha`.
+ */
+const CAPTCHA_DA_SHOPIFY = 'storefront-forms-hcaptcha';
+
+const MOTIVO_CAPTCHA =
+  'issue #64 — o hCaptcha da Shopify (storefront-forms-hcaptcha) intercepta o submit do ' +
+  'login e chama preventDefault(). Navegador automatizado não completa o desafio, então o ' +
+  'POST nunca sai. NÃO é defeito do tema: o login à mão funciona, e não há nada no Liquid ' +
+  'para corrigir. Para medir estes cinco, a proteção contra spam da loja precisa estar ' +
+  'desligada — aí a detecção cai sozinha e eles voltam a rodar.';
+
+/**
+ * O que a REDE diz quando o clique no submit não navega.
+ *
+ * As duas metades levam a lugares opostos, e é por isso que a mensagem precisa
+ * escolher uma em vez de descrever as duas: "pode ser A ou B" é o formato de
+ * diagnóstico que a #64 teve por três semanas.
+ */
+function veredito(respostas, form, diag) {
+  if (respostas.length) {
+    return (
+      `O POST SAIU, e a loja respondeu: ${respostas.join(' · ')}\n` +
+      'Resposta que não navega é da LOJA, não do tema — 204, 4xx sem corpo, ou um 200 ' +
+      'servido como se fosse XHR. Olhe o status acima ANTES de mexer no Liquid.'
+    );
+  }
+
+  // A validação nativa é o suspeito número um, e ela é MUDA aqui: o listener de
+  // `invalid` em `templates/customers/login.liquid` chama `preventDefault()`,
+  // que esconde a bolha do navegador sem desbloquear o envio. Um campo
+  // `required` inválido barra o submit sem deixar rastro na tela — e sem
+  // `novalidate` no form nada impede isso de acontecer.
+  const barrado = !form.novalidate && !form.valido;
+
+  return (
+    'NENHUM POST para /account/login saiu do navegador: o formulário não foi enviado, ' +
+    'e a causa está no CLIENTE — é bug de tema, não da loja nem da conta.\n' +
+    `O form: action=${form.action} · novalidate=${form.novalidate} · ` +
+    `checkValidity()=${form.valido} · submits=${form.submits}\n` +
+    (form.invalidos.length ? `Campos inválidos: ${form.invalidos.join(' · ')}\n` : '') +
+    (barrado
+      ? 'DIAGNÓSTICO: a validação nativa está barrando o envio, e o listener de `invalid` ' +
+        'do template engole a mensagem com `preventDefault()`. Corrija o campo acima, ou ' +
+        'faça o `novalidate` chegar ao HTML — hoje ele é passado ao `{% form %}` e não ' +
+        'está no elemento.\n'
+      : 'A validação nativa NÃO é a causa (o form passa em checkValidity, ou tem ' +
+        'novalidate).\n') +
+    ondeParou(diag) +
+    'O trace.zip do artefato mostra se houve requisição — é a prova, não o palpite.'
+  );
+}
+
+/**
+ * Em que degrau o envio morreu: clique → submit → navegação.
+ *
+ * A ordem importa porque cada degrau acusa um culpado diferente, e a mensagem
+ * precisa apontar UM. Sem isto sobra "algum listener intercepta", que é onde a
+ * #64 empacou — verdadeiro e sem endereço.
+ */
+function ondeParou(diag) {
+  if (!diag) return 'Sem diagnóstico do navegador (a página pode ter navegado).\n';
+
+  if (!diag.clique) {
+    return (
+      'O CLIQUE não chegou ao botão de submit. Algo cobre o botão, ou o seletor pega ' +
+      'outro elemento — o defeito é do teste, não do tema.\n'
+    );
+  }
+  if (!diag.submitCapturado) {
+    return (
+      'O clique CHEGOU e o evento `submit` NUNCA disparou. O botão não está submetendo ' +
+      'o form: um listener de `click` com `preventDefault()`, ou o botão não pertencer ' +
+      'ao form que ele parece pertencer (atributo `form=`, ou markup aninhado que o ' +
+      'navegador reparou movendo o botão para fora).\n'
+    );
+  }
+  if (diag.prevenido) {
+    return (
+      'O `submit` DISPAROU e foi CANCELADO: `defaultPrevented` é true quando o evento ' +
+      'chega ao document.\n' +
+      (diag.pilha
+        ? `Quem chamou preventDefault(), com endereço:\n${diag.pilha}\n`
+        : 'A pilha não foi capturada — quem cancelou não passou por ' +
+          '`Event.prototype.preventDefault` (pode ter usado `returnValue = false`, ou ' +
+          'rodado antes da instrumentação).\n')
+    );
+  }
+  return (
+    'O `submit` disparou e NÃO foi cancelado, e ainda assim nenhum POST saiu. O ' +
+    'navegador recusou o envio por conta própria — form sem `action` resolvível, ' +
+    'ou já em envio.\n'
+  );
+}
+
 async function entrar(page) {
   await page.goto('/account/login');
 
@@ -147,10 +307,171 @@ async function entrar(page) {
   const formulario = page.locator('form[action*="/account/login"]').first();
   await expect(formulario, 'a página de login não trouxe o formulário do tema').toBeVisible();
 
+  // ── O hCaptcha está na página? Então não há login a medir ─────────────────
+  //
+  // A detecção é pela PRESENÇA do script, e não pelo `preventDefault()` que ele
+  // chama. A primeira versão fazia o contrário — clicava, esperava 15s, e lia a
+  // pilha de quem cancelou — e o resultado foi um teste que às vezes pula e às
+  // vezes falha: na execução de `799e62a`, QUATRO dos cinco pularam e um caiu
+  // como falha, porque `clicaNoTema` estourou antes de o cancelamento
+  // acontecer e a pilha ficou nula.
+  //
+  // Oscilar assim é pior que qualquer um dos dois estados: um gate que muda de
+  // cor sem o código mudar é um gate que se aprende a ignorar.
+  //
+  // O script estar carregado é fato estável sobre a CONFIGURAÇÃO da loja, não
+  // sobre o que aconteceu num clique. Se ele está lá, navegador automatizado
+  // não completa o desafio e o POST não sai — não há o que medir, e dizer isso
+  // antes de tentar economiza 15s de timeout por teste.
+  const temCaptcha = await page.evaluate(
+    (marca) =>
+      [...document.scripts].some((s) => s.src.includes(marca)) ||
+      performance.getEntriesByType('resource').some((r) => r.name.includes(marca)),
+    CAPTCHA_DA_SHOPIFY
+  );
+  if (temCaptcha) test.skip(true, MOTIVO_CAPTCHA);
+
   await formulario.locator('input[name="customer[email]"]').fill(CLIENTE.email);
   await formulario.locator('input[name="customer[password]"]').fill(CLIENTE.senha);
-  await formulario.locator('button[type="submit"]').click();
-  await page.waitForLoadState('load');
+  // ── A escuta que faltava à #64 ────────────────────────────────────────────
+  //
+  // O PR #100 mediu que o clique no submit não produz documento novo NEM muda
+  // a URL, em 15s. Isso separa duas causas que este teste não distinguia, e que
+  // pedem correções opostas:
+  //
+  //   · o POST nunca SAIU do navegador   → a causa está no cliente
+  //   · o POST saiu e não navegou        → a causa está na loja
+  //
+  // Nenhuma se deduz da página: as duas deixam a mesma tela parada, que é
+  // exatamente por que a #64 passou três semanas com o diagnóstico errado.
+  // Quem responde é a REDE, e ninguém estava olhando para ela.
+  const respostas = [];
+  const anota = (res) => {
+    const req = res.request();
+    if (req.method() !== 'POST' || !/\/account\/login/.test(req.url())) return;
+    const destino = res.headers().location ?? '(sem Location)';
+    respostas.push(`${res.status()} ${res.statusText()} → ${destino}`);
+  };
+  page.on('response', anota);
+
+  // E o estado do form ANTES do clique, colhido do navegador. Quando o POST não
+  // sai, é isto que diz POR QUE: validação nativa barrando (e qual campo), ou
+  // não. Perguntar depois do clique não serve — se a página tivesse navegado,
+  // o form já não existiria.
+  const form = await formulario.evaluate((f) => ({
+    action: f.getAttribute('action'),
+    novalidate: f.hasAttribute('novalidate'),
+    valido: f.checkValidity(),
+    submits: f.querySelectorAll('button[type="submit"]').length,
+    // O valor vai MASCARADO. O log do CI é público, e um campo inválido aqui
+    // é, metade das vezes, o de senha — imprimir `el.value` publicaria o
+    // secret `SHOPIFY_CUSTOMER_PASSWORD` em texto puro. O comprimento e o tipo
+    // já bastam para diagnosticar (campo vazio, espaço sobrando, e-mail sem @).
+    invalidos: [...f.querySelectorAll('input:invalid, select:invalid, textarea:invalid')].map(
+      (el) =>
+        `${el.name || el.id || el.tagName} [type=${el.type}, ${el.value.length} caracteres] — ` +
+        `${el.validationMessage || 'sem mensagem'}`
+    ),
+  }));
+
+  // ── Os três sinais que fecham a árvore de causas ──────────────────────────
+  //
+  // A execução de `590ebae` descartou a validação: o form tem `novalidate`,
+  // passa em `checkValidity()`, a action está certa e há um só submit. Sobrou
+  // "alguém intercepta", e a busca estática não achou ninguém — nenhum listener
+  // global de `submit` nem de `click`; os três componentes que escutam `submit`
+  // escopam ao próprio custom element.
+  //
+  // Procurar mais no código seria adivinhar. Estes três listeners respondem a
+  // árvore inteira numa execução:
+  //
+  //   clique não capturado          → o clique não chegou ao botão
+  //   clique sim, submit não        → o clique não disparou o envio
+  //   submit capturado, prevenido   → alguém no meio cancelou (e o capture
+  //                                   roda ANTES de todo listener normal, então
+  //                                   o culpado está entre ele e o document)
+  //   submit não prevenido          → o navegador recusou por conta própria
+  await page.evaluate(() => {
+    window.__diagLogin = {
+      clique: false,
+      submitCapturado: false,
+      submitBorbulhou: false,
+      prevenido: null,
+      pilha: null,
+    };
+
+    // ── Quem chama `preventDefault`, com nome e linha ────────────────────────
+    //
+    // A execução de `8c69614` provou que o submit é CANCELADO, e a busca
+    // estática não encontra o culpado: não há listener de `submit` em nenhum
+    // arquivo que chegue a esta página. Ou a busca está cega, ou quem cancela
+    // não veio do repositório — script da própria Shopify, app de terceiro
+    // injetado na vitrine, extensão. As três hipóteses pedem respostas
+    // diferentes e nenhuma se resolve lendo mais código nosso.
+    //
+    // Interceptar o método é o que dá ENDEREÇO em vez de categoria: a pilha
+    // nomeia o arquivo e a linha de quem chamou. É diagnóstico de teste, não
+    // de produção — vive só nesta página, nesta execução.
+    const original = Event.prototype.preventDefault;
+    Event.prototype.preventDefault = function interceptado() {
+      if (this.type === 'submit' && !window.__diagLogin.pilha) {
+        window.__diagLogin.pilha = new Error('preventDefault() num evento submit').stack;
+      }
+      return original.apply(this, arguments);
+    };
+    document.addEventListener(
+      'click',
+      (e) => {
+        if (e.target instanceof Element && e.target.closest('button[type="submit"]')) {
+          window.__diagLogin.clique = true;
+        }
+      },
+      true
+    );
+    // Capture: roda antes de qualquer listener de borbulha, então registra que
+    // o envio COMEÇOU mesmo que alguém o cancele logo depois.
+    document.addEventListener('submit', () => {
+      window.__diagLogin.submitCapturado = true;
+    }, true);
+    // Borbulha no document: o último a rodar. Se `defaultPrevented` for true
+    // aqui, o cancelamento veio de um listener entre o form e o document.
+    document.addEventListener('submit', (e) => {
+      window.__diagLogin.submitBorbulhou = true;
+      window.__diagLogin.prevenido = e.defaultPrevented;
+    });
+  });
+
+  // A porta guardada, e não um clique cru: `clicaNoTema` carimba o documento
+  // ANTES do clique e espera o carimbo morrer — a prova de que o documento é
+  // OUTRO. Vale exatamente no caso deste POST, em que a URL pode voltar IGUAL
+  // (login recusado volta para /account/login com `form.errors`), e medir a
+  // URL diria "não saí do lugar" sobre uma página que chegou.
+  try {
+    await clicaNoTema(page, formulario.locator('button[type="submit"]'), 'Entrar, no login');
+  } catch (erro) {
+    // Só dá para ler isto porque a página NÃO navegou — `window` morre com o
+    // documento. No caminho de sucesso não há nada que ler, e nem faz falta.
+    const diag = await page.evaluate(() => window.__diagLogin).catch(() => null);
+
+    // A rede de segurança do skip, e não mais a porta dele.
+    //
+    // A porta é a checagem de PRESENÇA do script, lá em cima, antes do clique.
+    // Esta condição só é alcançada se o captcha cancelou o submit SEM o script
+    // ter sido detectado na página — carregado tarde, por exemplo. Nesse caso
+    // continua sendo o mesmo constraint, e continua sem nada para consertar no
+    // tema.
+    //
+    // Ela sozinha oscilava (ver o cabeçalho): depende de o cancelamento
+    // acontecer naquele clique. Como segunda linha, o custo dessa instabilidade
+    // é zero — se não bater, o caminho de falha abaixo ainda nomeia o culpado.
+    if (diag?.pilha?.includes(CAPTCHA_DA_SHOPIFY)) {
+      test.skip(true, MOTIVO_CAPTCHA);
+    }
+
+    throw new Error(`${erro.message}\n\n${veredito(respostas, form, diag)}`);
+  } finally {
+    page.off('response', anota);
+  }
 
   // O POST pode ter caído na tela de senha da vitrine: atravessa e confere de
   // novo antes de declarar que o login falhou.
@@ -259,7 +580,7 @@ test('um endereço fora do Brasil SALVA — e some depois', async ({ page }) => 
   await modal.locator('#address_province_new').selectOption('QC');
 
   try {
-    await modal.locator('button[type="submit"]').click();
+    await clicaNoTema(page, modal.locator('button[type="submit"]'), 'Salvar, no endereço novo');
 
     // O endereço salvo aparece na lista da página — que é a prova de que a
     // Shopify o aceitou, não só de que o formulário foi enviado.
@@ -305,34 +626,51 @@ async function limpa(page) {
     }
 
     await excluir.first().click();
-    await page.locator('#delete-form button[type="submit"]').click();
-    await page.waitForLoadState('load');
+    await clicaNoTema(
+      page,
+      page.locator('#delete-form button[type="submit"]'),
+      'Excluir, no endereço de teste'
+    );
   }
 
   console.warn(`[${CARIMBO}] dez voltas e ainda há endereço marcado — limpeza incompleta.`);
 }
 
 /**
- * A varredura final — e a guarda que faltava nela.
+ * A varredura final — e por que ela não pode ESTOURAR.
  *
- * `test.afterAll` roda mesmo quando TODOS os testes do arquivo estão `fixme`.
- * Sem a primeira linha, este hook chamaria `entrar()`, que hoje não passa, e
- * derrubaria o job pelo hook — anulando exatamente o `fixme` que existe para
- * manter o PR verde. Um teste marcado como não-executável precisa não executar
- * nada, inclusive limpeza do que ele não chegou a criar.
+ * `test.afterAll` roda mesmo quando todos os testes do arquivo foram pulados,
+ * e é isto que faz dele uma armadilha. Enquanto a #64 estava em `fixme`, a
+ * primeira linha era `if (LOGIN_NAO_COMPLETA) return;` — sem ela o hook
+ * chamava `entrar()`, que não passava, e derrubava o job PELO HOOK, anulando
+ * o `fixme` que existia para manter o PR verde. Aconteceu duas vezes: quando
+ * o `fixme` nasceu, e no PR #72, quando a constante foi removida por engano e
+ * cinco testes caíram com `ReferenceError`.
  *
- * Isso já aconteceu duas vezes: a primeira quando o `fixme` foi criado, e a
- * segunda no PR #72, quando a constante foi removida por engano e o hook
- * derrubou o job com `ReferenceError` — em cinco testes de uma vez.
+ * A #64 tirou o `fixme`, e com ele a constante. A armadilha não some junto:
+ * se `entrar()` falhar, este hook estoura e soma uma falha de INFRAESTRUTURA
+ * às falhas dos testes — que já reportaram a mesma causa, melhor. Cinco testes
+ * vermelhos mais um hook vermelho não é mais informação, é menos: a mensagem
+ * do hook aparece por último e é a que fica na cara do relatório.
+ *
+ * Então a limpeza avisa em vez de estourar. Não é silêncio: se ela não rodou,
+ * é porque o login não passou, e isso está escrito nos cinco testes acima,
+ * onde a mensagem é útil. Endereço de teste que sobrar fica com o carimbo
+ * deste arquivo, e a volta seguinte o apaga.
  */
 test.afterAll(async ({ browser }) => {
-  if (LOGIN_NAO_COMPLETA) return;
   if (!THEME_URL || !CLIENTE.email || !CLIENTE.senha) return;
 
   const page = await browser.newPage();
   try {
     await entrar(page);
     await limpa(page);
+  } catch (erro) {
+    console.warn(
+      `[${CARIMBO}] a limpeza final não rodou: ${erro.message.split('\n')[0]}\n` +
+        'Se foi o login, os testes acima já dizem por quê. Endereço de teste que ' +
+        'tenha sobrado leva o carimbo e é apagado na próxima execução.'
+    );
   } finally {
     await page.close();
   }
