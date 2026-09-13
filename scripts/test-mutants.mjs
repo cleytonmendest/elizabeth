@@ -709,6 +709,26 @@ const MUTANTES = [
     para: '    if (false) return;',
     teste: 'tests/carousel-manager.test.mjs',
   },
+  {
+    // O par que custou três semanas de `fixme` na #64: o clique dispara o POST
+    // e `waitForLoadState('load')` resolve na hora, contra o documento velho.
+    // Tudo que se perguntar depois é respondido pela página de ANTES do envio.
+    porque: 'o login volta a ser clique cru, e o teste mede a página de antes do POST',
+    arquivo: 'e2e/endereco.spec.mjs',
+    de: "  await clicaNoTema(page, formulario.locator('button[type=\"submit\"]'), 'Entrar, no login');",
+    para: "  await formulario.locator('button[type=\"submit\"]').click();\n  await page.waitForLoadState('load');",
+    teste: 'tests/clique-que-navega.test.mjs',
+  },
+  {
+    // A varredura passa verde com todos os specs limpos mesmo se o regex
+    // quebrar — o mesmo silêncio que a #64 sofreu um nível acima. Quem mata
+    // este mutante é o defeito PLANTADO, não a varredura dos arquivos reais.
+    porque: 'a varredura para de reconhecer um clique, e passa verde sem procurar nada',
+    arquivo: 'tests/clique-que-navega.test.mjs',
+    de: '    if (ehComentario(linha) || !/\\.click\\(\\s*\\)/.test(linha)) return;',
+    para: '    if (ehComentario(linha) || true) return;',
+    teste: 'tests/clique-que-navega.test.mjs',
+  },
 ];
 
 

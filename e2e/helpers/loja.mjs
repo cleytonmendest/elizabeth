@@ -259,9 +259,22 @@ export async function abrePaginaDoTema(page, caminho) {
  * clique, a página seguinte vem da vitrine PUBLICADA com 200, e a asserção
  * seguinte mede produção exibindo a mesma cara de quando está tudo certo.
  *
- * O caminho ficou FECHADO em vez de vigiado: não há mais um clique de
- * navegação cru nos specs, então a guarda não depende de alguém lembrar dela
- * — que é o critério da ADR 0001.
+ * O caminho fica fechado enquanto todo clique que navega passar por aqui.
+ * Hoje passa — mas isso é DISCIPLINA, não garantia, e vale escrever por quê:
+ * nenhum verificador consegue dizer estaticamente se um clique navega. Um
+ * `.click()` cru num botão que abre modal é correto; o mesmo `.click()` num
+ * submit que dá POST é a #73 de volta.
+ *
+ * A frase que estava aqui dizia "não há mais um clique de navegação cru nos
+ * specs", no presente e sem ressalva. Ela era FALSA quando foi escrita:
+ * `endereco.spec.mjs` tinha três — o login, a tela de senha da vitrine e a
+ * exclusão de endereço —, e o do login era a causa da #64, que passou três
+ * semanas em `fixme` com um diagnóstico que olhava para o lugar errado. Uma
+ * afirmação de cobertura que ninguém verifica apodrece igual a documento de
+ * estado, e foi o que aconteceu.
+ *
+ * Ao escrever spec novo: clique que traz documento, aqui. Clique que não traz,
+ * cru — e o erro desta função diz isso quando você errar o lado.
  *
  * ── Duas escolhas que parecem detalhe e não são ────────────────────────────
  *

@@ -25,62 +25,76 @@
  * ler a página.
  */
 import { test, expect } from '@playwright/test';
-import { THEME_URL, MOTIVO, CLIENTE, MOTIVO_CLIENTE, SENHA_VITRINE } from './helpers/loja.mjs';
+import {
+  THEME_URL,
+  MOTIVO,
+  CLIENTE,
+  MOTIVO_CLIENTE,
+  SENHA_VITRINE,
+  clicaNoTema,
+} from './helpers/loja.mjs';
 
 test.skip(!THEME_URL, MOTIVO);
 test.skip(!CLIENTE.email || !CLIENTE.senha, MOTIVO_CLIENTE);
 
 /**
- * ⚠ FIXME — issue #64. Estes cinco testes estão CORRETOS e não passam.
+ * ── A #64: por que estes cinco testes ficaram três semanas em `fixme` ──────
  *
- * O POST em /account/login volta com a página de login redesenhada limpa —
- * sem erro e sem sessão —, e o login à mão na vitrine funciona com as MESMAS
- * credenciais. Quatro execuções de CI estreitaram o diagnóstico:
- *
- *   1ª  "Received string: .../account/login" — verdadeiro e inútil
- *   2ª  a loja não exibiu erro NENHUM, o que descarta credencial errada
- *   3ª  a página é a do tema ("Conta – Elizabeth Estudos"), não a de senha
- *   4ª  o mesmo sintoma SEM o `theme dev` no caminho — ver abaixo
- *
- * Credencial inválida daria `form.errors`; válida daria 302 para /account. O
- * que volta é uma página como se o POST não tivesse ocorrido.
- *
- * ── 4ª rodada: NÃO era o proxy ─────────────────────────────────────────────
- *
- * A #64 concluiu que o `shopify theme dev` engolia o login, e propôs medir um
- * tema EMPURRADO. A migração foi feita (ADR 0007) e funcionou para o que se
- * esperava dela: a busca preditiva da #51 passou a responder na primeira
- * execução, provando que aquele caminho ERA o proxy.
- *
- * O login não. Na vitrine real, com cookies e sessão reais, ele falha com o
- * sintoma IDÊNTICO:
+ * O sintoma relatado, em quatro execuções de CI:
  *
  *   url=https://<loja>.myshopify.com/account/login
  *   título="Conta – Elizabeth Estudos"
  *   a loja não exibiu erro nenhum
  *
- * O que muda é o que isso descarta. Não é o proxy — o proxy não está mais no
- * caminho. E não é o markup: `{% form 'customer_login' %}` emite os campos
- * ocultos, e os `name` batem com o que a Shopify espera.
+ * Foi lido como "o POST não produz sessão", e esse diagnóstico sobreviveu a
+ * duas hipóteses reprovadas. A primeira dizia que o proxy do `shopify theme
+ * dev` engolia o login; medir provou o contrário — a migração para tema
+ * empurrado (ADR 0007) fez a busca preditiva da #51 passar na primeira
+ * execução e não mudou nada aqui. A segunda dizia que era o markup; também
+ * não: `{% form 'customer_login' %}` emite os campos ocultos e os `name`
+ * batem com o que a Shopify espera.
  *
- * O que sobra, e ninguém verificou ainda: o estado da CONTA (cliente criado no
- * admin nasce sem senha até aceitar o convite) ou a loja estar em "novas contas
- * de cliente", em que o formulário clássico deixa de ser o caminho de login.
- * As duas se checam entrando à mão na vitrine e olhando o admin — nenhuma se
- * checa daqui.
+ * ── A terceira leitura: o teste olhava a página de ANTES do POST ───────────
  *
- * `fixme` continua sendo a resposta certa, agora apontando para um diagnóstico
- * que não foi refutado. Afrouxar a asserção até passar transformaria em verde
- * um login que não acontece.
+ * O submit era um clique CRU seguido de `page.waitForLoadState('load')`. Essa
+ * espera resolve na hora quando o documento atual já está carregado — e no
+ * instante do clique ele está: é a página de login, que acabou de ser medida.
+ * O POST sai, a navegação ainda não começou, a espera volta imediatamente, e
+ * tudo que se perguntar depois é respondido pelo documento velho.
+ *
+ * As três observações passam a dizer a mesma coisa, e não é a que se pensava:
+ *
+ *   url=/account/login        → a URL de ANTES da navegação
+ *   título do tema            → a página de login, pré-POST
+ *   "não exibiu erro nenhum"  → claro: é a página de antes de enviar
+ *
+ * E explica o fato que mais incomodava — à mão funciona com as MESMAS
+ * credenciais. Uma pessoa espera a página trocar; `waitForLoadState('load')`
+ * não esperava.
+ *
+ * ── A correção estava no repositório, sem ser usada aqui ───────────────────
+ *
+ * `clicaNoTema`, em `helpers/loja.mjs`, é a porta guardada para clique que
+ * traz documento novo: ela carimba o documento ANTES do clique e espera o
+ * carimbo morrer — o carimbo vive num `window`, e `window` morre com o
+ * documento. Esse é o sinal certo aqui, porque a URL não é: login recusado
+ * volta para `/account/login` com `form.errors`, mesma URL e documento novo.
+ *
+ * `a11y.spec.mjs`, `fluxos.spec.mjs` e `guarda-do-clique.spec.mjs` já a usam.
+ * Este arquivo não usava, em três lugares — o login, a tela de senha da
+ * vitrine e a exclusão de endereço.
+ *
+ * ── O que isto ainda não prova ─────────────────────────────────────────────
+ *
+ * Que o login passa. O `fixme` sai porque a hipótese precisa ser MEDIDA, e
+ * medir exige rodar. Se estes cinco continuarem vermelhos, a mensagem de falha
+ * passa a vir de um documento que existe, e as duas hipóteses que sobravam na
+ * #64 — conta sem senha (convite de ativação não aceito) e loja em "novas
+ * contas de cliente" — voltam à mesa com uma evidência a mais, não a menos.
+ *
+ * O que não se faz é afrouxar a asserção até passar: isso transformaria em
+ * verde um login que não acontece.
  */
-const LOGIN_NAO_COMPLETA = true; // ← vira false quando a #64 for resolvida.
-
-test.fixme(
-  LOGIN_NAO_COMPLETA,
-  'issue #64 — o login de cliente não completa NEM na vitrine real (medido no PR #72). ' +
-    'Não é o proxy: a migração para tema empurrado não mudou o sintoma. Os testes ' +
-    'continuam corretos; o que falta é saber por que o POST não produz sessão.'
-);
 
 const CARIMBO = 'e2e-endereco';
 
@@ -118,7 +132,14 @@ async function atravessaSenhaDaVitrine(page) {
 
   await campo.first().fill(SENHA_VITRINE);
   await page.locator('form[action*="/password"] button[type="submit"]').first().click();
-  await page.waitForLoadState('load');
+  // Esperar o CAMPO sumir, e não `waitForLoadState('load')`: com o documento
+  // velho ainda carregado, aquela espera resolve na hora, e quem pergunta
+  // depois pergunta à página de ANTES do POST. Ver a nota da #64 no cabeçalho.
+  //
+  // `clicaNoTema` não serve aqui: ela prova de que TEMA veio o documento, e a
+  // resposta da tela de senha é da Shopify, não nossa. O sinal certo é o campo
+  // de senha ter deixado de existir.
+  await page.waitForSelector('input[name="password"]', { state: 'detached', timeout: 15000 });
   return true;
 }
 
@@ -149,8 +170,12 @@ async function entrar(page) {
 
   await formulario.locator('input[name="customer[email]"]').fill(CLIENTE.email);
   await formulario.locator('input[name="customer[password]"]').fill(CLIENTE.senha);
-  await formulario.locator('button[type="submit"]').click();
-  await page.waitForLoadState('load');
+  // A porta guardada, e não um clique cru: `clicaNoTema` carimba o documento
+  // ANTES do clique e espera o carimbo morrer — a prova de que o documento é
+  // OUTRO. Vale exatamente no caso deste POST, em que a URL pode voltar IGUAL
+  // (login recusado volta para /account/login com `form.errors`), e medir a
+  // URL diria "não saí do lugar" sobre uma página que chegou.
+  await clicaNoTema(page, formulario.locator('button[type="submit"]'), 'Entrar, no login');
 
   // O POST pode ter caído na tela de senha da vitrine: atravessa e confere de
   // novo antes de declarar que o login falhou.
@@ -259,7 +284,7 @@ test('um endereço fora do Brasil SALVA — e some depois', async ({ page }) => 
   await modal.locator('#address_province_new').selectOption('QC');
 
   try {
-    await modal.locator('button[type="submit"]').click();
+    await clicaNoTema(page, modal.locator('button[type="submit"]'), 'Salvar, no endereço novo');
 
     // O endereço salvo aparece na lista da página — que é a prova de que a
     // Shopify o aceitou, não só de que o formulário foi enviado.
@@ -305,34 +330,51 @@ async function limpa(page) {
     }
 
     await excluir.first().click();
-    await page.locator('#delete-form button[type="submit"]').click();
-    await page.waitForLoadState('load');
+    await clicaNoTema(
+      page,
+      page.locator('#delete-form button[type="submit"]'),
+      'Excluir, no endereço de teste'
+    );
   }
 
   console.warn(`[${CARIMBO}] dez voltas e ainda há endereço marcado — limpeza incompleta.`);
 }
 
 /**
- * A varredura final — e a guarda que faltava nela.
+ * A varredura final — e por que ela não pode ESTOURAR.
  *
- * `test.afterAll` roda mesmo quando TODOS os testes do arquivo estão `fixme`.
- * Sem a primeira linha, este hook chamaria `entrar()`, que hoje não passa, e
- * derrubaria o job pelo hook — anulando exatamente o `fixme` que existe para
- * manter o PR verde. Um teste marcado como não-executável precisa não executar
- * nada, inclusive limpeza do que ele não chegou a criar.
+ * `test.afterAll` roda mesmo quando todos os testes do arquivo foram pulados,
+ * e é isto que faz dele uma armadilha. Enquanto a #64 estava em `fixme`, a
+ * primeira linha era `if (LOGIN_NAO_COMPLETA) return;` — sem ela o hook
+ * chamava `entrar()`, que não passava, e derrubava o job PELO HOOK, anulando
+ * o `fixme` que existia para manter o PR verde. Aconteceu duas vezes: quando
+ * o `fixme` nasceu, e no PR #72, quando a constante foi removida por engano e
+ * cinco testes caíram com `ReferenceError`.
  *
- * Isso já aconteceu duas vezes: a primeira quando o `fixme` foi criado, e a
- * segunda no PR #72, quando a constante foi removida por engano e o hook
- * derrubou o job com `ReferenceError` — em cinco testes de uma vez.
+ * A #64 tirou o `fixme`, e com ele a constante. A armadilha não some junto:
+ * se `entrar()` falhar, este hook estoura e soma uma falha de INFRAESTRUTURA
+ * às falhas dos testes — que já reportaram a mesma causa, melhor. Cinco testes
+ * vermelhos mais um hook vermelho não é mais informação, é menos: a mensagem
+ * do hook aparece por último e é a que fica na cara do relatório.
+ *
+ * Então a limpeza avisa em vez de estourar. Não é silêncio: se ela não rodou,
+ * é porque o login não passou, e isso está escrito nos cinco testes acima,
+ * onde a mensagem é útil. Endereço de teste que sobrar fica com o carimbo
+ * deste arquivo, e a volta seguinte o apaga.
  */
 test.afterAll(async ({ browser }) => {
-  if (LOGIN_NAO_COMPLETA) return;
   if (!THEME_URL || !CLIENTE.email || !CLIENTE.senha) return;
 
   const page = await browser.newPage();
   try {
     await entrar(page);
     await limpa(page);
+  } catch (erro) {
+    console.warn(
+      `[${CARIMBO}] a limpeza final não rodou: ${erro.message.split('\n')[0]}\n` +
+        'Se foi o login, os testes acima já dizem por quê. Endereço de teste que ' +
+        'tenha sobrado leva o carimbo e é apagado na próxima execução.'
+    );
   } finally {
     await page.close();
   }
