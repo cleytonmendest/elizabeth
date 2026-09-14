@@ -112,17 +112,38 @@ test.skip(!CLIENTE.email || !CLIENTE.senha, MOTIVO_CLIENTE);
  * estes cinco viram PULADO COM MOTIVO em vez de falha.
  *
  * A detecção é pela PRESENÇA do script na página, não por configuração e não
- * pela pilha. A primeira versão lia a pilha de quem chamou `preventDefault()`
- * durante o clique, e isso OSCILOU: na execução de `799e62a`, quatro dos cinco
- * pularam e um caiu como falha, porque `clicaNoTema` estourou antes de o
- * cancelamento acontecer e a pilha ficou nula. Um teste que às vezes pula e às
- * vezes falha, sem o código mudar, é pior que qualquer um dos dois estados.
+ * pela pilha — e ela é perguntada DUAS VEZES: antes do clique e depois do
+ * cancelamento. As duas decisões foram aprendidas oscilando, uma de cada vez.
+ *
+ * A primeira versão lia a pilha de quem chamou `preventDefault()` durante o
+ * clique. Na execução de `799e62a`, quatro dos cinco pularam e um caiu como
+ * falha: `clicaNoTema` estourou antes de o cancelamento acontecer e a pilha
+ * ficou nula.
+ *
+ * A segunda versão perguntou pela presença do script — uma vez só, antes do
+ * clique. Na execução de `a482ad9` deu o MESMO 4 a 1, por outro motivo: o
+ * script não estava em `document.scripts` no instante da pergunta. Quem
+ * cancelou, naquele teste, foi um handler inline do próprio documento
+ * (`/account/login:74`), despachado por `event-observer-collector.js`.
+ *
+ * Um teste que às vezes pula e às vezes falha, sem o código mudar, é pior que
+ * qualquer um dos dois estados — e duas correções seguidas caíram no mesmo
+ * buraco porque as duas mediam um INSTANTE. Perguntar de novo depois do
+ * cancelamento é o que fecha a janela: barrar o submit é o que faz o desafio
+ * ser carregado, então o instante mais tarde é o instante em que a resposta é
+ * mais confiável. A pergunta não mudou; mudou QUANDO ela é feita.
  *
  * O script estar carregado é fato sobre a configuração da LOJA; a pilha era
  * fato sobre o que aconteceu num clique. Se a lojista desligar a proteção
  * contra spam, ou a Shopify trocar de mecanismo, os cinco voltam a rodar
  * sozinhos — um env var diria o que alguém LEMBROU de declarar; a página diz o
  * que a loja realmente carrega.
+ *
+ * E se NEM depois do cancelamento o script aparecer, a falha passa a trazer o
+ * inventário dos scripts que a página carregou. A execução de `a482ad9` não
+ * trazia, e por isso ela não prova qual das duas coisas aconteceu: o captcha
+ * chegou tarde, ou quem cancelou não é o captcha. A próxima falha responde
+ * isso sem mais uma rodada de palpite.
  *
  * ── Por que a busca no código nunca acharia ────────────────────────────────
  *
@@ -213,6 +234,55 @@ const MOTIVO_CAPTCHA =
   'POST nunca sai. NÃO é defeito do tema: o login à mão funciona, e não há nada no Liquid ' +
   'para corrigir. Para medir estes cinco, a proteção contra spam da loja precisa estar ' +
   'desligada — aí a detecção cai sozinha e eles voltam a rodar.';
+
+/**
+ * O captcha está NESTA página, agora?
+ *
+ * A função existe para ser chamada DUAS VEZES — antes do clique e depois do
+ * cancelamento —, e é a segunda chamada que justifica extrair isto: perguntar
+ * uma vez só, cedo, foi o que oscilou em `a482ad9`.
+ *
+ * Duas fontes porque nenhuma sozinha cobre as duas formas de o script chegar:
+ * `document.scripts` vê a TAG assim que ela entra no DOM, mesmo antes de
+ * baixar; a entrada de `performance` vê o que a REDE já trouxe, inclusive de
+ * uma tag que já foi removida.
+ *
+ * `catch` devolvendo `false` porque isto roda também depois de um erro, quando
+ * a página pode ter navegado — e "não consegui perguntar" nunca pode virar
+ * "pulei".
+ */
+async function captchaNaPagina(page) {
+  return page
+    .evaluate(
+      (marca) =>
+        [...document.scripts].some((s) => s.src.includes(marca)) ||
+        performance.getEntriesByType('resource').some((r) => r.name.includes(marca)),
+      CAPTCHA_DA_SHOPIFY
+    )
+    .catch(() => false);
+}
+
+/**
+ * Todo script que a página carregou, sem query string.
+ *
+ * É o que faltou ao relatório de `a482ad9`: ele nomeou quem cancelou
+ * (`event-observer-collector.js`, despachando um handler inline do documento) e
+ * não disse se o arquivo do captcha estava na página. Sem essa lista, "chegou
+ * tarde" e "não é o captcha" produzem exatamente o mesmo relatório — que é a
+ * forma de silêncio que custou três semanas à #64.
+ */
+async function scriptsDaPagina(page) {
+  return page
+    .evaluate(() => {
+      const deTag = [...document.scripts].map((s) => s.src).filter(Boolean);
+      const deRede = performance
+        .getEntriesByType('resource')
+        .filter((r) => r.initiatorType === 'script')
+        .map((r) => r.name);
+      return [...new Set([...deTag, ...deRede])].map((u) => u.replace(/\?.*$/, ''));
+    })
+    .catch(() => []);
+}
 
 /**
  * O que a REDE diz quando o clique no submit não navega.
@@ -307,29 +377,16 @@ async function entrar(page) {
   const formulario = page.locator('form[action*="/account/login"]').first();
   await expect(formulario, 'a página de login não trouxe o formulário do tema').toBeVisible();
 
-  // ── O hCaptcha está na página? Então não há login a medir ─────────────────
+  // ── O hCaptcha já está na página? Então não há login a medir ──────────────
   //
-  // A detecção é pela PRESENÇA do script, e não pelo `preventDefault()` que ele
-  // chama. A primeira versão fazia o contrário — clicava, esperava 15s, e lia a
-  // pilha de quem cancelou — e o resultado foi um teste que às vezes pula e às
-  // vezes falha: na execução de `799e62a`, QUATRO dos cinco pularam e um caiu
-  // como falha, porque `clicaNoTema` estourou antes de o cancelamento
-  // acontecer e a pilha ficou nula.
+  // Esta é a pergunta BARATA, não a decisiva: se o script já chegou, o POST não
+  // vai sair e dizer isso agora economiza 15s de timeout por teste.
   //
-  // Oscilar assim é pior que qualquer um dos dois estados: um gate que muda de
-  // cor sem o código mudar é um gate que se aprende a ignorar.
-  //
-  // O script estar carregado é fato estável sobre a CONFIGURAÇÃO da loja, não
-  // sobre o que aconteceu num clique. Se ele está lá, navegador automatizado
-  // não completa o desafio e o POST não sai — não há o que medir, e dizer isso
-  // antes de tentar economiza 15s de timeout por teste.
-  const temCaptcha = await page.evaluate(
-    (marca) =>
-      [...document.scripts].some((s) => s.src.includes(marca)) ||
-      performance.getEntriesByType('resource').some((r) => r.name.includes(marca)),
-    CAPTCHA_DA_SHOPIFY
-  );
-  if (temCaptcha) test.skip(true, MOTIVO_CAPTCHA);
+  // Ela não pode ser a única, e isso foi medido: em `a482ad9` quatro dos cinco
+  // pularam aqui e o quinto passou direto, porque o script ainda não estava em
+  // `document.scripts` neste instante. A mesma pergunta é refeita depois do
+  // cancelamento, lá embaixo, onde a resposta vale mais — ver o cabeçalho.
+  if (await captchaNaPagina(page)) test.skip(true, MOTIVO_CAPTCHA);
 
   await formulario.locator('input[name="customer[email]"]').fill(CLIENTE.email);
   await formulario.locator('input[name="customer[password]"]').fill(CLIENTE.senha);
@@ -453,22 +510,30 @@ async function entrar(page) {
     // documento. No caminho de sucesso não há nada que ler, e nem faz falta.
     const diag = await page.evaluate(() => window.__diagLogin).catch(() => null);
 
-    // A rede de segurança do skip, e não mais a porta dele.
+    // A MESMA pergunta da porta, refeita no instante em que ela vale mais.
     //
-    // A porta é a checagem de PRESENÇA do script, lá em cima, antes do clique.
-    // Esta condição só é alcançada se o captcha cancelou o submit SEM o script
-    // ter sido detectado na página — carregado tarde, por exemplo. Nesse caso
-    // continua sendo o mesmo constraint, e continua sem nada para consertar no
-    // tema.
+    // Chegar aqui significa que o envio foi barrado e a página continua viva. Se
+    // quem barrou foi o captcha, o desafio já foi carregado — então o script que
+    // podia não estar lá antes do clique está agora. É por isso que a segunda
+    // chamada não é redundância: ela mede DEPOIS do evento que faz o arquivo
+    // aparecer, e não antes.
     //
-    // Ela sozinha oscilava (ver o cabeçalho): depende de o cancelamento
-    // acontecer naquele clique. Como segunda linha, o custo dessa instabilidade
-    // é zero — se não bater, o caminho de falha abaixo ainda nomeia o culpado.
-    if (diag?.pilha?.includes(CAPTCHA_DA_SHOPIFY)) {
+    // A pilha fica como terceira linha. Ela sozinha oscilava (ver o cabeçalho),
+    // porque depende de o cancelamento acontecer naquele clique; atrás das duas
+    // perguntas de presença, o custo dessa instabilidade é zero.
+    if ((await captchaNaPagina(page)) || diag?.pilha?.includes(CAPTCHA_DA_SHOPIFY)) {
       test.skip(true, MOTIVO_CAPTCHA);
     }
 
-    throw new Error(`${erro.message}\n\n${veredito(respostas, form, diag)}`);
+    // Nenhuma das três bateu: o envio morreu por outra coisa, e o inventário é
+    // o que separa "o captcha chegou tarde e a detecção falhou" de "quem
+    // cancelou não é o captcha". Sem ele os dois casos produzem o mesmo texto.
+    const carregados = await scriptsDaPagina(page);
+    throw new Error(
+      `${erro.message}\n\n${veredito(respostas, form, diag)}\n` +
+        `Os ${carregados.length} scripts que a página carregou:\n` +
+        carregados.map((u) => `  ${u}`).join('\n')
+    );
   } finally {
     page.off('response', anota);
   }
