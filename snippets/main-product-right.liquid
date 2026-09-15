@@ -29,7 +29,7 @@
       {%- when 'title' -%}
         <div class="product__title" {{ block.shopify_attributes }}>
           {%- if product.type != blank -%}
-            <p class="text-xs uppercase tracking-label text-foreground/50 mb-2.5">{{ product.type }}</p>
+            <p class="text-xs uppercase tracking-label text-foreground-muted mb-2.5">{{ product.type }}</p>
           {%- endif -%}
           <h1 class="text-4xl font-light tracking-title leading-tight">{{ product.title | escape }}</h1>
         </div>
@@ -49,7 +49,7 @@
         {%- if product.description != blank -%}
           <div>
             {% if block.settings.show_title == true and block.settings.title_text != blank %}
-              <h2 class="text-xs uppercase tracking-label text-foreground/50 mb-2">{{ block.settings.title_text }}</h2>
+              <h2 class="text-xs uppercase tracking-label text-foreground-muted mb-2">{{ block.settings.title_text }}</h2>
             {% endif %}
             <div class="text-sm leading-relaxed text-foreground/80" {{ block.shopify_attributes }}>
               {{ product.description }}
@@ -70,7 +70,7 @@
                 </h2>
                 {% render 'icon-angle-down',
                   size: 16,
-                  class: 'text-foreground/50 transition-transform duration-300 group-open:rotate-180'
+                  class: 'text-foreground-muted transition-transform duration-300 group-open:rotate-180'
                 %}
               </summary>
               <div class="text-sm leading-relaxed text-foreground/70 pb-4" id="ProductAccordion-{{ block.id }}-{{ section.id }}">

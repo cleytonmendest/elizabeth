@@ -15,7 +15,7 @@
     {% endif %}
   </div>
   <div class="flex-[1] min-w-0">
-    <small class="uppercase text-xs text-foreground/50">{{ item.vendor }}</small>
+    <small class="uppercase text-xs text-foreground-muted">{{ item.vendor }}</small>
     <div class="flex gap-3">
       <a href="{{ item.url }}" class="flex-1 min-w-0">
         <h3 class="font-medium text-sm hover:underline line-clamp-2">{{ item.product.title }}</h3>
@@ -27,7 +27,7 @@
       </remove-from-cart>
     </div>
     {% unless item.product.has_only_default_variant %}
-      <div class="text-xs text-foreground/50 mt-1">
+      <div class="text-xs text-foreground-muted mt-1">
         {{ item.variant.title }}
       </div>
     {% endunless %}

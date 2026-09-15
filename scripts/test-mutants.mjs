@@ -548,6 +548,17 @@ const MUTANTES = [
     teste: 'tests/editable.test.mjs',
   },
   {
+    // O piso de contraste sem a faixa de 50 a 57 — exatamente os 100 usos que
+    // a #105 migrou. `text-foreground/50` dá 3,52:1 no esquema claro, e era a
+    // causa das 8 entradas de `color-contrast` do a11y-baseline. Sem esta
+    // faixa a regra fica verde com o defeito presente.
+    porque: 'o piso de contraste deixa de cobrir a faixa de /50 a /57',
+    arquivo: 'scripts/lint/rules/tokens.mjs',
+    de: '    pattern: /\\btext-foreground\\/(?:[0-9]|[1-4][0-9]|5[0-7])\\b/g,',
+    para: '    pattern: /\\btext-foreground\\/(?:[0-9]|[1-4][0-9])\\b/g,',
+    teste: 'tests/tokens.test.mjs',
+  },
+  {
     // O atributo `class` quebra linha — o `<aside>` de `main-collection` espalha
     // o dele por quatro. Um regex que não atravessa \n não enxerga o portador,
     // e "não enxerguei" produz exatamente o mesmo silêncio de "está tudo certo".

@@ -141,7 +141,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
         </svg>
         <h3 class="mt-2 text-sm font-medium text-foreground">{{ 'customer.addresses.empty_title' | t }}</h3>
-        <p class="mt-1 text-sm text-foreground/50">
+        <p class="mt-1 text-sm text-foreground-muted">
           {{ 'customer.addresses.empty_text' | t }}
         </p>
         <div class="mt-6">
@@ -170,7 +170,7 @@
 
     <div class="inline-block align-bottom bg-background rounded-theme px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
       <div class="absolute top-0 right-0 pt-4 pr-4">
-        <button type="button" onclick="closeAddressModal('new')" class="bg-background rounded-md text-foreground/40 hover:text-foreground/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground">
+        <button type="button" onclick="closeAddressModal('new')" class="bg-background rounded-md text-foreground/40 hover:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground">
           <span class="sr-only">{{ 'customer.shared.close' | t }}</span>
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -250,7 +250,7 @@
               class="w-full px-3 py-2 border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground focus:border-transparent"
               onblur="searchCEP('new')"
             >
-            <p class="mt-1 text-xs text-foreground/50" data-br-only hidden>{{ 'customer.addresses.cep_hint' | t }}</p>
+            <p class="mt-1 text-xs text-foreground-muted" data-br-only hidden>{{ 'customer.addresses.cep_hint' | t }}</p>
           </div>
 
           <div>
@@ -381,7 +381,7 @@
 
     <div class="inline-block align-bottom bg-background rounded-theme px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
       <div class="absolute top-0 right-0 pt-4 pr-4">
-        <button type="button" onclick="closeAddressModal('edit-{{ address.id }}')" class="bg-background rounded-md text-foreground/40 hover:text-foreground/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground">
+        <button type="button" onclick="closeAddressModal('edit-{{ address.id }}')" class="bg-background rounded-md text-foreground/40 hover:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground">
           <span class="sr-only">{{ 'customer.shared.close' | t }}</span>
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>

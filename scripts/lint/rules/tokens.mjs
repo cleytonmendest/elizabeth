@@ -28,7 +28,7 @@ export const meta = {
   ratchet: true,
 };
 
-const CHECKS = [
+export const CHECKS = [
   {
     code: 'hex',
     // Hex de 3, 6 ou 8 dígitos. `\b` no fim evita casar prefixo de string maior.
@@ -40,7 +40,8 @@ const CHECKS = [
     code: 'palette',
     pattern:
       /\b(?:text|bg|border|ring|divide|from|via|to|placeholder|decoration|outline)-(?:gray|slate|zinc|neutral|stone)-\d{2,3}\b/g,
-    message: (v) => `${v} é da paleta do Tailwind, não do color scheme. Use text-foreground/NN ou bg-foreground/NN.`,
+    message: (v) =>
+      `${v} é da paleta do Tailwind, não do color scheme. Use text-foreground (corpo), text-foreground-muted (secundário) ou bg-background.`,
   },
   {
     code: 'bw',
@@ -79,6 +80,25 @@ const CHECKS = [
     pattern: /(?<![-\w])tracking-(?!title\b|label\b|hero\b|\[)[a-z]+\b/g,
     message: (v) =>
       `${v} é degrau do Tailwind, não do tema. Use tracking-title (título), tracking-label (rótulo em caixa alta) ou tracking-hero (kicker sobre mídia). Ver ADR 0005.`,
+  },
+  {
+    code: 'opacity-contrast',
+    // Texto secundário por OPACIDADE, abaixo do piso de contraste.
+    //
+    // Medido contra os schemes do tema (#105): `text-foreground/50` dá 3,52:1
+    // no esquema claro, contra os 4,5:1 que o WCAG AA pede. `/55` dá 4,14:1.
+    // O piso real é 58% — abaixo disso reprova em pelo menos um dos dois
+    // esquemas, e nenhum valor fixo resolve, porque alfa clareia sobre fundo
+    // claro e escurece sobre escuro.
+    //
+    // O `/` na classe do Tailwind é o mesmo alfa, então a regra lê o número:
+    // 0 a 57 reprova, 58 em diante passa. `/60` e `/70` continuam válidos —
+    // eram 197 dos 343 usos e sempre estiveram certos. O defeito nunca foi
+    // "usar opacidade", foi não haver um degrau decidido.
+    pattern: /\btext-foreground\/(?:[0-9]|[1-4][0-9]|5[0-7])\b/g,
+    message: (v) =>
+      `${v} reprova WCAG AA — abaixo de /58 o contraste cai de 4,5:1 em pelo menos um color scheme. ` +
+      'Use text-foreground-muted, que deriva do par que a lojista escolheu. Ver #105.',
   },
   {
     code: 'zindex',

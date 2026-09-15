@@ -47,7 +47,7 @@
     {% if show_tags and article.tags.size > 0 %}
       <div class="flex flex-wrap gap-2 mb-3">
         {% for tag in article.tags limit: 2 %}
-          <span class="text-xs uppercase tracking-[0.12em] text-foreground/50">
+          <span class="text-xs uppercase tracking-[0.12em] text-foreground-muted">
             {{ tag }}
           </span>
         {% endfor %}
@@ -60,10 +60,10 @@
     </h3>
 
     {%- comment -%} Metadata (Autor e Data) {%- endcomment -%}
-    <div class="flex items-center gap-2 text-xs text-foreground/55 mb-3">
+    <div class="flex items-center gap-2 text-xs text-foreground-muted mb-3">
       {% if show_author and article.author %}
         <span class="font-medium">{{ article.author }}</span>
-        <span class="text-foreground/40">•</span>
+        <span class="text-foreground-muted">•</span>
       {% endif %}
       <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
         {{ article.published_at | date: '%d/%m/%Y' }}
@@ -72,13 +72,13 @@
       {% assign word_count = article.content | strip_html | split: ' ' | size %}
       {% assign reading_time = word_count | divided_by: 200 %}
       {% if reading_time == 0 %}{% assign reading_time = 1 %}{% endif %}
-      <span class="text-foreground/40">•</span>
+      <span class="text-foreground-muted">•</span>
       <span>{{ 'blog.general.reading_time' | t: minutes: reading_time }}</span>
     </div>
 
     {%- comment -%} Excerpt {%- endcomment -%}
     {% if show_excerpt %}
-      <div class="text-sm text-foreground/55 line-clamp-3 mb-4">
+      <div class="text-sm text-foreground-muted line-clamp-3 mb-4">
         {% if article.excerpt != blank %}
           {{ article.excerpt | strip_html }}
         {% else %}
