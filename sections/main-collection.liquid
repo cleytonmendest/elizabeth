@@ -23,7 +23,14 @@
   {%- endif -%}
 {%- endfor -%}
 
-<div class="page-width !py-8 color-{{ section.settings.color_scheme }}">
+{%- comment -%}
+  O portador do color scheme é este div EXTERNO, e ele pinta o próprio fundo.
+  Juntar portador e `page-width` num elemento só — como era até a #99 — deixa
+  o fundo preso à largura do conteúdo: em esquema escuro sobrariam duas faixas
+  claras nas laterais. É o mesmo desenho de main-cart, main-search e as outras.
+{%- endcomment -%}
+<div class="color-{{ section.settings.color_scheme }} color-background color-text">
+<div class="page-width !py-8">
   {%- if collection.image and section.settings.show_collection_image -%}
     <div class="collection-hero mb-10 md:mb-12 relative h-64 md:h-[26rem] rounded-theme overflow-hidden">
       <img
@@ -358,6 +365,7 @@
       </div>
     </form>
   {%- endpaginate -%}
+</div>
 </div>
 
 <style>

@@ -43,6 +43,26 @@
         "sem-section"
       ],
       "reason": "A Shopify não seciona o template de vale-presente: ele é servido fora do storefront normal, com layout próprio (layout/gift_card.liquid) e sem header nem footer. Não existe versão dele montada por section — exigir uma reprovaria um arquivo correto por motivo errado."
+    },
+    {
+      "rule": "editable",
+      "files": [
+        "sections/header.liquid"
+      ],
+      "codes": [
+        "scheme-carrier-not-painted"
+      ],
+      "reason": "O portador é o wrapper de largura total; quem pinta é #main-header-container, um descendente direto, e ele precisa ser um elemento separado porque carrega a sombra de scroll (.is-scrolling) e o z-index de sticky. Pintar o wrapper externo faria a sombra desenhar sobre o próprio fundo do header."
+    },
+    {
+      "rule": "editable",
+      "files": [
+        "sections/footer.liquid"
+      ],
+      "codes": [
+        "scheme-carrier-not-painted"
+      ],
+      "reason": "O portador acusado é o da NEWSLETTER (newsletter_color_scheme), não o do footer — o do footer pinta. A pintura da newsletter vive em snippets/newsletter.liquid, que aplica color-background na própria raiz, e a regra não atravessa {% render %}. O portador do footer, na linha 1, pinta fundo e texto."
     }
   ]
 }
