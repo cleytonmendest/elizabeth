@@ -165,12 +165,20 @@ proteção contra spam for desligada na loja, os cinco voltam a rodar sozinhos.
 Um env var registraria o que alguém LEMBROU de declarar; a página registra o
 que a loja realmente carrega.
 
-Esta linha dizia "a detecção é pela PILHA" até o commit seguinte ao que a
-escreveu. Era verdade por meia hora: a primeira versão lia a pilha de quem
-chamou `preventDefault()` durante o clique, e isso OSCILAVA — quatro dos cinco
-pulavam e um caía, porque a pilha só existe se o cancelamento acontecer naquela
-tentativa. Teste que muda de cor sem o código mudar é pior que vermelho fixo.
-A pilha continua no arquivo, como diagnóstico; ela deixou de ser a porta.
+A presença é perguntada DUAS VEZES: antes do clique e depois do cancelamento.
+Isso não é zelo — é o registro de duas correções que caíram no mesmo buraco.
+
+A primeira lia a PILHA de quem chamou `preventDefault()` durante o clique, e
+OSCILAVA: quatro dos cinco pulavam e um caía, porque a pilha só existe se o
+cancelamento acontecer naquela tentativa. A segunda trocou a pilha pela
+presença do script — perguntada uma vez, antes do clique — e deu o MESMO 4 a 1,
+porque o script ainda não tinha chegado naquele instante.
+
+As duas mediam um INSTANTE, e o instante certo é o mais TARDE: barrar o submit
+é o que faz o desafio ser carregado. Teste que muda de cor sem o código mudar é
+pior que vermelho fixo, e duas vezes seguidas é sinal de que o defeito estava
+na pergunta, não na resposta. A pilha continua no arquivo, como terceira linha
+e como diagnóstico; ela deixou de ser a porta.
 
 A lista que vale é sempre a do código:
 
