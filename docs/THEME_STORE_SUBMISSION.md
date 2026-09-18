@@ -13,13 +13,26 @@ Cobre a **loja demo**, **imagens/conteúdo**, **presets** e o **processo de envi
 
 ## 0. Pré-requisitos de código (bloqueadores)
 
-Estes vivem no `docs/ROADMAP.md` (seção "Requisitos Críticos") e são a **fonte da verdade**. A revisão da Theme Store é rigorosa neles:
+Estes NÃO vivem num arquivo. A lista aberta é a das issues com a label
+`theme-store-blocker`, e o estado de cada uma é **medido**, não escrito —
+ver [ADR 0001](adr/0001-guard-rails-executaveis-no-lugar-do-roadmap.md).
 
-- [ ] **i18n** completo (storefront + schema, PT-BR + EN) — sem strings hardcoded
-- [ ] **Acessibilidade** WCAG 2.1 AA (Lighthouse A11y > 90) — *gate atingido (93/93)*
-- [ ] **Performance** (Lighthouse mobile > 50) — *validar na loja publicada*
-- [ ] **Code Quality** (Theme Check 0 offenses) — *mantido em 0*
-- [ ] **Documentação Merchant** (ver seção 5)
+```bash
+npm run status    # painel de conformidade
+npm run gate      # build + linters + testes
+```
+
+| Bloqueador | Quem verifica |
+| --- | --- |
+| **i18n** completo (storefront + schema, PT-BR + EN), sem string hardcoded | `npm run lint -- --rules=i18n` |
+| **Acessibilidade** WCAG 2.1 AA | `npm run test:e2e` (axe) + `e2e/a11y-baseline.json` |
+| **Performance** (Lighthouse mobile > 50) | validar na loja **publicada** — nenhum gate mede isto |
+| **Code Quality** (Theme Check 0 offenses) | `npm run gate` |
+| **Documentação merchant** | seção 5 abaixo |
+
+> A checklist marcada à mão foi o que apodreceu antes. Se você sentir vontade
+> de escrever aqui "isto já está pronto", o lugar certo é um linter ou um
+> teste — não esta linha.
 
 ---
 
@@ -76,11 +89,18 @@ A Shopify **proíbe** Lorem Ipsum / texto de onboarding / placeholder / palavrõ
 
 ## 5. Documentação merchant
 
-- [ ] Guia de **setup/instalação/configuração** (para lojista leigo).
-- [ ] **Overview de features** (sections/settings).
-- [ ] **FAQ** e **formulário de contato de suporte** ao lojista prontos e **linkados** na listagem.
-- [ ] **Troubleshooting**.
-- [ ] Screenshots high-res (1920×1080) e, opcionalmente, vídeo demo (2-3 min).
+Publicada por **GitHub Pages a partir de `docs/`**, em PT-BR e inglês. Os
+arquivos ficam em `docs/lojista/` e `docs/merchant/`; o índice bilíngue é
+`docs/index.md`.
+
+- [x] Guia de **setup/instalação/configuração** (para lojista leigo) — [`lojista/primeiros-passos.md`](lojista/primeiros-passos.md) · [`merchant/getting-started.md`](merchant/getting-started.md)
+- [x] **Overview de features** (sections/settings) — [`lojista/sections.md`](lojista/sections.md) · [`merchant/sections.md`](merchant/sections.md)
+- [x] **Cores e identidade**, incluindo o critério de contraste — [`lojista/cores-e-marca.md`](lojista/cores-e-marca.md) · [`merchant/colors-and-brand.md`](merchant/colors-and-brand.md)
+- [x] **Troubleshooting** — [`lojista/problemas-comuns.md`](lojista/problemas-comuns.md) · [`merchant/troubleshooting.md`](merchant/troubleshooting.md)
+- [x] **FAQ** — [`lojista/faq.md`](lojista/faq.md) · [`merchant/faq.md`](merchant/faq.md)
+- [ ] **Ligar o GitHub Pages:** Settings → Pages → Source "Deploy from a branch" → Branch `main`, Folder `/docs`. Só depois disso existe a URL pública.
+- [ ] **Linkar a URL publicada** na listagem da Theme Store, junto do **contato de suporte**.
+- [ ] Screenshots high-res (1920×1080, 5-7 imagens) e, opcionalmente, vídeo demo (2-3 min) — exigem a loja demo montada (seções 1-3).
 
 ---
 
@@ -100,7 +120,7 @@ A Shopify **proíbe** Lorem Ipsum / texto de onboarding / placeholder / palavrõ
 - [ ] Catálogo com imagens reais, licenciadas e consistentes
 - [ ] Conteúdo 100% autêntico (zero Lorem Ipsum), PT-BR + EN traduzidos
 - [ ] Presets nomeados + pasta `/listings` (se múltiplos)
-- [ ] Documentação merchant + FAQ + contato de suporte publicados
+- [ ] Documentação merchant + FAQ escritas ✅ · GitHub Pages ligado e URL + contato de suporte na listagem
 - [ ] Versão + release notes
 - [ ] Revisão final de Lighthouse (Perf/A11y/Best Practices) na loja **publicada**
 

@@ -7,6 +7,7 @@ Tema customizado para e-commerce de moda feminina (vestidos e ocasiões especiai
 > Arquitetura, convenções e as regras do repositório: [`CLAUDE.md`](CLAUDE.md).
 > Estado atual do tema: `npm run status` (medido, não documentado).
 > Decisões e seus porquês: [`docs/adr/`](docs/adr/). Trabalho aberto: GitHub Issues.
+> Documentação do **lojista** (pt-BR e inglês): [`docs/`](docs/index.md).
 
 ## Stack
 
@@ -54,7 +55,7 @@ assets/        CSS compilado, JS (Web Components) e libs (Swiper)
 locales/       traduções storefront (pt-BR/en) + schema (.schema.json)
 config/        settings_schema.json / settings_data.json
 src/           tailwind.css (fonte do CSS)
-docs/          adr/ (decisões), history.md (congelado)
+docs/          guia do lojista (lojista/, merchant/), adr/ (decisões), history.md (congelado)
 scripts/       linters e painel de estado
 .githooks/     gate de pre-commit
 ```

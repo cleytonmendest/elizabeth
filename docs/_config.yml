@@ -1,0 +1,33 @@
+# Documentação do tema Elizabeth, publicada por GitHub Pages a partir de docs/.
+#
+# Para ligar: Settings → Pages → Source: "Deploy from a branch",
+# Branch: main, Folder: /docs. A URL sai como
+# https://<usuario>.github.io/<repositorio>/
+#
+# O conteúdo daqui é para LOJISTAS, não para desenvolvedores. Nada nestas
+# páginas pode exigir editar código — é critério de aceite da issue #38 e
+# requisito da Theme Store.
+
+title: Tema Elizabeth
+description: Guia do lojista — configuração, seções, cores e solução de problemas.
+lang: pt-BR
+
+theme: jekyll-theme-primer
+
+# As páginas do tema (ADRs, checklist de submissão, histórico) são documentação
+# de DESENVOLVIMENTO e não fazem parte do site do lojista.
+exclude:
+  - adr/
+  - THEME_STORE_SUBMISSION.md
+  - I18N_MIGRATION_GUIDE.md
+  - history.md
+
+defaults:
+  - scope:
+      path: 'lojista'
+    values:
+      lang: pt-BR
+  - scope:
+      path: 'merchant'
+    values:
+      lang: en
