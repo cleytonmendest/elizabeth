@@ -536,6 +536,39 @@ const MUTANTES = [
     teste: 'tests/schemecontract.test.mjs',
   },
   {
+    // A regra de antes da #99, de volta: perguntar ao ARQUIVO em vez de ao
+    // portador. Foi assim que `main-collection` ficou em produção com o defeito
+    // da #28 enquanto o linter exibia verde — um `bg-background` numa gaveta de
+    // filtro e um `text-foreground/55` num parágrafo absolviam o portador que
+    // não pintava nada.
+    porque: 'a pintura volta a ser procurada no arquivo inteiro, e não no portador do scheme',
+    arquivo: 'scripts/lint/rules/editable.mjs',
+    de: '  return portadores(markup).filter((p) => !PINTA_FUNDO.test(p.classes));',
+    para: '  return portadores(markup).filter((p) => !PINTA_FUNDO.test(markup));',
+    teste: 'tests/editable.test.mjs',
+  },
+  {
+    // O piso de contraste sem a faixa de 50 a 57 — exatamente os 100 usos que
+    // a #105 migrou. `text-foreground/50` dá 3,52:1 no esquema claro, e era a
+    // causa das 8 entradas de `color-contrast` do a11y-baseline. Sem esta
+    // faixa a regra fica verde com o defeito presente.
+    porque: 'o piso de contraste deixa de cobrir a faixa de /50 a /57',
+    arquivo: 'scripts/lint/rules/tokens.mjs',
+    de: '    pattern: /\\btext-foreground\\/(?:[0-9]|[1-4][0-9]|5[0-7])\\b/g,',
+    para: '    pattern: /\\btext-foreground\\/(?:[0-9]|[1-4][0-9])\\b/g,',
+    teste: 'tests/tokens.test.mjs',
+  },
+  {
+    // O atributo `class` quebra linha — o `<aside>` de `main-collection` espalha
+    // o dele por quatro. Um regex que não atravessa \n não enxerga o portador,
+    // e "não enxerguei" produz exatamente o mesmo silêncio de "está tudo certo".
+    porque: 'o portador com `class` em várias linhas deixa de ser enxergado',
+    arquivo: 'scripts/lint/rules/editable.mjs',
+    de: '  const re = /class\\s*=\\s*(["\'])([\\s\\S]*?)\\1/g;',
+    para: '  const re = /class\\s*=\\s*(["\'])([^\\n]*?)\\1/g;',
+    teste: 'tests/editable.test.mjs',
+  },
+  {
     // O desastre da #64, na forma exata em que ele aconteceria: usar a
     // preview_url inteira como baseURL. `page.goto('/cart')` descarta a query,
     // o tema PUBLICADO responde tudo com 200, e a suíte fica verde medindo a

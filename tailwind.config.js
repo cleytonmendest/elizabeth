@@ -23,7 +23,14 @@ module.exports = {
       // dark mode automaticamente. Suporta opacidade: text-foreground/70, bg-text/5.
       colors: {
         background: 'rgb(var(--color-background) / <alpha-value>)',
-        foreground: 'rgb(var(--color-foreground) / <alpha-value>)',
+        foreground: {
+          DEFAULT: 'rgb(var(--color-foreground) / <alpha-value>)',
+          // Texto secundário. O VALOR vem do scheme (--color-foreground-muted,
+          // gerado em snippets/theme-styles.liquid); este token só diz onde ele
+          // se aplica. Use-o em vez de escolher uma opacidade: `text-foreground/50`
+          // dá 3,52:1 no esquema claro e reprova WCAG AA. Ver #105 e ADR 0012.
+          muted: 'rgb(var(--color-foreground-muted) / <alpha-value>)',
+        },
         border: 'rgb(var(--color-border) / <alpha-value>)',
         link: 'rgb(var(--color-link) / <alpha-value>)',
         button: {

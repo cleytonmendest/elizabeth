@@ -23,7 +23,14 @@
   {%- endif -%}
 {%- endfor -%}
 
-<div class="page-width !py-8 color-{{ section.settings.color_scheme }}">
+{%- comment -%}
+  O portador do color scheme é este div EXTERNO, e ele pinta o próprio fundo.
+  Juntar portador e `page-width` num elemento só — como era até a #99 — deixa
+  o fundo preso à largura do conteúdo: em esquema escuro sobrariam duas faixas
+  claras nas laterais. É o mesmo desenho de main-cart, main-search e as outras.
+{%- endcomment -%}
+<div class="color-{{ section.settings.color_scheme }} color-background color-text">
+<div class="page-width !py-8">
   {%- if collection.image and section.settings.show_collection_image -%}
     <div class="collection-hero mb-10 md:mb-12 relative h-64 md:h-[26rem] rounded-theme overflow-hidden">
       <img
@@ -53,7 +60,7 @@
     <div class="text-center mb-10 md:mb-12">
       <h1 class="text-3xl md:text-4xl font-light tracking-title mb-3">{{ collection.title }}</h1>
       {%- if collection.description != blank and section.settings.show_collection_description -%}
-        <div class="text-sm text-foreground/55 max-w-2xl mx-auto">
+        <div class="text-sm text-foreground-muted max-w-2xl mx-auto">
           {{ collection.description }}
         </div>
       {%- endif -%}
@@ -97,7 +104,7 @@
               {%- if active_filter_count > 0 -%}
                 <a
                   href="{{ collection.url }}{% if sort_by != blank %}?sort_by={{ sort_by }}{% endif %}"
-                  class="text-xs uppercase tracking-[0.12em] text-foreground/55 hover:text-foreground underline underline-offset-4 transition-colors"
+                  class="text-xs uppercase tracking-[0.12em] text-foreground-muted hover:text-foreground underline underline-offset-4 transition-colors"
                 >
                   {{ 'collection.filters.clear_all' | t }}
                 </a>
@@ -143,7 +150,7 @@
                     -%}
                     <div class="mt-3 flex items-center gap-2">
                       <div class="flex items-center gap-1 flex-1">
-                        <span class="text-xs text-foreground/55">{{ cart.currency.symbol }}</span>
+                        <span class="text-xs text-foreground-muted">{{ cart.currency.symbol }}</span>
                         <input
                           type="number"
                           inputmode="decimal"
@@ -156,9 +163,9 @@
                           class="w-full border border-border rounded-theme-sm px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/40"
                         >
                       </div>
-                      <span class="text-foreground/40">—</span>
+                      <span class="text-foreground-muted">—</span>
                       <div class="flex items-center gap-1 flex-1">
-                        <span class="text-xs text-foreground/55">{{ cart.currency.symbol }}</span>
+                        <span class="text-xs text-foreground-muted">{{ cart.currency.symbol }}</span>
                         <input
                           type="number"
                           inputmode="decimal"
@@ -223,7 +230,7 @@
                               {% if disabled %}disabled{% endif %}
                             >
                             <span>{{ value.label | escape }}</span>
-                            <span class="text-foreground/40 text-xs">({{ value.count }})</span>
+                            <span class="text-foreground-muted text-xs">({{ value.count }})</span>
                           </label>
                         {%- endfor -%}
                       </div>
@@ -270,7 +277,7 @@
           </div>
 
           {%- comment -%} Centro: contagem de produtos {%- endcomment -%}
-          <p class="justify-self-center text-center text-sm text-foreground/55">
+          <p class="justify-self-center text-center text-sm text-foreground-muted">
             {%- assign showing_first = paginate.current_offset | plus: 1 -%}
             {%- assign showing_last = paginate.current_offset | plus: paginate.page_size | at_most: paginate.items -%}
             {{ 'collection.general.results_showing' | t: count: paginate.items, first: showing_first, last: showing_last }}
@@ -342,13 +349,13 @@
             </svg>
             {%- if active_filter_count > 0 -%}
               <h2 class="text-2xl font-light tracking-title mb-2">{{ 'collection.general.no_results' | t }}</h2>
-              <p class="text-sm text-foreground/55 mb-8">{{ 'collection.general.no_results_text' | t }}</p>
+              <p class="text-sm text-foreground-muted mb-8">{{ 'collection.general.no_results_text' | t }}</p>
               <a href="{{ collection.url }}" class="inline-flex items-center color-button text-xs uppercase tracking-label px-6 py-3.5 hover:opacity-90 transition-opacity rounded-theme">
                 {{ 'collection.filters.clear_all' | t }}
               </a>
             {%- else -%}
               <h2 class="text-2xl font-light tracking-title mb-2">{{ 'collection.general.no_products' | t }}</h2>
-              <p class="text-sm text-foreground/55 mb-8">{{ 'collection.general.empty_text' | t }}</p>
+              <p class="text-sm text-foreground-muted mb-8">{{ 'collection.general.empty_text' | t }}</p>
               <a href="{{ routes.collections_url }}" class="inline-flex items-center color-button text-xs uppercase tracking-label px-6 py-3.5 hover:opacity-90 transition-opacity rounded-theme">
                 {{ 'collection.general.view_all_collections' | t }}
               </a>
@@ -358,6 +365,7 @@
       </div>
     </form>
   {%- endpaginate -%}
+</div>
 </div>
 
 <style>

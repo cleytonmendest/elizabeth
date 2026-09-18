@@ -47,7 +47,7 @@
             <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
               {{ article.published_at | date: '%d de %B de %Y' }}
             </time>
-            <span class="text-foreground/40">•</span>
+            <span class="text-foreground-muted">•</span>
             {% assign word_count = article.content | strip_html | split: ' ' | size %}
             {% assign reading_time = word_count | divided_by: 200 %}
             {% if reading_time == 0 %}{% assign reading_time = 1 %}{% endif %}
@@ -301,7 +301,7 @@
                 {% if recent_article.id != article.id %}
                   <a href="{{ recent_article.url }}" class="block group">
                     <h4 class="text-sm font-normal text-foreground group-hover:text-foreground/60 line-clamp-2 mb-1 transition-colors">{{ recent_article.title }}</h4>
-                    <p class="text-xs text-foreground/50">{{ recent_article.published_at | date: '%d/%m/%Y' }}</p>
+                    <p class="text-xs text-foreground-muted">{{ recent_article.published_at | date: '%d/%m/%Y' }}</p>
                   </a>
                 {% endif %}
               {% endfor %}
