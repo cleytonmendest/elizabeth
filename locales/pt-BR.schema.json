@@ -645,7 +645,7 @@
       }
     },
     "announcement_bar": {
-      "name": "Barra de Anuncios",
+      "name": "Barra de Anúncios",
       "settings": {
         "color_scheme": {
           "label": "Esquema de cores",
@@ -679,7 +679,7 @@
         }
       },
       "presets": {
-        "name": "Barra de Anuncios"
+        "name": "Barra de Anúncios"
       }
     },
     "testimonials": {

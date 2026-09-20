@@ -19,6 +19,7 @@ automatizar — tudo o mais foi movido para onde não apodrece:
 | O que fazer a seguir | GitHub Issues | — |
 | Por que algo é assim | `docs/adr/` | — |
 | Dívida técnica conhecida | `scripts/lint/config/baseline.json` | `npm run status` |
+| O que a lojista precisa saber | `docs/lojista/` e `docs/merchant/` | `npm test` |
 
 O antigo `docs/ROADMAP.md` foi removido: ele afirmava um estado que dependia de
 alguém lembrar de atualizar, e divergiu do código. Ver

@@ -815,6 +815,31 @@ const MUTANTES = [
     para: '    if (ehComentario(linha) || true) return;',
     teste: 'tests/clique-que-navega.test.mjs',
   },
+  {
+    // Os três abaixo mutam PROSA, e é de propósito: a doc do lojista afirma
+    // coisas sobre o tema, e afirmação sem verificador é o defeito que a ADR
+    // 0001 descreve. O alvo é o texto porque é o texto que apodrece — o
+    // código continua certo enquanto a página passa a mentir sobre ele.
+    porque: 'a doc passa a chamar a seção por um nome que não existe no editor',
+    arquivo: 'docs/merchant/sections.md',
+    de: '### Countdown Timer',
+    para: '### Countdown clock',
+    teste: 'tests/docs.test.mjs',
+  },
+  {
+    porque: 'a doc afirma uma contagem de seções que o tema não tem (a rot do ROADMAP)',
+    arquivo: 'docs/lojista/sections.md',
+    de: '**23 seções que você adiciona onde quiser**',
+    para: '**24 seções que você adiciona onde quiser**',
+    teste: 'tests/docs.test.mjs',
+  },
+  {
+    porque: 'um link entre capítulos da doc aponta para uma âncora que não existe',
+    arquivo: 'docs/merchant/faq.md',
+    de: 'troubleshooting.html#collection-filters-dont-show-up',
+    para: 'troubleshooting.html#collection-filters-missing',
+    teste: 'tests/docs.test.mjs',
+  },
 ];
 
 

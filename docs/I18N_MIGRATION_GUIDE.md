@@ -1,6 +1,6 @@
 # Guia de Migração i18n (Internacionalização)
 
-Referência de **como** migrar textos para locales. O progresso/escopo vive no [`ROADMAP.md`](ROADMAP.md) — não duplicar status aqui.
+Referência de **como** migrar textos para locales. O progresso é medido, não escrito: `npm run lint -- --rules=i18n` diz o que falta, e a dívida registrada está em `scripts/lint/config/baseline.json` — não duplicar status aqui. Ver [ADR 0001](adr/0001-guard-rails-executaveis-no-lugar-do-roadmap.md).
 
 ## Os dois sistemas de tradução do Shopify
 
