@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{%- comment -%}
+  Layout próprio, e não o do `jekyll-theme-primer`, por UM motivo: o dele
+  escreve `<html lang="{{ site.lang }}">`, que é um valor por SITE. Esta doc
+  tem duas metades em idiomas diferentes, então um valor por site carimbaria
+  `pt-BR` em cima das seis páginas em inglês — reprovando o WCAG 2.1 3.1.1
+  (Language of Page), que é nível A, num tema que promete AA.
+
+  Aqui o idioma vem de `page.lang`, que o `_config.yml` atribui por pasta.
+
+  O CSS continua sendo o do primer: `assets/css/style.scss` vem do gem, e o
+  Jekyll o resolve como se estivesse nesta pasta.
+{%- endcomment -%}
+<html lang="{{ page.lang | default: site.lang }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {%- seo -%}
+    <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+    {%- if page.alt %}
+    <link rel="alternate" hreflang="{{ page.alt_lang }}" href="{{ page.alt | relative_url }}">
+    {%- endif %}
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+
+      {%- comment -%}
+        O seletor de idioma fica no TOPO de toda página, não só na inicial.
+        Quem chega por busca cai no meio do guia, não na raiz — e foi assim
+        que a versão anterior pareceu existir só em português.
+      {%- endcomment -%}
+      <nav class="d-flex flex-justify-between flex-items-center mb-4 pb-2 border-bottom" aria-label="{{ page.nav_label }}">
+        <a href="{{ '/' | relative_url }}">{{ site.title }}</a>
+        {%- if page.alt %}
+        <a href="{{ page.alt | relative_url }}" hreflang="{{ page.alt_lang }}" lang="{{ page.alt_lang }}">{{ page.alt_label }}</a>
+        {%- endif %}
+      </nav>
+
+      {{ content }}
+
+    </div>
+  </body>
+</html>

@@ -1,5 +1,6 @@
 ---
 title: Merchant guide
+alt: /lojista/
 ---
 
 # Merchant guide

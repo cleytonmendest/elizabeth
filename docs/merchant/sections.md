@@ -1,5 +1,6 @@
 ---
 title: 3. Sections, one by one
+alt: /lojista/sections.html
 ---
 
 # 3. Sections, one by one

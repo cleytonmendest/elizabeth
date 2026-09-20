@@ -1,5 +1,6 @@
 ---
 title: 2. Cores e identidade da marca
+alt: /merchant/colors-and-brand.html
 ---
 
 # 2. Cores e identidade da marca

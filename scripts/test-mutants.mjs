@@ -840,6 +840,38 @@ const MUTANTES = [
     para: 'troubleshooting.html#collection-filters-missing',
     teste: 'tests/docs.test.mjs',
   },
+  {
+    // O defeito que foi PUBLICADO: página sem layout sai como fragmento, e o
+    // build relata sucesso porque construir sem erro é tudo que ele mede.
+    porque: 'a página construída deixa de ser exigida como documento HTML completo',
+    arquivo: 'scripts/site.mjs',
+    de: "  if (!/^<!DOCTYPE html>/i.test(html.trim())) {",
+    para: '  if (false) {',
+    teste: 'tests/site.test.mjs',
+  },
+  {
+    porque: 'o idioma da pasta para de ser conferido, e o inglês volta a se declarar pt-BR',
+    arquivo: 'scripts/site.mjs',
+    de: '  } else if (esperado && lang !== esperado) {',
+    para: '  } else if (false) {',
+    teste: 'tests/site.test.mjs',
+  },
+  {
+    // A conferência que comparava a configuração consigo mesma. Sem o remote
+    // como testemunha externa, o `baseurl` errado passa verde.
+    porque: 'o baseurl volta a ser conferido contra ele mesmo em vez de contra o remote',
+    arquivo: 'scripts/site.mjs',
+    de: "  if (ler('baseurl') !== `/${repo}`) {",
+    para: '  if (false) {',
+    teste: 'tests/site.test.mjs',
+  },
+  {
+    porque: 'a página bilíngue deixa de precisar marcar o trecho no outro idioma (WCAG 3.1.2)',
+    arquivo: 'scripts/site.mjs',
+    de: '  const outros = Object.values(IDIOMA_DA_PASTA).filter((l) => l !== primario);',
+    para: '  const outros = [];',
+    teste: 'tests/site.test.mjs',
+  },
 ];
 
 

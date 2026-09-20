@@ -18,7 +18,8 @@
     "status": "node scripts/status.mjs",
     "gate": "npm run build && npm run lint && npm test",
     "setup": "git config core.hooksPath .githooks && echo 'Hooks de git ativados (.githooks).'",
-    "prepare": "npm run setup"
+    "prepare": "npm run setup",
+    "site": "node scripts/site.mjs"
   },
   "repository": {
     "type": "git",

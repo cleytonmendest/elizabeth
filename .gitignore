@@ -25,3 +25,4 @@ e2e/.auth/
 # arquivo está mutado; se sobrar, a execução seguinte restaura o arquivo e avisa.
 # Nunca deve ser commitado: ele carrega o conteúdo original de um arquivo do tema.
 .mutante-em-curso.json
+.site/

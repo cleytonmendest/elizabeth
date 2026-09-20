@@ -1,0 +1,11 @@
+# As gems do site da doc. Elas NÃO fazem parte do tema Shopify — o tema é
+# Liquid e Node, e nada aqui é empacotado no zip enviado à Theme Store.
+#
+# Existe para fixar a versão: o site precisa continuar de pé enquanto a
+# listagem da Theme Store apontar para ele, e uma major nova do Jekyll
+# quebrando o build em cima de um PR não relacionado é ruído caro.
+source 'https://rubygems.org'
+
+gem 'jekyll', '~> 4.4'
+gem 'jekyll-theme-primer', '~> 0.6'
+gem 'jekyll-seo-tag', '~> 2.9'

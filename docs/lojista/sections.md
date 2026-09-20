@@ -1,5 +1,6 @@
 ---
 title: 3. As seções, uma a uma
+alt: /merchant/sections.html
 ---
 
 # 3. As seções, uma a uma

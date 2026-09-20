@@ -1,5 +1,6 @@
 ---
 title: 4. Problemas comuns
+alt: /merchant/troubleshooting.html
 ---
 
 # 4. Problemas comuns

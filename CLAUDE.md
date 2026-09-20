@@ -19,7 +19,7 @@ automatizar — tudo o mais foi movido para onde não apodrece:
 | O que fazer a seguir | GitHub Issues | — |
 | Por que algo é assim | `docs/adr/` | — |
 | Dívida técnica conhecida | `scripts/lint/config/baseline.json` | `npm run status` |
-| O que a lojista precisa saber | `docs/lojista/` e `docs/merchant/` | `npm test` |
+| O que a lojista precisa saber | `docs/lojista/` e `docs/merchant/` | `npm test` · `npm run site` |
 
 O antigo `docs/ROADMAP.md` foi removido: ele afirmava um estado que dependia de
 alguém lembrar de atualizar, e divergiu do código. Ver
@@ -49,6 +49,7 @@ npm run test:mutants                  # os testes conseguem falhar?
 npm run test:e2e                      # Playwright: axe + fluxos
 npm run test:e2e:gate                 # os verificadores que não precisam de loja
 npm run test:e2e:baseline             # regrava a dívida de a11y (depois de reduzi-la)
+npm run site                          # constrói a doc do lojista e mede o HTML gerado
 ```
 
 **A catraca:** violação já existente é aviso; violação **nova** é erro. E o
