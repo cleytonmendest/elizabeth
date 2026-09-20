@@ -26,3 +26,9 @@ e2e/.auth/
 # Nunca deve ser commitado: ele carrega o conteúdo original de um arquivo do tema.
 .mutante-em-curso.json
 .site/
+
+# O lock do site da doc NÃO é commitado: ele grava a plataforma e a versão do
+# Bundler da máquina que o gerou, e um lock feito aqui (x86_64-linux-gnu,
+# Bundler 4) reprova no runner do Actions antes de instalar qualquer gem. O
+# pino que vale são as restrições do `docs/Gemfile`.
+docs/Gemfile.lock

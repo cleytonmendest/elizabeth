@@ -131,6 +131,14 @@ jobs:
       # filtro de caminho, pelo mesmo motivo que o job da loja não está atrás
       # de um `if:` de secret: job que só roda às vezes é verde que não prova
       # nada, e este repositório já pagou por isso no board.
+      # `ruby-version` sai do `docs/.ruby-version`, e o action REPROVA sem um
+      # dos dois — foi assim que a primeira versão deste job caiu, antes de
+      # instalar gem nenhuma.
+      #
+      # O `Gemfile.lock` não é commitado de propósito: ele grava a plataforma
+      # e a versão do Bundler de quem o gerou, e um lock feito num ambiente
+      # com Bundler 4 reprova aqui. O pino que vale são as restrições do
+      # `docs/Gemfile`, que já barram uma major nova do Jekyll.
       - uses: ruby/setup-ruby@v1
         with:
           working-directory: docs

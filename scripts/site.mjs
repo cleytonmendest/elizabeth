@@ -258,10 +258,12 @@ export function problemasDoEndereco(config, remote) {
  * Onde o Jekyll está, já que ele não costuma estar no PATH do npm.
  *
  * `bundle exec` primeiro: `docs/Gemfile` fixa a versão, e rodar uma solta do
- * sistema mediria um Jekyll diferente do que o CI e o GitHub Pages usam.
+ * sistema mediria um Jekyll diferente do que o CI e o GitHub Pages usam. Se o
+ * bundle não estiver instalado, a tentativa falha e o `jekyll` do sistema
+ * assume — que é o caso de quem só quer construir o site uma vez.
  */
 function achaJekyll() {
-  const comGemfile = fs.existsSync(path.join(FONTE, 'Gemfile.lock'));
+  const comGemfile = fs.existsSync(path.join(FONTE, 'Gemfile'));
   const candidatos = [
     ...(comGemfile ? [['bundle', 'exec', 'jekyll']] : []),
     'jekyll',
