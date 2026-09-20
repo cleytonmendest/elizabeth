@@ -1,5 +1,6 @@
 ---
 title: 2. Colors and brand identity
+alt: /lojista/cores-e-marca.html
 ---
 
 # 2. Colors and brand identity

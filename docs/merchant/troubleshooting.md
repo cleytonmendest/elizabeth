@@ -1,5 +1,6 @@
 ---
 title: 4. Troubleshooting
+alt: /lojista/problemas-comuns.html
 ---
 
 # 4. Troubleshooting

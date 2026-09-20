@@ -1,5 +1,6 @@
 ---
 title: 1. Primeiros passos
+alt: /merchant/getting-started.html
 ---
 
 # 1. Primeiros passos

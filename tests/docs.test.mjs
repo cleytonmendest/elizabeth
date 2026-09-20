@@ -107,7 +107,14 @@ describe.each(IDIOMAS)('a doc de $pasta nomeia as seções como o editor', ({ pa
     const dePagina = todas.filter(
       (s) => !s.adicionavel && !/sections\/(header|footer)\.liquid/.test(s.arquivo),
     ).length;
-    const numeros = [...texto.split('\n')[6].matchAll(/\*\*(\d+)[^*]*\*\*/g)].map((m) => Number(m[1]));
+    // A linha é achada pelo CONTEÚDO, não pelo índice. A primeira versão lia
+    // `split('\n')[6]`, e acrescentar uma chave ao front matter deslocou o
+    // arquivo inteiro: o teste ficou vermelho sem nada da doc ter mudado.
+    // Teste preso a número de linha mede o arquivo, não a afirmação.
+    const linha = texto.split('\n').find((l) => /\*\*\d+ (?:seções|sections)/.test(l));
+    expect(linha, 'nenhuma linha afirma uma contagem de seções').toBeTruthy();
+
+    const numeros = [...linha.matchAll(/\*\*(\d+)[^*]*\*\*/g)].map((m) => Number(m[1]));
     expect(numeros, 'a linha de abertura deveria afirmar duas contagens').toEqual([
       adicionaveis,
       dePagina,

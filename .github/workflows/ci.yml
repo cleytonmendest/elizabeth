@@ -112,6 +112,45 @@ jobs:
       - name: Os testes conseguem falhar?
         run: npm run test:mutants
 
+  site:
+    name: Site da doc do lojista
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # ── Por que este job existe ────────────────────────────────────────
+      #
+      # O `docs/_config.yml` declarava `theme: jekyll-theme-primer`, mas o
+      # Jekyll só aplica layout quando a página PEDE, e nenhuma pedia. As doze
+      # páginas foram publicadas como fragmento de HTML — sem `<!DOCTYPE>`, sem
+      # `<head>`, sem CSS e sem `<html lang>` — e todos os gates ficaram
+      # verdes, porque nenhum media a SAÍDA. O build do próprio GitHub Pages
+      # relatou sucesso: construir sem erro é tudo que ele verifica.
+      #
+      # Este job constrói o site e mede o HTML gerado. Ele NÃO está atrás de um
+      # filtro de caminho, pelo mesmo motivo que o job da loja não está atrás
+      # de um `if:` de secret: job que só roda às vezes é verde que não prova
+      # nada, e este repositório já pagou por isso no board.
+      # `ruby-version` sai do `docs/.ruby-version`, e o action REPROVA sem um
+      # dos dois — foi assim que a primeira versão deste job caiu, antes de
+      # instalar gem nenhuma.
+      #
+      # O `Gemfile.lock` não é commitado de propósito: ele grava a plataforma
+      # e a versão do Bundler de quem o gerou, e um lock feito num ambiente
+      # com Bundler 4 reprova aqui. O pino que vale são as restrições do
+      # `docs/Gemfile`, que já barram uma major nova do Jekyll.
+      - uses: ruby/setup-ruby@v1
+        with:
+          working-directory: docs
+          bundler-cache: true
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: O site construído está inteiro
+        run: npm run site
+
   e2e:
     name: Navegador (axe + fluxos)
     runs-on: ubuntu-latest

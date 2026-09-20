@@ -1,5 +1,6 @@
 ---
 title: 5. Perguntas frequentes
+alt: /merchant/faq.html
 ---
 
 # 5. Perguntas frequentes

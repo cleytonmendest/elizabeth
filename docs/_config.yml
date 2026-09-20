@@ -1,18 +1,26 @@
 # Documentação do tema Elizabeth, publicada por GitHub Pages a partir de docs/.
 #
 # Para ligar: Settings → Pages → Source: "Deploy from a branch",
-# Branch: main, Folder: /docs. A URL sai como
-# https://<usuario>.github.io/<repositorio>/
+# Branch: main, Folder: /docs.
 #
 # O conteúdo daqui é para LOJISTAS, não para desenvolvedores. Nada nestas
 # páginas pode exigir editar código — é critério de aceite da issue #38 e
 # requisito da Theme Store.
 
-title: Tema Elizabeth
-description: Guia do lojista — configuração, seções, cores e solução de problemas.
+title: Elizabeth
+description: Guia do lojista · Merchant guide
 lang: pt-BR
 
+# `baseurl` é o caminho do projeto no github.io, e sem ele todo `relative_url`
+# aponta para a RAIZ do domínio — a folha de estilo inclusive. Ver a nota sobre
+# links absolutos em `scripts/site.mjs`, que verifica cada href contra os
+# arquivos realmente gerados.
+url: https://cleytonmendest.github.io
+baseurl: /elizabeth
+
 theme: jekyll-theme-primer
+plugins:
+  - jekyll-seo-tag
 
 # As páginas do tema (ADRs, checklist de submissão, histórico) são documentação
 # de DESENVOLVIMENTO e não fazem parte do site do lojista.
@@ -22,12 +30,30 @@ exclude:
   - I18N_MIGRATION_GUIDE.md
   - history.md
 
+# ── `layout` aqui não é detalhe de estilo ───────────────────────────────────
+#
+# O Jekyll só aplica layout quando a página PEDE. Sem esta atribuição — que é
+# como o site nasceu — as doze páginas saem como fragmento de HTML: sem
+# `<!DOCTYPE>`, sem `<head>`, sem CSS e sem `<html lang>`. O build passa verde,
+# o Pages publica, e o defeito só aparece para quem abre a URL.
+#
+# `scripts/site.mjs` mede a SAÍDA justamente por isso.
 defaults:
   - scope:
-      path: 'lojista'
+      path: ''
+    values:
+      layout: default
+  - scope:
+      path: lojista
     values:
       lang: pt-BR
+      alt_lang: en
+      alt_label: 'English →'
+      nav_label: Idioma
   - scope:
-      path: 'merchant'
+      path: merchant
     values:
       lang: en
+      alt_lang: pt-BR
+      alt_label: 'Português →'
+      nav_label: Language

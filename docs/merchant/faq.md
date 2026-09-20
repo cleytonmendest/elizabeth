@@ -1,5 +1,6 @@
 ---
 title: 5. FAQ
+alt: /lojista/faq.html
 ---
 
 # 5. FAQ

@@ -1,5 +1,6 @@
 ---
 title: 1. Getting started
+alt: /lojista/primeiros-passos.html
 ---
 
 # 1. Getting started
