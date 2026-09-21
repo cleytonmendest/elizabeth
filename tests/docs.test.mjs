@@ -57,6 +57,15 @@ function secoes(localePath) {
 
 const doc = (relativo) => fs.readFileSync(path.join(DOCS, relativo), 'utf8');
 
+/** O texto de uma seção `## <titulo>`, até a próxima do mesmo nível. */
+const trecho = (texto, titulo) => {
+  const inicio = texto.indexOf(`## ${titulo}`);
+  if (inicio === -1) return '';
+  const resto = texto.slice(inicio + 3);
+  const fim = resto.indexOf('\n## ');
+  return fim === -1 ? resto : resto.slice(0, fim);
+};
+
 const paginas = (pasta) =>
   fs
     .readdirSync(path.join(DOCS, pasta))
@@ -203,6 +212,32 @@ describe('o checklist de submissão aponta para a doc publicada', () => {
 
   it.each(IDIOMAS)('a seção 5 linka $pasta', ({ pasta }) => {
     expect(checklist).toMatch(new RegExp(`\\(${pasta}/[a-z-]+\\.md\\)`));
+  });
+
+  it('a seção 5 carrega a URL publicada, montada a partir do _config.yml', () => {
+    // O endereço NÃO é digitado à mão nos dois lugares. Ele é montado de `url`
+    // + `baseurl`, que é de onde o Jekyll também o monta — então renomear o
+    // repositório reprova aqui em vez de deixar o checklist apontando para uma
+    // URL que ninguém serve.
+    //
+    // É o último critério de aceite da #38 ("publicado numa URL pública e
+    // estável") virando comando, que é o que este repositório pede de um
+    // critério.
+    const config = doc('_config.yml');
+    const ler = (chave) =>
+      config.match(new RegExp(`^${chave}:\\s*(\\S+)`, 'm'))[1].replace(/["']/g, '');
+    const publicada = `${ler('url')}${ler('baseurl')}/`;
+
+    expect(publicada).toMatch(/^https:\/\/\S+\.github\.io\/\S+\/$/);
+
+    // A conferência é por SEÇÃO, e não no documento inteiro. A primeira versão
+    // procurava a URL em `checklist` e sobreviveu ao defeito plantado: apagar
+    // o endereço do §5 deixava o teste VERDE, porque o §6 também o carrega.
+    // O teste afirmava uma coisa e media outra — de novo.
+    for (const secao of ['5. Documentação merchant', '6. Envio']) {
+      expect(trecho(checklist, secao), `a §${secao[0]} deveria linkar ${publicada}`)
+        .toContain(publicada);
+    }
   });
 
   it('não sobrou referência ao ROADMAP removido', () => {

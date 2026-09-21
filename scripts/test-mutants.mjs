@@ -866,6 +866,16 @@ const MUTANTES = [
     teste: 'tests/site.test.mjs',
   },
   {
+    // O plantio mostrou que a conferência procurava a URL no documento INTEIRO
+    // e não na seção: apagar o endereço do §5 passava verde, porque o §6 o
+    // carrega também. O fatiador é o que faz a afirmação e a medida baterem.
+    porque: 'a URL publicada volta a ser procurada no documento todo, e não na seção',
+    arquivo: 'tests/docs.test.mjs',
+    de: "  const resto = texto.slice(inicio + 3);",
+    para: '  const resto = texto;',
+    teste: 'tests/docs.test.mjs',
+  },
+  {
     porque: 'a página bilíngue deixa de precisar marcar o trecho no outro idioma (WCAG 3.1.2)',
     arquivo: 'scripts/site.mjs',
     de: '  const outros = Object.values(IDIOMA_DA_PASTA).filter((l) => l !== primario);',
