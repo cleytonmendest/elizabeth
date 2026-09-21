@@ -89,17 +89,26 @@ A Shopify **proíbe** Lorem Ipsum / texto de onboarding / placeholder / palavrõ
 
 ## 5. Documentação merchant
 
-Publicada por **GitHub Pages a partir de `docs/`**, em PT-BR e inglês. Os
-arquivos ficam em `docs/lojista/` e `docs/merchant/`; o índice bilíngue é
-`docs/index.md`.
+**Publicada:** <https://cleytonmendest.github.io/elizabeth/>
+
+Em PT-BR e inglês, por GitHub Pages a partir de `docs/`. Os arquivos ficam em
+`docs/lojista/` e `docs/merchant/`; o índice bilíngue é `docs/index.md`.
+
+O endereço acima é o que vai na listagem da Theme Store, e ele não é digitado
+à mão em dois lugares: `tests/docs.test.mjs` o monta a partir de `url` +
+`baseurl` do `docs/_config.yml` e exige que esta seção o contenha. Renomear o
+repositório muda o endereço, e o teste reprova até esta linha acompanhar.
+
+`npm run site` constrói o site e mede o HTML gerado — layout aplicado, idioma
+declarado por pasta, links resolvendo. Ele existe porque a primeira publicação
+saiu como doze fragmentos sem `<head>`, com o build relatando sucesso.
 
 - [x] Guia de **setup/instalação/configuração** (para lojista leigo) — [`lojista/primeiros-passos.md`](lojista/primeiros-passos.md) · [`merchant/getting-started.md`](merchant/getting-started.md)
 - [x] **Overview de features** (sections/settings) — [`lojista/sections.md`](lojista/sections.md) · [`merchant/sections.md`](merchant/sections.md)
 - [x] **Cores e identidade**, incluindo o critério de contraste — [`lojista/cores-e-marca.md`](lojista/cores-e-marca.md) · [`merchant/colors-and-brand.md`](merchant/colors-and-brand.md)
 - [x] **Troubleshooting** — [`lojista/problemas-comuns.md`](lojista/problemas-comuns.md) · [`merchant/troubleshooting.md`](merchant/troubleshooting.md)
 - [x] **FAQ** — [`lojista/faq.md`](lojista/faq.md) · [`merchant/faq.md`](merchant/faq.md)
-- [ ] **Ligar o GitHub Pages:** Settings → Pages → Source "Deploy from a branch" → Branch `main`, Folder `/docs`. Só depois disso existe a URL pública.
-- [ ] **Linkar a URL publicada** na listagem da Theme Store, junto do **contato de suporte**.
+- [x] **GitHub Pages ligado** e o site de pé nos dois idiomas
 - [ ] Screenshots high-res (1920×1080, 5-7 imagens) e, opcionalmente, vídeo demo (2-3 min) — exigem a loja demo montada (seções 1-3).
 
 ---
@@ -107,7 +116,9 @@ arquivos ficam em `docs/lojista/` e `docs/merchant/`; o índice bilíngue é
 ## 6. Envio
 
 - [ ] **Número de versão** + **release notes** destacando as features principais.
-- [ ] Metadados da listagem: nome, descrição, lista de features, docs, contato de suporte, preço.
+- [ ] Metadados da listagem: nome, descrição, lista de features, preço.
+- [ ] **URL da documentação** na listagem: <https://cleytonmendest.github.io/elizabeth/>
+- [ ] **Contato de suporte** na listagem.
 - [ ] URL de cada **loja demo** (uma por preset).
 - [ ] Submeter pelo **Partner Dashboard** → aguardar revisão da Shopify (rigorosa nos bloqueadores da seção 0).
 
@@ -120,7 +131,7 @@ arquivos ficam em `docs/lojista/` e `docs/merchant/`; o índice bilíngue é
 - [ ] Catálogo com imagens reais, licenciadas e consistentes
 - [ ] Conteúdo 100% autêntico (zero Lorem Ipsum), PT-BR + EN traduzidos
 - [ ] Presets nomeados + pasta `/listings` (se múltiplos)
-- [ ] Documentação merchant + FAQ escritas ✅ · GitHub Pages ligado e URL + contato de suporte na listagem
+- [ ] Documentação merchant publicada ✅ · URL e contato de suporte na listagem da Theme Store
 - [ ] Versão + release notes
 - [ ] Revisão final de Lighthouse (Perf/A11y/Best Practices) na loja **publicada**
 
