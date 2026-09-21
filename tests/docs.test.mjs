@@ -240,6 +240,30 @@ describe('o checklist de submissão aponta para a doc publicada', () => {
     }
   });
 
+  it('a seção 4 nomeia os presets que o tema realmente tem', () => {
+    // A linha que estava aqui dizia "o tema tem um estilo só" enquanto
+    // `settings_data.json` já trazia quatro presets completos, cada um com
+    // fonte, cores e arranjo de home próprios. A afirmação nunca foi medida, e
+    // por isso sobreviveu ao nascimento dos outros três.
+    //
+    // Importa além da estética: o §4 diz que CADA preset exige a própria loja
+    // demo e o próprio jogo de screenshots. A linha errada escondia que o
+    // trabalho de submissão é quatro vezes o que o documento sugeria.
+    const presets = Object.keys(readJSONC('config/settings_data.json').presets);
+    const secao = trecho(checklist, '4. Presets / estilos');
+
+    expect(presets.length).toBeGreaterThan(0);
+    for (const nome of presets) {
+      expect(secao, `a §4 não menciona o preset "${nome}"`).toContain(nome);
+    }
+
+    // A direção contrária: a §4 não pode listar um preset que não existe mais.
+    // Sem isto, apagar um preset do tema deixaria a tabela vendendo quatro
+    // estilos quando a loja entrega três.
+    const naTabela = [...secao.matchAll(/^\| \*\*([^*]+)\*\* \|/gm)].map((m) => m[1].trim());
+    expect(naTabela.sort()).toEqual([...presets].sort());
+  });
+
   it('não sobrou referência ao ROADMAP removido', () => {
     // O arquivo apontava para `docs/ROADMAP.md` como "fonte da verdade" MESES
     // depois de a ADR 0001 removê-lo. Um link morto num checklist é pior que
