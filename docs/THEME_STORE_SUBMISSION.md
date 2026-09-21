@@ -78,12 +78,35 @@ A Shopify **proíbe** Lorem Ipsum / texto de onboarding / placeholder / palavrõ
 
 ## 4. Presets / estilos
 
-- [ ] Definir preset(s) do tema. **Um preset usa o nome do tema** ("Elizabeth").
-- [ ] Nomes de preset: **1-2 palavras, < 30 caracteres, únicos** na Theme Store.
-- [ ] Múltiplos presets exigem **conjuntos de templates distintos** numa pasta **`/listings`** dentro do zip do tema.
-- [ ] Cada preset tem **sua própria loja demo**, com layout/cores/tipografia espelhando o preset.
+**Decisão: os quatro presets vão ser submetidos.**
 
-> **Estado atual:** o tema tem um estilo só. Definir a estratégia de presets (quantos, nomes, paletas) antes de submeter.
+O tema tem quatro, em `config/settings_data.json`, e cada um sobrescreve treze
+settings — fonte de título e de corpo, os dois color schemes, largura, logo e o
+`content_for_index` (o arranjo da home é próprio de cada preset):
+
+| Preset | Fonte de título | Fundo | Texto | Botão |
+| --- | --- | --- | --- | --- |
+| **Elizabeth** | Work Sans | `#ffffff` | `#121212` | `#121212` |
+| **Rosé** | Cormorant | `#FCF8F5` | `#3D2C2E` | `#B76E79` |
+| **Noir** | Playfair | `#14110F` | `#F2EDE7` | `#C9A227` |
+| **Botânico** | Fraunces | `#F4F2EC` | `#2E3A2E` | `#7C8B6E` |
+
+Esta tabela não é escrita à mão sem rede: `tests/docs.test.mjs` compara os
+nomes com os de `settings_data.json` e reprova se divergirem, nos dois
+sentidos. Ela substitui uma linha que afirmava "o tema tem um estilo só"
+enquanto os quatro já existiam no código — o mesmo tipo de afirmação não
+medida que a [ADR 0001](adr/0001-guard-rails-executaveis-no-lugar-do-roadmap.md)
+descreve.
+
+- [x] Presets definidos. **Um usa o nome do tema** ("Elizabeth") ✓
+- [x] Nomes com **1-2 palavras e menos de 30 caracteres** ✓ — falta conferir se são **únicos** na Theme Store
+- [ ] Os quatro exigem **conjuntos de templates distintos** numa pasta **`/listings`** no zip. Ela **não existe** hoje.
+- [ ] **Quatro lojas demo**, uma por preset, com layout/cores/tipografia espelhando o preset (§1-3, vezes quatro)
+- [ ] Screenshots de cada preset — [issue #112](https://github.com/cleytonmendest/elizabeth/issues/112)
+
+> As duas últimas regras — `/listings` e uma demo por preset — vêm da doc da
+> Theme Store citada no topo deste arquivo, e **não** de medição nossa. Valem o
+> aviso geral: reconfirmar antes de submeter.
 
 ---
 
@@ -130,7 +153,7 @@ saiu como doze fragmentos sem `<head>`, com o build relatando sucesso.
 - [ ] Loja(s) demo criada(s) como client transfer store, uma por preset
 - [ ] Catálogo com imagens reais, licenciadas e consistentes
 - [ ] Conteúdo 100% autêntico (zero Lorem Ipsum), PT-BR + EN traduzidos
-- [ ] Presets nomeados + pasta `/listings` (se múltiplos)
+- [ ] Os quatro presets nomeados + pasta `/listings` + quatro lojas demo
 - [ ] Documentação merchant publicada ✅ · URL e contato de suporte na listagem da Theme Store
 - [ ] Versão + release notes
 - [ ] Revisão final de Lighthouse (Perf/A11y/Best Practices) na loja **publicada**

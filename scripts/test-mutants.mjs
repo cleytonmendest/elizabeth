@@ -866,6 +866,30 @@ const MUTANTES = [
     teste: 'tests/site.test.mjs',
   },
   {
+    // ── Este mutante nasceu errado, e a lição está no erro ─────────────────
+    //
+    // A primeira versão mutava a ASSERÇÃO da direção reversa em tautologia
+    // (`toEqual(naTabela.sort())`) e SOBREVIVEU: com a tabela correta, aquela
+    // asserção não tinha nada para pegar, então esvaziá-la não muda a cor da
+    // suíte. Mutante que vira tautologia só mata quando o DADO já está errado.
+    //
+    // O alvo certo é o documento. Este acrescenta um preset que não existe no
+    // tema, sem tirar nenhum dos reais: a direção direta continua passando —
+    // os quatro estão lá — e só a reversa reprova. É ela, e nada mais, que
+    // este mutante prova.
+    //
+    // Importa porque é o defeito caro: a §4 vendendo quatro estilos enquanto
+    // a loja entrega três, descoberto pela revisão da Theme Store em vez de
+    // por nós.
+    porque: 'a §4 vende um preset que o tema não tem, e só a direção reversa pega',
+    arquivo: 'docs/THEME_STORE_SUBMISSION.md',
+    de: '| **Botânico** | Fraunces | `#F4F2EC` | `#2E3A2E` | `#7C8B6E` |',
+    para:
+      '| **Botânico** | Fraunces | `#F4F2EC` | `#2E3A2E` | `#7C8B6E` |\n' +
+      '| **Veludo** | Cormorant | `#1A1014` | `#F5E6E8` | `#8E3B52` |',
+    teste: 'tests/docs.test.mjs',
+  },
+  {
     // O plantio mostrou que a conferência procurava a URL no documento INTEIRO
     // e não na seção: apagar o endereço do §5 passava verde, porque o §6 o
     // carrega também. O fatiador é o que faz a afirmação e a medida baterem.
