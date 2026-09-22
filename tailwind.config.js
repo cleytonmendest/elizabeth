@@ -106,6 +106,36 @@ module.exports = {
       minHeight: {
         page: '60vh',
       },
+      // Sombra da barra fixa de comprar. O valor que estava no markup era
+      // `shadow-[0_-2px_8px_rgba(0,0,0,0.08)]`: preto cravado num tema cujo
+      // princípio é que cor vem do color scheme. Num scheme escuro ela some.
+      // Aqui ela sai de `--color-shadow`, que a lojista escolhe por scheme.
+      boxShadow: {
+        bar: '0 -2px 8px rgb(var(--color-shadow) / 0.08)',
+      },
+      // Recuo do toque no botão. Era `scale-[0.97]`, escrito uma vez e sem
+      // degrau — qualquer botão novo inventaria o próprio.
+      scale: {
+        press: '0.97',
+      },
+      // As três medidas do seletor de quantidade. Elas existiam como valor
+      // arbitrário em DOIS arquivos (o snippet e uma cópia dentro da barra
+      // fixa), que é também o que a regra `similarity` apontava.
+      width: {
+        'qty-step':  '25px',  // botão + / − · ícone de 16px com folga de toque
+        'qty-field': '50px',  // campo numérico · cabe 3 dígitos sem cortar
+      },
+      // Piso do botão de ação. Sem ele o rótulo troca ("Adicionar" →
+      // "Esgotado") e a barra inteira pula de largura.
+      minWidth: {
+        action: '100px',
+      },
+      // Largura do miolo da barra fixa. O `page-width` do lojista vai a 2560px,
+      // e com ele a barra punha título numa borda e botão na outra, com um
+      // buraco no meio (issue #46). Este é o teto do CONTEÚDO, não da página.
+      maxWidth: {
+        bar: '64rem',
+      },
       // Proporções — `video` (16/9) já é degrau do Tailwind e continua valendo.
       aspectRatio: {
         portrait:  '3 / 4',   // mídia editorial em pé

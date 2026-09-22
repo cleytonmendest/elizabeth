@@ -866,6 +866,32 @@ const MUTANTES = [
     teste: 'tests/site.test.mjs',
   },
   {
+    // Os três da barra fixa. O choque com o "voltar ao topo" é de POSIÇÃO, não
+    // de camada: os dois vivem em `z-overlay` e quem ficava por cima dependia
+    // da ordem no DOM. Ver issue #46.
+    porque: 'a barra some sem avisar quem flutua no rodapé, e o botão volta a ficar por cima dela',
+    arquivo: 'assets/sticky-atc.js',
+    de: "    document.documentElement.removeAttribute('data-sticky-atc-visivel');",
+    para: '    // mutante',
+    teste: 'tests/sticky-atc.test.mjs',
+  },
+  {
+    porque: 'a barra aparece sem marcar o estado, e o afastamento nunca acontece',
+    arquivo: 'assets/sticky-atc.js',
+    de: "    document.documentElement.setAttribute('data-sticky-atc-visivel', '');",
+    para: '    // mutante',
+    teste: 'tests/sticky-atc.test.mjs',
+  },
+  {
+    // A altura precisa ser MEDIDA: ela muda com `settings.font_scale`, com o
+    // preço e com a largura da tela. Um número cravado erra para alguém.
+    porque: 'a altura da barra vira número cravado e a folga fica errada em outro font_scale',
+    arquivo: 'assets/sticky-atc.js',
+    de: '      `${this.stickyBar.offsetHeight}px`,',
+    para: "      '64px',",
+    teste: 'tests/sticky-atc.test.mjs',
+  },
+  {
     // A afirmação errada que este PR corrigiu: o §4 dizia que cada preset traz
     // o próprio arranjo de home. A chave existe e está VAZIA nos quatro, e o
     // erro escondia que "uma demo por preset com layout espelhando o preset"

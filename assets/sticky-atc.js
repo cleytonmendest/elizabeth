@@ -44,12 +44,29 @@ class StickyAddToCart {
     observer.observe(this.mainButton);
   }
 
+  /**
+   * A barra é `fixed bottom-0` e ocupa a faixa onde o botão "voltar ao topo"
+   * mora (`bottom-6`). Os dois estão em `z-overlay`, então quem fica por cima
+   * dependia da ordem no DOM — não de decisão. E empilhar não resolveria: o
+   * problema é de POSIÇÃO, não de camada.
+   *
+   * Por isso a barra publica a própria altura e o próprio estado no elemento
+   * raiz, e quem flutua no rodapé se afasta. A altura é MEDIDA, não cravada:
+   * ela muda com `settings.font_scale`, com o tamanho do preço e com a largura
+   * da tela.
+   */
   show() {
     this.stickyBar.classList.add('visible');
+    document.documentElement.style.setProperty(
+      '--sticky-atc-height',
+      `${this.stickyBar.offsetHeight}px`,
+    );
+    document.documentElement.setAttribute('data-sticky-atc-visivel', '');
   }
 
   hide() {
     this.stickyBar.classList.remove('visible');
+    document.documentElement.removeAttribute('data-sticky-atc-visivel');
   }
 }
 
