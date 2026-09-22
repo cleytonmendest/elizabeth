@@ -866,6 +866,17 @@ const MUTANTES = [
     teste: 'tests/site.test.mjs',
   },
   {
+    // A afirmação errada que este PR corrigiu: o §4 dizia que cada preset traz
+    // o próprio arranjo de home. A chave existe e está VAZIA nos quatro, e o
+    // erro escondia que "uma demo por preset com layout espelhando o preset"
+    // é impossível hoje — o layout é o mesmo. Ver a issue #114.
+    porque: 'a §4 volta a prometer que cada preset traz o próprio arranjo de home',
+    arquivo: 'docs/THEME_STORE_SUBMISSION.md',
+    de: 'e ele está **vazio** nos quatro',
+    para: 'e ele carrega o arranjo da home de cada preset',
+    teste: 'tests/docs.test.mjs',
+  },
+  {
     // ── Este mutante nasceu errado, e a lição está no erro ─────────────────
     //
     // A primeira versão mutava a ASSERÇÃO da direção reversa em tautologia

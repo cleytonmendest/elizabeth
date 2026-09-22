@@ -81,8 +81,17 @@ A Shopify **proíbe** Lorem Ipsum / texto de onboarding / placeholder / palavrõ
 **Decisão: os quatro presets vão ser submetidos.**
 
 O tema tem quatro, em `config/settings_data.json`, e cada um sobrescreve treze
-settings — fonte de título e de corpo, os dois color schemes, largura, logo e o
-`content_for_index` (o arranjo da home é próprio de cada preset):
+settings: fonte de título e de corpo, os dois color schemes, largura, logo,
+favicon, valor do frete grátis e três redes sociais.
+
+**O que eles NÃO mudam é o layout.** O décimo terceiro setting é
+`content_for_index`, e ele está **vazio** nos quatro — é chave legada de tema
+pré-OS 2.0, quando o arranjo da home morava no `settings_data.json`. Aqui a
+home é o `templates/index.json`, um só, compartilhado. Trocar de preset muda
+cor, fonte, logo e largura; a ordem e o conteúdo das seções são idênticos.
+
+Isso é o problema da [issue #114](https://github.com/cleytonmendest/elizabeth/issues/114),
+e é o que a pasta `/listings` existe para resolver:
 
 | Preset | Fonte de título | Fundo | Texto | Botão |
 | --- | --- | --- | --- | --- |

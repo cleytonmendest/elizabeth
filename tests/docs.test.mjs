@@ -264,6 +264,28 @@ describe('o checklist de submissão aponta para a doc publicada', () => {
     expect(naTabela.sort()).toEqual([...presets].sort());
   });
 
+  it('a §4 não promete que os presets mudam o layout', () => {
+    // A primeira versão desta seção dizia que cada preset traz o próprio
+    // `content_for_index`, "o arranjo da home é próprio de cada preset".
+    // Falso: a chave existe e está VAZIA nos quatro. É legado de tema pré-OS
+    // 2.0; a home de verdade é `templates/index.json`, compartilhado.
+    //
+    // O erro importava porque o §4 exige uma loja demo por preset "com layout
+    // espelhando o preset" — e o layout, hoje, não espelha nada.
+    const presets = readJSONC('config/settings_data.json').presets;
+    const vazios = Object.entries(presets)
+      .filter(([, p]) => Array.isArray(p.content_for_index) && p.content_for_index.length === 0)
+      .map(([nome]) => nome);
+
+    // Enquanto estiverem vazios, a §4 precisa dizer isso. Se um dia algum
+    // preset ganhar seções de verdade, este teste reprova e a prosa acompanha.
+    if (vazios.length === Object.keys(presets).length) {
+      expect(trecho(checklist, '4. Presets / estilos')).toMatch(/vazio/i);
+    } else {
+      expect(trecho(checklist, '4. Presets / estilos')).not.toMatch(/está \*\*vazio\*\* nos quatro/);
+    }
+  });
+
   it('não sobrou referência ao ROADMAP removido', () => {
     // O arquivo apontava para `docs/ROADMAP.md` como "fonte da verdade" MESES
     // depois de a ADR 0001 removê-lo. Um link morto num checklist é pior que
