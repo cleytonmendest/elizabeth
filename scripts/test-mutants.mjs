@@ -866,6 +866,31 @@ const MUTANTES = [
     teste: 'tests/site.test.mjs',
   },
   {
+    // O defeito da issue #68, replantado. Os dois lados usavam o mesmo id e
+    // `querySelector` devolvia o primeiro na ordem do documento — funcionava
+    // por ORDENAÇÃO, não por desenho.
+    porque: 'o destino volta a ser o id que a página também usa, e a ordem no DOM decide de novo',
+    arquivo: 'assets/cart.js',
+    de: "            const destino = document.querySelector('#cart-drawer-items');",
+    para: "            const destino = document.querySelector('#cart-items-container');",
+    teste: 'tests/mini-carrinho.test.mjs',
+  },
+  {
+    porque: 'origem e destino trocam de papel: o drawer copia a si mesmo e a página é que muda',
+    arquivo: 'assets/cart.js',
+    de: "            const origem = doc.querySelector('#cart-items-container');",
+    para: "            const origem = doc.querySelector('#cart-drawer-items');",
+    teste: 'tests/mini-carrinho.test.mjs',
+  },
+  {
+    // Loja com locale no caminho (`/pt-br/cart`) quebra com a rota cravada.
+    porque: 'a rota do carrinho volta a ser literal em vez de vir de window.routes',
+    arquivo: 'assets/cart.js',
+    de: '            const response = await fetch(routes.cart_url);',
+    para: "            const response = await fetch('/cart');",
+    teste: 'tests/mini-carrinho.test.mjs',
+  },
+  {
     // Os três da barra fixa. O choque com o "voltar ao topo" é de POSIÇÃO, não
     // de camada: os dois vivem em `z-overlay` e quem ficava por cima dependia
     // da ordem no DOM. Ver issue #46.

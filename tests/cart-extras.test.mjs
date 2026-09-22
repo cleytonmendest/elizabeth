@@ -189,7 +189,7 @@ describe('página do carrinho: o resumo acompanha o carrinho', () => {
     // O mesmo evento chega nas duas telas. Se o guarda de `updateCartPage`
     // cair, ele começa a apagar `.cart-item` do drawer pelo data-key.
     document.body.innerHTML = `
-      <div id="cart-items-container">
+      <div id="cart-drawer-items">
         <div class="cart-item" data-index="1" data-key="aaa"></div>
       </div>`;
 
