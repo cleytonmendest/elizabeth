@@ -2222,23 +2222,18 @@
       },
       "social_twitter_link": {
         "label": "X / Twitter",
-        "placeholder": "https://x.com/shopify"
-      },
-      "social_snapchat_link": {
-        "label": "Snapchat",
-        "placeholder": "https://www.snapchat.com/add/shopify"
+        "placeholder": "https://x.com/shopify",
+        "info": "Does not become a footer icon: it feeds the link preview on Twitter/X."
       },
       "social_pinterest_link": {
         "label": "Pinterest",
-        "placeholder": "https://pinterest.com/shopify"
+        "placeholder": "https://pinterest.com/shopify",
+        "info": "Does not become a footer icon: it feeds the structured data Google reads."
       },
-      "social_tumblr_link": {
-        "label": "Tumblr",
-        "placeholder": "https://shopify.tumblr.com"
-      },
-      "social_vimeo_link": {
-        "label": "Vimeo",
-        "placeholder": "https://vimeo.com/shopify"
+      "social_whatsapp_link": {
+        "label": "WhatsApp",
+        "info": "WhatsApp link, in the format https://wa.me/15551234567",
+        "placeholder": "https://wa.me/15551234567"
       }
     },
     "typography": {

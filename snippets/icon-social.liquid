@@ -1,0 +1,33 @@
+{%- comment -%}
+  Despacha o ícone da rede social pelo handle.
+
+  ── Por que um `case` e não `{% render 'icon-social-' | append: rede %}` ────
+
+  O `render` do Liquid exige nome LITERAL — não aceita nome montado por filtro,
+  e a regra `refs` reprova a tentativa. Então o despacho mora aqui, num lugar
+  só, em vez de espalhar `{% if %}` por cada consumidor.
+
+  Acrescentar uma rede exige DOIS passos: uma linha na lista de
+  `sections/footer.liquid` e um `when` aqui. Esquecer um dos dois é o defeito
+  que criou quatro settings mortos na #5 — a lojista preenchia TikTok no admin
+  e nada acontecia, sem erro e sem aviso.
+
+  Por isso `tests/redes-sociais.test.mjs` compara as duas listas e reprova se
+  divergirem, nos dois sentidos.
+
+  Parâmetros:
+  - rede: handle da rede (obrigatório) — instagram, facebook, youtube, tiktok, whatsapp
+{%- endcomment -%}
+
+{%- case rede -%}
+  {%- when 'instagram' -%}
+    {% render 'icon-social-instagram' %}
+  {%- when 'facebook' -%}
+    {% render 'icon-social-facebook' %}
+  {%- when 'youtube' -%}
+    {% render 'icon-social-youtube' %}
+  {%- when 'tiktok' -%}
+    {% render 'icon-social-tiktok' %}
+  {%- when 'whatsapp' -%}
+    {% render 'icon-social-whatsapp' %}
+{%- endcase -%}

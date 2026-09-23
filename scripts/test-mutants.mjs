@@ -866,6 +866,34 @@ const MUTANTES = [
     teste: 'tests/site.test.mjs',
   },
   {
+    // O defeito da #5, replantado: campo no admin que ninguém lê. Eram quatro,
+    // e a lojista preenchia o TikTok e não acontecia nada.
+    porque: 'uma rede volta a sumir do rodapé, e o setting dela fica mudo no admin',
+    arquivo: 'sections/footer.liquid',
+    de: "              {% render 'social-link', url: settings.social_tiktok_link, rede: 'tiktok', nome: 'TikTok' %}",
+    para: '              {%- comment -%} mutante {%- endcomment -%}',
+    teste: 'tests/redes-sociais.test.mjs',
+  },
+  {
+    // `fill="black"` no rodapé some no preset Noir (fundo #14110F) — o mesmo
+    // defeito da sombra da barra fixa. A regra `hex` não pega: ela procura
+    // #rrggbb, não cor nomeada.
+    porque: 'o ícone social volta a cravar preto e some no color scheme escuro',
+    arquivo: 'snippets/icon-social-whatsapp.liquid',
+    de: 'fill="currentColor"/>',
+    para: 'fill="black"/>',
+    teste: 'tests/redes-sociais.test.mjs',
+  },
+  {
+    // O rótulo é o que impede o campo de mentir: quem preenche o Pinterest
+    // espera um ícone no rodapé, e ele alimenta só dados estruturados.
+    porque: 'o setting que só alimenta metadados para de avisar que não vira ícone',
+    arquivo: 'config/settings_schema.json',
+    de: '"info": "t:settings_schema.social.social_pinterest_link.info"',
+    para: '"placeholder": "t:settings_schema.social.social_pinterest_link.placeholder"',
+    teste: 'tests/redes-sociais.test.mjs',
+  },
+  {
     // A área de cliente inteira estava fora da varredura de a11y (#101), e o
     // perigo maior não era a ausência: era "não coberto" e "esquecido" serem
     // indistinguíveis. Este mutante tira o login da varredura.

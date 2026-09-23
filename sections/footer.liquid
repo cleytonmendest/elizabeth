@@ -72,22 +72,27 @@
           <!-- Redes Sociais -->
           {% if block.settings.active_social_media %}
             <h3 class="text-sm color-text font-normal">{{ block.settings.title_social_media }}</h3>
+            {%- comment -%}
+              ── Uma linha por rede, e o markup num snippet só ──────────────
+
+              Eram três `{% if %}` quase idênticos de seis linhas cada, e foi a
+              dessincronia entre ÍCONE e SETTING que criou quatro campos
+              mortos: o admin oferecia TikTok, Snapchat, Tumblr e Vimeo, e
+              nenhum markup lia o valor. A lojista preenchia e nada acontecia —
+              sem erro e sem aviso (#5).
+
+              O `settings.social_<rede>_link` é escrito LITERAL aqui, e não
+              montado com `append`, porque é assim que a regra `settings` do
+              linter sabe que o campo é lido. A primeira versão desta correção
+              usava chave dinâmica e fez o linter acusar cinco settings como
+              mortos — trocaria um defeito por outro.
+            {%- endcomment -%}
             <div class="social-links flex gap-2">
-              {% if settings.social_instagram_link != blank %}
-                <a href="{{ settings.social_instagram_link }}" target="_blank" rel="noopener" aria-label="Instagram">
-                  {% render 'icon-social-instagram' %}
-                </a>
-              {% endif %}
-              {% if settings.social_facebook_link != blank %}
-                <a href="{{ settings.social_facebook_link }}" target="_blank" rel="noopener" aria-label="Facebook">
-                  {% render 'icon-social-facebook' %}
-                </a>
-              {% endif %}
-              {% if settings.social_youtube_link != blank %}
-                <a href="{{ settings.social_youtube_link }}" target="_blank" rel="noopener" aria-label="YouTube">
-                  {% render 'icon-social-youtube' %}
-                </a>
-              {% endif %}
+              {% render 'social-link', url: settings.social_instagram_link, rede: 'instagram', nome: 'Instagram' %}
+              {% render 'social-link', url: settings.social_facebook_link, rede: 'facebook', nome: 'Facebook' %}
+              {% render 'social-link', url: settings.social_youtube_link, rede: 'youtube', nome: 'YouTube' %}
+              {% render 'social-link', url: settings.social_tiktok_link, rede: 'tiktok', nome: 'TikTok' %}
+              {% render 'social-link', url: settings.social_whatsapp_link, rede: 'whatsapp', nome: 'WhatsApp' %}
             </div>
           {% endif %}
         </div>
