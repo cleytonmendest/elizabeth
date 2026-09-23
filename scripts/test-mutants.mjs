@@ -866,6 +866,36 @@ const MUTANTES = [
     teste: 'tests/site.test.mjs',
   },
   {
+    // A área de cliente inteira estava fora da varredura de a11y (#101), e o
+    // perigo maior não era a ausência: era "não coberto" e "esquecido" serem
+    // indistinguíveis. Este mutante tira o login da varredura.
+    porque: 'o login de cliente sai da varredura de a11y e ninguém é avisado',
+    arquivo: 'e2e/a11y.spec.mjs',
+    de: "  ['login de cliente', '/account/login'],",
+    para: '  // mutante',
+    teste: 'tests/a11y-cobertura.test.mjs',
+  },
+  {
+    // A primeira versão do teste procurava a URL `/account/login` em qualquer
+    // lugar do spec — e SOBREVIVEU ao mutante acima, porque o teste de
+    // recuperação de senha navega para a mesma URL sem medir a página de
+    // login. Navegar não é aferir, e este mutante trava a diferença.
+    porque: 'a cobertura volta a ser conferida pela URL visitada em vez do nome aferido',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: "  login: 'login de cliente',",
+    para: "  login: 'nome que nenhum teste afere',",
+    teste: 'tests/a11y-cobertura.test.mjs',
+  },
+  {
+    // O painel de recuperação é `hidden` até o clique, e o axe ignora o que
+    // está oculto. Sem o clique, o teste mediria o nada e ficaria verde.
+    porque: 'a recuperação de senha é medida com o painel ainda escondido',
+    arquivo: 'e2e/a11y.spec.mjs',
+    de: "  await page.locator('#recover-password-link').click();",
+    para: '  // mutante',
+    teste: 'tests/a11y-cobertura.test.mjs',
+  },
+  {
     // O estado da section ANTES desta correção: autoplay em loop infinito
     // atrás do texto, para todo mundo. WCAG 2.2.2 (Pause, Stop, Hide) é nível
     // A, e a section estava marcada como "nunca validada" desde a #36.

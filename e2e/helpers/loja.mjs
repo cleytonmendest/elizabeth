@@ -80,6 +80,47 @@ export const MOTIVO_CLIENTE =
  * Isso é o que torna a página de senha alcançável no estado que a usa (#71) —
  * e o que faz um erro aqui reprovar a suíte inteira de uma vez.
  */
+/**
+ * Os templates de cliente que a varredura de a11y MEDE, e o nome com que cada
+ * um aparece no relatório.
+ *
+ * O nome é declarado aqui, e não deduzido da URL, porque é ele que
+ * `tests/a11y-cobertura.test.mjs` procura no spec. A primeira versão daquele
+ * teste procurava a URL `/account/login` em qualquer lugar do arquivo — e
+ * SOBREVIVEU ao defeito plantado de tirar o login da varredura, porque o teste
+ * de recuperação de senha também navega para essa URL. Procurar a URL media a
+ * navegação; procurar o nome mede a AFERIÇÃO.
+ */
+export const CLIENTE_NA_VARREDURA = {
+  login: 'login de cliente',
+  register: 'cadastro de cliente',
+};
+
+/**
+ * Os cinco templates de cliente que NÃO entram na varredura, e por quê.
+ *
+ * Existe para que "não coberto" e "esquecido" não sejam indistinguíveis — o
+ * defeito da #74. O `scripts/e2e.mjs` não imprime esta lista (ela não gera
+ * teste pulado), então ela é lida por quem abrir este arquivo; o que garante
+ * que ela não apodreça é `tests/a11y-cobertura.test.mjs`, que lê os templates
+ * do diretório e exige que cada um esteja na varredura ou nomeado aqui.
+ */
+export const CLIENTE_FORA_DA_VARREDURA = {
+  account: 'exige sessão de cliente, e o hCaptcha da Shopify barra o submit do login (#64)',
+  addresses: 'exige sessão de cliente, e o hCaptcha da Shopify barra o submit do login (#64)',
+  order: 'exige sessão de cliente e um pedido feito, e o hCaptcha barra o submit do login (#64)',
+  activate_account: 'exige token de convite válido, que só chega por e-mail',
+  // A tabela da #101 diz que este entra "pelo fluxo de recuperação". MEDIDO:
+  // não entra. O formulário de recuperação é um painel escondido DENTRO de
+  // `templates/customers/login.liquid`, revelado por clique; o
+  // `reset_password.liquid` é outro template, servido em
+  // `/account/reset/{id}/{token}` — e o token só chega por e-mail.
+  //
+  // O que dava para medir foi medido: o painel de recuperação tem teste
+  // próprio, logo abaixo.
+  reset_password: 'servido só em /account/reset/{id}/{token}, com token de e-mail',
+};
+
 export const SENHA_VITRINE = process.env.SHOPIFY_STORE_PASSWORD;
 
 /**

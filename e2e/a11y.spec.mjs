@@ -130,7 +130,25 @@ const PAGINAS = [
       'vem pelo layout da vitrine, não pelo layout/password.liquid',
   ],
   ['style guide (todos os color schemes)', STYLEGUIDE_PATH],
+
+  // ── Área de cliente ───────────────────────────────────────────────────────
+  //
+  // Requisito da Theme Store, e nenhum dos sete templates de
+  // `templates/customers/` era aberto por navegador — nem para a11y, nem para
+  // regressão visual (issue #101). A cobertura era `tests/address-country`,
+  // 19 testes em jsdom sobre a lógica de país de UM componente; jsdom não
+  // calcula contraste, não move foco e não resolve layout.
+  //
+  // A #64 provou que o hCaptcha barra o ENVIO do formulário, não o ABRIR da
+  // página. Estas duas são públicas e entram sem depender de sessão.
+  ['login de cliente', '/account/login'],
+  ['cadastro de cliente', '/account/register'],
 ];
+
+// Os cinco templates de cliente que NÃO entram na varredura, e por quê, estão
+// em `CLIENTE_FORA_DA_VARREDURA` (e2e/helpers/loja.mjs) — lá porque
+// `tests/a11y-cobertura.test.mjs` precisa importar a lista, e este arquivo
+// chama `test.skip()` no topo, o que impede o import fora do Playwright.
 
 for (const [nome, caminho, motivoFixme] of PAGINAS) {
   test(`sem violação NOVA de WCAG AA: ${nome}`, async ({ page }) => {
@@ -156,6 +174,21 @@ test('sem violação NOVA de WCAG AA: página de produto', async ({ page }) => {
   await clicaNoTema(page, page.locator('a[href*="/products/"]').first(), 'o primeiro produto da coleção');
   await expect(page).toHaveURL(/\/products\//);
   await semViolacaoNova(page, 'página de produto');
+});
+
+test('sem violação NOVA de WCAG AA: recuperação de senha', async ({ page }) => {
+  // O formulário de recuperação NÃO é o `reset_password.liquid` — é um painel
+  // `hidden` dentro do login, que um clique revela. Um estado que a auditoria
+  // manual esquece pelo mesmo motivo que esquecia o drawer: o axe só vê o que
+  // está visível.
+  await abrePaginaDoTema(page, '/account/login');
+
+  // Clique CRU: o painel troca de classe no MESMO documento, que o `goto`
+  // acima já provou ser desta branch.
+  await page.locator('#recover-password-link').click();
+  await expect(page.locator('#recover-password-form')).toBeVisible();
+
+  await semViolacaoNova(page, 'recuperação de senha');
 });
 
 test('o drawer do carrinho aberto também passa', async ({ page }) => {
