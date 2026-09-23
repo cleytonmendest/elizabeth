@@ -106,12 +106,18 @@ module.exports = {
       minHeight: {
         page: '60vh',
       },
+      // Largura mínima de cada coluna do mega menu. Abaixo disto o título da
+      // coleção quebra em duas linhas e o painel vira uma escada.
+      minWidth: {
+        'menu-col': '150px',
+      },
       // Sombra da barra fixa de comprar. O valor que estava no markup era
       // `shadow-[0_-2px_8px_rgba(0,0,0,0.08)]`: preto cravado num tema cujo
       // princípio é que cor vem do color scheme. Num scheme escuro ela some.
       // Aqui ela sai de `--color-shadow`, que a lojista escolhe por scheme.
       boxShadow: {
         bar: '0 -2px 8px rgb(var(--color-shadow) / 0.08)',
+        panel: '0 10px 20px -8px rgb(var(--color-shadow) / 0.15)',
       },
       // Recuo do toque no botão. Era `scale-[0.97]`, escrito uma vez e sem
       // degrau — qualquer botão novo inventaria o próprio.
@@ -130,6 +136,9 @@ module.exports = {
       minWidth: {
         action: '100px',
       },
+      // Sombra do painel do mega menu — mesma origem da `bar`: cor do scheme,
+      // não preto cravado.
+      // (declarada junto de `bar`, abaixo)
       // Largura do miolo da barra fixa. O `page-width` do lojista vai a 2560px,
       // e com ele a barra punha título numa borda e botão na outra, com um
       // buraco no meio (issue #46). Este é o teto do CONTEÚDO, não da página.

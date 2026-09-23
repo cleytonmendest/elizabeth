@@ -1,15 +1,15 @@
 {
   "$comment": "Dívida técnica conhecida. Gerado por \"npm run lint:baseline\". Só deve encolher — nunca adicione entradas à mão para silenciar uma violação nova.",
-  "generated": "2026-09-22",
+  "generated": "2026-09-23",
   "counts": {
     "boundaries": 1,
     "i18n": 112,
     "remotes": 1,
     "settings": 7,
     "similarity": 5,
-    "tokens": 102
+    "tokens": 98
   },
-  "total": 228,
+  "total": 224,
   "fingerprints": [
     "boundaries|assets/search-component.js|storefront-routes",
     "i18n|locales/pt-BR.json|orphan:announcement_bar.close",
@@ -211,10 +211,6 @@
     "tokens|snippets/inventory-status.liquid|tracking:tracking-wide",
     "tokens|snippets/localization-form.liquid|tracking:tracking-wider",
     "tokens|snippets/logo.liquid|arbitrary:flex-[1]",
-    "tokens|snippets/main-menu.liquid|arbitrary:aspect-[4/5]",
-    "tokens|snippets/main-menu.liquid|arbitrary:min-w-[150px]",
-    "tokens|snippets/main-menu.liquid|arbitrary:shadow-[0_10px_20px_-8px_rgb(var(--color-shadow)/0.15)]",
-    "tokens|snippets/main-menu.liquid|tracking:tracking-wide",
     "tokens|snippets/main-product-right.liquid|tracking:tracking-wide",
     "tokens|snippets/newsletter.liquid|arbitrary:flex-[2]",
     "tokens|snippets/pagination.liquid|opacity-contrast:text-foreground/30",

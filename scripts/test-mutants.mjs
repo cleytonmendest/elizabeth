@@ -866,6 +866,25 @@ const MUTANTES = [
     teste: 'tests/site.test.mjs',
   },
   {
+    // O estado da section ANTES desta correção: autoplay em loop infinito
+    // atrás do texto, para todo mundo. WCAG 2.2.2 (Pause, Stop, Hide) é nível
+    // A, e a section estava marcada como "nunca validada" desde a #36.
+    porque: 'o vídeo de fundo volta a tocar sozinho para quem pediu menos movimento',
+    arquivo: 'assets/video-section.js',
+    de: '      this.respeitaPreferenciaDeMovimento();',
+    para: '      // mutante',
+    teste: 'tests/video-section.test.mjs',
+  },
+  {
+    // Pausar sem devolver controle deixa a pessoa sem saída — é meia correção,
+    // e é a metade que passa despercebida numa revisão de código.
+    porque: 'o vídeo pausa mas não ganha controles, e não há como assistir',
+    arquivo: 'assets/video-section.js',
+    de: '      fundo.controls = true;',
+    para: '      // mutante',
+    teste: 'tests/video-section.test.mjs',
+  },
+  {
     // O defeito da issue #68, replantado. Os dois lados usavam o mesmo id e
     // `querySelector` devolvia o primeiro na ordem do documento — funcionava
     // por ORDENAÇÃO, não por desenho.
