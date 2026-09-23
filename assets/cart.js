@@ -359,17 +359,36 @@ class AddToCart extends HTMLElement {
         }
     }
 
+    /**
+     * Repõe os itens do mini-carrinho a partir da página do carrinho.
+     *
+     * ── Os dois ids são DIFERENTES de propósito ────────────────────────────
+     *
+     * Até a issue #68, o drawer e a página usavam o MESMO `id`. Dois elementos
+     * com o mesmo id no mesmo documento é HTML inválido, e `querySelector`
+     * devolve o primeiro na ordem do documento — que era o do drawer só porque
+     * `theme.liquid` renderiza o drawer antes do `content_for_layout`.
+     *
+     * Funcionava por ORDENAÇÃO, não por desenho: mover uma linha do layout
+     * fazia o drawer passar a ler a página do carrinho, sem erro no console,
+     * sem teste vermelho e sem nada no lint — porque os dois containers
+     * renderizam o mesmo `cart-drawer-item`, e só divergiriam depois.
+     *
+     * Com nomes distintos, ORIGEM e DESTINO não podem se confundir, em nenhuma
+     * ordem: a página só tem `#cart-items-container`, o drawer só tem
+     * `#cart-drawer-items`.
+     */
     async updateCartDrawer() {
         try {
-            const response = await fetch('/cart');
+            const response = await fetch(routes.cart_url);
             const text = await response.text();
             const parser = new DOMParser();
             const doc = parser.parseFromString(text, 'text/html');
-            const cartItemsContainer = doc.querySelector('#cart-items-container');
+            const origem = doc.querySelector('#cart-items-container');
+            const destino = document.querySelector('#cart-drawer-items');
 
-            if (cartItemsContainer) {
-                const targetContainer = document.querySelector('#cart-items-container');
-                targetContainer.innerHTML = cartItemsContainer.innerHTML;
+            if (origem && destino) {
+                destino.innerHTML = origem.innerHTML;
                 document.querySelector('cart-drawer').updateItemIndexes();
             }
         } catch (error) {

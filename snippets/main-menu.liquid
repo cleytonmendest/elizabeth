@@ -31,14 +31,14 @@
           </a>
 
           {%- comment -%} Painel mega menu: full-width, ancorado ao #main-header-container (relative) {%- endcomment -%}
-          <div class="mega-panel color-background border-t border-border absolute left-0 top-full w-full z-overlay transition-all duration-300 opacity-0 -translate-y-2 pointer-events-none shadow-[0_10px_20px_-8px_rgb(var(--color-shadow)/0.15)] group-hover/menu:opacity-100 group-hover/menu:translate-y-0 group-hover/menu:pointer-events-auto group-focus-within/menu:opacity-100 group-focus-within/menu:translate-y-0 group-focus-within/menu:pointer-events-auto">
+          <div class="mega-panel color-background border-t border-border absolute left-0 top-full w-full z-overlay transition-all duration-300 opacity-0 -translate-y-2 pointer-events-none shadow-panel group-hover/menu:opacity-100 group-hover/menu:translate-y-0 group-hover/menu:pointer-events-auto group-focus-within/menu:opacity-100 group-focus-within/menu:translate-y-0 group-focus-within/menu:pointer-events-auto">
             <div class="page-width py-8 flex gap-10 justify-between">
               <div class="flex flex-wrap gap-x-12 gap-y-6 flex-1">
                 {% for sublink in link.links %}
-                  <div class="min-w-[150px]">
+                  <div class="min-w-menu-col">
                     <a
                       href="{{ sublink.url }}"
-                      class="color-text block text-sm font-medium tracking-wide mb-3 hover:opacity-70 transition-opacity"
+                      class="color-text block text-sm font-medium tracking-label mb-3 hover:opacity-70 transition-opacity"
                     >
                       {{ sublink.title }}
                     </a>
@@ -66,7 +66,7 @@
                   class="mega-promo shrink-0 w-64 group/promo"
                   {{ promo.shopify_attributes }}
                 >
-                  <div class="rounded-theme overflow-hidden bg-foreground/5 aspect-[4/5]">
+                  <div class="rounded-theme overflow-hidden bg-foreground/5 aspect-portrait">
                     {{
                       promo.settings.image
                       | image_url: width: 600
@@ -78,7 +78,7 @@
                     }}
                   </div>
                   {% if promo.settings.heading != blank %}
-                    <span class="color-text block text-sm mt-3 tracking-wide uppercase">
+                    <span class="color-text block text-sm mt-3 tracking-label uppercase">
                       {{ promo.settings.heading }}
                       <span aria-hidden="true">&rarr;</span>
                     </span>

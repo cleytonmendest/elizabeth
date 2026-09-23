@@ -30,7 +30,7 @@ function monta() {
       <div id="minicart-overlay"></div>
       <div id="cart-empty" class="flex"></div>
       <div id="cart-container" class="hidden">
-        <div id="cart-items-container">
+        <div id="cart-drawer-items">
           <div class="cart-item" data-index="1"><span class="item-total-price"></span></div>
         </div>
       </div>

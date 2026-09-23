@@ -40,7 +40,7 @@ npm run gate      # build + linters + testes
 
 - [ ] **Shopify Partner account** ativa.
 - [ ] Criar a loja demo como **"client transfer store"** pelo Partner Dashboard (⚠️ **não** é dev store comum).
-- [ ] **Uma loja demo por preset/estilo** do tema (ver seção 4).
+- [ ] **Uma loja demo**, do estilo listado (ver seção 4).
 - [ ] Cada demo deve bater com a **indústria** (moda feminina) e o **tamanho de catálogo** que o preset mira.
 - [ ] **Pagamentos:** usar **Bogus Gateway** ou **Shopify Payments em modo teste**; desabilitar as demais opções de checkout.
 
@@ -78,7 +78,20 @@ A Shopify **proíbe** Lorem Ipsum / texto de onboarding / placeholder / palavrõ
 
 ## 4. Presets / estilos
 
-**Decisão: os quatro presets vão ser submetidos.**
+**Decisão: o tema ENTREGA quatro presets e a listagem anuncia UM estilo
+("Elizabeth").**
+
+São coisas diferentes, e confundi-las custa caro:
+
+| | O que é | Quantos |
+| --- | --- | --- |
+| **Preset** em `settings_data.json` | a lojista escolhe no editor | **4**, todos entregues |
+| **Style** na listagem | uma vitrine na Theme Store, com demo e screenshots próprios | **1** |
+
+Listar um estilo é o que torna a submissão viável num prazo curto: uma loja
+demo em vez de quatro, 5-7 screenshots em vez de 20-28, e a pasta `/listings`
+deixa de se aplicar ([issue #114](https://github.com/cleytonmendest/elizabeth/issues/114)).
+A lojista não perde nada — os quatro presets continuam no editor.
 
 O tema tem quatro, em `config/settings_data.json`, e cada um sobrescreve treze
 settings: fonte de título e de corpo, os dois color schemes, largura, logo,
@@ -107,15 +120,18 @@ enquanto os quatro já existiam no código — o mesmo tipo de afirmação não
 medida que a [ADR 0001](adr/0001-guard-rails-executaveis-no-lugar-do-roadmap.md)
 descreve.
 
-- [x] Presets definidos. **Um usa o nome do tema** ("Elizabeth") ✓
-- [x] Nomes com **1-2 palavras e menos de 30 caracteres** ✓ — falta conferir se são **únicos** na Theme Store
-- [ ] Os quatro exigem **conjuntos de templates distintos** numa pasta **`/listings`** no zip. Ela **não existe** hoje.
-- [ ] **Quatro lojas demo**, uma por preset, com layout/cores/tipografia espelhando o preset (§1-3, vezes quatro)
-- [ ] Screenshots de cada preset — [issue #112](https://github.com/cleytonmendest/elizabeth/issues/112)
+- [x] Presets definidos. O estilo listado **usa o nome do tema** ("Elizabeth") ✓
+- [x] Nome com **1-2 palavras e menos de 30 caracteres** ✓ — falta conferir se é **único** na Theme Store
+- [x] Pasta `/listings`: **não se aplica** com um estilo listado
+- [ ] **Uma loja demo** (§1-3), montada com o preset Elizabeth
+- [ ] Screenshots — [issue #112](https://github.com/cleytonmendest/elizabeth/issues/112)
 
-> As duas últimas regras — `/listings` e uma demo por preset — vêm da doc da
-> Theme Store citada no topo deste arquivo, e **não** de medição nossa. Valem o
-> aviso geral: reconfirmar antes de submeter.
+> Listar mais estilos depois é possível, e aí `/listings`, demo e screenshots
+> por estilo voltam à mesa. A ordem certa é submeter primeiro.
+
+> A regra "múltiplos estilos exigem `/listings` e uma demo cada" vem da doc da
+> Theme Store citada no topo deste arquivo, e **não** de medição nossa. Com um
+> estilo listado ela não morde; se um dia listar mais, reconfirmar antes.
 
 ---
 
@@ -162,7 +178,7 @@ saiu como doze fragmentos sem `<head>`, com o build relatando sucesso.
 - [ ] Loja(s) demo criada(s) como client transfer store, uma por preset
 - [ ] Catálogo com imagens reais, licenciadas e consistentes
 - [ ] Conteúdo 100% autêntico (zero Lorem Ipsum), PT-BR + EN traduzidos
-- [ ] Os quatro presets nomeados + pasta `/listings` + quatro lojas demo
+- [ ] Um estilo listado ("Elizabeth"), uma loja demo — os 4 presets seguem entregues no tema
 - [ ] Documentação merchant publicada ✅ · URL e contato de suporte na listagem da Theme Store
 - [ ] Versão + release notes
 - [ ] Revisão final de Lighthouse (Perf/A11y/Best Practices) na loja **publicada**

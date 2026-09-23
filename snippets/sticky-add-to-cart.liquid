@@ -21,87 +21,88 @@
 {{ 'sticky-atc.css' | asset_url | stylesheet_tag }}
 
 <div
-  class="fixed bottom-0 left-0 right-0 bg-background text-foreground border-t border-border shadow-[0_-2px_8px_rgba(0,0,0,0.08)] translate-y-full transition-transform duration-300 ease-in-out z-overlay"
+  class="fixed bottom-0 left-0 right-0 bg-background text-foreground border-t border-border shadow-bar translate-y-full transition-transform duration-300 ease-in-out z-overlay"
   data-sticky-atc
   data-product-id="{{ product.id }}"
 >
-  <div class="page-width py-3 flex items-center gap-3 lg:gap-6">
-    {%- comment -%} Info do Produto {%- endcomment -%}
-    <div class="flex-1 min-w-0">
-      <p class="text-xs lg:text-sm truncate font-medium">
-        {{ product.title }}
-      </p>
-      {%- render 'price-v2', use_variant: true -%}
-    </div>
-
-    {%- comment -%} Add to Cart Component {%- endcomment -%}
-    <add-to-cart class="flex gap-2 items-center">
-      {%- form 'product',
-        product,
-        id: 'sticky-product-form',
-        class: 'flex gap-2 items-center w-full',
-        novalidate: 'novalidate',
-        data-type: 'add-to-cart-form'
-      -%}
-        <input
-          type="hidden"
-          name="id"
-          value="{{ current_variant.id }}"
-          class="product-variant-id"
-          {% unless current_variant.available %}disabled{% endunless %}
+  <div class="page-width py-3">
+    {%- comment -%}
+      O teto de largura é do MIOLO, não da página: com `page-width` sozinho
+      (até 2560px, escolha da lojista) o título ficava numa borda da tela e o
+      botão na outra, com um buraco no meio. Ver issue #46.
+    {%- endcomment -%}
+    <div class="max-w-bar mx-auto flex items-center gap-3 lg:gap-6">
+      {%- comment -%}
+        Miniatura: quem chega até aqui rolou para longe da galeria e perdeu a
+        referência do que está comprando. Só em telas largas, onde sobra
+        espaço. `aria-hidden` porque o título ao lado já nomeia o produto.
+      {%- endcomment -%}
+      {%- if product.featured_image -%}
+        <img
+          src="{{ product.featured_image | image_url: width: 120 }}"
+          alt=""
+          aria-hidden="true"
+          width="48"
+          height="64"
+          loading="lazy"
+          class="hidden lg:block w-12 aspect-product object-cover rounded-theme-sm flex-shrink-0"
         >
+      {%- endif -%}
 
-        {%- comment -%} Quantity Selector {%- endcomment -%}
-        <quantity-selector class="border border-border p-1 flex h-10 w-fit max-w-28">
-          <button
-            type="button"
-            name="minus"
-            aria-label="{{ 'product.general.decrease_quantity' | t }}"
-            class="h-full flex items-center justify-center w-[25px]"
-          >
-            {% render 'icon-minus', size: 16 %}
-          </button>
+      {%- comment -%} Info do Produto {%- endcomment -%}
+      <div class="flex-1 min-w-0">
+        <p class="text-sm truncate font-medium">
+          {{ product.title }}
+        </p>
+        {%- render 'price-v2', use_variant: true -%}
+      </div>
+
+      {%- comment -%} Add to Cart Component {%- endcomment -%}
+      <add-to-cart class="flex gap-2 items-center">
+        {%- form 'product',
+          product,
+          id: 'sticky-product-form',
+          class: 'flex gap-2 items-center w-full',
+          novalidate: 'novalidate',
+          data-type: 'add-to-cart-form'
+        -%}
           <input
-            type="number"
-            name="quantity"
-            value="1"
-            min="1"
-            aria-label="{{ 'product.general.quantity' | t }}"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            class="h-full text-center w-[30px]"
+            type="hidden"
+            name="id"
+            value="{{ current_variant.id }}"
+            class="product-variant-id"
+            {% unless current_variant.available %}disabled{% endunless %}
           >
-          <button
-            type="button"
-            name="plus"
-            aria-label="{{ 'product.general.increase_quantity' | t }}"
-            class="h-full flex items-center justify-center w-[25px]"
-          >
-            {% render 'icon-plus', size: 16 %}
-          </button>
-        </quantity-selector>
 
-        {%- comment -%} Botão Add to Cart {%- endcomment -%}
-        <button
-          type="submit"
-          name="add"
-          class="flex items-center justify-center bg-button text-button-text px-5 h-10 text-xs font-medium uppercase tracking-[0.12em] transition-all border-0 cursor-pointer whitespace-nowrap flex-shrink-0 min-w-[100px] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97] active:opacity-95 rounded-theme"
-          aria-haspopup="dialog"
-          aria-live="polite"
-          data-text-desktop="{{ 'product.general.add_to_cart' | t }}"
-          data-text-mobile="{{ 'product.general.add_to_cart_short' | t }}"
-          data-text-sold-out="{{ 'product.general.sold_out' | t }}"
-          data-text-unavailable="{{ 'product.general.unavailable' | t }}"
-          {% unless current_variant.available %}disabled{% endunless %}
-        >
-          {% if current_variant.available %}
-            {{ 'product.general.add_to_cart_short' | t }}
-          {% else %}
-            {{ 'product.general.sold_out' | t }}
-          {% endif %}
-        </button>
-      {%- endform -%}
-    </add-to-cart>
+          {%- comment -%}
+            O seletor era uma CÓPIA byte a byte do snippet, com uma medida
+            diferente — o que a regra `similarity` apontava. Agora é o mesmo
+            arquivo, e corrigir um defeito nele corrige nos dois lugares.
+          {%- endcomment -%}
+          {%- render 'quantity-selector' -%}
+
+          {%- comment -%} Botão Add to Cart {%- endcomment -%}
+          <button
+            type="submit"
+            name="add"
+            class="flex items-center justify-center bg-button text-button-text px-5 h-10 text-xs font-medium uppercase tracking-label transition-all border-0 cursor-pointer whitespace-nowrap flex-shrink-0 min-w-action hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed active:scale-press active:opacity-95 rounded-theme"
+            aria-haspopup="dialog"
+            aria-live="polite"
+            data-text-desktop="{{ 'product.general.add_to_cart' | t }}"
+            data-text-mobile="{{ 'product.general.add_to_cart_short' | t }}"
+            data-text-sold-out="{{ 'product.general.sold_out' | t }}"
+            data-text-unavailable="{{ 'product.general.unavailable' | t }}"
+            {% unless current_variant.available %}disabled{% endunless %}
+          >
+            {% if current_variant.available %}
+              {{ 'product.general.add_to_cart_short' | t }}
+            {% else %}
+              {{ 'product.general.sold_out' | t }}
+            {% endif %}
+          </button>
+        {%- endform -%}
+      </add-to-cart>
+    </div>
   </div>
 </div>
 

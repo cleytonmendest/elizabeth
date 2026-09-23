@@ -35,42 +35,29 @@ test('adicionar ao carrinho abre o drawer e atualiza a bolha', async ({ page }) 
   await page.locator('add-to-cart button[name="add"]').first().click();
 
   await expect(page.locator('cart-drawer')).toHaveClass(/active/);
-  await expect(page.locator('#cart-items-container .cart-item')).toHaveCount(1);
+  await expect(page.locator('#cart-drawer-items .cart-item')).toHaveCount(1);
   await expect(page.locator('#qtd-bubble')).toHaveText('1');
   // A prova de que o drawer trocou de estado, e não só ganhou um item.
   await expect(page.locator('#cart-empty')).toHaveClass(/hidden/);
 });
 
 test('a página do carrinho não repete o id que o drawer usa', async ({ page }) => {
-  // ⚠ MARCADO COMO fixme — issue #68, e o defeito é do TEMA, não do teste.
+  // Este teste passou três semanas em `fixme` — issue #68, defeito do TEMA.
   //
-  // O teste acima passa, e passa por sorte. `updateCartDrawer` (assets/cart.js)
-  // baixa a página INTEIRA do carrinho e copia uma div de lá para dentro do
-  // drawer:
+  // `updateCartDrawer` (assets/cart.js) copia uma div da página do carrinho
+  // para dentro do drawer. Até a correção, os dois lados usavam o MESMO id, e
+  // `querySelector` devolvia o primeiro na ordem do documento — o do drawer,
+  // só porque `theme.liquid` o renderiza antes do `content_for_layout`.
   //
-  //     const doc = parser.parseFromString(await (await fetch('/cart')).text(), 'text/html');
-  //     targetContainer.innerHTML = doc.querySelector('#cart-items-container').innerHTML;
+  // Funcionava por ORDENAÇÃO. Mover uma linha do layout fazia o drawer passar
+  // a ler a página do carrinho, sem erro no console, sem teste vermelho e sem
+  // nada no lint, porque os dois containers renderizam o mesmo snippet.
   //
-  // Só que `#cart-items-container` existe DUAS vezes no documento que ele
-  // acabou de baixar: o do drawer (snippets/cart-drawer.liquid, renderizado em
-  // theme.liquid:173) e o da página (theme.liquid:184, via content_for_layout).
-  // Dois elementos com o mesmo id é HTML inválido, e `querySelector` devolve o
-  // primeiro na ordem do documento — hoje o do drawer.
-  //
-  // Ou seja: funciona por ORDENAÇÃO, não por desenho. Mover
-  // `{% render 'cart-drawer' %}` para depois de `{{ content_for_layout }}` faz
-  // o seletor passar a ler a página do carrinho — sem erro no console, sem
-  // aviso no lint e sem um teste vermelho, porque os dois containers renderizam
-  // o mesmo `{% render 'cart-drawer-item' %}`. O dia em que divergirem é o dia
-  // em que o mini-carrinho mostra outra coisa.
-  //
-  // Não afrouxar até passar: a asserção é o comportamento correto, e é ela que
-  // vira verde quando a #68 for resolvida.
-  test.fixme(true, 'issue #68 — #cart-items-container existe no drawer E na página');
+  // Agora os nomes são distintos, e é isto que esta asserção prova no
+  // navegador: na página do carrinho existe UM `#cart-items-container`.
 
-  // O carrinho VAZIO esconde o defeito: o container da página só é renderizado
-  // com `cart.item_count > 0`, então sem item há um id só e a asserção passa.
-  // Por isso o produto entra antes.
+  // O carrinho VAZIO esconderia o defeito: o container da página só é
+  // renderizado com `cart.item_count > 0`. Por isso o produto entra antes.
   await abrePDP(page);
   // Clique CRU, mesmo motivo do teste acima: sem documento novo.
   await page.locator('add-to-cart button[name="add"]').first().click();
@@ -79,6 +66,9 @@ test('a página do carrinho não repete o id que o drawer usa', async ({ page })
   await abrePaginaDoTema(page, '/cart');
 
   await expect(page.locator('#cart-items-container')).toHaveCount(1);
+  // A outra metade: o drawer continua existindo nesta página, com o id dele.
+  // Sem esta linha, renomear os DOIS para o mesmo nome passaria de novo.
+  await expect(page.locator('#cart-drawer-items')).toHaveCount(1);
 });
 
 test('quick-add do card mantém o ícone e adiciona sem sair da coleção', async ({ page }) => {

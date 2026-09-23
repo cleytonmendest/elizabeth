@@ -866,6 +866,76 @@ const MUTANTES = [
     teste: 'tests/site.test.mjs',
   },
   {
+    // O estado da section ANTES desta correção: autoplay em loop infinito
+    // atrás do texto, para todo mundo. WCAG 2.2.2 (Pause, Stop, Hide) é nível
+    // A, e a section estava marcada como "nunca validada" desde a #36.
+    porque: 'o vídeo de fundo volta a tocar sozinho para quem pediu menos movimento',
+    arquivo: 'assets/video-section.js',
+    de: '      this.respeitaPreferenciaDeMovimento();',
+    para: '      // mutante',
+    teste: 'tests/video-section.test.mjs',
+  },
+  {
+    // Pausar sem devolver controle deixa a pessoa sem saída — é meia correção,
+    // e é a metade que passa despercebida numa revisão de código.
+    porque: 'o vídeo pausa mas não ganha controles, e não há como assistir',
+    arquivo: 'assets/video-section.js',
+    de: '      fundo.controls = true;',
+    para: '      // mutante',
+    teste: 'tests/video-section.test.mjs',
+  },
+  {
+    // O defeito da issue #68, replantado. Os dois lados usavam o mesmo id e
+    // `querySelector` devolvia o primeiro na ordem do documento — funcionava
+    // por ORDENAÇÃO, não por desenho.
+    porque: 'o destino volta a ser o id que a página também usa, e a ordem no DOM decide de novo',
+    arquivo: 'assets/cart.js',
+    de: "            const destino = document.querySelector('#cart-drawer-items');",
+    para: "            const destino = document.querySelector('#cart-items-container');",
+    teste: 'tests/mini-carrinho.test.mjs',
+  },
+  {
+    porque: 'origem e destino trocam de papel: o drawer copia a si mesmo e a página é que muda',
+    arquivo: 'assets/cart.js',
+    de: "            const origem = doc.querySelector('#cart-items-container');",
+    para: "            const origem = doc.querySelector('#cart-drawer-items');",
+    teste: 'tests/mini-carrinho.test.mjs',
+  },
+  {
+    // Loja com locale no caminho (`/pt-br/cart`) quebra com a rota cravada.
+    porque: 'a rota do carrinho volta a ser literal em vez de vir de window.routes',
+    arquivo: 'assets/cart.js',
+    de: '            const response = await fetch(routes.cart_url);',
+    para: "            const response = await fetch('/cart');",
+    teste: 'tests/mini-carrinho.test.mjs',
+  },
+  {
+    // Os três da barra fixa. O choque com o "voltar ao topo" é de POSIÇÃO, não
+    // de camada: os dois vivem em `z-overlay` e quem ficava por cima dependia
+    // da ordem no DOM. Ver issue #46.
+    porque: 'a barra some sem avisar quem flutua no rodapé, e o botão volta a ficar por cima dela',
+    arquivo: 'assets/sticky-atc.js',
+    de: "    document.documentElement.removeAttribute('data-sticky-atc-visivel');",
+    para: '    // mutante',
+    teste: 'tests/sticky-atc.test.mjs',
+  },
+  {
+    porque: 'a barra aparece sem marcar o estado, e o afastamento nunca acontece',
+    arquivo: 'assets/sticky-atc.js',
+    de: "    document.documentElement.setAttribute('data-sticky-atc-visivel', '');",
+    para: '    // mutante',
+    teste: 'tests/sticky-atc.test.mjs',
+  },
+  {
+    // A altura precisa ser MEDIDA: ela muda com `settings.font_scale`, com o
+    // preço e com a largura da tela. Um número cravado erra para alguém.
+    porque: 'a altura da barra vira número cravado e a folga fica errada em outro font_scale',
+    arquivo: 'assets/sticky-atc.js',
+    de: '      `${this.stickyBar.offsetHeight}px`,',
+    para: "      '64px',",
+    teste: 'tests/sticky-atc.test.mjs',
+  },
+  {
     // A afirmação errada que este PR corrigiu: o §4 dizia que cada preset traz
     // o próprio arranjo de home. A chave existe e está VAZIA nos quatro, e o
     // erro escondia que "uma demo por preset com layout espelhando o preset"

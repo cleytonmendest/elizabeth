@@ -195,35 +195,11 @@
   </div>
 </section>
 
-<script>
-  (function () {
-    if (customElements.get('video-section')) return;
-    customElements.define(
-      'video-section',
-      class VideoSection extends HTMLElement {
-        connectedCallback() {
-          this.btn = this.querySelector('[data-play-button]');
-          if (this.btn) this.btn.addEventListener('click', this.play.bind(this));
-        }
-        play() {
-          var tpl = this.querySelector('[data-video-template]');
-          if (!tpl) return;
-          this.appendChild(tpl.content.cloneNode(true));
-          ['[data-play-button]', '.video-poster', '[data-video-overlay]', '.video-scrim'].forEach(
-            function (sel) {
-              var el = this.querySelector(sel);
-              if (el) el.remove();
-            }.bind(this)
-          );
-          var video = this.querySelector('video');
-          if (video) {
-            try { video.play(); } catch (e) {}
-          }
-        }
-      }
-    );
-  })();
-</script>
+{%- comment -%}
+  Co-locado: o componente só pesa na página que tem a section. O script saiu
+  de inline para cá porque inline não é testável — ver o cabeçalho do arquivo.
+{%- endcomment -%}
+<script src="{{ 'video-section.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
