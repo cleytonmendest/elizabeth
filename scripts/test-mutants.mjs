@@ -139,6 +139,82 @@ function resgataMutanteOrfao() {
 const comE2E = process.argv.includes('--e2e');
 
 const MUTANTES = [
+  // ── A #36, fase 1: o que abre abaixo do cabeçalho passava da janela ─────
+  {
+    porque: 'o painel do mega menu volta a não ter teto, e menu grande fica inalcançável',
+    arquivo: 'snippets/main-menu.liquid',
+    de: 'max-h-below-header overflow-y-auto',
+    para: '',
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'a gaveta mobile volta a cortar o fim do menu, sem rolagem',
+    arquivo: 'snippets/main-menu.liquid',
+    de: 'h-full overflow-y-auto overscroll-contain',
+    para: 'h-full',
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'a altura do cabeçalho publica zero, e o teto vira a janela inteira',
+    arquivo: 'src/js/header.js',
+    de: '    if (!altura) return;',
+    para: '    void 0;',
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'a altura para de ser remedida, e o teto fica errado depois de girar o celular',
+    arquivo: 'src/js/header.js',
+    de: "    window.addEventListener('resize', this.publicaAltura);",
+    para: '    void 0;',
+    teste: 'tests/menu.test.mjs',
+  },
+  // ── A #36: o menu nunca tinha sido medido ───────────────────────────────
+  //
+  // `theme.js` abre a gaveta e os submenus em toda página e tinha ZERO testes
+  // e ZERO mutantes. Os três defeitos que medir encontrou não aparecem para
+  // quem usa mouse numa loja publicada — aparecem no EDITOR e no TECLADO.
+  {
+    porque: 'o submenu fechado volta a esconder do leitor de tela sem tirar do Tab (WCAG 4.1.2)',
+    arquivo: 'src/js/theme.js',
+    de: "    submenu.setAttribute('inert', '');",
+    para: '    void 0;',
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'o estado do submenu volta a sair da altura em linha, e o segundo clique reabre',
+    arquivo: 'src/js/theme.js',
+    de: "  const aberto = botao.getAttribute('aria-expanded') === 'true';",
+    para: "  const aberto = submenu.style.height && submenu.style.height !== '0px';",
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'o clique passa a exigir o botão exato, e o ícone dentro dele deixa de contar',
+    arquivo: 'src/js/theme.js',
+    de: "  const botao = alvo.closest('.submenu-toggle');",
+    para: "  const botao = alvo.matches('.submenu-toggle') ? alvo : null;",
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'o Escape passa a fechar o menu mesmo já fechado, pisando no estado de outro componente',
+    arquivo: 'src/js/theme.js',
+    de: "  if (evento.key === 'Escape' && menuAberto()) fechaMenu();",
+    para: "  if (evento.key === 'Escape') fechaMenu();",
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'a guarda passa a valer com QUALQUER nome, e a de nome trocado volta a aprovar',
+    arquivo: 'scripts/lint/rules/componentes.mjs',
+    de: '        if (guardada === tag) return;',
+    para: '        if (guardada !== null) return;',
+    teste: 'tests/componentes.test.mjs',
+  },
+  {
+    porque: 'a busca pela guarda para de exigir um if, e qualquer ancestral serve',
+    arquivo: 'scripts/lint/rules/componentes.mjs',
+    de: "    if (anc.type !== 'IfStatement') continue;",
+    para: '    if (false) continue;',
+    teste: 'tests/componentes.test.mjs',
+  },
   // ── A #5 mudou o rodapé e a doc ficou descrevendo o arranjo anterior ────
   //
   // Quatro páginas afirmaram por semanas que TikTok "não aparece em lugar
@@ -1134,6 +1210,25 @@ const MUTANTES = [
  * código que decide se uma página passa ou não.
  */
 const MUTANTES_E2E = [
+  // ── O painel que abria e não deixava clicar ─────────────────────────────
+  //
+  // Faixa morta de 14px entre o item e o painel: ao descer o mouse, o `:hover`
+  // do grupo caía e o painel virava `pointer-events: none`. Só um navegador vê
+  // isto — o jsdom não calcula layout nem faz hit-testing.
+  {
+    porque: 'a ponte some e o painel volta a fechar no caminho do mouse',
+    arquivo: 'snippets/main-menu.liquid',
+    de: " before:absolute before:inset-x-0 before:bottom-full before:h-4 before:content-['']",
+    para: '',
+    teste: 'e2e/menu-desktop.spec.mjs',
+  },
+  {
+    porque: 'o overflow volta para o painel e recorta a própria ponte (a regressão que custou um diagnóstico)',
+    arquivo: 'snippets/main-menu.liquid',
+    de: 'w-full z-overlay before:absolute',
+    para: 'w-full z-overlay overflow-y-auto before:absolute',
+    teste: 'e2e/menu-desktop.spec.mjs',
+  },
   {
     porque: 'o axe passa a devolver lista vazia — toda página "acessível"',
     arquivo: 'e2e/helpers/axe.mjs',

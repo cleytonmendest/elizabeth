@@ -69,5 +69,7 @@ if (!customElements.get('video-section')) {
     }
   }
 
+  if (!customElements.get('video-section')) {
   customElements.define('video-section', VideoSection);
+}
 }

@@ -98,7 +98,7 @@ describe('o runner usa a poda de verdade', () => {
    * sem nada ter sido medido — a forma de verde vazio que este script existe
    * para encontrar, dentro do script que a procura.
    */
-  const SEM_LOJA = ['e2e/gate.spec.mjs', 'e2e/guarda-do-clique.spec.mjs'];
+  const SEM_LOJA = ['e2e/gate.spec.mjs', 'e2e/guarda-do-clique.spec.mjs', 'e2e/menu-desktop.spec.mjs'];
 
   it('todo mutante de navegador roda contra um spec que não precisa de loja', () => {
     const alvos = [...new Set([...fonte.matchAll(/teste:\s*'(e2e\/[^']+)'/g)].map((m) => m[1]))];

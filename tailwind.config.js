@@ -106,6 +106,21 @@ module.exports = {
       minHeight: {
         page: '60vh',
       },
+      // Teto de altura do que abre logo abaixo do cabeçalho — hoje o painel do
+      // mega menu e a gaveta mobile.
+      //
+      // `--header-height` é MEDIDA e publicada por `src/js/header.js`, porque o
+      // CSS não tem como saber: ela muda com o logo que a lojista subiu, com
+      // `font_scale` e com a barra de anúncio estar ligada. Um valor cravado
+      // daria, em outra loja, exatamente o defeito que este token corrige.
+      //
+      // O `6rem` do fallback é só para o instante entre o CSS pintar e o JS
+      // medir; se o script não rodar, o painel fica um pouco mais curto que o
+      // ideal — o que é infinitamente melhor que mais alto que a janela, que é
+      // como ele estava.
+      maxHeight: {
+        'below-header': 'calc(100vh - var(--header-height, 6rem))',
+      },
       // Largura mínima de cada coluna do mega menu. Abaixo disto o título da
       // coleção quebra em duas linhas e o painel vira uma escada.
       minWidth: {
