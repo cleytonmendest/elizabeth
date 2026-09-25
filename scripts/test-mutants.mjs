@@ -139,6 +139,20 @@ function resgataMutanteOrfao() {
 const comE2E = process.argv.includes('--e2e');
 
 const MUTANTES = [
+  {
+    porque: 'a decisão volta a acontecer antes de o <main> existir — a feature inteira para de funcionar',
+    arquivo: 'src/js/header.js',
+    de: "    if (document.readyState === 'loading') {",
+    para: '    if (false) {',
+    teste: 'tests/header-transparente.test.mjs',
+  },
+  {
+    porque: 'o contêiner volta a ser congelado no construtor, e um null ali mata tudo que vem depois',
+    arquivo: 'src/js/header.js',
+    de: '    if (!this._container || !this.contains(this._container)) {',
+    para: '    if (false) {',
+    teste: 'tests/header-transparente.test.mjs',
+  },
   // ── A #121: o cabeçalho transparente ────────────────────────────────────
   //
   // O risco real desta feature é contraste, e é justamente o que o axe NÃO vê
@@ -162,8 +176,8 @@ const MUTANTES = [
   {
     porque: 'o transparente deixa de depender do topo, e a sombra volta a flutuar sobre a imagem',
     arquivo: 'src/js/header.js',
-    de: "      this.container.toggleAttribute('data-transparente', noTopo);",
-    para: "      this.container.toggleAttribute('data-transparente', true);",
+    de: "      alvo.toggleAttribute('data-transparente', noTopo);",
+    para: "      alvo.toggleAttribute('data-transparente', true);",
     teste: 'tests/header-transparente.test.mjs',
   },
   {

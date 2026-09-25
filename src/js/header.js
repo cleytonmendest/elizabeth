@@ -50,14 +50,29 @@
 class MainHeader extends HTMLElement {
   constructor() {
     super();
-    this.container = this.querySelector('#main-header-container');
     this.onScroll = this.onScroll.bind(this);
     this.publicaAltura = this.publicaAltura.bind(this);
   }
 
+  /**
+   * O contêiner, resolvido na hora do uso e não no construtor.
+   *
+   * O asset é co-locado e carregado com `async`: ele pode chegar no meio do
+   * parse, definir o elemento, e o `connectedCallback` disparar quando
+   * `<main-header>` ainda não tem filho nenhum. Guardar o resultado do
+   * `querySelector` no construtor congelava um `null` para sempre — e a partir
+   * dali nada mais media a altura nem trocava o estado.
+   */
+  get container() {
+    if (!this._container || !this.contains(this._container)) {
+      this._container = this.querySelector('#main-header-container');
+    }
+    return this._container;
+  }
+
   connectedCallback() {
     this.publicaAltura();
-    this.preparaTransparencia();
+    this.decideTransparenciaQuandoDerPara();
     this.onScroll();
     window.addEventListener('scroll', this.onScroll, { passive: true });
     window.addEventListener('resize', this.publicaAltura);
@@ -77,12 +92,55 @@ class MainHeader extends HTMLElement {
    * flutuando sobre a imagem do herói.
    */
   onScroll() {
+    const alvo = this.container;
+    if (!alvo) return;
     const noTopo = window.scrollY === 0;
 
-    this.container.classList.toggle('is-scrolling', !noTopo);
+    alvo.classList.toggle('is-scrolling', !noTopo);
     if (this.podeSerTransparente) {
-      this.container.toggleAttribute('data-transparente', noTopo);
+      alvo.toggleAttribute('data-transparente', noTopo);
     }
+  }
+
+  /**
+   * Adia a decisão até o documento ter o que ela precisa ler.
+   *
+   * ── O defeito que isto corrige ─────────────────────────────────────────
+   *
+   * `{% sections 'header-group' %}` vem ANTES de `<main>` no layout, e o
+   * `connectedCallback` dispara durante o parse do cabeçalho. Nesse instante
+   * `#MainContent` ainda não existe: a busca pela primeira section devolvia
+   * `null`, a decisão saía "sem herói", e o cabeçalho ficava sólido em TODA
+   * página — inclusive nas que deviam ficar transparentes.
+   *
+   * O sintoma era a feature inteira não funcionar com o toggle ligado, e
+   * nenhum teste via porque todos montavam o `<main>` antes do cabeçalho — a
+   * ordem inversa da real.
+   *
+   * `readyState` e não um `setTimeout`: o que falta é o resto do documento,
+   * e `DOMContentLoaded` é exatamente o evento que diz que ele chegou. Se o
+   * script for injetado depois (re-render no editor), o documento já está
+   * pronto e a decisão é imediata.
+   */
+  decideTransparenciaQuandoDerPara() {
+    if (document.readyState === 'loading') {
+      document.addEventListener(
+        'DOMContentLoaded',
+        () => {
+          // A altura é REMEDIDA aqui, e não só na conexão. O
+          // `connectedCallback` dispara no meio do parse do próprio cabeçalho,
+          // quando nem todos os filhos dele existem — a medida de lá sai menor
+          // que a real. Medido: o herói subia 24px a menos, e o mesmo valor
+          // encurtava o teto do painel do mega menu.
+          this.publicaAltura();
+          this.preparaTransparencia();
+          this.onScroll();
+        },
+        { once: true }
+      );
+      return;
+    }
+    this.preparaTransparencia();
   }
 
   /**
@@ -92,6 +150,7 @@ class MainHeader extends HTMLElement {
    */
   preparaTransparencia() {
     this.podeSerTransparente = false;
+    if (!this.container) return;
     if (this.dataset.transparente !== 'true') return;
 
     const primeira = document.querySelector('#MainContent > .shopify-section:first-child');

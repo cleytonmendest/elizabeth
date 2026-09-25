@@ -19,7 +19,7 @@
  * sólido é de onde se parte — um cabeçalho que só fica legível depois que o
  * script carrega seria pior que um cabeçalho sólido sempre.
  */
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { loadAsset } from './helpers/load-asset.mjs';
 
 loadAsset('header.js');
@@ -173,5 +173,110 @@ describe('o herói sobe pela altura MEDIDA', () => {
     monta({ toggle: true, heroi: true, alturaDoHeader: 140 });
 
     expect(document.documentElement.style.getPropertyValue('--header-height')).toBe('140px');
+  });
+});
+
+/**
+ * A ordem em que o navegador monta a página.
+ *
+ * ── O defeito que passou por TODOS os testes anteriores ───────────────────
+ *
+ * `{% sections 'header-group' %}` vem antes de `<main>` no layout, e o
+ * `connectedCallback` dispara durante o parse do cabeçalho. Nesse instante
+ * `#MainContent` não existe: a busca pela primeira section devolvia `null`, a
+ * decisão saía "sem herói", e o cabeçalho ficava sólido em TODA página.
+ *
+ * A feature inteira não funcionava com o toggle ligado, e nenhum teste via —
+ * os daqui montavam o `<main>` ANTES do cabeçalho, que é a ordem inversa da
+ * real, e o de navegador injetava o script depois do documento pronto.
+ *
+ * Achado em QA manual, no preview. É a quinta vez nesta sequência de trabalho
+ * que uma fixture com o contexto errado deixa um verificador verde sobre um
+ * arranjo que a loja não tem.
+ */
+describe('a decisão espera o documento ficar pronto', () => {
+  const comReadyState = (valor) =>
+    Object.defineProperty(document, 'readyState', { value: valor, configurable: true });
+
+  afterEach(() => comReadyState('complete'));
+
+  it('o cabeçalho conecta antes do <main>, e reavalia quando ele chega', () => {
+    document.body.innerHTML = '';
+    comReadyState('loading');
+
+    const fora = document.createElement('div');
+    fora.innerHTML = '<main-header data-transparente="true"><div id="main-header-container"></div></main-header>';
+    Object.defineProperty(fora.querySelector('#main-header-container'), 'offsetHeight', {
+      value: 96,
+      configurable: true,
+    });
+    document.body.appendChild(fora.firstElementChild);
+
+    const c = document.getElementById('main-header-container');
+    expect(c.hasAttribute('data-transparente'), 'decidiu com o documento ainda carregando').toBe(false);
+
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      `<main id="MainContent"><div class="shopify-section">
+         <section class="${ESQUEMA_DO_HEROI}" data-hero-media>herói</section>
+       </div></main>`
+    );
+    comReadyState('complete');
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+
+    expect(
+      c.hasAttribute('data-transparente'),
+      'o cabeçalho ficou sólido: não reavaliou quando o documento ficou pronto'
+    ).toBe(true);
+    expect([...c.classList], 'e a cor do herói não foi herdada na segunda passada').toContain(ESQUEMA_DO_HEROI);
+  });
+});
+
+describe('o elemento atualizado antes dos filhos existirem', () => {
+  const comReadyState = (valor) =>
+    Object.defineProperty(document, 'readyState', { value: valor, configurable: true });
+
+  afterEach(() => comReadyState('complete'));
+
+  it('encontra o contêiner quando ele chega, e não congela um null', () => {
+    // ── O caso que o `async` cria ────────────────────────────────────────
+    //
+    // `header.js` é co-locado e carregado com `async`: ele pode chegar no meio
+    // do parse, definir o elemento, e o `connectedCallback` disparar quando
+    // `<main-header>` ainda não tem filho nenhum. O `querySelector` do
+    // construtor devolvia `null`, esse `null` ficava guardado, e a partir dali
+    // nada mais media a altura nem trocava o estado — nem quando o resto da
+    // página chegava.
+    document.body.innerHTML = '';
+    comReadyState('loading');
+
+    // 1. o elemento entra VAZIO
+    const cabecalho = document.createElement('main-header');
+    cabecalho.setAttribute('data-transparente', 'true');
+    document.body.appendChild(cabecalho);
+
+    // 2. os filhos chegam depois, como o parser faria
+    cabecalho.innerHTML = '<div id="main-header-container"></div>';
+    const c = cabecalho.querySelector('#main-header-container');
+    Object.defineProperty(c, 'offsetHeight', { value: 96, configurable: true });
+
+    // 3. e o resto do documento
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      `<main id="MainContent"><div class="shopify-section">
+         <section class="${ESQUEMA_DO_HEROI}" data-hero-media>herói</section>
+       </div></main>`
+    );
+    comReadyState('complete');
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+
+    expect(
+      c.hasAttribute('data-transparente'),
+      'o contêiner de antes ficou guardado como null e nada mais o encontrou'
+    ).toBe(true);
+    expect(
+      document.documentElement.style.getPropertyValue('--header-height'),
+      'a altura nunca foi publicada'
+    ).toBe('96px');
   });
 });

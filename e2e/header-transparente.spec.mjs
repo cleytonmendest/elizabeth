@@ -43,6 +43,32 @@ function estiloDoCabecalho() {
 
 const ESQUEMA_HEROI = 'color-scheme-3';
 
+/**
+ * O script vai INLINE, logo depois do cabeçalho e ANTES do `<main>`.
+ *
+ * `addScriptTag` depois do `setContent` o executa com o documento pronto e o
+ * `<main>` no lugar — a ordem inversa da real, e foi por isso que este arquivo
+ * ficou verde enquanto a feature não funcionava na loja. No layout o
+ * `header-group` vem antes do `<main>`, e é nesse instante que o
+ * `connectedCallback` dispara.
+ */
+const JS_DO_CABECALHO = fs.readFileSync(path.join(RAIZ, 'assets/header.js'), 'utf8');
+
+/**
+ * As folhas vão INLINE no `<head>`, e não por `addStyleTag` depois.
+ *
+ * `addStyleTag` aplica o CSS após o documento ser parseado — então o script,
+ * que agora roda na posição certa, mede o cabeçalho ANTES de o `py-3` existir
+ * e publica uma altura 24px menor que a real. Na loja a folha está no `<head>`
+ * e já valeu quando o corpo é parseado.
+ *
+ * São duas: `color-background` e `color-text` vivem em `color-scheme.css`, não
+ * no `application.css`.
+ */
+const CSS_DO_TEMA = ['assets/application.css', 'assets/color-scheme.css']
+  .map((f) => fs.readFileSync(path.join(RAIZ, f), 'utf8'))
+  .join('\n');
+
 async function monta(page, { toggle = true, heroi = true } = {}) {
   await page.setViewportSize({ width: 1400, height: 900 });
 
@@ -58,6 +84,7 @@ async function monta(page, { toggle = true, heroi = true } = {}) {
    --color-text; --color-foreground é outra, e trocar uma pela outra faz o
    teste medir o fallback do navegador em vez do esquema. */
 .${ESQUEMA_HEROI}{--color-background:20 20 20;--color-text:255 255 255;--color-foreground:255 255 255}</style>
+<style>${CSS_DO_TEMA}</style>
 ${estiloDoCabecalho()}
 </head><body>
 <div id="shopify-section-teste">
@@ -69,16 +96,11 @@ ${estiloDoCabecalho()}
     </div>
   </main-header>
 </div>
+<script>${JS_DO_CABECALHO}</script>
 <main id="MainContent" class="flex flex-col"><div class="shopify-section">${primeira}</div></main>
 <div style="height:2000px"></div>
 </body></html>`);
 
-  // As DUAS folhas. `color-background` e `color-text` vivem em
-  // `color-scheme.css`, não no `application.css` — carregar só a segunda deixa
-  // o cabeçalho sem fundo e faz o teste concluir que ele já era transparente.
-  await page.addStyleTag({ path: path.join(RAIZ, 'assets/application.css') });
-  await page.addStyleTag({ path: path.join(RAIZ, 'assets/color-scheme.css') });
-  await page.addScriptTag({ path: path.join(RAIZ, 'assets/header.js') });
   // Mais que os 300ms da transição: medir antes disso pega a cor no MEIO da
   // animação, e a asserção falha por tempo em vez de por comportamento.
   await page.waitForTimeout(400);
@@ -143,6 +165,7 @@ test('sem JavaScript o cabeçalho é sólido — o transparente é o estado adic
   // parte. Aqui o asset simplesmente não é injetado.
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.setContent(`<!doctype html><html><head><meta charset="utf-8">
+<style>${CSS_DO_TEMA}</style>
 <style>:root{--color-background:255 255 255;--color-text:20 20 20;--color-foreground:20 20 20;--page-width:1200px;--radius:8px;--font-scale:1}</style>
 ${estiloDoCabecalho()}</head><body>
 <main-header data-transparente="true"><div id="main-header-container" class="color-background color-text"
@@ -150,9 +173,6 @@ ${estiloDoCabecalho()}</head><body>
 <main id="MainContent"><div class="shopify-section">
   <section class="color-scheme-3" data-hero-media style="height:400px">herói</section>
 </div></main></body></html>`);
-  await page.addStyleTag({ path: path.join(RAIZ, 'assets/application.css') });
-  await page.addStyleTag({ path: path.join(RAIZ, 'assets/color-scheme.css') });
-
   expect(await fundo(page), 'sem JS o cabeçalho já nasceu transparente').not.toBe(TRANSPARENTE);
 
   const heroi = await page.locator('[data-hero-media]').boundingBox();
