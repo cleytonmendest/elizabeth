@@ -139,6 +139,35 @@ function resgataMutanteOrfao() {
 const comE2E = process.argv.includes('--e2e');
 
 const MUTANTES = [
+  // ── A #36, fase 1: o que abre abaixo do cabeçalho passava da janela ─────
+  {
+    porque: 'o painel do mega menu volta a não ter teto, e menu grande fica inalcançável',
+    arquivo: 'snippets/main-menu.liquid',
+    de: 'max-h-below-header overflow-y-auto',
+    para: '',
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'a gaveta mobile volta a cortar o fim do menu, sem rolagem',
+    arquivo: 'snippets/main-menu.liquid',
+    de: 'h-full overflow-y-auto overscroll-contain',
+    para: 'h-full',
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'a altura do cabeçalho publica zero, e o teto vira a janela inteira',
+    arquivo: 'src/js/header.js',
+    de: '    if (!altura) return;',
+    para: '    void 0;',
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'a altura para de ser remedida, e o teto fica errado depois de girar o celular',
+    arquivo: 'src/js/header.js',
+    de: "    window.addEventListener('resize', this.publicaAltura);",
+    para: '    void 0;',
+    teste: 'tests/menu.test.mjs',
+  },
   // ── A #36: o menu nunca tinha sido medido ───────────────────────────────
   //
   // `theme.js` abre a gaveta e os submenus em toda página e tinha ZERO testes
