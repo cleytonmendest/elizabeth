@@ -63,6 +63,27 @@
         "scheme-carrier-not-painted"
       ],
       "reason": "O portador acusado é o da NEWSLETTER (newsletter_color_scheme), não o do footer — o do footer pinta. A pintura da newsletter vive em snippets/newsletter.liquid, que aplica color-background na própria raiz, e a regra não atravessa {% render %}. O portador do footer, na linha 1, pinta fundo e texto."
+    },
+    {
+      "rule": "svgcolors",
+      "files": [
+        "snippets/icon-pay-american.liquid",
+        "snippets/icon-pay-aura.liquid",
+        "snippets/icon-pay-dinners.liquid",
+        "snippets/icon-pay-elo.liquid",
+        "snippets/icon-pay-gpay.liquid",
+        "snippets/icon-pay-hiper.liquid",
+        "snippets/icon-pay-jcb.liquid",
+        "snippets/icon-pay-master.liquid",
+        "snippets/icon-pay-pix.liquid",
+        "snippets/icon-pay-sodexo.liquid",
+        "snippets/icon-pay-visa.liquid",
+        "snippets/payment-icons.liquid"
+      ],
+      "codes": [
+        "nomeada:*"
+      ],
+      "reason": "Logos de bandeira e meio de pagamento com cor de marca própria — o branco aqui é parte do desenho oficial (o cartão, o texto do logo, o contorno), e trocá-lo pelo texto do color scheme descaracterizaria marca de terceiro, o que as guidelines das bandeiras vedam. Medido antes de registrar: cada um destes tem pelo menos uma cor que não é preto nem branco, ou um fundo de cartão que o torna legível em qualquer scheme. Fora desta lista ficaram icon-pay-boleto e icon-pay-yapay, que são monocromáticos de verdade e continuam como dívida visível."
     }
   ]
 }

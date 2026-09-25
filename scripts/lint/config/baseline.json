@@ -7,9 +7,10 @@
     "remotes": 1,
     "settings": 3,
     "similarity": 5,
+    "svgcolors": 3,
     "tokens": 98
   },
-  "total": 220,
+  "total": 223,
   "fingerprints": [
     "boundaries|src/js/search-component.js|storefront-routes",
     "i18n|locales/pt-BR.json|orphan:announcement_bar.close",
@@ -133,6 +134,9 @@
     "similarity|sections/image-banner.liquid|pair:sections/video.liquid",
     "similarity|sections/product-recommendations.liquid|pair:sections/recently-viewed.liquid",
     "similarity|templates/customers/register.liquid|pair:templates/customers/reset_password.liquid",
+    "svgcolors|snippets/icon-pay-boleto.liquid|nomeada:white",
+    "svgcolors|snippets/icon-pay-yapay.liquid|nomeada:black",
+    "svgcolors|snippets/icon-pay-yapay.liquid|nomeada:white",
     "tokens|sections/blog-posts.liquid|opacity-contrast:text-foreground/30",
     "tokens|sections/countdown-timer.liquid|arbitrary:min-w-[60px]",
     "tokens|sections/countdown-timer.liquid|arbitrary:min-w-[76px]",
