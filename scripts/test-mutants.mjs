@@ -1210,6 +1210,25 @@ const MUTANTES = [
  * código que decide se uma página passa ou não.
  */
 const MUTANTES_E2E = [
+  // ── O painel que abria e não deixava clicar ─────────────────────────────
+  //
+  // Faixa morta de 14px entre o item e o painel: ao descer o mouse, o `:hover`
+  // do grupo caía e o painel virava `pointer-events: none`. Só um navegador vê
+  // isto — o jsdom não calcula layout nem faz hit-testing.
+  {
+    porque: 'a ponte some e o painel volta a fechar no caminho do mouse',
+    arquivo: 'snippets/main-menu.liquid',
+    de: " before:absolute before:inset-x-0 before:bottom-full before:h-4 before:content-['']",
+    para: '',
+    teste: 'e2e/menu-desktop.spec.mjs',
+  },
+  {
+    porque: 'o overflow volta para o painel e recorta a própria ponte (a regressão que custou um diagnóstico)',
+    arquivo: 'snippets/main-menu.liquid',
+    de: 'w-full z-overlay before:absolute',
+    para: 'w-full z-overlay overflow-y-auto before:absolute',
+    teste: 'e2e/menu-desktop.spec.mjs',
+  },
   {
     porque: 'o axe passa a devolver lista vazia — toda página "acessível"',
     arquivo: 'e2e/helpers/axe.mjs',

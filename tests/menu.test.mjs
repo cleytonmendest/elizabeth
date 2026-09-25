@@ -168,11 +168,24 @@ describe('o painel e a gaveta cabem na janela', () => {
     return m ? m[0] : '';
   };
 
-  it('o painel do mega menu tem teto de altura e rolagem', () => {
-    const classes = classesDe('mega-panel');
+  it('o teto e a rolagem ficam no MIOLO, não no painel', () => {
+    // A separação não é estética. Enquanto o `overflow` esteve no painel, ele
+    // recortava o `::before` que faz a ponte sobre a faixa morta entre o item
+    // e o painel — a ponte existia no CSS, com a geometria certa, e não era
+    // atingida pelo cursor. Quem PROVA o efeito é `e2e/menu-desktop.spec.mjs`,
+    // que move o mouse de verdade; aqui fica a guarda barata do arranjo.
+    const miolo = classesDe('page-width py-8');
 
-    expect(classes, 'o painel perdeu o teto de altura').toContain('max-h-below-header');
-    expect(classes, 'com teto e sem rolagem, o conteúdo é cortado em vez de alcançável').toContain('overflow-y-auto');
+    expect(miolo, 'o miolo perdeu o teto de altura').toContain('max-h-below-header');
+    expect(miolo, 'com teto e sem rolagem, o conteúdo é cortado em vez de alcançável').toContain('overflow-y-auto');
+    expect(classesDe('mega-panel'), 'o overflow voltou para o painel e recorta a ponte').not.toContain('overflow-y-auto');
+  });
+
+  it('o painel tem a ponte que cobre a faixa morta', () => {
+    const painel = classesDe('mega-panel');
+
+    expect(painel, 'sem a ponte, descer o mouse até o painel o fecha no caminho').toContain('before:bottom-full');
+    expect(painel).toContain("before:content-['']");
   });
 
   it('a gaveta mobile rola, e não arrasta a página junto', () => {
