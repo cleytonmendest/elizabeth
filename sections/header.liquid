@@ -62,8 +62,55 @@
    * fora do topo, e o transparente só existe NO topo. Os dois são o mesmo
    * interruptor invertido.
    */
+  /*
+   * A transição entre os dois estados.
+   *
+   * Escrita aqui e não como classe do Tailwind porque são duas propriedades
+   * (fundo e sombra) e a utilidade `transition-shadow` cobre uma só. Duas
+   * fontes para a mesma transição divergem na primeira vez que alguém mexe
+   * numa delas.
+   */
+  #main-header-container {
+    transition: background-color 300ms ease, box-shadow 300ms ease;
+  }
+
   #main-header-container[data-transparente] {
     background-color: transparent;
+  }
+
+  /* ── O scrim do cabeçalho ─────────────────────────────────────────────────
+   *
+   * O scrim do banner pode ser LATERAL — `linear-gradient(270deg, cor 0%,
+   * transparent 65%)` —, então ele escurece ~35% da largura, onde o título
+   * dele mora. O cabeçalho atravessa a largura inteira, inclusive o pedaço
+   * onde o scrim já virou transparente. Ali o texto dele não tem nada
+   * ajudando.
+   *
+   * A cor sai de `--color-background` do esquema HERDADO, igual ao scrim do
+   * banner: herói escuro dá scrim escuro, que ajuda texto claro; herói claro
+   * dá scrim claro, que ajuda texto escuro. Um valor fixo (preto, digamos)
+   * ajudaria metade dos casos e atrapalharia a outra.
+   *
+   * Isto MELHORA as chances, não garante contraste: nenhum scrim garante, com
+   * foto arbitrária atrás. A garantia continua sendo olho humano — ver ADR 0015.
+   *
+   * O pseudo-elemento existe SEMPRE, com opacidade zero. Pseudo-elemento que
+   * só nasce num estado não tem de onde animar, e a troca apareceria como um
+   * salto no meio de uma transição de 300ms que é suave em todo o resto.
+   */
+  #main-header-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 300ms ease;
+    background: linear-gradient(to bottom, rgb(var(--color-background) / 0.5), transparent);
+  }
+
+  #main-header-container[data-transparente]::before {
+    opacity: 1;
   }
 
   /*
@@ -100,7 +147,7 @@
   >
     <div
       id="main-header-container"
-      class="color-background color-text w-full transition-shadow duration-300 group relative z-raised"
+      class="color-background color-text w-full group relative z-raised"
     >
       <div class="!py-3 page-width w-full">
         <div class="flex justify-between">

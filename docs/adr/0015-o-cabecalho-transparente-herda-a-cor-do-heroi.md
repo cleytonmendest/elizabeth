@@ -79,6 +79,28 @@ risco flutuando sobre a imagem, sem precisar de uma regra que a desligue.
 - Slideshow com slides de esquemas diferentes: o cabeçalho herda o do primeiro
   e não acompanha a troca. Registrado, não resolvido.
 
+## O scrim do cabeçalho
+
+O scrim do banner pode ser **lateral** — `linear-gradient(270deg, cor 0%,
+transparent 65%)` —, escurecendo cerca de 35% da largura, que é onde o título
+dele mora. O cabeçalho atravessa a largura inteira, inclusive o pedaço onde
+aquele gradiente já virou transparente: ali o texto dele não tem nada
+ajudando.
+
+Por isso o cabeçalho ganha o próprio scrim, um gradiente do topo, **só enquanto
+transparente**. A cor sai de `--color-background` do esquema herdado, pelo
+mesmo raciocínio do resto: herói escuro dá scrim escuro, que ajuda texto claro;
+herói claro dá scrim claro, que ajuda texto escuro. Preto cravado ajudaria
+metade dos casos e atrapalharia a outra.
+
+Ele **melhora as chances, não garante** contraste — nenhum scrim garante, com
+foto arbitrária atrás.
+
+O pseudo-elemento existe sempre, com opacidade zero, e não só no estado
+transparente: pseudo-elemento que nasce junto com o estado não tem de onde
+animar, e a troca apareceria como um salto no meio de uma transição que é suave
+em todo o resto.
+
 ## O que o portão automático não alcança
 
 O axe reporta texto sobre `background-image` como **incomplete**, não como

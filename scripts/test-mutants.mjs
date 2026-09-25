@@ -1260,6 +1260,27 @@ const MUTANTES = [
  */
 const MUTANTES_E2E = [
   {
+    porque: 'o scrim do cabeçalho some, e o texto fica sem ajuda onde o scrim do banner já virou transparente',
+    arquivo: 'sections/header.liquid',
+    de: '    opacity: 1;',
+    para: '    opacity: 0;',
+    teste: 'e2e/header-transparente.spec.mjs',
+  },
+  {
+    porque: 'o scrim vira preto cravado — ajuda o herói escuro e atrapalha o claro',
+    arquivo: 'sections/header.liquid',
+    de: 'background: linear-gradient(to bottom, rgb(var(--color-background) / 0.5), transparent);',
+    para: 'background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);',
+    teste: 'e2e/header-transparente.spec.mjs',
+  },
+  {
+    porque: 'a troca entre transparente e sólido volta a ser um corte seco',
+    arquivo: 'sections/header.liquid',
+    de: '    transition: background-color 300ms ease, box-shadow 300ms ease;',
+    para: '    transition: none;',
+    teste: 'e2e/header-transparente.spec.mjs',
+  },
+  {
     porque: 'o herói deixa de subir, e sobra uma faixa entre o cabeçalho e a imagem',
     arquivo: 'sections/header.liquid',
     de: 'margin-top: calc(-1 * var(--header-height, 0px));',

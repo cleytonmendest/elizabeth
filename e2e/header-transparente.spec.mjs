@@ -79,7 +79,9 @@ ${estiloDoCabecalho()}
   await page.addStyleTag({ path: path.join(RAIZ, 'assets/application.css') });
   await page.addStyleTag({ path: path.join(RAIZ, 'assets/color-scheme.css') });
   await page.addScriptTag({ path: path.join(RAIZ, 'assets/header.js') });
-  await page.waitForTimeout(50);
+  // Mais que os 300ms da transição: medir antes disso pega a cor no MEIO da
+  // animação, e a asserção falha por tempo em vez de por comportamento.
+  await page.waitForTimeout(400);
 }
 
 const fundo = (page) =>
@@ -90,7 +92,12 @@ const TRANSPARENTE = 'rgba(0, 0, 0, 0)';
 test('no topo, com herói: o fundo some e o herói sobe para debaixo do cabeçalho', async ({ page }) => {
   await monta(page);
 
-  expect(await fundo(page), 'o cabeçalho continuou com fundo sólido').toBe(TRANSPARENTE);
+  // `toHaveCSS` refaz a medição até bater: é o certo para uma propriedade que
+  // agora é animada, em vez de um `waitForTimeout` calibrado na mão.
+  await expect(
+    page.locator('#main-header-container'),
+    'o cabeçalho continuou com fundo sólido'
+  ).toHaveCSS('background-color', TRANSPARENTE);
 
   const heroi = await page.locator('[data-hero-media]').boundingBox();
   expect(heroi.y, 'o herói não subiu: sobra uma faixa entre o cabeçalho e a imagem').toBe(0);
@@ -109,9 +116,10 @@ test('a cor do texto é a do herói, não a do cabeçalho', async ({ page }) => 
 test('rolar devolve o fundo sólido', async ({ page }) => {
   await monta(page);
   await page.evaluate(() => window.scrollTo(0, 300));
-  await page.waitForTimeout(50);
 
-  expect(await fundo(page), 'o cabeçalho continuou transparente fora do topo').not.toBe(TRANSPARENTE);
+  await expect
+    .poll(() => fundo(page), { message: 'o cabeçalho continuou transparente fora do topo' })
+    .not.toBe(TRANSPARENTE);
 });
 
 test('sem herói na primeira section, o cabeçalho fica sólido e nada sobe', async ({ page }) => {
@@ -149,4 +157,61 @@ ${estiloDoCabecalho()}</head><body>
 
   const heroi = await page.locator('[data-hero-media]').boundingBox();
   expect(heroi.y, 'sem JS o herói foi puxado para cima e sumiu sob o cabeçalho').toBeGreaterThan(0);
+});
+
+const scrim = (page, prop) =>
+  page.locator('#main-header-container').evaluate(
+    (e, p) => getComputedStyle(e, '::before')[p],
+    prop
+  );
+
+test('o scrim aparece no estado transparente e some no sólido', async ({ page }) => {
+  // ── Por que o scrim existe ───────────────────────────────────────────────
+  //
+  // O scrim do banner pode ser LATERAL, escurecendo ~35% da largura — onde o
+  // título dele mora. O cabeçalho atravessa a largura inteira, inclusive o
+  // pedaço onde aquele gradiente já virou transparente, e ali o texto dele não
+  // tem nada ajudando.
+  await monta(page);
+
+  await expect
+    .poll(() => scrim(page, 'opacity'), { message: 'o scrim não apareceu no topo' })
+    .toBe('1');
+
+  await page.evaluate(() => window.scrollTo(0, 300));
+
+  await expect
+    .poll(() => scrim(page, 'opacity'), { message: 'o scrim ficou por cima do cabeçalho sólido' })
+    .toBe('0');
+});
+
+test('o scrim usa a cor do esquema herdado, e não uma cor fixa', async ({ page }) => {
+  // Herói escuro dá scrim escuro, que ajuda texto claro; herói claro dá scrim
+  // claro, que ajuda texto escuro. Preto cravado ajudaria metade dos casos e
+  // atrapalharia a outra.
+  await monta(page);
+
+  const fundo = await scrim(page, 'backgroundImage');
+
+  expect(fundo, 'o scrim deixou de derivar do esquema').toContain('rgba(20, 20, 20');
+});
+
+test('o scrim existe sempre — senão a troca vira um salto no meio da transição', async ({ page }) => {
+  // Pseudo-elemento que só nasce num estado não tem de onde animar.
+  await monta(page, { toggle: false });
+
+  expect(await scrim(page, 'content'), 'o scrim deixou de existir no estado sólido').not.toBe('none');
+  expect(await scrim(page, 'opacity')).toBe('0');
+});
+
+test('os dois estados são animados, e não trocam de golpe', async ({ page }) => {
+  await monta(page);
+
+  const transicao = await page
+    .locator('#main-header-container')
+    .evaluate((e) => getComputedStyle(e).transitionProperty);
+
+  expect(transicao, 'o fundo deixou de ser animado').toContain('background-color');
+  expect(transicao, 'a sombra deixou de ser animada').toContain('box-shadow');
+  expect(await scrim(page, 'transitionProperty'), 'o scrim aparece de golpe').toContain('opacity');
 });
