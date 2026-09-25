@@ -2222,23 +2222,18 @@
       },
       "social_twitter_link": {
         "label": "X / Twitter",
-        "placeholder": "https://x.com/shopify"
-      },
-      "social_snapchat_link": {
-        "label": "Snapchat",
-        "placeholder": "https://www.snapchat.com/add/shopify"
+        "placeholder": "https://x.com/shopify",
+        "info": "Não vira ícone no rodapé: alimenta a prévia de link no Twitter/X."
       },
       "social_pinterest_link": {
         "label": "Pinterest",
-        "placeholder": "https://pinterest.com/shopify"
+        "placeholder": "https://pinterest.com/shopify",
+        "info": "Não vira ícone no rodapé: alimenta os dados estruturados que o Google lê."
       },
-      "social_tumblr_link": {
-        "label": "Tumblr",
-        "placeholder": "https://shopify.tumblr.com"
-      },
-      "social_vimeo_link": {
-        "label": "Vimeo",
-        "placeholder": "https://vimeo.com/shopify"
+      "social_whatsapp_link": {
+        "label": "WhatsApp",
+        "info": "Link do WhatsApp, no formato https://wa.me/5511999999999",
+        "placeholder": "https://wa.me/5511999999999"
       }
     },
     "typography": {

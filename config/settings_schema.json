@@ -317,33 +317,24 @@
       },
       {
         "type": "text",
-        "id": "social_twitter_link",
-        "label": "t:settings_schema.social.social_twitter_link.label",
-        "placeholder": "t:settings_schema.social.social_twitter_link.placeholder"
+        "id": "social_whatsapp_link",
+        "label": "t:settings_schema.social.social_whatsapp_link.label",
+        "info": "t:settings_schema.social.social_whatsapp_link.info",
+        "placeholder": "t:settings_schema.social.social_whatsapp_link.placeholder"
       },
       {
         "type": "text",
-        "id": "social_snapchat_link",
-        "label": "t:settings_schema.social.social_snapchat_link.label",
-        "placeholder": "t:settings_schema.social.social_snapchat_link.placeholder"
+        "id": "social_twitter_link",
+        "label": "t:settings_schema.social.social_twitter_link.label",
+        "placeholder": "t:settings_schema.social.social_twitter_link.placeholder",
+        "info": "t:settings_schema.social.social_twitter_link.info"
       },
       {
         "type": "text",
         "id": "social_pinterest_link",
         "label": "t:settings_schema.social.social_pinterest_link.label",
-        "placeholder": "t:settings_schema.social.social_pinterest_link.placeholder"
-      },
-      {
-        "type": "text",
-        "id": "social_tumblr_link",
-        "label": "t:settings_schema.social.social_tumblr_link.label",
-        "placeholder": "t:settings_schema.social.social_tumblr_link.placeholder"
-      },
-      {
-        "type": "text",
-        "id": "social_vimeo_link",
-        "label": "t:settings_schema.social.social_vimeo_link.label",
-        "placeholder": "t:settings_schema.social.social_vimeo_link.placeholder"
+        "placeholder": "t:settings_schema.social.social_pinterest_link.placeholder",
+        "info": "t:settings_schema.social.social_pinterest_link.info"
       }
     ]
   },

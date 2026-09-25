@@ -1,0 +1,25 @@
+{%- comment -%}
+  Um link de rede social do rodapé.
+
+  Existe para que o markup do `<a>` — target, rel, aria-label e o despacho do
+  ícone — more num lugar só. Eram três blocos quase idênticos em
+  `sections/footer.liquid`, e é a repetição que deixa um par ícone/setting
+  nascer dessincronizado (issue #5).
+
+  O `url` é passado pelo chamador como `settings.social_<rede>_link` LITERAL,
+  de propósito: a regra `settings` do linter procura essa referência no fonte
+  para saber que o campo é lido. Montar a chave com `append` deixaria os cinco
+  settings invisíveis para ela — e "campo que a lojista preenche e não faz
+  nada" é exatamente o defeito que esta issue corrige.
+
+  Parâmetros:
+  - url: o link (obrigatório) — nada renderiza se vier em branco
+  - rede: handle para o ícone (obrigatório)
+  - nome: como a marca se escreve, para o aria-label (obrigatório)
+{%- endcomment -%}
+
+{%- if url != blank -%}
+  <a href="{{ url }}" target="_blank" rel="noopener" aria-label="{{ 'general.social.follow_on' | t: rede: nome }}">
+    {% render 'icon-social', rede: rede %}
+  </a>
+{%- endif -%}

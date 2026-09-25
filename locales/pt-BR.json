@@ -9,12 +9,12 @@
  */
 {
   "general": {
-    "see_more": "Ver mais",
     "404": {
       "title": "Página não encontrada",
       "subtext_html": "A página que você está procurando não existe",
       "back_home": "Voltar à página inicial"
     },
+    "see_more": "Ver mais",
     "password_page": {
       "signup_heading": "Avise-me quando abrir",
       "login_form_heading": "Entrar com senha",
@@ -87,11 +87,12 @@
       "page": "Página {{ number }}"
     },
     "social": {
+      "follow_on": "Siga no {{ rede }}",
       "share": "Compartilhar",
+      "share_link": "Copiar link",
       "share_on_facebook": "Compartilhar no Facebook",
-      "share_on_twitter": "Compartilhar no Twitter",
       "share_on_pinterest": "Compartilhar no Pinterest",
-      "share_link": "Copiar link"
+      "share_on_twitter": "Compartilhar no Twitter"
     },
     "currency": {
       "currency_label": "Moeda"

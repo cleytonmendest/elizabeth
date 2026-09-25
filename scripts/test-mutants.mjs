@@ -866,6 +866,64 @@ const MUTANTES = [
     teste: 'tests/site.test.mjs',
   },
   {
+    // O defeito da #5, replantado: campo no admin que ninguém lê. Eram quatro,
+    // e a lojista preenchia o TikTok e não acontecia nada.
+    porque: 'uma rede volta a sumir do rodapé, e o setting dela fica mudo no admin',
+    arquivo: 'sections/footer.liquid',
+    de: "              {% render 'social-link', url: settings.social_tiktok_link, rede: 'tiktok', nome: 'TikTok' %}",
+    para: '              {%- comment -%} mutante {%- endcomment -%}',
+    teste: 'tests/redes-sociais.test.mjs',
+  },
+  {
+    // `fill="black"` no rodapé some no preset Noir (fundo #14110F) — o mesmo
+    // defeito da sombra da barra fixa. A regra `hex` não pega: ela procura
+    // #rrggbb, não cor nomeada.
+    porque: 'o ícone social volta a cravar preto e some no color scheme escuro',
+    arquivo: 'snippets/icon-social-whatsapp.liquid',
+    de: 'fill="currentColor"/>',
+    para: 'fill="black"/>',
+    teste: 'tests/redes-sociais.test.mjs',
+  },
+  {
+    // O rótulo é o que impede o campo de mentir: quem preenche o Pinterest
+    // espera um ícone no rodapé, e ele alimenta só dados estruturados.
+    porque: 'o setting que só alimenta metadados para de avisar que não vira ícone',
+    arquivo: 'config/settings_schema.json',
+    de: '"info": "t:settings_schema.social.social_pinterest_link.info"',
+    para: '"placeholder": "t:settings_schema.social.social_pinterest_link.placeholder"',
+    teste: 'tests/redes-sociais.test.mjs',
+  },
+  {
+    // A área de cliente inteira estava fora da varredura de a11y (#101), e o
+    // perigo maior não era a ausência: era "não coberto" e "esquecido" serem
+    // indistinguíveis. Este mutante tira o login da varredura.
+    porque: 'o login de cliente sai da varredura de a11y e ninguém é avisado',
+    arquivo: 'e2e/a11y.spec.mjs',
+    de: "  ['login de cliente', '/account/login'],",
+    para: '  // mutante',
+    teste: 'tests/a11y-cobertura.test.mjs',
+  },
+  {
+    // A primeira versão do teste procurava a URL `/account/login` em qualquer
+    // lugar do spec — e SOBREVIVEU ao mutante acima, porque o teste de
+    // recuperação de senha navega para a mesma URL sem medir a página de
+    // login. Navegar não é aferir, e este mutante trava a diferença.
+    porque: 'a cobertura volta a ser conferida pela URL visitada em vez do nome aferido',
+    arquivo: 'e2e/helpers/loja.mjs',
+    de: "  login: 'login de cliente',",
+    para: "  login: 'nome que nenhum teste afere',",
+    teste: 'tests/a11y-cobertura.test.mjs',
+  },
+  {
+    // O painel de recuperação é `hidden` até o clique, e o axe ignora o que
+    // está oculto. Sem o clique, o teste mediria o nada e ficaria verde.
+    porque: 'a recuperação de senha é medida com o painel ainda escondido',
+    arquivo: 'e2e/a11y.spec.mjs',
+    de: "  await page.locator('#recover-password-link').click();",
+    para: '  // mutante',
+    teste: 'tests/a11y-cobertura.test.mjs',
+  },
+  {
     // O estado da section ANTES desta correção: autoplay em loop infinito
     // atrás do texto, para todo mundo. WCAG 2.2.2 (Pause, Stop, Hide) é nível
     // A, e a section estava marcada como "nunca validada" desde a #36.
