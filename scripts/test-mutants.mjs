@@ -139,6 +139,38 @@ function resgataMutanteOrfao() {
 const comE2E = process.argv.includes('--e2e');
 
 const MUTANTES = [
+  // ── A #106: stripInert decide o que TODAS as regras enxergam ────────────
+  //
+  // Erro aqui não aparece como erro: aparece como uma regra acusando um trecho
+  // que ninguém escreveu para valer, ou deixando de acusar um que foi escrito.
+  {
+    porque: 'a cerquilha passa a comentar em qualquer posição — cor cravada em `assign` some do radar',
+    arquivo: 'scripts/lint/lib.mjs',
+    de: "    .map((linha) => (/^\\s*#/.test(linha) ? '' : linha))",
+    para: "    .map((linha) => (/#/.test(linha) ? '' : linha))",
+    teste: 'tests/strip-inert.test.mjs',
+  },
+  {
+    porque: 'a linha de # dentro de {% liquid %} volta a chegar nas regras como código',
+    arquivo: 'scripts/lint/lib.mjs',
+    de: 'semComentarioDeCerquilha)',
+    para: '((b) => b))',
+    teste: 'tests/strip-inert.test.mjs',
+  },
+  {
+    porque: 'o comentário de bloco de CSS volta a ser lido como markup ativo',
+    arquivo: 'scripts/lint/lib.mjs',
+    de: '    .replace(/\\/\\*[\\s\\S]*?\\*\\//g, blank);',
+    para: '    .replace(/(?!)/g, blank);',
+    teste: 'tests/strip-inert.test.mjs',
+  },
+  {
+    porque: 'a limpeza deixa de preservar a contagem de linhas, e o erro passa a apontar o lugar errado',
+    arquivo: 'scripts/lint/lib.mjs',
+    de: "  const blank = (m) => '\\n'.repeat(countLines(m));",
+    para: "  const blank = () => '';",
+    teste: 'tests/strip-inert.test.mjs',
+  },
   {
     porque: 'a decisão volta a acontecer antes de o <main> existir — a feature inteira para de funcionar',
     arquivo: 'src/js/header.js',

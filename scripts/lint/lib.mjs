@@ -132,7 +132,50 @@ export function stripInert(src) {
   return src
     .replace(/\{%-?\s*comment\s*-?%\}[\s\S]*?\{%-?\s*endcomment\s*-?%\}/g, blank)
     .replace(/\{%-?\s*schema\s*-?%\}[\s\S]*?\{%-?\s*endschema\s*-?%\}/g, blank)
-    .replace(/<!--[\s\S]*?-->/g, blank);
+    .replace(/<!--[\s\S]*?-->/g, blank)
+    .replace(/\{%-?\s*liquid[\s\S]*?-?%\}/g, semComentarioDeCerquilha)
+    // Comentário de bloco de CSS e de JS, pelo mesmo motivo do `<!-- -->` logo
+    // acima: não é markup ativo. Medido: `#121` escrito dentro de um `/* */`
+    // num `<style>` reprovava no check `hex` como cor de três dígitos, igual
+    // ao `#105` dentro do `{% liquid %}` que originou a #106. Mesma classe de
+    // defeito, outro contêiner — corrigir só um deixaria o outro esperando a
+    // próxima pessoa tropeçar.
+    .replace(/\/\*[\s\S]*?\*\//g, blank);
+}
+
+/**
+ * Apaga as linhas de comentário de dentro de uma tag `{% liquid %}`.
+ *
+ * ── Por que a quarta forma de comentário existe ────────────────────────────
+ *
+ * Dentro de `{% liquid %}`, uma linha cujo primeiro caractere não-branco é `#`
+ * é comentário — é assim que a Liquid define, e é a única forma de comentar em
+ * notação de tag. `stripInert` não sabia disso, então essas linhas chegavam às
+ * regras como se fossem código.
+ *
+ * O sintoma: `# Ver #105` reprovava na regra `tokens`, porque `#105` tem três
+ * dígitos hexadecimais válidos e o check `hex` o casava como cor. O contorno
+ * era escrever o comentário fora do `{% liquid %}` — ou seja, o linter passava
+ * a ditar onde o comentário pode morar.
+ *
+ * Aconteceu de novo hoje, com `#121` num comentário de CSS: a mesma classe de
+ * defeito, em outro arquivo.
+ *
+ * ── O falso positivo que a regra precisa evitar ────────────────────────────
+ *
+ * `assign cor = '#fff'` tem `#` na linha e NÃO é comentário. A Liquid olha o
+ * primeiro caractere não-branco, e é esse critério que vale aqui — não "a
+ * linha contém `#`", que apagaria código de verdade e faria as regras deixarem
+ * de ver cor cravada.
+ *
+ * O conteúdo some e a LINHA fica, para a contagem não escorregar: erro
+ * apontado na linha errada é erro que a pessoa procura no lugar errado.
+ */
+function semComentarioDeCerquilha(bloco) {
+  return bloco
+    .split('\n')
+    .map((linha) => (/^\s*#/.test(linha) ? '' : linha))
+    .join('\n');
 }
 
 /** Cria um offense com fingerprint estável (sem número de linha). */

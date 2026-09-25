@@ -122,16 +122,10 @@
             e 4,89:1 no claro), mas 60% chega com 0,39 de margem. Uma lojista
             que escolha um par de contraste mais baixo derruba o de 60 e não o
             de 70. O valor continua sendo DELA — o tema só decide o degrau.
-
-            Esta explicação vive num bloco de comentário, e não em linhas de
-            `#` dentro do bloco liquid logo abaixo, por um motivo mecânico:
-            `stripInert` remove bloco de comentário, mas não remove linha de
-            `#`. Com a referência `#105` numa linha dessas, o check `hex` da
-            regra `tokens` a lia como cor de três dígitos e acusava
-            "Cor fixa #105". Ver a #106.
           {%- endcomment -%}
 
           {% liquid
+            # O contraste do fundo, derivado do brilho dele. Ver #105.
             assign background_color = scheme.settings.background
             assign background_color_brightness = background_color | color_brightness
             if background_color_brightness <= 26
