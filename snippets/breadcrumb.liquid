@@ -1,7 +1,23 @@
 {%- comment -%}
   snippets/breadcrumb.liquid
 {%- endcomment -%}
+{%- comment -%}
+  A caixa é DELE, e não do layout.
+
+  O `layout/theme.liquid` envolvia este render num `<div class="page-width
+  py-4">` que era emitido sempre — inclusive na home, onde o breadcrumb não
+  renderiza nada. Sobravam 32px de padding sem conteúdo no topo de toda home,
+  mais o `gap` entre as sections. Medido, não estimado.
+
+  Ninguém notava porque 32px de branco acima de um banner branco não chamam
+  atenção. Chamam quando o cabeçalho passa a ser transparente sobre o herói
+  (issue 121): aí o herói precisa começar colado no topo, e esse espaço vira uma
+  faixa visível entre o cabeçalho e a imagem.
+
+  Caixa que só existe quando há conteúdo resolve os dois casos de uma vez.
+{%- endcomment -%}
 {%- if template.name != 'index' -%}
+  <div class="page-width py-4 w-full">
   <nav aria-label="{{ 'general.breadcrumbs.aria_label' | t }}" class="breadcrumb-nav sm:text-sm text-xs w-full my-2">
     <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
       <li>
@@ -89,4 +105,5 @@
       {%- endcase -%}
     </ol>
   </nav>
+  </div>
 {%- endif -%}

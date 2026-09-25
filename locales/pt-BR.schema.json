@@ -511,6 +511,10 @@
         "fixed_header": {
           "label": "Header fixo (sticky)",
           "info": "Se ativado, o header acompanha o scroll fixo no topo"
+        },
+        "transparent_header": {
+          "label": "Cabeçalho sobre a primeira seção",
+          "info": "O cabeçalho fica transparente sobre a imagem de abertura, e as cores dele acompanham o esquema de cores dessa seção. Só vale em páginas que começam com Banner de Imagem, Vídeo ou Carrossel de Imagem — nas outras ele continua sólido, mesmo com esta opção ligada."
         }
       },
       "blocks": {

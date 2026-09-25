@@ -50,10 +50,54 @@
   #main-header-container.is-scrolling {
     box-shadow: 0 2px 8px rgb(var(--color-shadow) / 0.1);
   }
+
+  /* ── O modo transparente (issue 121) ───────────────────────────────────────────
+   *
+   * `data-transparente` é posto por `header.js` e SÓ quando as duas condições
+   * valem: a lojista ligou o toggle E a primeira section tem mídia atrás. Sem
+   * JavaScript nada disto acontece, e o cabeçalho fica sólido — que é o estado
+   * seguro, e por isso é o padrão.
+   *
+   * A sombra do `is-scrolling` não precisa ser desligada aqui: ela só existe
+   * fora do topo, e o transparente só existe NO topo. Os dois são o mesmo
+   * interruptor invertido.
+   */
+  #main-header-container[data-transparente] {
+    background-color: transparent;
+  }
+
+  /*
+   * Submenu aberto devolve o fundo.
+   *
+   * O painel é sólido e fica logo abaixo da barra. Com a barra transparente
+   * sobre a foto e o painel sólido colado nela, o conjunto lê como defeito de
+   * renderização — foi um dos cinco que derrubaram a primeira tentativa desta
+   * feature.
+   */
+  #main-header-container[data-transparente]:has(.menu-desk [data-forma]:hover),
+  #main-header-container[data-transparente]:has(.menu-desk [data-forma]:focus-within) {
+    background-color: rgb(var(--color-background));
+  }
+
+  /*
+   * O herói sobe para debaixo do cabeçalho.
+   *
+   * `--header-height` é medida e publicada por `header.js`; sem ela a margem
+   * é zero e a página fica exatamente como era. `data-heroi-sob-cabecalho`
+   * só é posto quando a transparência foi realmente habilitada, então uma
+   * página sem herói nunca é puxada.
+   */
+  :root[data-heroi-sob-cabecalho] #MainContent > .shopify-section:first-child {
+    margin-top: calc(-1 * var(--header-height, 0px));
+  }
 </style>
 
 <div class="w-full color-{{ section.settings.color_scheme }}">
-  <main-header class="w-full block relative z-sticky" data-type="{{ header_type }}">
+  <main-header
+    class="w-full block relative z-sticky"
+    data-type="{{ header_type }}"
+    data-transparente="{% if section.settings.transparent_header %}true{% else %}false{% endif %}"
+  >
     <div
       id="main-header-container"
       class="color-background color-text w-full transition-shadow duration-300 group relative z-raised"
@@ -139,6 +183,13 @@
       "id": "fixed_header",
       "label": "t:sections.header.settings.fixed_header.label",
       "info": "t:sections.header.settings.fixed_header.info"
+    },
+    {
+      "type": "checkbox",
+      "default": false,
+      "id": "transparent_header",
+      "label": "t:sections.header.settings.transparent_header.label",
+      "info": "t:sections.header.settings.transparent_header.info"
     }
   ],
   "blocks": [

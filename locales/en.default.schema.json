@@ -511,6 +511,10 @@
         "fixed_header": {
           "label": "Fixed header (sticky)",
           "info": "If enabled, the header follows the scroll fixed at the top"
+        },
+        "transparent_header": {
+          "label": "Header over the first section",
+          "info": "The header goes transparent over the opening image, and its colors follow that section's color scheme. It only applies on pages that start with an Image Banner, Video or Image Carousel — elsewhere it stays solid, even with this option on."
         }
       },
       "blocks": {
