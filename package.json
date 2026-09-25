@@ -5,7 +5,7 @@
   "description": "Tema Shopify Online Store 2.0 para moda feminina (TailwindCSS, vanilla JS, Swiper).",
   "scripts": {
     "tail": "tailwindcss -i ./src/tailwind.css -o ./assets/application.css --watch --minify",
-    "build": "tailwindcss -i ./src/tailwind.css -o ./assets/application.css --minify",
+    "build": "tailwindcss -i ./src/tailwind.css -o ./assets/application.css --minify && node scripts/build-js.mjs",
     "lint": "node scripts/lint/index.mjs",
     "lint:fast": "node scripts/lint/index.mjs --fast",
     "lint:baseline": "node scripts/lint/index.mjs --write-baseline",
@@ -19,7 +19,8 @@
     "gate": "npm run build && npm run lint && npm test",
     "setup": "git config core.hooksPath .githooks && echo 'Hooks de git ativados (.githooks).'",
     "prepare": "npm run setup",
-    "site": "node scripts/site.mjs"
+    "site": "node scripts/site.mjs",
+    "build:js": "node scripts/build-js.mjs"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
     "acorn": "^8.18.0",
     "acorn-walk": "^8.3.5",
     "actionlint": "^2.0.6",
+    "esbuild": "^0.28.2",
     "jsdom": "^30.0.1",
     "tailwindcss": "^3.4.7",
     "vitest": "^4.1.11"

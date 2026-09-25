@@ -34,7 +34,11 @@ npm run lint --silent -- --fast || {
 # Componente mexido → roda a suíte. São ~2s; o mutante (npm run test:mutants)
 # fica para o CI, que é onde a pergunta "esses testes conseguem falhar?" precisa
 # ser feita sem pressa.
-if printf '%s\n' "$changed" | grep -qE '^assets/.*\.js$|^tests/'; then
+#
+# O fonte é src/js/ desde a #96; assets/*.js é gerado. Continua na lista porque
+# uma edição à mão no artefato é justamente o que precisa ser pego — e o passo
+# de build logo abaixo é quem a transforma em erro.
+if printf '%s\n' "$changed" | grep -qE '^src/js/.*\.js$|^assets/.*\.js$|^tests/'; then
   echo "→ testes unitários"
   npm test --silent || {
     echo ""
@@ -44,17 +48,18 @@ if printf '%s\n' "$changed" | grep -qE '^assets/.*\.js$|^tests/'; then
   }
 fi
 
-# Se o CSS-fonte ou qualquer .liquid mudou, o application.css precisa vir junto.
-if printf '%s\n' "$changed" | grep -qE '\.liquid$|^src/'; then
-  if ! printf '%s\n' "$changed" | grep -q '^assets/application.css$'; then
-    echo "→ verificando se o build do Tailwind está em dia"
-    npm run lint --silent -- --rules=build || {
-      echo ""
-      echo "Commit bloqueado: rode 'npm run build' e inclua assets/application.css no commit."
-      echo ""
-      exit 1
-    }
-  fi
+# Se um fonte mudou, o artefato correspondente precisa vir no mesmo commit:
+# .liquid e src/tailwind.css geram assets/application.css; src/js/*.js geram
+# assets/*.js. Um commit com o fonte e sem o artefato sobe uma loja que roda o
+# programa ANTIGO — e passa em todos os outros linters.
+if printf '%s\n' "$changed" | grep -qE '\.liquid$|^src/|^assets/.*\.js$'; then
+  echo "→ verificando se os artefatos gerados estão em dia"
+  npm run lint --silent -- --rules=build || {
+    echo ""
+    echo "Commit bloqueado: rode 'npm run build' e inclua os arquivos gerados no commit."
+    echo ""
+    exit 1
+  }
 fi
 
 # Nudge (não bloqueia): mostra a dívida que ainda existe nos arquivos tocados,

@@ -123,11 +123,12 @@ E deixe o link **"Não, obrigado"** visível. Modal sem saída clara faz a clien
 
 ## Preenchi a rede social e o ícone não apareceu
 
-**Causa:** só **Instagram, Facebook e YouTube** viram ícone no rodapé.
+**Causa:** duas possíveis.
 
-TikTok, Snapchat, Tumblr e Vimeo têm campo mas não aparecem em lugar nenhum. Twitter alimenta a prévia de link no Twitter/X; Pinterest alimenta os dados estruturados que o Google lê — nenhum dos dois vira ícone.
+1. **É um dos dois campos que não viram ícone.** Twitter alimenta a prévia de link no Twitter/X; Pinterest alimenta os dados estruturados que o Google lê. O próprio admin avisa isso no campo. Viram ícone: **Instagram, Facebook, YouTube, TikTok e WhatsApp**.
+2. **O bloco não está no rodapé.** Confira se **Pagamentos e Social** está presente e com a opção de social ligada.
 
-**O que fazer:** confira também se o bloco **Pagamentos e Social** está presente no rodapé e com a opção de social ligada.
+**O que fazer:** no caso 1 não há o que fazer — o campo não é para isso. No caso 2, adicione o bloco em **Rodapé** no editor.
 
 ---
 

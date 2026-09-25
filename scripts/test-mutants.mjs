@@ -20,7 +20,7 @@
  *
  * Há duas listas, e cada execução roda UMA:
  *
- *   npm run test:mutants          assets/*.js, via Vitest
+ *   npm run test:mutants          src/js/*.js, via Vitest
  *   npm run test:mutants -- --e2e  o verificador de a11y, via Playwright
  *
  * A segunda precisa de Chromium, então vive no job de navegador do CI.
@@ -52,12 +52,34 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { constroi } from './build-js.mjs';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const VITEST = path.join(ROOT, 'node_modules', '.bin', 'vitest');
 const PLAYWRIGHT = path.join(ROOT, 'node_modules', '.bin', 'playwright');
+
+/**
+ * Propaga a mutação do fonte para o artefato que os testes leem.
+ *
+ * ── Por que este passo existe ──────────────────────────────────────────────
+ *
+ * Até a #96 o mutante editava `assets/cart.js` e o teste lia `assets/cart.js`:
+ * o mesmo arquivo, sem intermediário. Agora o fonte é `src/js/cart.js` e
+ * `assets/cart.js` é GERADO — e `tests/helpers/load-asset.mjs` continua lendo
+ * `assets/`, de propósito, porque é o que a loja serve.
+ *
+ * Sem reconstruir aqui, o mutante seria escrito num arquivo que o teste não
+ * lê. Todos os 30 mutantes de JS passariam a SOBREVIVER — e não por os testes
+ * serem fracos, mas por estarem medindo o artefato velho. Seria o pior
+ * resultado possível deste script: um relatório confiante sobre outro
+ * programa, que é exatamente o que ele existe para detectar.
+ */
+function propaga(arquivo) {
+  if (!arquivo.startsWith('src/js/')) return;
+  constroi(path.basename(arquivo));
+}
 
 /**
  * O registro do mutante EM CURSO, gravado antes de o arquivo ser tocado.
@@ -92,12 +114,18 @@ function resgataMutanteOrfao() {
   const atual = fs.existsSync(alvo) ? fs.readFileSync(alvo, 'utf8') : null;
 
   if (atual === registro.original) {
-    // O `finally` chegou a rodar e só a sentinela sobrou. Nada a desfazer.
+    // O `finally` chegou a rodar no FONTE e só a sentinela sobrou. O artefato
+    // em `assets/` pode ter ficado para trás mesmo assim, então reconstrói:
+    // é barato e determinístico, e a alternativa é confiar que os dois passos
+    // do `finally` sempre acontecem juntos — que é a suposição que a sentinela
+    // existe para não fazer.
+    propaga(registro.arquivo);
     fs.rmSync(SENTINELA, { force: true });
     return;
   }
 
   fs.writeFileSync(alvo, registro.original);
+  propaga(registro.arquivo);
   fs.rmSync(SENTINELA, { force: true });
   console.error(
     red('⚠ Uma execução anterior foi interrompida e deixou um MUTANTE no disco.') +
@@ -111,9 +139,61 @@ function resgataMutanteOrfao() {
 const comE2E = process.argv.includes('--e2e');
 
 const MUTANTES = [
+  // ── A #5 mudou o rodapé e a doc ficou descrevendo o arranjo anterior ────
+  //
+  // Quatro páginas afirmaram por semanas que TikTok "não aparece em lugar
+  // nenhum", depois de o rodapé passar a renderizá-lo. Passou no CI porque a
+  // afirmação não era conferida contra nada. Agora é derivada do footer.
+  {
+    porque: 'a doc volta a listar só as três redes antigas, e quem preenche TikTok acha o tema quebrado',
+    arquivo: 'docs/lojista/primeiros-passos.md',
+    de: '**Instagram, Facebook, YouTube, TikTok e WhatsApp**',
+    para: '**Instagram, Facebook e YouTube**',
+    teste: 'tests/docs.test.mjs',
+  },
+  {
+    porque: 'a doc ressuscita uma rede que saiu do schema na #5 (ADR 0012)',
+    arquivo: 'docs/merchant/troubleshooting.md',
+    de: 'Twitter feeds the link preview on Twitter/X',
+    para: 'Snapchat feeds the link preview on Twitter/X',
+    teste: 'tests/docs.test.mjs',
+  },
+  // ── A #96: o JS servido passou a ser gerado ────────────────────────────
+  //
+  // Três defeitos novos entraram junto com o build, e os três são SILENCIOSOS:
+  // o tema continua funcionando em todos eles. É a forma de defeito que um
+  // teste verde não distingue de saúde, então cada um precisa do seu mutante.
+  {
+    porque: 'o gerador para de minificar e devolve o fonte (a loja pesa o dobro, e funciona)',
+    arquivo: 'scripts/build-js.mjs',
+    de: 'minify: true',
+    para: 'minify: false',
+    teste: 'tests/build-js.test.mjs',
+  },
+  {
+    porque: 'o alvo do esbuild afrouxa e a loja passa a servir sintaxe pós-ES2019',
+    arquivo: 'scripts/build-js.mjs',
+    de: "const ALVO = 'es2019'",
+    para: "const ALVO = 'esnext'",
+    teste: 'tests/build-js.test.mjs',
+  },
+  {
+    porque: 'assets/*.js sem fonte deixa de ser órfão — arquivo escrito à mão entra sem ser minificado',
+    arquivo: 'scripts/build-js.mjs',
+    de: '&& !(f in VENDORIZADOS)',
+    para: '&& true',
+    teste: 'tests/build-js.test.mjs',
+  },
+  {
+    porque: 'a regra build para de comparar e aceita artefato velho (o commit sobe o programa ANTIGO)',
+    arquivo: 'scripts/lint/rules/build.mjs',
+    de: 'if (fresco === commitado) continue;',
+    para: 'if (true) continue;',
+    teste: 'tests/build-js.test.mjs',
+  },
   {
     porque: 'formatMoney deixa de converter centavos em unidades da moeda',
-    arquivo: 'assets/money.js',
+    arquivo: 'src/js/money.js',
     de: '.format(cents / 100)',
     para: '.format(cents)',
     teste: 'tests/money.test.mjs',
@@ -123,7 +203,7 @@ const MUTANTES = [
     // vê: com a loja em BRL as duas versões imprimem "R$ 19,99". Só um caso
     // que TROCA de moeda separa "lê a loja" de "crava o Brasil".
     porque: 'a moeda volta a ser cravada no código em vez de vir da loja',
-    arquivo: 'assets/money.js',
+    arquivo: 'src/js/money.js',
     de: "return (shopify.currency && shopify.currency.active) || null;",
     para: "return 'BRL';",
     teste: 'tests/money.test.mjs',
@@ -132,7 +212,7 @@ const MUTANTES = [
     // `/search/suggest.json` responde "179.90"; sem o ×100 a busca preditiva
     // volta a exibir R$ 1,79 — a outra metade da divergência da #39.
     porque: 'moneyToCents trata unidades da moeda como se já fossem centavos',
-    arquivo: 'assets/money.js',
+    arquivo: 'src/js/money.js',
     de: 'return Math.round(parseFloat(value) * 100);',
     para: 'return Math.round(parseFloat(value));',
     teste: 'tests/money.test.mjs',
@@ -149,84 +229,84 @@ const MUTANTES = [
   },
   {
     porque: 'updateQuantity para de avisar o erro para quem escuta',
-    arquivo: 'assets/cart.js',
+    arquivo: 'src/js/cart.js',
     de: 'publish(PUB_SUB_EVENTS.cartError, error);',
     para: 'void error;',
     teste: 'tests/cart.test.mjs',
   },
   {
     porque: 'addToCart volta a mandar Content-Type e o multipart chega ilegível',
-    arquivo: 'assets/cart.js',
+    arquivo: 'src/js/cart.js',
     de: "delete config.headers['Content-Type'];",
     para: '// mutante',
     teste: 'tests/cart.test.mjs',
   },
   {
     porque: 'o botão sem data-text-* volta a ser reescrito (apaga o ícone do quick-add)',
-    arquivo: 'assets/cart.js',
+    arquivo: 'src/js/cart.js',
     de: 'if (!textDesktop || !textMobile) return;',
     para: 'if (false) return;',
     teste: 'tests/add-to-cart.test.mjs',
   },
   {
     porque: 'o preço riscado aparece justamente quando não há desconto',
-    arquivo: 'assets/price-component.js',
+    arquivo: 'src/js/price-component.js',
     de: "classList.toggle('hidden', !listingPrice)",
     para: "classList.toggle('hidden', listingPrice)",
     teste: 'tests/price-component.test.mjs',
   },
   {
     porque: 'a variante passa a casar com combinação parcial',
-    arquivo: 'assets/variations-selector.js',
+    arquivo: 'src/js/variations-selector.js',
     de: 'return optionsMatchLength && optionsMatchValues;',
     para: 'return optionsMatchLength || optionsMatchValues;',
     teste: 'tests/variations-selector.test.mjs',
   },
   {
     porque: 'a URL compartilhável perde o parâmetro que a Shopify entende',
-    arquivo: 'assets/variations-selector.js',
+    arquivo: 'src/js/variations-selector.js',
     de: '?variant=${this.currentVariant.id}',
     para: '?variante=${this.currentVariant.id}',
     teste: 'tests/variations-selector.test.mjs',
   },
   {
     porque: 'datas impossíveis (31/02) voltam a rolar para o mês seguinte',
-    arquivo: 'assets/countdown-timer.js',
+    arquivo: 'src/js/countdown-timer.js',
     de: 'if (d > lastDay) d = lastDay;',
     para: 'if (false) d = lastDay;',
     teste: 'tests/countdown-timer.test.mjs',
   },
   {
     porque: 'o modo diário para de pular para o dia seguinte',
-    arquivo: 'assets/countdown-timer.js',
+    arquivo: 'src/js/countdown-timer.js',
     de: 'if (target <= now) target += 86400000;',
     para: 'if (false) target += 86400000;',
     teste: 'tests/countdown-timer.test.mjs',
   },
   {
     porque: 'o contador vencido volta a rodar para sempre com a seção escondida',
-    arquivo: 'assets/countdown-timer.js',
+    arquivo: 'src/js/countdown-timer.js',
     de: 'this.interval = setInterval(() => this.tick(), 1000);\n    this.tick();',
     para: 'this.tick();\n    this.interval = setInterval(() => this.tick(), 1000);',
     teste: 'tests/countdown-timer.test.mjs',
   },
   {
     porque: 'addToCart volta a publicar o item de linha como se fosse carrinho (issue #4)',
-    arquivo: 'assets/cart.js',
+    arquivo: 'src/js/cart.js',
     de: 'publish(PUB_SUB_EVENTS.itemAdded, result);',
     para: 'publish(PUB_SUB_EVENTS.cartUpdate, result);',
     teste: 'tests/cart.test.mjs',
   },
   {
     porque: 'a guarda do drawer cai e a bolha volta a receber undefined',
-    arquivo: 'assets/cart.js',
+    arquivo: 'src/js/cart.js',
     de: '            if (!ehCarrinho(event.detail)) return;',
     para: '            if (false) return;',
     teste: 'tests/cart-drawer.test.mjs',
   },
   {
     porque: 'a barra de frete grátis volta a exibir "Faltam R$ NaN"',
-    arquivo: 'assets/cart-extras.js',
+    arquivo: 'src/js/cart-extras.js',
     de: '    if (!ehCarrinho(cart)) return;',
     para: '    if (!cart) return;',
     teste: 'tests/cart-extras.test.mjs',
@@ -274,7 +354,7 @@ const MUTANTES = [
     // faz o botão salvar parar de funcionar sem dizer nada. Troca um bug
     // visível ("só dá para cadastrar no Brasil") por um invisível.
     porque: 'país sem províncias volta a deixar um select vazio e obrigatório no formulário',
-    arquivo: 'assets/address-country.js',
+    arquivo: 'src/js/address-country.js',
     de: '      this.estado.required = false;',
     para: '      this.estado.required = true;',
     teste: 'tests/address-country.test.mjs',
@@ -284,14 +364,14 @@ const MUTANTES = [
     // ligado fora do Brasil CORTA o que a pessoa digitou, sem aviso — e o
     // formulário salva um código postal incompleto que parece certo.
     porque: 'o limite de tamanho do CEP volta a valer fora do Brasil e trunca o código postal',
-    arquivo: 'assets/address-country.js',
+    arquivo: 'src/js/address-country.js',
     de: "      else campo.removeAttribute('maxlength');",
     para: '      else void campo;',
     teste: 'tests/address-country.test.mjs',
   },
   {
     porque: 'o país gravado deixa de ser reselecionado, e editar um endereço troca o país sozinho',
-    arquivo: 'assets/address-country.js',
+    arquivo: 'src/js/address-country.js',
     de: '    if (salvo) this.pais.value = salvo;',
     para: '    void salvo;',
     teste: 'tests/address-country.test.mjs',
@@ -470,7 +550,7 @@ const MUTANTES = [
     // dois; sem ele, `cart-update` passa a varrer a DOM do drawer procurando
     // `.cart-item` por data-key e apaga o que não reconhece.
     porque: 'o guarda da página cai e o evento passa a mexer na DOM do drawer',
-    arquivo: 'assets/cart-extras.js',
+    arquivo: 'src/js/cart-extras.js',
     de: "    const page = document.querySelector('[data-cart-page]');",
     para: "    const page = document.querySelector('[data-cart-page]') || document.body;",
     teste: 'tests/cart-extras.test.mjs',
@@ -479,7 +559,7 @@ const MUTANTES = [
     // Item removido em outra aba (ou pelo próprio drawer) continuaria na tela
     // com preço e tudo — e o resumo ao lado já mostrando o total sem ele.
     porque: 'o item que saiu do carrinho continua desenhado na página',
-    arquivo: 'assets/cart-extras.js',
+    arquivo: 'src/js/cart-extras.js',
     de: '      if (key && keys.indexOf(key) === -1) el.remove();',
     para: '      if (false) el.remove();',
     teste: 'tests/cart-extras.test.mjs',
@@ -780,7 +860,7 @@ const MUTANTES = [
     // home com seis carrosséis baixa 151 KB seis vezes. Nada quebra na tela —
     // os sliders funcionam —, então isso só aparece na aba Network de alguém.
     porque: 'o cache do download cai, e cada <my-slider> baixa o bundle de novo',
-    arquivo: 'assets/carousel-manager.js',
+    arquivo: 'src/js/carousel-manager.js',
     de: '  if (window.swiperCarregando) return window.swiperCarregando;',
     para: '  if (false) return window.swiperCarregando;',
     teste: 'tests/carousel-manager.test.mjs',
@@ -790,7 +870,7 @@ const MUTANTES = [
     // download não se paga. Baixar 151 KB para não inicializar nada é o pior
     // dos dois mundos, e continua invisível na tela.
     porque: 'o slider que não inicializa passa a baixar o Swiper assim mesmo',
-    arquivo: 'assets/carousel-manager.js',
+    arquivo: 'src/js/carousel-manager.js',
     de: '    if (items < 2) return;',
     para: '    if (false) return;',
     teste: 'tests/carousel-manager.test.mjs',
@@ -928,7 +1008,7 @@ const MUTANTES = [
     // atrás do texto, para todo mundo. WCAG 2.2.2 (Pause, Stop, Hide) é nível
     // A, e a section estava marcada como "nunca validada" desde a #36.
     porque: 'o vídeo de fundo volta a tocar sozinho para quem pediu menos movimento',
-    arquivo: 'assets/video-section.js',
+    arquivo: 'src/js/video-section.js',
     de: '      this.respeitaPreferenciaDeMovimento();',
     para: '      // mutante',
     teste: 'tests/video-section.test.mjs',
@@ -937,7 +1017,7 @@ const MUTANTES = [
     // Pausar sem devolver controle deixa a pessoa sem saída — é meia correção,
     // e é a metade que passa despercebida numa revisão de código.
     porque: 'o vídeo pausa mas não ganha controles, e não há como assistir',
-    arquivo: 'assets/video-section.js',
+    arquivo: 'src/js/video-section.js',
     de: '      fundo.controls = true;',
     para: '      // mutante',
     teste: 'tests/video-section.test.mjs',
@@ -947,14 +1027,14 @@ const MUTANTES = [
     // `querySelector` devolvia o primeiro na ordem do documento — funcionava
     // por ORDENAÇÃO, não por desenho.
     porque: 'o destino volta a ser o id que a página também usa, e a ordem no DOM decide de novo',
-    arquivo: 'assets/cart.js',
+    arquivo: 'src/js/cart.js',
     de: "            const destino = document.querySelector('#cart-drawer-items');",
     para: "            const destino = document.querySelector('#cart-items-container');",
     teste: 'tests/mini-carrinho.test.mjs',
   },
   {
     porque: 'origem e destino trocam de papel: o drawer copia a si mesmo e a página é que muda',
-    arquivo: 'assets/cart.js',
+    arquivo: 'src/js/cart.js',
     de: "            const origem = doc.querySelector('#cart-items-container');",
     para: "            const origem = doc.querySelector('#cart-drawer-items');",
     teste: 'tests/mini-carrinho.test.mjs',
@@ -962,7 +1042,7 @@ const MUTANTES = [
   {
     // Loja com locale no caminho (`/pt-br/cart`) quebra com a rota cravada.
     porque: 'a rota do carrinho volta a ser literal em vez de vir de window.routes',
-    arquivo: 'assets/cart.js',
+    arquivo: 'src/js/cart.js',
     de: '            const response = await fetch(routes.cart_url);',
     para: "            const response = await fetch('/cart');",
     teste: 'tests/mini-carrinho.test.mjs',
@@ -972,14 +1052,14 @@ const MUTANTES = [
     // de camada: os dois vivem em `z-overlay` e quem ficava por cima dependia
     // da ordem no DOM. Ver issue #46.
     porque: 'a barra some sem avisar quem flutua no rodapé, e o botão volta a ficar por cima dela',
-    arquivo: 'assets/sticky-atc.js',
+    arquivo: 'src/js/sticky-atc.js',
     de: "    document.documentElement.removeAttribute('data-sticky-atc-visivel');",
     para: '    // mutante',
     teste: 'tests/sticky-atc.test.mjs',
   },
   {
     porque: 'a barra aparece sem marcar o estado, e o afastamento nunca acontece',
-    arquivo: 'assets/sticky-atc.js',
+    arquivo: 'src/js/sticky-atc.js',
     de: "    document.documentElement.setAttribute('data-sticky-atc-visivel', '');",
     para: '    // mutante',
     teste: 'tests/sticky-atc.test.mjs',
@@ -988,7 +1068,7 @@ const MUTANTES = [
     // A altura precisa ser MEDIDA: ela muda com `settings.font_scale`, com o
     // preço e com a largura da tela. Um número cravado erra para alguém.
     porque: 'a altura da barra vira número cravado e a folga fica errada em outro font_scale',
-    arquivo: 'assets/sticky-atc.js',
+    arquivo: 'src/js/sticky-atc.js',
     de: '      `${this.stickyBar.offsetHeight}px`,',
     para: "      '64px',",
     teste: 'tests/sticky-atc.test.mjs',
@@ -1240,12 +1320,14 @@ function main() {
     // a queda de energia.
     const restaura = () => {
       fs.writeFileSync(alvo, original);
+      propaga(mutante.arquivo);
       fs.rmSync(SENTINELA, { force: true });
     };
 
     try {
       fs.writeFileSync(SENTINELA, JSON.stringify({ arquivo: mutante.arquivo, original }));
       fs.writeFileSync(alvo, original.replace(mutante.de, mutante.para));
+      propaga(mutante.arquivo);
       const navegador = mutante.teste.startsWith('e2e/');
       resultado = navegador
         ? spawnSync(PLAYWRIGHT, ['test', mutante.teste, `--output=${SAIDA_DO_MUTANTE}`], {

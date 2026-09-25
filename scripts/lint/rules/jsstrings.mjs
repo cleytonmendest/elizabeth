@@ -93,7 +93,7 @@ const slug = (value) =>
 export function run() {
   const offenses = [];
 
-  for (const file of list('assets', '.js')) {
+  for (const file of list('src/js', '.js')) {
     // Bundle de terceiro não é nosso para corrigir.
     if (file.includes('.min.')) continue;
 
