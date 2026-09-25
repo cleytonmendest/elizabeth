@@ -362,36 +362,59 @@ class AddToCart extends HTMLElement {
     }
 
     /**
-     * Repõe os itens do mini-carrinho a partir da página do carrinho.
+     * Repõe os itens do mini-carrinho.
+     *
+     * ── O que ele baixava, e por quê isso era caro ─────────────────────────
+     *
+     * Até a #117 esta função pedia `routes.cart_url` — a PÁGINA DO CARRINHO
+     * INTEIRA, com `<head>`, cabeçalho, rodapé, o próprio drawer de novo, e as
+     * tags de todo o CSS e JS do tema — para extrair o `innerHTML` de uma
+     * `<div>`. A cada adição ao carrinho.
+     *
+     * Agora pede só o fragmento desta section, pela Section Rendering API.
+     *
+     * ── Por que o id vem do Liquid, e não cravado aqui ─────────────────────
+     *
+     * O carrinho é um template JSON, onde o id de uma section é a CHAVE que
+     * alguém escolheu (`"main"`), não o tipo. Cravar `?section_id=main` neste
+     * arquivo amarraria um asset a uma chave de template — que some em
+     * silêncio se renomearem, sem erro no console e sem teste vermelho.
+     *
+     * O drawer virou uma section estática (`{% section 'cart-drawer' %}` no
+     * layout), então o id dele é o NOME DO ARQUIVO. E mesmo assim ele não está
+     * escrito aqui: o Liquid o publica em `data-section-id`, porque quem sabe
+     * o próprio nome é a section, não o JavaScript que a consome.
      *
      * ── Os dois ids são DIFERENTES de propósito ────────────────────────────
      *
-     * Até a issue #68, o drawer e a página usavam o MESMO `id`. Dois elementos
-     * com o mesmo id no mesmo documento é HTML inválido, e `querySelector`
-     * devolve o primeiro na ordem do documento — que era o do drawer só porque
-     * `theme.liquid` renderiza o drawer antes do `content_for_layout`.
+     * Até a #68, o drawer e a página usavam o MESMO `id`. Dois elementos com o
+     * mesmo id no mesmo documento é HTML inválido, e `querySelector` devolve o
+     * primeiro na ordem do documento — que era o do drawer só porque o layout
+     * o renderiza antes do `content_for_layout`.
      *
-     * Funcionava por ORDENAÇÃO, não por desenho: mover uma linha do layout
-     * fazia o drawer passar a ler a página do carrinho, sem erro no console,
-     * sem teste vermelho e sem nada no lint — porque os dois containers
-     * renderizam o mesmo `cart-drawer-item`, e só divergiriam depois.
-     *
-     * Com nomes distintos, ORIGEM e DESTINO não podem se confundir, em nenhuma
-     * ordem: a página só tem `#cart-items-container`, o drawer só tem
-     * `#cart-drawer-items`.
+     * Funcionava por ORDENAÇÃO, não por desenho. Isso importa ainda mais
+     * agora: o fragmento que chega é o PRÓPRIO drawer re-renderizado, então
+     * origem e destino têm o mesmo `#cart-drawer-items` — um no documento
+     * novo, outro no vivo. O `doc.querySelector` só enxerga o primeiro, e é
+     * por isso que a busca é feita no documento certo, e não num seletor que
+     * poderia casar nos dois.
      */
     async updateCartDrawer() {
         try {
-            const response = await fetch(routes.cart_url);
+            const drawer = document.querySelector('cart-drawer');
+            const secao = drawer?.closest('[data-section-id]')?.dataset.sectionId;
+            if (!secao) return;
+
+            const response = await fetch(`${routes.cart_url}?section_id=${secao}`);
             const text = await response.text();
             const parser = new DOMParser();
             const doc = parser.parseFromString(text, 'text/html');
-            const origem = doc.querySelector('#cart-items-container');
+            const origem = doc.querySelector('#cart-drawer-items');
             const destino = document.querySelector('#cart-drawer-items');
 
             if (origem && destino) {
                 destino.innerHTML = origem.innerHTML;
-                document.querySelector('cart-drawer').updateItemIndexes();
+                drawer.updateItemIndexes();
             }
         } catch (error) {
             console.error('Erro ao atualizar o minicart:', error);

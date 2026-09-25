@@ -50,9 +50,44 @@ function secoes(localePath) {
       if (!schema) return null;
       const bruto = schema.name || '';
       const nome = bruto.startsWith('t:') ? dicionario[bruto.slice(2)] : bruto;
-      return { arquivo, nome, adicionavel: Boolean(schema.presets) };
+      const configuravel = (schema.settings ?? []).length > 0 || (schema.blocks ?? []).length > 0;
+      return { arquivo, nome, adicionavel: Boolean(schema.presets), configuravel };
     })
     .filter(Boolean);
+}
+
+/**
+ * As sections que o LAYOUT renderiza — cromo, não conteúdo.
+ *
+ * A lojista nunca as adiciona nem as remove: elas estão em toda página porque
+ * `layout/theme.liquid` as coloca lá, por `{% section %}` ou pelo JSON de um
+ * `{% sections %}`. Documentá-las no capítulo "as seções, uma a uma" mandaria
+ * a pessoa procurar na lista do editor uma entrada que ela não pode manipular.
+ *
+ * Isto era uma regex com `header|footer` escrita à mão. O mini-carrinho virou
+ * section na #117 e caiu na contagem errada — não porque a doc estivesse
+ * errada, mas porque a lista cravada não sabia da terceira. Derivar do layout
+ * faz a próxima entrar sozinha.
+ */
+function cromoDoLayout() {
+  const layout = read('layout/theme.liquid');
+  const tipos = new Set();
+
+  for (const m of layout.matchAll(/\{%-?\s*section\s+'([^']+)'/g)) tipos.add(m[1]);
+
+  for (const m of layout.matchAll(/\{%-?\s*sections\s+'([^']+)'/g)) {
+    let grupo;
+    try {
+      grupo = JSON.parse(read(`sections/${m[1]}.json`).replace(/\/\*[\s\S]*?\*\//g, ''));
+    } catch {
+      continue;
+    }
+    for (const secao of Object.values(grupo.sections ?? {})) {
+      if (secao?.type) tipos.add(secao.type);
+    }
+  }
+
+  return tipos;
 }
 
 const doc = (relativo) => fs.readFileSync(path.join(DOCS, relativo), 'utf8');
@@ -92,12 +127,29 @@ describe.each(IDIOMAS)('a doc de $pasta nomeia as seções como o editor', ({ pa
   const texto = doc(`${pasta}/${capitulos}`);
   const todas = secoes(locale);
 
-  it.each(todas)('$arquivo aparece pelo nome do editor', ({ nome }) => {
+  // O capítulo descreve O QUE A LOJISTA MUDA em cada seção. Section sem
+  // nenhum setting e sem nenhum bloco não tem o que descrever — e o parágrafo
+  // que sobrasse seria "esta seção não tem opções", que ocupa espaço no lugar
+  // de informar. Hoje só o mini-carrinho cai aqui: ele virou section na #117
+  // pela Section Rendering API (o JS pede `?section_id=`), não para aparecer
+  // no editor. O filtro é medido, não é uma lista de nomes: se alguém der um
+  // setting a ela, ela volta a exigir capítulo sozinha.
+  const descritiveis = todas.filter((s) => s.configuravel);
+
+  it.each(descritiveis)('$arquivo aparece pelo nome do editor', ({ nome }) => {
     // O critério da #38 é explícito: "com o nome que aparece no editor".
     // Descrever a seção com outro nome é pior que não descrever — manda a
     // lojista procurar na lista uma entrada que não existe.
     expect(nome, 'o locale não resolve o nome desta section').toBeTruthy();
     expect(texto).toContain(nome);
+  });
+
+  it('toda section do tema ou é descrita, ou não tem o que descrever', () => {
+    // A guarda do filtro acima. Sem ela, um schema quebrado que perdesse os
+    // settings sumiria do `it.each` em silêncio e levaria junto a exigência
+    // de documentação — teste que encolhe sozinho fica verde exibindo menos.
+    const mudas = todas.filter((s) => !s.configuravel).map((s) => s.arquivo);
+    expect(mudas).toEqual(['sections/cart-drawer.liquid']);
   });
 
   it('não inventa seção que não existe', () => {
@@ -113,8 +165,9 @@ describe.each(IDIOMAS)('a doc de $pasta nomeia as seções como o editor', ({ pa
 
   it('a contagem que o texto afirma é a contagem que existe', () => {
     const adicionaveis = todas.filter((s) => s.adicionavel).length;
+    const cromo = cromoDoLayout();
     const dePagina = todas.filter(
-      (s) => !s.adicionavel && !/sections\/(header|footer)\.liquid/.test(s.arquivo),
+      (s) => !s.adicionavel && !cromo.has(path.basename(s.arquivo, '.liquid')),
     ).length;
     // A linha é achada pelo CONTEÚDO, não pelo índice. A primeira versão lia
     // `split('\n')[6]`, e acrescentar uma chave ao front matter deslocou o

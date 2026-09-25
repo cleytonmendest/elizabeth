@@ -489,6 +489,9 @@
         "name": "Artigo do Blog"
       }
     },
+    "cart_drawer": {
+      "name": "Mini-carrinho (gaveta lateral)"
+    },
     "header": {
       "name": "Header",
       "settings": {
