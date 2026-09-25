@@ -489,6 +489,9 @@
         "name": "Blog Article"
       }
     },
+    "cart_drawer": {
+      "name": "Mini cart (side drawer)"
+    },
     "header": {
       "name": "Header",
       "settings": {

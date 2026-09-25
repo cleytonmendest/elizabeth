@@ -1,7 +1,34 @@
+{%- comment -%}
+  O mini-carrinho. É uma SECTION, e não um snippet, por um motivo só.
+
+  ── Por que section ────────────────────────────────────────────────────────
+
+  Depois de adicionar um produto, o drawer precisa redesenhar os itens. Ele
+  fazia isso baixando a PÁGINA DO CARRINHO INTEIRA — `<head>`, cabeçalho,
+  rodapé, todo o CSS e JS referenciado — para extrair o `innerHTML` de uma
+  `<div>`. A cada clique.
+
+  A saída idiomática é a Section Rendering API, que devolve só o fragmento de
+  uma section. Ela precisa de um `section_id`, e aí estava o problema: o
+  carrinho é um template JSON, onde o id é a CHAVE que alguém escolheu
+  (`"main"`), não o tipo. Cravar `?section_id=main` no JavaScript amarraria um
+  asset a uma chave de template, que some em silêncio se alguém renomear.
+
+  Como section estática renderizada pelo layout, o id é o NOME DESTE ARQUIVO.
+  Não há chave para renomear, e o que o JS pede é o que o disco tem.
+
+  ── O schema é vazio de propósito ──────────────────────────────────────────
+
+  Não há setting aqui, e não deve haver: o drawer não tem nada que a lojista
+  decida — o que ele mostra vem do carrinho, e as cores vêm do scheme do
+  layout. Um schema com settings inventados só para "ser uma section de
+  verdade" seria pior que nenhum.
+{%- endcomment -%}
 {{ 'cart.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'cart.js' | asset_url }}" defer></script>
 <script src="{{ 'cart-extras.js' | asset_url }}" defer></script>
 
+<div data-section-id="{{ section.id }}">
 <cart-drawer
   class="cart-drawer fixed z-drawer left-0 top-0 w-screen h-full flex justify-end bg-foreground/50"
   role="dialog"
@@ -101,3 +128,11 @@
     <div id="minicart-overlay" class="fixed top-0 left-0 right-0 bottom-0"></div>
   </div>
 </cart-drawer>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.cart_drawer.name",
+  "settings": []
+}
+{% endschema %}

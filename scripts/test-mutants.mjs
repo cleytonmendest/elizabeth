@@ -791,12 +791,34 @@ const MUTANTES = [
     teste: 'tests/budget.test.mjs',
   },
   {
-    // O outro lado: seguir DEMAIS. Section tem asset co-locado de propósito —
-    // contá-lo como global apagaria a diferença que o tema inteiro preserva.
-    porque: 'o orçamento passa a contar asset co-locado de section como se fosse global',
+    // O outro lado: seguir DEMAIS. Section de TEMPLATE tem asset co-locado de
+    // propósito — contá-lo como global apagaria a diferença que o tema inteiro
+    // preserva. `content_for_layout` não é um nome de arquivo, então o que este
+    // mutante faz é jogar todo `{% render %}` na pasta errada.
+    porque: 'o orçamento passa a procurar snippet dentro de sections/ e perde a cadeia inteira',
     arquivo: 'scripts/lint/rules/budget.mjs',
-    de: "    for (const match of src.matchAll(/\\{%-?\\s*render\\s+'([^']+)'/g)) {",
-    para: "    for (const match of src.matchAll(/\\{%-?\\s*sections?\\s+'([^']+)'/g)) {",
+    de: '      fila.push(`snippets/${match[1]}.liquid`);',
+    para: '      fila.push(`sections/${match[1]}.liquid`);',
+    teste: 'tests/budget.test.mjs',
+  },
+  {
+    // A #117 fez o drawer virar section. Sem esta linha, os 24 KB de `cart.js`
+    // saem da conta na mesma hora — e nenhum byte a menos chega ao navegador.
+    // É o defeito da #27 de novo, com outro verbo do Liquid.
+    porque: 'section estática do layout some da conta, e o orçamento subnotifica de novo',
+    arquivo: 'scripts/lint/rules/budget.mjs',
+    de: '      fila.push(`sections/${match[1]}.liquid`);',
+    para: '      void match;',
+    teste: 'tests/budget.test.mjs',
+  },
+  {
+    // O comentário que a Shopify põe no topo de todo section group. Sem
+    // removê-lo, `JSON.parse` recusa o arquivo REAL, o catch devolve lista
+    // vazia e o grupo inteiro fica invisível — sem erro, sem aviso.
+    porque: 'o grupo com comentário deixa de parsear, e o header some da conta em silêncio',
+    arquivo: 'scripts/lint/rules/budget.mjs',
+    de: "    json = JSON.parse(ler(arquivo).replace(/\\/\\*[\\s\\S]*?\\*\\//g, ''));",
+    para: '    json = JSON.parse(ler(arquivo));',
     teste: 'tests/budget.test.mjs',
   },
   {
@@ -1226,18 +1248,53 @@ const MUTANTES = [
     teste: 'tests/mini-carrinho.test.mjs',
   },
   {
-    porque: 'origem e destino trocam de papel: o drawer copia a si mesmo e a página é que muda',
+    // A MESMA troca de papéis da #68, na forma que a #117 criou. O fragmento
+    // que chega é o próprio drawer, então os dois documentos têm o mesmo id:
+    // ler no vivo faz o drawer copiar a si mesmo e congelar no estado anterior
+    // à adição — sem erro no console e sem nada mudar de lugar.
+    porque: 'a origem passa a ser lida no documento VIVO, e o drawer copia a si mesmo',
     arquivo: 'src/js/cart.js',
-    de: "            const origem = doc.querySelector('#cart-items-container');",
-    para: "            const origem = doc.querySelector('#cart-drawer-items');",
+    de: "            const origem = doc.querySelector('#cart-drawer-items');",
+    para: "            const origem = document.querySelector('#cart-drawer-items');",
     teste: 'tests/mini-carrinho.test.mjs',
   },
   {
     // Loja com locale no caminho (`/pt-br/cart`) quebra com a rota cravada.
     porque: 'a rota do carrinho volta a ser literal em vez de vir de window.routes',
     arquivo: 'src/js/cart.js',
-    de: '            const response = await fetch(routes.cart_url);',
-    para: "            const response = await fetch('/cart');",
+    de: '            const response = await fetch(`${routes.cart_url}?section_id=${secao}`);',
+    para: "            const response = await fetch(`/cart?section_id=${secao}`);",
+    teste: 'tests/mini-carrinho.test.mjs',
+  },
+  {
+    // O ponto inteiro da #117. Sem o parâmetro a resposta volta a ser a página
+    // do carrinho completa — e o drawer continua recebendo os itens certos,
+    // porque o `#cart-drawer-items` está lá dentro também. Ou seja: o defeito
+    // que este mutante planta é INVISÍVEL para qualquer asserção sobre a DOM.
+    // Só a URL o denuncia, e é por isso que existe um teste sobre a URL.
+    porque: 'volta a baixar a PÁGINA inteira do carrinho a cada adição',
+    arquivo: 'src/js/cart.js',
+    de: '            const response = await fetch(`${routes.cart_url}?section_id=${secao}`);',
+    para: '            const response = await fetch(routes.cart_url);',
+    teste: 'tests/mini-carrinho.test.mjs',
+  },
+  {
+    // O id é a CHAVE da section no template, não o tipo. Cravá-lo aqui amarra
+    // um asset a um nome que some em silêncio se renomearem.
+    porque: 'o id da section volta a ser cravado no JS em vez de vir do Liquid',
+    arquivo: 'src/js/cart.js',
+    de: "            const secao = drawer?.closest('[data-section-id]')?.dataset.sectionId;",
+    para: "            const secao = 'cart-drawer';",
+    teste: 'tests/mini-carrinho.test.mjs',
+  },
+  {
+    // `removeItem` e `updateItemTotalPrice` acham a linha por `[data-index]`.
+    // Sem o recálculo, o markup recém-chegado não tem o atributo e o primeiro
+    // clique em remover não acha nada — silenciosamente.
+    porque: 'os itens novos chegam sem [data-index], e remover deixa de funcionar',
+    arquivo: 'src/js/cart.js',
+    de: '                drawer.updateItemIndexes();',
+    para: '                // mutante',
     teste: 'tests/mini-carrinho.test.mjs',
   },
   {

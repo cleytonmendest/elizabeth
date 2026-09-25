@@ -84,6 +84,17 @@
         "nomeada:*"
       ],
       "reason": "Logos de bandeira e meio de pagamento com cor de marca própria — o branco aqui é parte do desenho oficial (o cartão, o texto do logo, o contorno), e trocá-lo pelo texto do color scheme descaracterizaria marca de terceiro, o que as guidelines das bandeiras vedam. Medido antes de registrar: cada um destes tem pelo menos uma cor que não é preto nem branco, ou um fundo de cartão que o torna legível em qualquer scheme. Fora desta lista ficaram icon-pay-boleto e icon-pay-yapay, que são monocromáticos de verdade e continuam como dívida visível."
+    },
+    {
+      "rule": "editable",
+      "files": [
+        "sections/cart-drawer.liquid"
+      ],
+      "codes": [
+        "no-color-scheme",
+        "no-presets"
+      ],
+      "reason": "O mini-carrinho é cromo do layout, não conteúdo que a lojista posiciona: ele é renderizado por {% section %} no theme.liquid e nunca aparece na lista de seções do editor. `presets` só faz sentido para section que se adiciona a um template, e um `color_scheme` próprio o faria divergir do cabeçalho e do resto do cromo, que herdam o scheme do layout. Ele é section — e não snippet — por um motivo mecânico e não de edição: a Section Rendering API precisa de um section_id estável para o drawer se redesenhar sem baixar a página inteira do carrinho (#117)."
     }
   ]
 }
