@@ -139,6 +139,54 @@ function resgataMutanteOrfao() {
 const comE2E = process.argv.includes('--e2e');
 
 const MUTANTES = [
+  {
+    porque: 'a decisão volta a acontecer antes de o <main> existir — a feature inteira para de funcionar',
+    arquivo: 'src/js/header.js',
+    de: "    if (document.readyState === 'loading') {",
+    para: '    if (false) {',
+    teste: 'tests/header-transparente.test.mjs',
+  },
+  {
+    porque: 'o contêiner volta a ser congelado no construtor, e um null ali mata tudo que vem depois',
+    arquivo: 'src/js/header.js',
+    de: '    if (!this._container || !this.contains(this._container)) {',
+    para: '    if (false) {',
+    teste: 'tests/header-transparente.test.mjs',
+  },
+  // ── A #121: o cabeçalho transparente ────────────────────────────────────
+  //
+  // O risco real desta feature é contraste, e é justamente o que o axe NÃO vê
+  // (texto sobre background-image vira *incomplete*, não falha). O que dá para
+  // travar é a máquina de estados: quando ligar, quando não, e de onde a cor
+  // vem.
+  {
+    porque: 'a exigência de mídia some, e a coleção ganha link claro sobre fundo branco',
+    arquivo: 'src/js/header.js',
+    de: "    const heroi = primeira?.querySelector('[data-hero-media]');",
+    para: '    const heroi = primeira;',
+    teste: 'tests/header-transparente.test.mjs',
+  },
+  {
+    porque: 'a cor deixa de ser herdada do herói, e o cabeçalho usa a própria sobre a foto',
+    arquivo: 'src/js/header.js',
+    de: '    this.container.classList.add(this.esquemaDoHeroi);',
+    para: '    void 0;',
+    teste: 'tests/header-transparente.test.mjs',
+  },
+  {
+    porque: 'o transparente deixa de depender do topo, e a sombra volta a flutuar sobre a imagem',
+    arquivo: 'src/js/header.js',
+    de: "      alvo.toggleAttribute('data-transparente', noTopo);",
+    para: "      alvo.toggleAttribute('data-transparente', true);",
+    teste: 'tests/header-transparente.test.mjs',
+  },
+  {
+    porque: 'o toggle da lojista deixa de ser consultado — transparente em toda loja',
+    arquivo: 'src/js/header.js',
+    de: "    if (this.dataset.transparente !== 'true') return;",
+    para: '    if (false) return;',
+    teste: 'tests/header-transparente.test.mjs',
+  },
   // ── A #36 fase 0: a primeira decisão em Liquid que o tema consegue testar ─
   {
     porque: 'a forma passa a ser sempre painel — a lista plana volta à faixa de largura inteira',
@@ -1225,6 +1273,41 @@ const MUTANTES = [
  * código que decide se uma página passa ou não.
  */
 const MUTANTES_E2E = [
+  {
+    porque: 'o scrim do cabeçalho some, e o texto fica sem ajuda onde o scrim do banner já virou transparente',
+    arquivo: 'sections/header.liquid',
+    de: '    opacity: 1;',
+    para: '    opacity: 0;',
+    teste: 'e2e/header-transparente.spec.mjs',
+  },
+  {
+    porque: 'o scrim vira preto cravado — ajuda o herói escuro e atrapalha o claro',
+    arquivo: 'sections/header.liquid',
+    de: 'background: linear-gradient(to bottom, rgb(var(--color-background) / 0.5), transparent);',
+    para: 'background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);',
+    teste: 'e2e/header-transparente.spec.mjs',
+  },
+  {
+    porque: 'a troca entre transparente e sólido volta a ser um corte seco',
+    arquivo: 'sections/header.liquid',
+    de: '    transition: background-color 300ms ease, box-shadow 300ms ease;',
+    para: '    transition: none;',
+    teste: 'e2e/header-transparente.spec.mjs',
+  },
+  {
+    porque: 'o herói deixa de subir, e sobra uma faixa entre o cabeçalho e a imagem',
+    arquivo: 'sections/header.liquid',
+    de: 'margin-top: calc(-1 * var(--header-height, 0px));',
+    para: 'margin-top: 0;',
+    teste: 'e2e/header-transparente.spec.mjs',
+  },
+  {
+    porque: 'o fundo transparente deixa de ser aplicado, e a feature inteira vira enfeite',
+    arquivo: 'sections/header.liquid',
+    de: '    background-color: transparent;',
+    para: '    background-color: rgb(var(--color-background));',
+    teste: 'e2e/header-transparente.spec.mjs',
+  },
   {
     // Estava apontado para `tests/menu.test.mjs`, que afirmava isto por busca
     // de classe. A afirmação virou medição no navegador (o painel CABENDO na

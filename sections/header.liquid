@@ -50,13 +50,104 @@
   #main-header-container.is-scrolling {
     box-shadow: 0 2px 8px rgb(var(--color-shadow) / 0.1);
   }
+
+  /* ── O modo transparente (issue 121) ───────────────────────────────────────────
+   *
+   * `data-transparente` é posto por `header.js` e SÓ quando as duas condições
+   * valem: a lojista ligou o toggle E a primeira section tem mídia atrás. Sem
+   * JavaScript nada disto acontece, e o cabeçalho fica sólido — que é o estado
+   * seguro, e por isso é o padrão.
+   *
+   * A sombra do `is-scrolling` não precisa ser desligada aqui: ela só existe
+   * fora do topo, e o transparente só existe NO topo. Os dois são o mesmo
+   * interruptor invertido.
+   */
+  /*
+   * A transição entre os dois estados.
+   *
+   * Escrita aqui e não como classe do Tailwind porque são duas propriedades
+   * (fundo e sombra) e a utilidade `transition-shadow` cobre uma só. Duas
+   * fontes para a mesma transição divergem na primeira vez que alguém mexe
+   * numa delas.
+   */
+  #main-header-container {
+    transition: background-color 300ms ease, box-shadow 300ms ease;
+  }
+
+  #main-header-container[data-transparente] {
+    background-color: transparent;
+  }
+
+  /* ── O scrim do cabeçalho ─────────────────────────────────────────────────
+   *
+   * O scrim do banner pode ser LATERAL — `linear-gradient(270deg, cor 0%,
+   * transparent 65%)` —, então ele escurece ~35% da largura, onde o título
+   * dele mora. O cabeçalho atravessa a largura inteira, inclusive o pedaço
+   * onde o scrim já virou transparente. Ali o texto dele não tem nada
+   * ajudando.
+   *
+   * A cor sai de `--color-background` do esquema HERDADO, igual ao scrim do
+   * banner: herói escuro dá scrim escuro, que ajuda texto claro; herói claro
+   * dá scrim claro, que ajuda texto escuro. Um valor fixo (preto, digamos)
+   * ajudaria metade dos casos e atrapalharia a outra.
+   *
+   * Isto MELHORA as chances, não garante contraste: nenhum scrim garante, com
+   * foto arbitrária atrás. A garantia continua sendo olho humano — ver ADR 0015.
+   *
+   * O pseudo-elemento existe SEMPRE, com opacidade zero. Pseudo-elemento que
+   * só nasce num estado não tem de onde animar, e a troca apareceria como um
+   * salto no meio de uma transição de 300ms que é suave em todo o resto.
+   */
+  #main-header-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 300ms ease;
+    background: linear-gradient(to bottom, rgb(var(--color-background) / 0.5), transparent);
+  }
+
+  #main-header-container[data-transparente]::before {
+    opacity: 1;
+  }
+
+  /*
+   * Submenu aberto devolve o fundo.
+   *
+   * O painel é sólido e fica logo abaixo da barra. Com a barra transparente
+   * sobre a foto e o painel sólido colado nela, o conjunto lê como defeito de
+   * renderização — foi um dos cinco que derrubaram a primeira tentativa desta
+   * feature.
+   */
+  #main-header-container[data-transparente]:has(.menu-desk [data-forma]:hover),
+  #main-header-container[data-transparente]:has(.menu-desk [data-forma]:focus-within) {
+    background-color: rgb(var(--color-background));
+  }
+
+  /*
+   * O herói sobe para debaixo do cabeçalho.
+   *
+   * `--header-height` é medida e publicada por `header.js`; sem ela a margem
+   * é zero e a página fica exatamente como era. `data-heroi-sob-cabecalho`
+   * só é posto quando a transparência foi realmente habilitada, então uma
+   * página sem herói nunca é puxada.
+   */
+  :root[data-heroi-sob-cabecalho] #MainContent > .shopify-section:first-child {
+    margin-top: calc(-1 * var(--header-height, 0px));
+  }
 </style>
 
 <div class="w-full color-{{ section.settings.color_scheme }}">
-  <main-header class="w-full block relative z-sticky" data-type="{{ header_type }}">
+  <main-header
+    class="w-full block relative z-sticky"
+    data-type="{{ header_type }}"
+    data-transparente="{% if section.settings.transparent_header %}true{% else %}false{% endif %}"
+  >
     <div
       id="main-header-container"
-      class="color-background color-text w-full transition-shadow duration-300 group relative z-raised"
+      class="color-background color-text w-full group relative z-raised"
     >
       <div class="!py-3 page-width w-full">
         <div class="flex justify-between">
@@ -139,6 +230,13 @@
       "id": "fixed_header",
       "label": "t:sections.header.settings.fixed_header.label",
       "info": "t:sections.header.settings.fixed_header.info"
+    },
+    {
+      "type": "checkbox",
+      "default": false,
+      "id": "transparent_header",
+      "label": "t:sections.header.settings.transparent_header.label",
+      "info": "t:sections.header.settings.transparent_header.info"
     }
   ],
   "blocks": [

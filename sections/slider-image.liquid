@@ -20,7 +20,7 @@
   my-slider.hero-slider .swiper-pagination-bullet-active { opacity: 1; width: 18px; border-radius: 3px; }
 </style>
 
-<div class="color-{{ section.settings.color_scheme }} bg-background">
+<div class="color-{{ section.settings.color_scheme }} bg-background" data-hero-media>
   <div class="{% if section.settings.fullwidth %}w-full{% else %}page-width{% endif %}">
     <my-slider
       class="hero-slider w-full relative"
