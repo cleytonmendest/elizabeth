@@ -1,6 +1,6 @@
 {
   "$comment": "Dívida técnica conhecida. Gerado por \"npm run lint:baseline\". Só deve encolher — nunca adicione entradas à mão para silenciar uma violação nova.",
-  "generated": "2026-09-23",
+  "generated": "2026-09-25",
   "counts": {
     "boundaries": 1,
     "i18n": 112,
@@ -11,7 +11,7 @@
   },
   "total": 220,
   "fingerprints": [
-    "boundaries|assets/search-component.js|storefront-routes",
+    "boundaries|src/js/search-component.js|storefront-routes",
     "i18n|locales/pt-BR.json|orphan:announcement_bar.close",
     "i18n|locales/pt-BR.json|orphan:blog.article.share",
     "i18n|locales/pt-BR.json|orphan:blog.comments.error",

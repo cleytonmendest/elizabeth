@@ -1,3 +1,9 @@
+// @vitest-environment node
+//
+// Sem DOM aqui, e o `scripts/test-mutants.mjs` passou a importar o esbuild
+// (para reconstruir `assets/` entre mutar e testar, ver ADR 0013). O esbuild se
+// recusa a rodar sob jsdom, cujo TextEncoder devolve Uint8Array de outro realm.
+
 /**
  * O mutante de navegador mede o VERIFICADOR, não a loja.
  *

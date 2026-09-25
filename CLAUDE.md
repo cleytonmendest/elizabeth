@@ -89,6 +89,13 @@ eles não exportam nada, e `cart.js`, `cart-extras.js`, `price-component.js` e
 em módulos ES: transformar o código de produção para agradar o teste faria o
 teste medir outro programa.
 
+Pelo mesmo motivo ele lê `assets/` — o **minificado** —, e não `src/js/`. Ler o
+fonte seria mais confortável e mediria um arquivo que nenhuma cliente baixa. O
+preço é que o trecho apontado por um teste vermelho vem minificado; o arquivo a
+editar é sempre `src/js/<mesmo nome>`. E o corredor de mutantes reconstrói entre
+mutar e testar — sem isso os 30 mutantes de JS sobreviveriam todos, por estarem
+medindo o artefato velho.
+
 **`npm run test:mutants` é a parte que não se pula.** Ele quebra o tema de
 propósito, uma quebra por vez, e exige que a suíte fique vermelha. Uma suíte
 verde diz que os testes passaram — não que eles verificam alguma coisa. Um
@@ -258,7 +265,8 @@ usa `t:sections.<nome>.…`. Toda chave existe em pt-BR **e** en.default. Nunca
 
 ```bash
 npm run tail          # Tailwind em watch
-npm run build         # compila assets/application.css (precisa ir no commit)
+npm run build         # gera assets/application.css E assets/*.js (vão no commit)
+npm run build:js      # só o JS (src/js/*.js → assets/*.js, via esbuild)
 shopify theme dev     # servidor local
 shopify theme push    # deploy
 ```
@@ -270,7 +278,15 @@ shopify theme push    # deploy
 - `sections/` — seções do editor · `snippets/` — componentes menores
 - `templates/` — templates JSON (OS 2.0) + `customers/*.liquid` (legado)
 - `assets/` — CSS compilado, Web Components, Swiper
-- `src/tailwind.css` → `assets/application.css` (gerado; nunca editar à mão)
+- `src/js/*.js` → `assets/*.js` e `src/tailwind.css` → `assets/application.css`
+  — **os dois são gerados; nunca editar `assets/` à mão.** A Shopify serve
+  `assets/` direto, então o que está lá é o que a cliente baixa: minificado, com
+  o fonte em `src/`, que o `.shopifyignore` não empurra. A regra `build` compara
+  byte a byte e reprova artefato fora de sincronia — inclusive edição à mão, que
+  de outro jeito sobreviveria a todos os testes e sumiria no build seguinte.
+  `swiper-bundle.min.js` é de terceiro, não tem fonte aqui, e está declarado em
+  `VENDORIZADOS` (`scripts/build-js.mjs`) com o motivo escrito — ver
+  [ADR 0013](docs/adr/0013-o-js-servido-e-gerado-e-o-teste-le-o-gerado.md).
 
 **Carregamento de assets — três estratégias, e a escolha importa:**
 - **Global** (`theme.liquid`, `defer`): só o que roda em toda página.

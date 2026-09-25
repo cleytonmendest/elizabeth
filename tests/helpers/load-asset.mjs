@@ -15,6 +15,26 @@
  * a global (`loadGlobalAsset`), exatamente como `window.formatMoney` no
  * navegador. O que se testa é o arquivo que vai para a loja, byte a byte.
  *
+ * ── E desde a #96 esse arquivo é MINIFICADO ────────────────────────────────
+ *
+ * O fonte mora em `src/js/`; `assets/` é gerado por esbuild. Este carregador
+ * continua lendo `assets/` — e a escolha foi deliberada, porque é a leitura
+ * que mantém a frase acima verdadeira. Ler `src/js/` seria mais confortável
+ * (rastreamento de pilha legível, nome de variável intacto) e mediria um
+ * arquivo que nenhuma cliente baixa.
+ *
+ * Na prática a garantia ficou mais FORTE, não mais fraca: a suíte agora prova
+ * que o artefato construído roda, e não só que o fonte rodaria se alguém o
+ * servisse. Medido na migração: os 573 testes passaram contra o minificado sem
+ * uma linha de ajuste, e os nomes de topo que o epílogo pede (`formatMoney`,
+ * `AddToCart`) sobrevivem — o esbuild não renomeia declaração de topo em
+ * script clássico, porque ela pode ser global.
+ *
+ * O preço é o diagnóstico: quando um teste quebra, o trecho que ele aponta
+ * está minificado. O caminho é abrir `src/js/<mesmo nome>`, que é o arquivo
+ * que se edita — `assets/` nunca se edita à mão, e a regra de lint `build`
+ * reprova quem tentar.
+ *
  * O epílogo `return {…}` é o único acréscimo: sem ele não haveria como o teste
  * alcançar `CartManager` (uma `class`, que não vira propriedade do global nem
  * no navegador). Pedir um nome que o arquivo não declara é erro imediato — um

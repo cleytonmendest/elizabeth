@@ -4,16 +4,16 @@
     {
       "capability": "cart-mutation",
       "pattern": "routes\\.cart_(add|change|update)_url|['\"`]/cart/(add|change|update)",
-      "files": ["assets/*.js", "sections/*.liquid", "snippets/*.liquid", "layout/*.liquid", "templates/**"],
-      "owners": ["assets/cart.js", "assets/cart-extras.js", "layout/theme.liquid"],
+      "files": ["src/js/*.js", "sections/*.liquid", "snippets/*.liquid", "layout/*.liquid", "templates/**"],
+      "owners": ["src/js/cart.js", "src/js/cart-extras.js", "layout/theme.liquid"],
       "severity": "error",
-      "reason": "Toda mutação de carrinho passa pelo CartManager (assets/cart.js), que publica os eventos cart-update e quantity-update. O drawer e a página de carrinho escutam esses eventos para se redesenhar. Um fetch direto para /cart/add fora daí atualiza o carrinho no servidor mas não avisa ninguém — a interface fica desatualizada até a próxima navegação.",
-      "guidance": "Use CartManager.addToCart(form) / .updateQuantity(line, qty) / .getCart() de assets/cart.js. Para comportamento novo que não caiba ali, escute os eventos em assets/cart-extras.js (que é exatamente o arquivo criado para estender o carrinho sem tocar no cart.js)."
+      "reason": "Toda mutação de carrinho passa pelo CartManager (src/js/cart.js), que publica os eventos cart-update e quantity-update. O drawer e a página de carrinho escutam esses eventos para se redesenhar. Um fetch direto para /cart/add fora daí atualiza o carrinho no servidor mas não avisa ninguém — a interface fica desatualizada até a próxima navegação.",
+      "guidance": "Use CartManager.addToCart(form) / .updateQuantity(line, qty) / .getCart() de src/js/cart.js. Para comportamento novo que não caiba ali, escute os eventos em src/js/cart-extras.js (que é exatamente o arquivo criado para estender o carrinho sem tocar no cart.js)."
     },
     {
       "capability": "storefront-routes",
       "pattern": "['\"`]/(cart|search|collections|products|account|checkout)(/[a-z._-]+)?(\\?|['\"`])",
-      "files": ["assets/*.js"],
+      "files": ["src/js/*.js"],
       "owners": [],
       "severity": "error",
       "reason": "URL de storefront escrita literalmente quebra em loja com prefixo de idioma (/en/search/suggest.json) e em loja com rota customizada. O layout/theme.liquid expõe window.routes justamente para isso, e o CLAUDE.md registra a regra desde antes deste linter existir.",
@@ -22,27 +22,27 @@
     {
       "capability": "pubsub",
       "pattern": "(function|const|let|var)\\s+(publish|subscribe)\\s*[=(]",
-      "files": ["assets/*.js"],
-      "owners": ["assets/cart.js"],
+      "files": ["src/js/*.js"],
+      "owners": ["src/js/cart.js"],
       "severity": "error",
-      "reason": "O barramento de eventos do tema é definido uma vez em assets/cart.js. Uma segunda implementação de publish/subscribe cria dois barramentos que não se enxergam: um componente publica num e outro escuta no outro, e o bug resultante é invisível em revisão de código.",
+      "reason": "O barramento de eventos do tema é definido uma vez em src/js/cart.js. Uma segunda implementação de publish/subscribe cria dois barramentos que não se enxergam: um componente publica num e outro escuta no outro, e o bug resultante é invisível em revisão de código.",
       "guidance": "Chamar publish()/subscribe() de qualquer arquivo é livre e encorajado — o que não pode é DEFINIR outra versão. Se o barramento precisa de recurso novo, estenda o de cart.js."
     },
     {
       "capability": "money-format",
       "pattern": "Intl\\.NumberFormat",
-      "files": ["assets/*.js"],
-      "owners": ["assets/money.js"],
+      "files": ["src/js/*.js"],
+      "owners": ["src/js/money.js"],
       "severity": "error",
-      "reason": "Toda formatação de preço em JS passa por assets/money.js, que lê a moeda e o idioma ATIVOS de window.Shopify. Havia três cópias disto (cart.js, cart-extras.js, search-component.js), escritas independentemente: elas discordavam sobre dividir por 100 e as três cravavam pt-BR e BRL. O Liquid não tinha esse defeito — `| money` acompanha o seletor de moeda do rodapé —, então bastava a cliente trocar de moeda para o carrinho, o mini-carrinho e a busca preditiva continuarem em reais. Ver issue #39 e ADR 0010.",
-      "guidance": "Use formatMoney(centavos) de assets/money.js, que respeita a moeda ativa da loja; para valor vindo de JSON da Shopify, converta antes com moneyToCents(). Se o que falta é outro formato (sem símbolo, sem centavos), acrescente a opção em money.js em vez de montar um Intl.NumberFormat aqui."
+      "reason": "Toda formatação de preço em JS passa por src/js/money.js, que lê a moeda e o idioma ATIVOS de window.Shopify. Havia três cópias disto (cart.js, cart-extras.js, search-component.js), escritas independentemente: elas discordavam sobre dividir por 100 e as três cravavam pt-BR e BRL. O Liquid não tinha esse defeito — `| money` acompanha o seletor de moeda do rodapé —, então bastava a cliente trocar de moeda para o carrinho, o mini-carrinho e a busca preditiva continuarem em reais. Ver issue #39 e ADR 0010.",
+      "guidance": "Use formatMoney(centavos) de src/js/money.js, que respeita a moeda ativa da loja; para valor vindo de JSON da Shopify, converta antes com moneyToCents(). Se o que falta é outro formato (sem símbolo, sem centavos), acrescente a opção em money.js em vez de montar um Intl.NumberFormat aqui."
     },
     {
       "capability": "section-rendering",
       "pattern": "section_id=",
-      "files": ["assets/*.js", "sections/*.liquid", "snippets/*.liquid"],
+      "files": ["src/js/*.js", "sections/*.liquid", "snippets/*.liquid"],
       "owners": [
-        "assets/recently-viewed.js",
+        "src/js/recently-viewed.js",
         "sections/main-collection.liquid",
         "sections/product-recommendations.liquid"
       ],

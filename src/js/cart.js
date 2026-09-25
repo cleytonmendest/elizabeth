@@ -1,0 +1,463 @@
+/*
+ * `formatMoney` é global e vem de `assets/money.js`, carregado antes deste no
+ * `layout/theme.liquid`. Uma quarta cópia dela aqui reprova a fronteira
+ * `money-format` (scripts/lint/config/boundaries.json).
+ */
+const ON_CHANGE_DEBOUNCE_TIMER = 300;
+
+/**
+ * O contrato dos eventos. `cart-update` e `quantity-update` carregam SEMPRE o
+ * objeto carrinho — com `items`, `item_count`, `total_price`. Quem escuta pode
+ * contar com isso.
+ *
+ * `cart:item-added` é o outro: ele carrega o ITEM que acabou de entrar, que é
+ * o que `/cart/add.js` devolve. São informações diferentes e por isso têm
+ * nomes diferentes.
+ *
+ * Isso não é purismo. Até a v2.31.0 o `addToCart` publicava o item de linha
+ * como se fosse carrinho, e os dois ouvintes liam campos que não existiam ali:
+ * a bolha recebia `undefined`, e a barra de frete grátis chegava a exibir
+ * "Faltam R$ NaN para frete grátis" — porque `total_price` de um item é
+ * undefined, e `Math.max(limiar - undefined, 0)` é NaN. Ver issue #4.
+ */
+const PUB_SUB_EVENTS = {
+    cartUpdate: 'cart-update',
+    itemAdded: 'cart:item-added',
+    quantityUpdate: 'quantity-update',
+    variantChange: 'variant-change',
+    cartError: 'cart-error',
+};
+
+function fetchConfig(type = 'json') {
+    return {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: `application/${type}` },
+    };
+}
+
+/** Carrinho da Shopify tem `items` e `item_count`; item de linha não tem. */
+function ehCarrinho(cart) {
+    return Boolean(cart) && Array.isArray(cart.items) && typeof cart.item_count === 'number';
+}
+
+function publish(event, detail) {
+    document.dispatchEvent(new CustomEvent(event, { detail }));
+}
+
+function debounce(fn, delay) {
+    let timer = null;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+    };
+}
+
+class CartManager {
+    static async getCart() {
+        try {
+            const response = await fetch(`${routes.cart_url}.js`);
+            const cart = await response.json();
+            publish(PUB_SUB_EVENTS.cartUpdate, cart);
+            return cart;
+        } catch (error) {
+            console.error('Erro ao obter o carrinho:', error);
+            throw error;
+        }
+    }
+
+    static async addToCart(form) {
+        const formData = new FormData(form);
+        const config = fetchConfig('javascript');
+        config.headers['X-Requested-With'] = 'XMLHttpRequest';
+        delete config.headers['Content-Type'];
+        config.body = formData;
+
+        try {
+            const response = await fetch(`${routes.cart_add_url}`, config);
+            const result = await response.json();
+            // `/cart/add.js` devolve o ITEM adicionado, não o carrinho. Quem
+            // precisa do carrinho recebe pelo `cartUpdate` que o `getCart()`
+            // publica logo em seguida (ver submitHandler).
+            publish(PUB_SUB_EVENTS.itemAdded, result);
+            return result;
+        } catch (error) {
+            console.error('Erro ao adicionar ao carrinho:', error);
+            throw error;
+        }
+    }
+
+    static async updateQuantity(line, quantity) {
+        const body = JSON.stringify({ line, quantity });
+
+        try {
+            const response = await fetch(`${routes.cart_change_url}`, { ...fetchConfig(), body });
+            const cart = await response.json();
+            publish(PUB_SUB_EVENTS.quantityUpdate, cart);
+
+            return cart;
+        } catch (error) {
+            console.error('Erro ao atualizar a quantidade:', error);
+            publish(PUB_SUB_EVENTS.cartError, error);
+            throw error;
+        }
+    }
+}
+
+class CartDrawer extends HTMLElement {
+    constructor() {
+        super();
+        this.setupEventListeners();
+        this.setHeaderCartIconAccessibility();
+        this.setupEventSubscriptions();
+    }
+
+    setupEventListeners() {
+        this.addEventListener('keyup', (evt) => {
+            if (evt.code === 'Escape') this.close();
+        });
+        this.querySelector('#minicart-overlay').addEventListener('click', this.close.bind(this));
+    }
+
+    setupEventSubscriptions() {
+        document.addEventListener(PUB_SUB_EVENTS.cartUpdate, (event) => {
+            // Mesma guarda do cart-extras, e pelo mesmo motivo: `cart-update`
+            // é nome genérico, e app de terceiro pode disparar o dele na mesma
+            // página. Sem isto a bolha recebe `undefined` e o resumo escreve
+            // "R$ NaN" — o sintoma da issue #4.
+            if (!ehCarrinho(event.detail)) return;
+            this.updateCartSummary(event.detail);
+            this.updateQtdBubble(event.detail.item_count)
+        });
+
+        document.addEventListener(PUB_SUB_EVENTS.quantityUpdate, (event) => {
+            const cart = event.detail;
+            if (!ehCarrinho(cart)) return;
+
+            cart.items.forEach((item, index) => {
+                this.updateItemTotalPrice(index + 1, item.final_line_price);
+            });
+            this.updateCartSummary(cart);
+            this.updateQtdBubble(cart.item_count)
+        });
+
+        document.addEventListener(PUB_SUB_EVENTS.cartError, (event) => {
+            console.error('Erro detectado:', event.detail);
+        });
+    }
+
+    open() {
+        document.body.classList.add('overflow-hidden');
+        this.classList.add('animate', 'active');
+    }
+
+    close() {
+        document.body.classList.remove('overflow-hidden');
+        this.classList.remove('active');
+    }
+
+    setHeaderCartIconAccessibility() {
+        const cartButton = document.querySelector('#minicart-button');
+        cartButton.setAttribute('role', 'button');
+        cartButton.setAttribute('aria-haspopup', 'dialog');
+        cartButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            this.open();
+        });
+        cartButton.addEventListener('keydown', (event) => {
+            if (event.code.toUpperCase() === 'SPACE') {
+                event.preventDefault();
+                this.open();
+            }
+        });
+    }
+
+    updateItemIndexes() {
+        this.querySelectorAll('.cart-item').forEach((item, index) => {
+            item.setAttribute('data-index', index + 1);
+        });
+    }
+
+    removeItem(line) {
+        const itemElement = this.querySelector(`[data-index="${line}"]`);
+        if (itemElement) {
+            itemElement.closest('.cart-item').remove();
+        }
+
+        this.updateItemIndexes();
+    }
+
+    updateItemTotalPrice(line, newPrice) {
+        const itemElement = this.querySelector(`[data-index="${line}"]`);
+        const priceElement = itemElement.querySelector('.item-total-price');
+        if (priceElement) {
+            priceElement.textContent = formatMoney(newPrice);
+        }
+    }
+
+    async updateCartSummary(cart) {
+        const summaryElement = document.querySelector('#cart-summary-total');
+        const itemsSubtotalPriceElement = summaryElement.querySelector('.subtotal');
+        const totalDiscountElement = summaryElement.querySelector('.discounts');
+        const totalPriceElement = summaryElement.querySelector('.total-price');
+
+        const { items_subtotal_price, total_discount, total_price } = cart;
+
+        itemsSubtotalPriceElement.textContent = formatMoney(items_subtotal_price);
+        if (totalDiscountElement) {
+            totalDiscountElement.textContent = `-${formatMoney(total_discount)}`;
+        }
+        totalPriceElement.textContent = formatMoney(total_price);
+    }
+
+    updateQtdBubble(newQtd) {
+        const qtdBubble = document.querySelector('#qtd-bubble');
+        const cartEmpty = this.querySelector('#cart-empty');
+        const cartContainer = this.querySelector('#cart-container');
+        const isVisible = newQtd > 0;
+
+        const toggleVisibility = (element, visible) => {
+            element.classList.toggle('flex', visible);
+            element.classList.toggle('hidden', !visible);
+        };
+
+        toggleVisibility(qtdBubble, isVisible);
+        toggleVisibility(cartEmpty, !isVisible);
+        toggleVisibility(cartContainer, isVisible);
+
+        qtdBubble.textContent = newQtd;
+    }
+}
+
+customElements.define('cart-drawer', CartDrawer);
+
+class AddToCart extends HTMLElement {
+    constructor() {
+        super();
+
+        this.form = this.querySelector('form');
+        this.button = this.querySelector('button[name="add"]');
+        this.hiddenInput = this.form ? this.form.querySelector('input[name="id"]') : null;
+        this.formQuantityInput = this.form ? this.form.querySelector('input[name="quantity"]') : null;
+
+        this.variantChangeHandler = this._onVariantChange.bind(this)
+        this.quantityChangeHandler = this._onQuantityChange.bind(this);
+        this.resizeHandler = this._onResize.bind(this);
+
+        // MediaQuery para detectar mudanças de tamanho de tela
+        this.mediaQuery = window.matchMedia('(max-width: 600px)');
+    }
+
+    connectedCallback() {
+        if (this.form) {
+            this.form.addEventListener('submit', this.submitHandler.bind(this));
+        }
+
+        this.productContext = this.closest('[product-context]');
+        if (this.productContext) {
+            this.productContext.addEventListener('variant:change', this._onVariantChange.bind(this));
+            this.productContext.addEventListener('quantity:change', this.quantityChangeHandler);
+        } else {
+            console.warn('AddToCart: product-context não encontrado.');
+        }
+
+        // Listener para mudanças de tamanho de tela
+        if (this.mediaQuery.addEventListener) {
+            this.mediaQuery.addEventListener('change', this.resizeHandler);
+        } else {
+            // Fallback para navegadores antigos
+            this.mediaQuery.addListener(this.resizeHandler);
+        }
+
+        // O Liquid renderiza um texto só — ele não sabe a largura da tela. Sem
+        // este ajuste no load, a barra fixa nasce com o texto curto ("Adicionar")
+        // e só troca para o longo no primeiro resize ou troca de variante.
+        this._onResize();
+    }
+
+    disconnectedCallback() {
+        if (this.form) {
+            this.form.removeEventListener('submit', this.submitHandler);
+        }
+        if (this.productContext) {
+            this.productContext.removeEventListener('variant:change', this._onVariantChange.bind(this));
+        }
+
+        // Remove listener de resize
+        if (this.mediaQuery.removeEventListener) {
+            this.mediaQuery.removeEventListener('change', this.resizeHandler);
+        } else {
+            this.mediaQuery.removeListener(this.resizeHandler);
+        }
+    }
+
+    _onResize() {
+        // Quando o tamanho da tela muda, atualiza o texto do botão.
+        //
+        // Só age em botão que DECLARA os dois textos. O quick-add do card de
+        // produto é um <add-to-cart> cujo botão tem ícone SVG dentro e nenhum
+        // data-text-*: escrever textContent nele apagaria o ícone e trocaria o
+        // rótulo por um texto pt-BR cravado no JS.
+        const { textDesktop, textMobile } = this.button?.dataset ?? {};
+        if (!textDesktop || !textMobile) return;
+
+        const variantId = this.hiddenInput?.value;
+        if (variantId && !this.button.disabled) {
+            this.button.textContent = this.mediaQuery.matches ? textMobile : textDesktop;
+        }
+    }
+
+    _onVariantChange(event) {
+        const variant = event.detail.variant;
+
+        this._updateInputAndButton(variant);
+    }
+
+    _onQuantityChange(event) {
+        const newQuantity = event.detail.quantity;
+        if (this.formQuantityInput) {
+            this.formQuantityInput.value = newQuantity;
+        }
+    }
+
+    _updateInputAndButton(variant) {
+        // Atualiza o Input Hidden
+        if (this.hiddenInput) {
+            this.hiddenInput.value = variant ? variant.id : '';
+        }
+
+        if (!this.button) return;
+
+        // Todo texto vem do elemento, posto lá pelo Liquid com o filtro `t`.
+        // Sem fallback em português: uma cópia aqui divergiria do locale, e a
+        // loja em inglês mostraria "ESGOTADO". Quem não declara o atributo
+        // (o quick-add do card, que tem ícone dentro do botão) mantém o texto
+        // que o servidor renderizou.
+        const { textDesktop, textMobile, textSoldOut, textUnavailable } = this.button.dataset;
+
+        if (variant && variant.available) {
+            this.button.disabled = false;
+            if (textDesktop && textMobile) {
+                this.button.textContent = this.mediaQuery.matches ? textMobile : textDesktop;
+            }
+        } else {
+            this.button.disabled = true;
+            const label = variant ? textSoldOut : textUnavailable;
+            if (label) this.button.textContent = label;
+        }
+    }
+
+    async submitHandler(event) {
+        event.preventDefault();
+        try {
+            await CartManager.addToCart(this.form);
+            await this.updateCartDrawer();
+            await CartManager.getCart()
+        } catch (error) {
+            console.error('Erro ao adicionar o produto ao carrinho:', error);
+        } finally {
+            document.querySelector('cart-drawer').open();
+        }
+    }
+
+    /**
+     * Repõe os itens do mini-carrinho a partir da página do carrinho.
+     *
+     * ── Os dois ids são DIFERENTES de propósito ────────────────────────────
+     *
+     * Até a issue #68, o drawer e a página usavam o MESMO `id`. Dois elementos
+     * com o mesmo id no mesmo documento é HTML inválido, e `querySelector`
+     * devolve o primeiro na ordem do documento — que era o do drawer só porque
+     * `theme.liquid` renderiza o drawer antes do `content_for_layout`.
+     *
+     * Funcionava por ORDENAÇÃO, não por desenho: mover uma linha do layout
+     * fazia o drawer passar a ler a página do carrinho, sem erro no console,
+     * sem teste vermelho e sem nada no lint — porque os dois containers
+     * renderizam o mesmo `cart-drawer-item`, e só divergiriam depois.
+     *
+     * Com nomes distintos, ORIGEM e DESTINO não podem se confundir, em nenhuma
+     * ordem: a página só tem `#cart-items-container`, o drawer só tem
+     * `#cart-drawer-items`.
+     */
+    async updateCartDrawer() {
+        try {
+            const response = await fetch(routes.cart_url);
+            const text = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, 'text/html');
+            const origem = doc.querySelector('#cart-items-container');
+            const destino = document.querySelector('#cart-drawer-items');
+
+            if (origem && destino) {
+                destino.innerHTML = origem.innerHTML;
+                document.querySelector('cart-drawer').updateItemIndexes();
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar o minicart:', error);
+        }
+    }
+}
+
+customElements.define('add-to-cart', AddToCart);
+
+class RemoveFromCart extends HTMLElement {
+    constructor() {
+        super();
+        this.addEventListener('click', this.removeHandler.bind(this));
+    }
+
+    async removeHandler(event) {
+        event.preventDefault();
+        const itemElement = this.closest('.cart-item');
+        const itemIndex = itemElement.getAttribute('data-index');
+
+        try {
+            await CartManager.updateQuantity(itemIndex, 0);
+            document.querySelector('cart-drawer').removeItem(itemIndex);
+        } catch (error) {
+            console.error('Erro ao remover o item do carrinho:', error);
+        }
+    }
+}
+
+customElements.define('remove-from-cart', RemoveFromCart);
+
+class QuantityInput extends HTMLElement {
+    constructor() {
+        super();
+        this.plus = this.querySelector('#quantity-plus');
+        this.minus = this.querySelector('#quantity-minus');
+        this.input = this.querySelector('#quantity-input');
+        this.maxQtd = this.getAttribute('data-max-qtd')
+
+        this.plus.addEventListener('click', this.changeQuantity.bind(this, 1));
+        this.minus.addEventListener('click', this.changeQuantity.bind(this, -1));
+
+        // Debounced version of the update function
+        this.debouncedUpdateQuantity = debounce(this.updateCartQuantity.bind(this), ON_CHANGE_DEBOUNCE_TIMER);
+    }
+
+    changeQuantity(change) {
+        const newQuantity = parseInt(this.input.value) + change;
+        if (newQuantity < 1 || newQuantity > this.maxQtd) return;
+
+        this.input.value = newQuantity;
+
+        // Call the debounced update function
+        this.debouncedUpdateQuantity();
+    }
+
+    async updateCartQuantity() {
+        const newQuantity = parseInt(this.input.value);
+        const itemElement = this.closest('.cart-item');
+        const itemIndex = itemElement.getAttribute('data-index');
+
+        try {
+            await CartManager.updateQuantity(itemIndex, newQuantity);
+        } catch (error) {
+            console.error('Erro ao atualizar a quantidade no carrinho:', error);
+        }
+    }
+}
+
+
+customElements.define('quantity-input', QuantityInput);

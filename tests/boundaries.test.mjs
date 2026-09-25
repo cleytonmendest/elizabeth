@@ -23,11 +23,19 @@ const ler = (arquivo) => fs.readFileSync(path.join(RAIZ, arquivo), 'utf8');
 
 const { boundaries } = JSON.parse(ler('scripts/lint/config/boundaries.json'));
 
-/** Os assets de JS do tema, sem o Swiper — código de terceiro não é do tema. */
+/**
+ * O JS autoral do tema — o FONTE, que é o que a regra de fronteiras varre.
+ *
+ * Lia `assets/` até a #96, quando dava no mesmo: eram o mesmo arquivo. Agora
+ * `assets/*.js` é gerado e minificado, e continuar lendo de lá faria este teste
+ * varrer um corpo e a regra varrer outro — o teste ficaria verde sobre arquivos
+ * que a regra nunca olha. (O Swiper sai por não ter fonte aqui: código de
+ * terceiro não é do tema.)
+ */
 const ASSETS_JS = fs
-  .readdirSync(path.join(RAIZ, 'assets'))
-  .filter((nome) => nome.endsWith('.js') && !nome.endsWith('.min.js'))
-  .map((nome) => `assets/${nome}`)
+  .readdirSync(path.join(RAIZ, 'src', 'js'))
+  .filter((nome) => nome.endsWith('.js'))
+  .map((nome) => `src/js/${nome}`)
   .sort();
 
 describe('toda fronteira declarada', () => {
@@ -56,9 +64,9 @@ describe('a fronteira money-format', () => {
   // lendo o DIRETÓRIO — então ele continua valendo se a declaração sumir.
   const fronteira = boundaries.find((f) => f.capability === 'money-format');
 
-  it('existe, e o dono é assets/money.js', () => {
+  it('existe, e o dono é src/js/money.js', () => {
     expect(fronteira, 'money-format não está declarada em boundaries.json').toBeTruthy();
-    expect(fronteira.owners).toEqual(['assets/money.js']);
+    expect(fronteira.owners).toEqual(['src/js/money.js']);
   });
 
   it('nenhum outro asset formata moeda por conta própria', () => {
@@ -68,7 +76,7 @@ describe('a fronteira money-format', () => {
     expect(
       formatadores,
       'Havia três (cart.js, cart-extras.js, search-component.js) e elas discordavam ' +
-        'sobre dividir por 100. Use formatMoney() de assets/money.js.'
-    ).toEqual(['assets/money.js']);
+        'sobre dividir por 100. Use formatMoney() de src/js/money.js.'
+    ).toEqual(['src/js/money.js']);
   });
 });
