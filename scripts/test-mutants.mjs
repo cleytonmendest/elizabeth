@@ -1210,6 +1210,13 @@ const MUTANTES = [
  * código que decide se uma página passa ou não.
  */
 const MUTANTES_E2E = [
+  {
+    porque: 'o gatilho volta a não acompanhar a altura da linha, e o vão cresce com o logo da lojista',
+    arquivo: 'snippets/main-menu.liquid',
+    de: 'lg:justify-around lg:w-full self-stretch',
+    para: 'lg:justify-around lg:w-full',
+    teste: 'e2e/menu-desktop.spec.mjs',
+  },
   // ── O painel que abria e não deixava clicar ─────────────────────────────
   //
   // Faixa morta de 14px entre o item e o painel: ao descer o mouse, o `:hover`

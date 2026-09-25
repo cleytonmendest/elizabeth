@@ -51,14 +51,29 @@ function classe(padrao) {
   return achado[1];
 }
 
-const pagina = (grupos) => `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+/**
+ * A fixture PRECISA do logo, e ele precisa de altura.
+ *
+ * É o logo que define a altura da linha do cabeçalho, e a altura da linha é o
+ * que determina o tamanho do vão. Sem ele, a fixture tinha uma linha rasa, o
+ * vão media 14px, e o teste aprovava uma ponte que na loja real — com o grupo
+ * medindo 20px dentro de uma linha de 48 — não cobria os 26px de vão.
+ *
+ * Isto não é detalhe de montagem: é a terceira vez nesta investigação que uma
+ * fixture divergente fez o verificador medir outro programa. Por isso as
+ * classes saem do snippet e a geometria é conferida aqui, com um logo de
+ * verdade.
+ */
+const pagina = (grupos, alturaDoLogo = 48) => `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
 <style>:root{--color-background:255 255 255;--color-foreground:20 20 20;--color-border:220 220 220;
 --color-shadow:0 0 0;--page-width:1200px;--radius:8px;--font-scale:1}</style></head>
 <body><div class="w-full"><main-header class="w-full block relative">
 <div id="main-header-container" class="color-background color-text w-full group relative">
-  <div class="!py-3 page-width w-full"><div class="flex justify-between"><span>LOGO</span>
-    <nav class="flex items-center"><div class="menu-desk hidden lg:flex lg:justify-around lg:w-full">
-      <div class="${classe('static flex')}">
+  <div class="!py-3 page-width w-full"><div class="flex justify-between">
+    <div class="flex-[1] justify-center items-center flex"><h1 class="w-fit"><a href="/">
+      <div style="width:200px;height:${alturaDoLogo}px;background:#ddd"></div></a></h1></div>
+    <nav class="${classe('flex items-center lg:justify-center')}"><div class="${classe('menu-desk')}">
+      <div id="grupo" class="${classe('static flex')}">
         <a id="gatilho" href="#" class="color-text text-sm flex items-center gap-1">Mais</a>
         <div id="painel" class="${classe('mega-panel')}">
           <div id="miolo" class="${classe('page-width py-8')}">
@@ -66,7 +81,7 @@ const pagina = (grupos) => `<!doctype html><html lang="pt-BR"><head><meta charse
           </div>
         </div>
       </div>
-    </div></nav><span>ÍCONES</span>
+    </div></nav><div class="flex items-center">ÍCONES</div>
   </div></div>
 </div></main-header></div></body></html>`;
 
@@ -86,10 +101,23 @@ const grupo = (i, itens = 0) =>
      }</ul>
    </div>`;
 
-async function monta(page, quantos, itens = 0) {
-  await page.setContent(pagina(Array.from({ length: quantos }, (_, i) => grupo(i, itens)).join('')));
+async function monta(page, quantos, itens = 0, alturaDoLogo = 48) {
+  await page.setContent(
+    pagina(Array.from({ length: quantos }, (_, i) => grupo(i, itens)).join(''), alturaDoLogo)
+  );
   await page.addStyleTag({ path: path.join(RAIZ, 'assets/application.css') });
 }
+
+/** O vão entre a base da área com hover e o topo do painel. */
+async function vao(page) {
+  const grupoBox = await page.locator('#grupo').boundingBox();
+  const painel = await page.locator('#painel').boundingBox();
+  return painel.y - (grupoBox.y + grupoBox.height);
+}
+
+/** A altura da ponte (`::before` do painel), em px. */
+const ponte = (page) =>
+  page.locator('#painel').evaluate((e) => parseFloat(getComputedStyle(e, '::before').height));
 
 test('o painel continua aberto no caminho do gatilho até o item', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
@@ -123,11 +151,14 @@ test('a faixa entre o gatilho e o painel existe — e é ela que a ponte cobre',
   await monta(page, 4);
   await page.locator('#gatilho').hover();
 
-  const grupoBox = await page.locator('.group\\/menu').boundingBox();
-  const painel = await page.locator('#painel').boundingBox();
-  const faixa = painel.y - (grupoBox.y + grupoBox.height);
+  const faixa = await vao(page);
+  const alturaDaPonte = await ponte(page);
 
   expect(faixa, 'a faixa sumiu; o teste da ponte deixou de exercitar o defeito').toBeGreaterThan(0);
+  expect(
+    faixa,
+    `a faixa (${faixa}px) ficou maior que a ponte (${alturaDaPonte}px) — ela deixa de cobrir`
+  ).toBeLessThan(alturaDaPonte);
 });
 
 test('painel com muitos grupos cabe na janela, e o miolo é que rola', async ({ page }) => {
@@ -158,4 +189,47 @@ test('o teto de altura não volta para o painel — lá ele recorta a ponte', as
     overflowDoPainel,
     'o painel voltou a recortar: a ponte contra a faixa morta para de funcionar'
   ).toBe('visible');
+});
+
+test('o vão não cresce com o logo da lojista', async ({ page }) => {
+  // ── A propriedade que decide a correção ──────────────────────────────────
+  //
+  // Aumentar a ponte até cobrir o vão seria número cravado, e o vão NÃO é
+  // constante: ele nasce da altura da linha do cabeçalho, que nasce do logo,
+  // que é setting da lojista (`logo_width`). Medido antes da correção: com um
+  // logo de 48px o vão era 26px; com 160px passaria de 100px. Nenhuma ponte
+  // fixa cobre isso.
+  //
+  // A correção foi na raiz. O gatilho já pedia `h-full`, e falhava em silêncio:
+  // `nav` é `items-center`, então `menu-desk` ficava com altura de CONTEÚDO
+  // (20px, como o devtools da loja mostrou) e o `100%` do gatilho resolvia
+  // contra ela. Com `self-stretch` no `menu-desk` a cadeia volta a ter altura
+  // definida, o gatilho preenche a linha, e o que sobra é só o `py-3` do
+  // cabeçalho — que não depende de setting nenhum.
+  //
+  // É isto que este teste trava: não o número, a INDEPENDÊNCIA dele.
+  await page.setViewportSize({ width: 1400, height: 900 });
+
+  const medidas = [];
+  for (const alturaDoLogo of [32, 80, 160]) {
+    await monta(page, 4, 0, alturaDoLogo);
+    await page.locator('#gatilho').hover();
+    await expect(page.locator('#painel')).toHaveCSS('opacity', '1');
+
+    const grupoBox = await page.locator('#grupo').boundingBox();
+    medidas.push({ alturaDoLogo, linha: grupoBox.height, faixa: await vao(page), ponte: await ponte(page) });
+  }
+
+  for (const m of medidas) {
+    expect(
+      m.faixa,
+      `logo de ${m.alturaDoLogo}px: a linha ficou com ${m.linha}px e o vão com ${m.faixa}px, ` +
+        `acima da ponte de ${m.ponte}px — o gatilho voltou a não acompanhar a altura da linha`
+    ).toBeLessThan(m.ponte);
+  }
+
+  // E a prova de que o logo REALMENTE mudou a linha: sem isto, o laço acima
+  // ficaria verde no dia em que a fixture parasse de variar a altura.
+  const alturas = [...new Set(medidas.map((m) => m.linha))];
+  expect(alturas.length, 'o logo parou de afetar a altura da linha; o teste deixou de variar nada').toBeGreaterThan(1);
 });
