@@ -139,14 +139,29 @@ function resgataMutanteOrfao() {
 const comE2E = process.argv.includes('--e2e');
 
 const MUTANTES = [
-  // ── A #36, fase 1: o que abre abaixo do cabeçalho passava da janela ─────
+  // ── A #36 fase 0: a primeira decisão em Liquid que o tema consegue testar ─
   {
-    porque: 'o painel do mega menu volta a não ter teto, e menu grande fica inalcançável',
-    arquivo: 'snippets/main-menu.liquid',
-    de: 'max-h-below-header overflow-y-auto',
-    para: '',
-    teste: 'tests/menu.test.mjs',
+    porque: 'a forma passa a ser sempre painel — a lista plana volta à faixa de largura inteira',
+    arquivo: 'snippets/menu-forma.liquid',
+    de: "    echo 'dropdown'",
+    para: "    echo 'painel'",
+    teste: 'tests/menu-forma.test.mjs',
   },
+  {
+    porque: 'o terceiro nível deixa de pedir painel, e grupos viram uma coluna estreita',
+    arquivo: 'snippets/menu-forma.liquid',
+    de: '  elsif tem_terceiro_nivel',
+    para: '  elsif false',
+    teste: 'tests/menu-forma.test.mjs',
+  },
+  {
+    porque: 'a busca por terceiro nível nunca acha nada (o laço roda e não conclui)',
+    arquivo: 'snippets/menu-forma.liquid',
+    de: '      assign tem_terceiro_nivel = true',
+    para: '      assign tem_terceiro_nivel = false',
+    teste: 'tests/menu-forma.test.mjs',
+  },
+  // ── A #36, fase 1: o que abre abaixo do cabeçalho passava da janela ─────
   {
     porque: 'a gaveta mobile volta a cortar o fim do menu, sem rolagem',
     arquivo: 'snippets/main-menu.liquid',
@@ -1211,6 +1226,31 @@ const MUTANTES = [
  */
 const MUTANTES_E2E = [
   {
+    // Estava apontado para `tests/menu.test.mjs`, que afirmava isto por busca
+    // de classe. A afirmação virou medição no navegador (o painel CABENDO na
+    // janela, o miolo rolando), e o mutante sobreviveu até acompanhar — que é
+    // o corredor fazendo o trabalho dele.
+    porque: 'o painel do mega menu volta a não ter teto, e menu grande fica inalcançável',
+    arquivo: 'snippets/menu-item-desktop.liquid',
+    de: "assign miolo = 'page-width py-8 flex gap-10 justify-between max-h-below-header overflow-y-auto'",
+    para: "assign miolo = 'page-width py-8 flex gap-10 justify-between'",
+    teste: 'e2e/menu-desktop.spec.mjs',
+  },
+  {
+    porque: 'a lista longa perde a segunda coluna e o dropdown estica para fora da tela',
+    arquivo: 'snippets/menu-item-desktop.liquid',
+    de: "assign colunas = 'grid grid-cols-2 gap-x-10 gap-y-3'",
+    para: "assign colunas = 'flex flex-col gap-3'",
+    teste: 'e2e/menu-desktop.spec.mjs',
+  },
+  {
+    porque: 'o dropdown deixa de se ancorar no item e escapa para o cabeçalho, como o painel',
+    arquivo: 'snippets/menu-item-desktop.liquid',
+    de: "            assign ancoragem = 'relative'",
+    para: "            assign ancoragem = 'static'",
+    teste: 'e2e/menu-desktop.spec.mjs',
+  },
+  {
     porque: 'o gatilho volta a não acompanhar a altura da linha, e o vão cresce com o logo da lojista',
     arquivo: 'snippets/main-menu.liquid',
     de: 'lg:justify-around lg:w-full self-stretch',
@@ -1224,16 +1264,16 @@ const MUTANTES_E2E = [
   // isto — o jsdom não calcula layout nem faz hit-testing.
   {
     porque: 'a ponte some e o painel volta a fechar no caminho do mouse',
-    arquivo: 'snippets/main-menu.liquid',
+    arquivo: 'snippets/menu-item-desktop.liquid',
     de: " before:absolute before:inset-x-0 before:bottom-full before:h-4 before:content-['']",
     para: '',
     teste: 'e2e/menu-desktop.spec.mjs',
   },
   {
     porque: 'o overflow volta para o painel e recorta a própria ponte (a regressão que custou um diagnóstico)',
-    arquivo: 'snippets/main-menu.liquid',
-    de: 'w-full z-overlay before:absolute',
-    para: 'w-full z-overlay overflow-y-auto before:absolute',
+    arquivo: 'snippets/menu-item-desktop.liquid',
+    de: 'top-full z-overlay {{ caixa }} before:absolute',
+    para: 'top-full z-overlay overflow-y-auto {{ caixa }} before:absolute',
     teste: 'e2e/menu-desktop.spec.mjs',
   },
   {

@@ -1,0 +1,56 @@
+{%- comment -%}
+  A forma que o submenu de um item da barra assume: `dropdown` ou `painel`.
+
+  ── A regra: a PROFUNDIDADE decide, não a contagem ─────────────────────────
+
+  Dois níveis ("Vestidos" → Curtos, Longos, Festa) é uma LISTA, e a forma
+  natural de uma lista é uma coluna: dropdown estreito, com a largura do
+  conteúdo. Três níveis ("Roupas" → Vestidos → Curtos…) é um conjunto de
+  GRUPOS, e grupos lado a lado é o que o painel de largura inteira existe para
+  mostrar — o markup já trata o 2º nível como título de coluna e o 3º como o
+  conteúdo dela.
+
+  Por isso o critério não é "mais de N subitens", que seria um número
+  escolhido por alguém. É a estrutura que a lojista montou na Navegação: ela
+  já respondeu a pergunta, só não sabia que estava respondendo.
+
+  Contagem aparece uma vez só, e para outra coisa: quantas COLUNAS o dropdown
+  tem. Isso é layout dentro de uma forma já decidida, que é onde contagem é
+  legítima.
+
+  ── Por que o bloco de promo força painel ──────────────────────────────────
+
+  O promo é uma imagem de 256px à direita dos links. Num dropdown estreito não
+  há onde encaixá-la ao lado de uma lista fina: ou o dropdown incha até virar
+  um painel pequeno, ou a imagem que a lojista configurou não aparece. Se ela
+  anexou imagem àquele item, o tema usa a forma larga.
+
+  ── Por que isto é um snippet separado ─────────────────────────────────────
+
+  Para poder ser TESTADO. O tema não tinha como exercitar decisão escrita em
+  Liquid — `theme-check` é estático e o Vitest não renderiza Liquid. Isolada
+  aqui, a regra não usa filtro nenhum da Shopify (só `.size`, `if` e `for`), e
+  `tests/menu-forma.test.mjs` a renderiza com um motor de Liquid de verdade,
+  contra objetos fabricados. Ver ADR 0014.
+
+  Uso:
+    {%- capture forma -%}{%- render 'menu-forma', link: link, promo: promo -%}{%- endcapture -%}
+    {%- assign forma = forma | strip -%}
+{%- endcomment -%}
+{%- liquid
+  assign tem_terceiro_nivel = false
+  for sublink in link.links
+    if sublink.links.size > 0
+      assign tem_terceiro_nivel = true
+      break
+    endif
+  endfor
+
+  if promo
+    echo 'painel'
+  elsif tem_terceiro_nivel
+    echo 'painel'
+  else
+    echo 'dropdown'
+  endif
+-%}
