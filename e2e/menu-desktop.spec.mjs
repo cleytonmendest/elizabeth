@@ -1,70 +1,88 @@
 /**
- * O mega menu sobrevive ao caminho do mouse, e cabe na janela?
+ * O menu de desktop, medido num navegador — e renderizado pelo Liquid de verdade.
  *
  * Irmão de `gate.spec.mjs` e `guarda-do-clique.spec.mjs`: não precisa de loja,
- * então roda em toda execução. O que ele mede é geometria e hit-testing —
- * coisas que o jsdom não tem, porque ele não calcula layout.
+ * então roda em toda execução. O que ele mede é geometria e hit-testing, que o
+ * jsdom não tem porque não calcula layout.
  *
- * ── O defeito que este arquivo nasceu para travar ──────────────────────────
+ * ── O defeito que este arquivo trava ───────────────────────────────────────
  *
- * O painel abre por `group-hover`, e o gatilho fica dentro do `!py-3` do
- * cabeçalho enquanto o painel é `absolute top-full` do `#main-header-container`.
- * Isso deixa uma FAIXA MORTA entre os dois — medida: 14px. Ao descer o mouse
- * do item para o painel, a pessoa atravessa essa faixa, o `:hover` do grupo cai,
- * o painel recebe `pointer-events: none` e não dá mais para alcançá-lo.
+ * O painel abre por `group-hover`, e entre a base do item e o topo do painel
+ * sobra uma FAIXA MORTA. Ao descer o mouse a pessoa a atravessa, o `:hover` do
+ * grupo cai, o painel recebe `pointer-events: none` e não dá mais para
+ * alcançá-lo: um menu que abre e não deixa clicar.
  *
- * O resultado é um menu que abre e não deixa clicar. Relatado em QA manual, com
- * o tema empurrado; nenhum teste via, porque nenhum teste move o mouse.
+ * A ponte é um `::before` do painel cobrindo a faixa. Ela tem dois vizinhos
+ * perigosos, e os dois já morderam:
  *
- * A ponte é um `::before` do painel cobrindo a faixa. E ela tem um vizinho
- * perigoso: enquanto o `overflow-y-auto` esteve no PAINEL, ele recortava o
- * próprio `::before` — a ponte existia no CSS, com a geometria certa, e não era
- * atingida. Por isso o teto de altura mora no MIOLO e a ponte no painel; os
- * dois testes abaixo existem para essa separação não ser desfeita por alguém
- * que ache que juntar é mais limpo.
+ *   · `overflow` no PAINEL recorta o próprio `::before` — a ponte existe no
+ *     CSS, com a geometria certa, e não é atingida. Por isso o teto de altura
+ *     mora no MIOLO.
+ *   · a faixa CRESCE com a altura da linha do cabeçalho, que cresce com o logo
+ *     da lojista. Enquanto o gatilho não acompanhava a linha (o `h-full` falhava
+ *     em silêncio), nenhuma ponte fixa cobria.
+ *
+ * ── Por que a marcação vem do `liquidjs`, e não de uma cópia ───────────────
+ *
+ * Este arquivo remontava a marcação à mão a partir das classes do snippet. Essa
+ * cópia divergiu do original TRÊS vezes na mesma investigação, e as três vezes
+ * o teste ficou verde medindo um arranjo que a loja não tinha — a última
+ * aprovou uma ponte de 16px contra um vão que na loja era 26px, porque a
+ * fixture não tinha logo e a linha ficava rasa.
+ *
+ * Agora `snippets/menu-item-desktop.liquid` é renderizado de verdade. O que o
+ * navegador mede é a saída do MESMO arquivo que a loja serve. O que sobra de
+ * cópia é só a moldura do cabeçalho, e as classes dela saem dos fontes.
  */
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { Liquid } from 'liquidjs';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const engine = new Liquid({ root: path.join(RAIZ, 'snippets'), extname: '.liquid' });
 
 /**
- * As classes saem do snippet de verdade, e não de uma cópia.
+ * Uma classe literal de um fonte do tema.
  *
- * Fixture copiada à mão diverge do fonte e passa a medir outro programa — foi o
- * que aconteceu enquanto este defeito era investigado, e custou uma rodada
- * inteira de diagnóstico errado. Se algum `class=` mudar de forma a não casar
- * mais, `classe()` estoura: o teste fica vermelho em vez de verde por não achar
- * o que mediria.
+ * Se o padrão parar de casar, estoura: o teste fica vermelho em vez de verde
+ * medindo uma moldura que não existe mais.
  */
-function classe(padrao) {
-  const src = fs.readFileSync(path.join(RAIZ, 'snippets/main-menu.liquid'), 'utf8');
+function classe(arquivo, padrao) {
+  const src = fs.readFileSync(path.join(RAIZ, arquivo), 'utf8');
   const achado = src.match(new RegExp(`class="(${padrao}[^"]*)"`));
   if (!achado) {
-    throw new Error(
-      `main-menu.liquid não tem mais um class="${padrao}…". O teste perdeu o alvo — ` +
-        'atualize o padrão em vez de deixá-lo verde medindo nada.'
-    );
+    throw new Error(`${arquivo} não tem mais um class="${padrao}…" — o teste perdeu o alvo.`);
   }
   return achado[1];
 }
 
+/** Um item de menu: `n` subitens, os `comFilhos` primeiros com terceiro nível. */
+const item = (n, comFilhos = 0) => ({
+  title: 'Mais',
+  url: '/mais',
+  links: Array.from({ length: n }, (_, i) => ({
+    title: `Subitem ${i}`,
+    url: `/s${i}`,
+    links:
+      i < comFilhos
+        ? Array.from({ length: 8 }, (_, j) => ({ title: `Terceiro ${j}`, url: `/t${j}`, links: [] }))
+        : [],
+  })),
+});
+
 /**
- * A fixture PRECISA do logo, e ele precisa de altura.
+ * A página: a moldura do cabeçalho, com o item renderizado pelo Liquid dentro.
  *
- * É o logo que define a altura da linha do cabeçalho, e a altura da linha é o
- * que determina o tamanho do vão. Sem ele, a fixture tinha uma linha rasa, o
- * vão media 14px, e o teste aprovava uma ponte que na loja real — com o grupo
- * medindo 20px dentro de uma linha de 48 — não cobria os 26px de vão.
- *
- * Isto não é detalhe de montagem: é a terceira vez nesta investigação que uma
- * fixture divergente fez o verificador medir outro programa. Por isso as
- * classes saem do snippet e a geometria é conferida aqui, com um logo de
- * verdade.
+ * O logo é um bloco de altura explícita porque é ELE que define a altura da
+ * linha, e a altura da linha é o que determina a faixa.
  */
-const pagina = (grupos, alturaDoLogo = 48) => `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+async function monta(page, link, { alturaDoLogo = 48, largura = 1400, altura = 900 } = {}) {
+  await page.setViewportSize({ width: largura, height: altura });
+  const itemHtml = await engine.renderFile('menu-item-desktop', { link, promo_blocks: [] });
+
+  await page.setContent(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
 <style>:root{--color-background:255 255 255;--color-foreground:20 20 20;--color-border:220 220 220;
 --color-shadow:0 0 0;--page-width:1200px;--radius:8px;--font-scale:1}</style></head>
 <body><div class="w-full"><main-header class="w-full block relative">
@@ -72,152 +90,165 @@ const pagina = (grupos, alturaDoLogo = 48) => `<!doctype html><html lang="pt-BR"
   <div class="!py-3 page-width w-full"><div class="flex justify-between">
     <div class="flex-[1] justify-center items-center flex"><h1 class="w-fit"><a href="/">
       <div style="width:200px;height:${alturaDoLogo}px;background:#ddd"></div></a></h1></div>
-    <nav class="${classe('flex items-center lg:justify-center')}"><div class="${classe('menu-desk')}">
-      <div id="grupo" class="${classe('static flex')}">
-        <a id="gatilho" href="#" class="color-text text-sm flex items-center gap-1">Mais</a>
-        <div id="painel" class="${classe('mega-panel')}">
-          <div id="miolo" class="${classe('page-width py-8')}">
-            <div class="flex flex-wrap gap-x-12 gap-y-6 flex-1">${grupos}</div>
-          </div>
-        </div>
-      </div>
-    </div></nav><div class="flex items-center">ÍCONES</div>
+    <nav class="${classe('snippets/main-menu.liquid', 'flex items-center lg:justify-center')}">
+      <div class="${classe('snippets/main-menu.liquid', 'menu-desk')}">${itemHtml}</div>
+    </nav>
+    <div class="flex items-center">ÍCONES</div>
   </div></div>
-</div></main-header></div></body></html>`;
+</div></main-header></div></body></html>`);
 
-/**
- * Um grupo do painel: título (2º nível) e os itens dele (3º nível).
- *
- * Os itens não são enfeite. Com grupos de UMA linha, 120 deles ainda cabiam
- * abaixo do teto e o miolo não rolava — o teste passava sem exercitar nada.
- * Menu que transborda de verdade é menu com terceiro nível, que é exatamente
- * o caso em que o painel full-bleed se justifica.
- */
-const grupo = (i, itens = 0) =>
-  `<div class="min-w-menu-col">
-     <a id="alvo-${i}" href="/g${i}" class="color-text block text-sm font-medium mb-3">Grupo ${i}</a>
-     <ul class="flex flex-col gap-2">${
-       Array.from({ length: itens }, (_, j) => `<li><a href="/g${i}/i${j}" class="text-sm">Item ${j}</a></li>`).join('')
-     }</ul>
-   </div>`;
-
-async function monta(page, quantos, itens = 0, alturaDoLogo = 48) {
-  await page.setContent(
-    pagina(Array.from({ length: quantos }, (_, i) => grupo(i, itens)).join(''), alturaDoLogo)
-  );
   await page.addStyleTag({ path: path.join(RAIZ, 'assets/application.css') });
 }
 
+const grupo = (page) => page.locator('[data-forma]');
+const painel = (page) => page.locator('.mega-panel');
+
 /** O vão entre a base da área com hover e o topo do painel. */
 async function vao(page) {
-  const grupoBox = await page.locator('#grupo').boundingBox();
-  const painel = await page.locator('#painel').boundingBox();
-  return painel.y - (grupoBox.y + grupoBox.height);
+  const g = await grupo(page).boundingBox();
+  const p = await painel(page).boundingBox();
+  return p.y - (g.y + g.height);
 }
 
-/** A altura da ponte (`::before` do painel), em px. */
+/** A altura da ponte (`::before` do painel), medida. */
 const ponte = (page) =>
-  page.locator('#painel').evaluate((e) => parseFloat(getComputedStyle(e, '::before').height));
+  painel(page).evaluate((e) => parseFloat(getComputedStyle(e, '::before').height));
 
-test('o painel continua aberto no caminho do gatilho até o item', async ({ page }) => {
-  await page.setViewportSize({ width: 1400, height: 900 });
-  await monta(page, 4);
-
-  const gatilho = await page.locator('#gatilho').boundingBox();
-  await page.locator('#gatilho').hover();
-  await expect(page.locator('#painel')).toHaveCSS('opacity', '1');
-
-  const alvo = await page.locator('#alvo-0').boundingBox();
-  const x = gatilho.x + gatilho.width / 2;
-
-  // Passo pequeno de propósito: é o movimento de uma pessoa, e é ele que
-  // atravessa a faixa morta. Um `hover()` direto no alvo teletransporta o
-  // cursor e passa mesmo com o defeito presente.
-  for (let y = gatilho.y + gatilho.height / 2; y <= alvo.y + alvo.height / 2; y += 4) {
+/** Desce o cursor do item até o primeiro link do painel, como uma pessoa faria. */
+async function desceAteOPainel(page) {
+  const g = await grupo(page).boundingBox();
+  const alvo = await painel(page).locator('a').first().boundingBox();
+  const x = g.x + g.width / 2;
+  // Passo pequeno de propósito: `hover()` direto teletransporta o cursor e
+  // passa mesmo com a faixa morta presente.
+  for (let y = g.y + g.height / 2; y <= alvo.y + alvo.height / 2; y += 4) {
     await page.mouse.move(x, y);
   }
+}
 
-  await expect(
-    page.locator('#painel'),
-    'o painel fechou enquanto o mouse atravessava a faixa entre o item e ele'
-  ).toHaveCSS('opacity', '1');
-  await expect(page.locator('#painel')).toHaveCSS('pointer-events', 'auto');
+for (const [nome, link, formaEsperada] of [
+  ['lista plana (dropdown)', item(4), 'dropdown'],
+  ['com terceiro nível (painel)', item(4, 4), 'painel'],
+]) {
+  test(`${nome}: o submenu continua aberto no caminho do mouse`, async ({ page }) => {
+    await monta(page, link);
+
+    await expect(grupo(page)).toHaveAttribute('data-forma', formaEsperada);
+    await page.locator('[data-forma] > a').first().hover();
+    await expect(painel(page)).toHaveCSS('opacity', '1');
+
+    await desceAteOPainel(page);
+
+    await expect(
+      painel(page),
+      'o submenu fechou enquanto o mouse atravessava a faixa entre o item e ele'
+    ).toHaveCSS('opacity', '1');
+    await expect(painel(page)).toHaveCSS('pointer-events', 'auto');
+  });
+
+  test(`${nome}: a faixa é coberta, ou não existe`, async ({ page }) => {
+    // ── As duas formas têm ÂNCORAS diferentes, e por isso faixas diferentes ──
+    //
+    // O painel é `static` no item, então o `absolute` escapa para o
+    // `#main-header-container`: ele começa na base do CABEÇALHO, e entre o item
+    // e ele sobra o `py-3`. É a faixa morta, e é ela que a ponte cobre.
+    //
+    // O dropdown é `relative` no próprio item: `top-full` é a base DELE, e as
+    // duas caixas se encostam. Faixa zero, ou negativa quando a animação ainda
+    // está a caminho. Medir isto separado não é detalhe — foi o que mostrou que
+    // as duas formas não compartilham o problema.
+    await monta(page, link);
+    await page.locator('[data-forma] > a').first().hover();
+    await expect(painel(page)).toHaveCSS('opacity', '1');
+
+    const faixa = await vao(page);
+    const alturaDaPonte = await ponte(page);
+
+    if (formaEsperada === 'painel') {
+      expect(faixa, 'a faixa sumiu; o teste da ponte deixou de exercitar o defeito').toBeGreaterThan(0);
+      expect(
+        faixa,
+        `a faixa (${faixa}px) ficou maior que a ponte (${alturaDaPonte}px) — ela deixa de cobrir`
+      ).toBeLessThan(alturaDaPonte);
+    } else {
+      expect(
+        faixa,
+        `o dropdown deixou de encostar no item (faixa de ${faixa}px) — ele é ancorado nele e não deveria ter vão`
+      ).toBeLessThanOrEqual(0);
+    }
+  });
+}
+
+test('a forma segue o conteúdo, e não a contagem', async ({ page }) => {
+  // O sintoma que motivou a matriz: um item com 5 subitens planos abria um
+  // painel de largura inteira com cinco links soltos numa faixa.
+  await monta(page, item(5));
+  await page.locator('[data-forma] > a').first().hover();
+  const estreito = await painel(page).boundingBox();
+
+  await monta(page, item(5, 5));
+  await page.locator('[data-forma] > a').first().hover();
+  const largo = await painel(page).boundingBox();
+
+  expect(estreito.width, 'a lista plana abriu com a largura da janela').toBeLessThan(1400 / 2);
+  expect(largo.width, 'o conteúdo em grupos deixou de usar a largura inteira').toBe(1400);
 });
 
-test('a faixa entre o gatilho e o painel existe — e é ela que a ponte cobre', async ({ page }) => {
-  // Sem esta medição o teste acima ficaria verde no dia em que a faixa
-  // desaparecesse por outro motivo, sem provar nada sobre a ponte.
-  await page.setViewportSize({ width: 1400, height: 900 });
-  await monta(page, 4);
-  await page.locator('#gatilho').hover();
+test('lista longa continua dropdown, em duas colunas', async ({ page }) => {
+  // Contagem não muda a FORMA — muda quantas colunas ela tem.
+  await monta(page, item(12));
 
-  const faixa = await vao(page);
-  const alturaDaPonte = await ponte(page);
+  await expect(grupo(page)).toHaveAttribute('data-forma', 'dropdown');
+  await page.locator('[data-forma] > a').first().hover();
 
-  expect(faixa, 'a faixa sumiu; o teste da ponte deixou de exercitar o defeito').toBeGreaterThan(0);
-  expect(
-    faixa,
-    `a faixa (${faixa}px) ficou maior que a ponte (${alturaDaPonte}px) — ela deixa de cobrir`
-  ).toBeLessThan(alturaDaPonte);
+  const colunas = await painel(page)
+    .locator('div > div')
+    .first()
+    .evaluate((e) => getComputedStyle(e).gridTemplateColumns.split(' ').length);
+
+  expect(colunas, 'a lista longa ficou em uma coluna só e estica para fora da tela').toBe(2);
 });
 
 test('painel com muitos grupos cabe na janela, e o miolo é que rola', async ({ page }) => {
-  await page.setViewportSize({ width: 1400, height: 800 });
-  await monta(page, 40, 8);
-  await page.locator('#gatilho').hover();
+  await monta(page, item(40, 40), { altura: 800 });
+  await page.locator('[data-forma] > a').first().hover();
 
-  const painel = await page.locator('#painel').boundingBox();
+  const p = await painel(page).boundingBox();
   expect(
-    painel.y + painel.height,
+    p.y + p.height,
     'o painel passou da janela: a parte de baixo fica inalcançável, porque sair com o mouse o fecha'
   ).toBeLessThanOrEqual(800);
 
-  const rola = await page.locator('#miolo').evaluate((e) => e.scrollHeight > e.clientHeight);
+  const rola = await painel(page)
+    .locator('> div')
+    .evaluate((e) => e.scrollHeight > e.clientHeight);
   expect(rola, 'o conteúdo foi cortado em vez de ficar alcançável por rolagem').toBe(true);
 });
 
 test('o teto de altura não volta para o painel — lá ele recorta a ponte', async ({ page }) => {
-  // A regressão exata que custou uma rodada de diagnóstico: com `overflow` no
-  // painel, o `::before` da ponte é recortado. Ela continua no CSS, com a
-  // geometria certa, e simplesmente não é atingida pelo cursor.
-  await page.setViewportSize({ width: 1400, height: 900 });
-  await monta(page, 4);
-
-  const overflowDoPainel = await page.locator('#painel').evaluate((e) => getComputedStyle(e).overflow);
+  await monta(page, item(4, 4));
 
   expect(
-    overflowDoPainel,
+    await painel(page).evaluate((e) => getComputedStyle(e).overflow),
     'o painel voltou a recortar: a ponte contra a faixa morta para de funcionar'
   ).toBe('visible');
 });
 
 test('o vão não cresce com o logo da lojista', async ({ page }) => {
-  // ── A propriedade que decide a correção ──────────────────────────────────
+  // A propriedade que decide a correção. Aumentar a ponte até cobrir seria
+  // número cravado, e o vão NÃO é constante: ele nasce da altura da linha, que
+  // nasce do logo, que é `logo_width` — setting da lojista. Medido antes:
+  // com logo de 48px o vão era 26px; com 160px passaria de 100px.
   //
-  // Aumentar a ponte até cobrir o vão seria número cravado, e o vão NÃO é
-  // constante: ele nasce da altura da linha do cabeçalho, que nasce do logo,
-  // que é setting da lojista (`logo_width`). Medido antes da correção: com um
-  // logo de 48px o vão era 26px; com 160px passaria de 100px. Nenhuma ponte
-  // fixa cobre isso.
-  //
-  // A correção foi na raiz. O gatilho já pedia `h-full`, e falhava em silêncio:
-  // `nav` é `items-center`, então `menu-desk` ficava com altura de CONTEÚDO
-  // (20px, como o devtools da loja mostrou) e o `100%` do gatilho resolvia
-  // contra ela. Com `self-stretch` no `menu-desk` a cadeia volta a ter altura
-  // definida, o gatilho preenche a linha, e o que sobra é só o `py-3` do
-  // cabeçalho — que não depende de setting nenhum.
-  //
-  // É isto que este teste trava: não o número, a INDEPENDÊNCIA dele.
-  await page.setViewportSize({ width: 1400, height: 900 });
-
+  // `self-stretch` no `menu-desk` devolve altura definida à cadeia, o gatilho
+  // preenche a linha, e sobra só o `py-3` do cabeçalho. É a INDEPENDÊNCIA que
+  // este teste trava, não o número.
   const medidas = [];
   for (const alturaDoLogo of [32, 80, 160]) {
-    await monta(page, 4, 0, alturaDoLogo);
-    await page.locator('#gatilho').hover();
-    await expect(page.locator('#painel')).toHaveCSS('opacity', '1');
-
-    const grupoBox = await page.locator('#grupo').boundingBox();
-    medidas.push({ alturaDoLogo, linha: grupoBox.height, faixa: await vao(page), ponte: await ponte(page) });
+    await monta(page, item(4, 4), { alturaDoLogo });
+    await page.locator('[data-forma] > a').first().hover();
+    const g = await grupo(page).boundingBox();
+    medidas.push({ alturaDoLogo, linha: g.height, faixa: await vao(page), ponte: await ponte(page) });
   }
 
   for (const m of medidas) {
@@ -228,8 +259,6 @@ test('o vão não cresce com o logo da lojista', async ({ page }) => {
     ).toBeLessThan(m.ponte);
   }
 
-  // E a prova de que o logo REALMENTE mudou a linha: sem isto, o laço acima
-  // ficaria verde no dia em que a fixture parasse de variar a altura.
   const alturas = [...new Set(medidas.map((m) => m.linha))];
   expect(alturas.length, 'o logo parou de afetar a altura da linha; o teste deixou de variar nada').toBeGreaterThan(1);
 });

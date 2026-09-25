@@ -161,32 +161,26 @@ describe('o editor re-renderiza a section, e o menu continua vivo', () => {
  * anúncio — nenhum desses o CSS conhece. Por isso a altura é medida por
  * `header.js` e publicada em `--header-height`.
  */
-describe('o painel e a gaveta cabem na janela', () => {
+describe('a gaveta mobile cabe na janela', () => {
+  // ── O que saiu daqui, e por quê ──────────────────────────────────────────
+  //
+  // Este bloco também afirmava, por string de classe, que o teto de altura
+  // ficava no miolo e que o painel tinha a ponte. Essas duas passaram a ser
+  // medidas em `e2e/menu-desktop.spec.mjs`, que renderiza o snippet com
+  // `liquidjs` e mede num navegador — a faixa em pixels, a altura da ponte, o
+  // painel cabendo na janela.
+  //
+  // Manter as duas versões seria manter a mais fraca: busca por classe aprova
+  // uma ponte de 16px contra um vão de 26px, que foi exatamente o que
+  // aconteceu. A cobertura não some, ela troca de lugar — e o desktop agora é
+  // medido pelo comportamento, não pela grafia.
+  //
+  // O que fica aqui é a gaveta mobile, que nenhum spec de navegador cobre.
   const menu = readFileSync(resolve(RAIZ, 'snippets/main-menu.liquid'), 'utf8');
   const classesDe = (marca) => {
     const m = menu.match(new RegExp(`class="${marca}[^"]*"`));
     return m ? m[0] : '';
   };
-
-  it('o teto e a rolagem ficam no MIOLO, não no painel', () => {
-    // A separação não é estética. Enquanto o `overflow` esteve no painel, ele
-    // recortava o `::before` que faz a ponte sobre a faixa morta entre o item
-    // e o painel — a ponte existia no CSS, com a geometria certa, e não era
-    // atingida pelo cursor. Quem PROVA o efeito é `e2e/menu-desktop.spec.mjs`,
-    // que move o mouse de verdade; aqui fica a guarda barata do arranjo.
-    const miolo = classesDe('page-width py-8');
-
-    expect(miolo, 'o miolo perdeu o teto de altura').toContain('max-h-below-header');
-    expect(miolo, 'com teto e sem rolagem, o conteúdo é cortado em vez de alcançável').toContain('overflow-y-auto');
-    expect(classesDe('mega-panel'), 'o overflow voltou para o painel e recorta a ponte').not.toContain('overflow-y-auto');
-  });
-
-  it('o painel tem a ponte que cobre a faixa morta', () => {
-    const painel = classesDe('mega-panel');
-
-    expect(painel, 'sem a ponte, descer o mouse até o painel o fecha no caminho').toContain('before:bottom-full');
-    expect(painel).toContain("before:content-['']");
-  });
 
   it('a gaveta mobile rola, e não arrasta a página junto', () => {
     const classes = classesDe('menu-mob');

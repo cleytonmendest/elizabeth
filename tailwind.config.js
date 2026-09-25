@@ -126,6 +126,12 @@ module.exports = {
       minWidth: {
         'menu-col': '150px',
       },
+      // Teto de largura do dropdown do menu. Ele cresce com o conteúdo
+      // (`w-max`), e sem teto um item de coleção com nome longo esticaria a
+      // caixa até atravessar a tela.
+      maxWidth: {
+        dropdown: '28rem',
+      },
       // Sombra da barra fixa de comprar. O valor que estava no markup era
       // `shadow-[0_-2px_8px_rgba(0,0,0,0.08)]`: preto cravado num tema cujo
       // princípio é que cor vem do color scheme. Num scheme escuro ela some.
