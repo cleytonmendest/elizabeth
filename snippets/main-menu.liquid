@@ -1,6 +1,6 @@
 <nav style="flex: {{ flex }}" class="flex items-center lg:justify-center justify-start max-lg:!flex-1 max-lg:order-1">
   <!-- Menu Desktop -->
-  <div class="menu-desk hidden lg:flex lg:justify-around lg:w-full">
+  <div class="menu-desk hidden lg:flex lg:justify-around lg:w-full self-stretch">
     {% for link in linklist.links %}
       {% if link.links.size > 0 %}
         {%- comment -%} Procura um bloco de imagem promocional casado com o título deste item {%- endcomment -%}
