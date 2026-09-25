@@ -314,3 +314,107 @@ describe('o guia de cores conta as cores que o esquema tem', () => {
     }
   });
 });
+
+/**
+ * A doc descreve o rodapé que o tema TEM?
+ *
+ * ── O defeito que este bloco existe para impedir ───────────────────────────
+ *
+ * A #5 mudou as redes do rodapé: TikTok e WhatsApp passaram a ser
+ * renderizados, Snapchat, Tumblr e Vimeo saíram do schema (ADR 0012). Quatro
+ * páginas da doc continuaram afirmando o arranjo anterior — "apenas Instagram,
+ * Facebook e YouTube aparecem como ícone", "TikTok não aparece em lugar
+ * nenhum" — e sobreviveram ao merge, ao CI e a este arquivo de testes, que na
+ * época já se chamava "a doc do lojista não pode mentir".
+ *
+ * O motivo é o de sempre: os testes daqui conferiam nomes de SEÇÃO e contagem
+ * de CORES contra o tema, e a afirmação sobre redes sociais não era conferida
+ * contra nada. Uma lojista que lesse a doc preencheria TikTok e concluiria que
+ * o tema está quebrado — o pior tipo de erro de documentação, o que faz a
+ * pessoa desconfiar do produto certo.
+ *
+ * Então a lista aqui não é escrita: é DERIVADA de `sections/footer.liquid`,
+ * inclusive o nome de exibição, que é o mesmo parâmetro que o rodapé passa
+ * para o ícone.
+ */
+describe('a doc descreve as redes que o rodapé realmente renderiza', () => {
+  const footer = read('sections/footer.liquid');
+
+  const renderizadas = [
+    ...footer.matchAll(/render 'social-link', url: settings\.(\w+), rede: '(\w+)', nome: '([^']+)'/g),
+  ].map((m) => ({ setting: m[1], rede: m[2], nome: m[3] }));
+
+  const grupoSocial = readJSONC('config/settings_schema.json').find(
+    (g) => g.settings?.some((s) => s.id?.startsWith('social_'))
+  );
+  const soMetadados = grupoSocial.settings
+    .filter((s) => s.id?.startsWith('social_') && !renderizadas.some((r) => r.setting === s.id))
+    .map((s) => s.id.replace(/^social_|_link$/g, ''));
+
+  /**
+   * As redes que alguma versão deste tema já ofereceu, para procurar por nome.
+   *
+   * É vocabulário de BUSCA, não afirmação sobre o tema: o que o tema tem vem
+   * do `footer.liquid` e do schema, acima. Uma rede nova que entre no tema sem
+   * entrar aqui continua coberta pelo primeiro teste, que exige que toda rede
+   * renderizada esteja nomeada na doc.
+   */
+  const VOCABULARIO = [
+    'Instagram', 'Facebook', 'YouTube', 'TikTok', 'WhatsApp',
+    'Twitter', 'Pinterest', 'Snapchat', 'Tumblr', 'Vimeo',
+  ];
+
+  const PASSAGENS = [
+    ['docs/lojista/primeiros-passos.md', '1.10 Redes sociais'],
+    ['docs/merchant/getting-started.md', '1.10 Social media'],
+    ['docs/lojista/problemas-comuns.md', 'Preenchi a rede social e o ícone não apareceu'],
+    ['docs/merchant/troubleshooting.md', 'I filled in a social network and no icon appeared'],
+  ];
+
+  it('o rodapé renderiza alguma rede — senão não há o que conferir', () => {
+    expect(renderizadas.length).toBeGreaterThan(0);
+  });
+
+  it.each(PASSAGENS)('%s nomeia toda rede que vira ícone', (arquivo, titulo) => {
+    const passagem = trecho(doc(arquivo.replace('docs/', '')), titulo);
+    expect(passagem, `seção "${titulo}" não encontrada em ${arquivo}`).not.toBe('');
+
+    for (const { nome } of renderizadas) {
+      expect(passagem, `${arquivo}: "${nome}" vira ícone no rodapé e a doc não o nomeia`).toContain(nome);
+    }
+  });
+
+  it.each(PASSAGENS)('%s não nomeia rede que o tema não oferece mais', (arquivo, titulo) => {
+    const passagem = trecho(doc(arquivo.replace('docs/', '')), titulo);
+    const oferecidas = [
+      ...renderizadas.map((r) => r.nome.toLowerCase()),
+      ...soMetadados.map((s) => s.toLowerCase()),
+    ];
+
+    const fantasmas = VOCABULARIO.filter(
+      (nome) => !oferecidas.includes(nome.toLowerCase()) && passagem.includes(nome)
+    );
+
+    expect(
+      fantasmas,
+      `${arquivo}: a doc fala de rede que o tema não tem mais (ver ADR 0012)`
+    ).toEqual([]);
+  });
+
+  it.each(PASSAGENS)('%s não diz que uma rede renderizada "não aparece"', (arquivo, titulo) => {
+    // A afirmação exata que apodreceu: a doc listava TikTok entre as que "não
+    // aparecem em lugar nenhum" DEPOIS de o rodapé passar a renderizá-lo.
+    const passagem = trecho(doc(arquivo.replace('docs/', '')), titulo);
+    const negativas = /não aparecem? em lugar nenhum|don't appear anywhere|não vira ícone|doesn't become an icon/gi;
+
+    for (const frase of passagem.split(/\n|(?<=\.)\s/)) {
+      if (!negativas.test(frase)) continue;
+      for (const { nome } of renderizadas) {
+        expect(
+          frase.includes(nome),
+          `${arquivo}: "${nome}" vira ícone, e a doc o cita numa frase que nega isso:\n  ${frase.trim()}`
+        ).toBe(false);
+      }
+    }
+  });
+});

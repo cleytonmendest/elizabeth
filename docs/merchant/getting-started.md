@@ -171,7 +171,7 @@ When on, it shows the consent banner. Configure:
 
 The icons show in the footer — as long as the **Payments and Social** block is there with the social option turned on.
 
-> Nine fields exist, but only **Instagram, Facebook and YouTube** appear as footer icons. Twitter feeds the link preview on Twitter/X; Pinterest, Facebook and Instagram feed the structured data Google reads. **TikTok, Snapchat, Tumblr and Vimeo don't appear anywhere today** — filling them in does nothing.
+> Five become footer icons: **Instagram, Facebook, YouTube, TikTok and WhatsApp**. The other two fields exist for something else, and the admin says so on each: **Twitter** feeds the link preview on Twitter/X and **Pinterest** feeds the structured data Google reads — neither becomes an icon. A field that does nothing anywhere no longer exists.
 
 ---
 

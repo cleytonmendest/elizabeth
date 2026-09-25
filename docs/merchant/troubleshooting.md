@@ -123,11 +123,12 @@ And keep the **"No thanks"** link visible. A modal with no clear way out makes t
 
 ## I filled in a social network and no icon appeared
 
-**Cause:** only **Instagram, Facebook and YouTube** become footer icons.
+**Cause:** two possibilities.
 
-TikTok, Snapchat, Tumblr and Vimeo have fields but don't appear anywhere. Twitter feeds the link preview on Twitter/X; Pinterest feeds the structured data Google reads — neither becomes an icon.
+1. **It's one of the two fields that don't become icons.** Twitter feeds the link preview on Twitter/X; Pinterest feeds the structured data Google reads. The admin says so on the field itself. These become icons: **Instagram, Facebook, YouTube, TikTok and WhatsApp**.
+2. **The block isn't in the footer.** Check that **Payments and Social** is present with the social option turned on.
 
-**What to do:** also check that the **Payments and Social** block is present in the footer with the social option turned on.
+**What to do:** in case 1 there's nothing to do — that field isn't for this. In case 2, add the block under **Footer** in the editor.
 
 ---
 

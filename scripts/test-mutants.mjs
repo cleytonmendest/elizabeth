@@ -139,6 +139,25 @@ function resgataMutanteOrfao() {
 const comE2E = process.argv.includes('--e2e');
 
 const MUTANTES = [
+  // ── A #5 mudou o rodapé e a doc ficou descrevendo o arranjo anterior ────
+  //
+  // Quatro páginas afirmaram por semanas que TikTok "não aparece em lugar
+  // nenhum", depois de o rodapé passar a renderizá-lo. Passou no CI porque a
+  // afirmação não era conferida contra nada. Agora é derivada do footer.
+  {
+    porque: 'a doc volta a listar só as três redes antigas, e quem preenche TikTok acha o tema quebrado',
+    arquivo: 'docs/lojista/primeiros-passos.md',
+    de: '**Instagram, Facebook, YouTube, TikTok e WhatsApp**',
+    para: '**Instagram, Facebook e YouTube**',
+    teste: 'tests/docs.test.mjs',
+  },
+  {
+    porque: 'a doc ressuscita uma rede que saiu do schema na #5 (ADR 0012)',
+    arquivo: 'docs/merchant/troubleshooting.md',
+    de: 'Twitter feeds the link preview on Twitter/X',
+    para: 'Snapchat feeds the link preview on Twitter/X',
+    teste: 'tests/docs.test.mjs',
+  },
   // ── A #96: o JS servido passou a ser gerado ────────────────────────────
   //
   // Três defeitos novos entraram junto com o build, e os três são SILENCIOSOS:

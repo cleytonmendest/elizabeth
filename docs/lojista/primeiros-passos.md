@@ -171,7 +171,7 @@ Ligado, mostra a faixa de consentimento. Configure:
 
 Os ícones aparecem no rodapé — desde que o bloco **Pagamentos e Social** esteja lá e com a opção de social ligada.
 
-> Nove campos existem, mas apenas **Instagram, Facebook e YouTube** aparecem como ícone no rodapé. Twitter alimenta a prévia de link no Twitter/X; Pinterest, Facebook e Instagram alimentam os dados estruturados que o Google lê. **TikTok, Snapchat, Tumblr e Vimeo não aparecem em lugar nenhum hoje** — preencher não faz nada.
+> Cinco viram ícone no rodapé: **Instagram, Facebook, YouTube, TikTok e WhatsApp**. Os outros dois campos existem para outra coisa, e o admin diz isso em cada um: **Twitter** alimenta a prévia de link no Twitter/X e **Pinterest** alimenta os dados estruturados que o Google lê — nenhum dos dois vira ícone. Campo que não faz nada em lugar nenhum não existe mais.
 
 ---
 
