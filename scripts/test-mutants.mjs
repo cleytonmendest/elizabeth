@@ -139,6 +139,53 @@ function resgataMutanteOrfao() {
 const comE2E = process.argv.includes('--e2e');
 
 const MUTANTES = [
+  // ── A #36: o menu nunca tinha sido medido ───────────────────────────────
+  //
+  // `theme.js` abre a gaveta e os submenus em toda página e tinha ZERO testes
+  // e ZERO mutantes. Os três defeitos que medir encontrou não aparecem para
+  // quem usa mouse numa loja publicada — aparecem no EDITOR e no TECLADO.
+  {
+    porque: 'o submenu fechado volta a esconder do leitor de tela sem tirar do Tab (WCAG 4.1.2)',
+    arquivo: 'src/js/theme.js',
+    de: "    submenu.setAttribute('inert', '');",
+    para: '    void 0;',
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'o estado do submenu volta a sair da altura em linha, e o segundo clique reabre',
+    arquivo: 'src/js/theme.js',
+    de: "  const aberto = botao.getAttribute('aria-expanded') === 'true';",
+    para: "  const aberto = submenu.style.height && submenu.style.height !== '0px';",
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'o clique passa a exigir o botão exato, e o ícone dentro dele deixa de contar',
+    arquivo: 'src/js/theme.js',
+    de: "  const botao = alvo.closest('.submenu-toggle');",
+    para: "  const botao = alvo.matches('.submenu-toggle') ? alvo : null;",
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'o Escape passa a fechar o menu mesmo já fechado, pisando no estado de outro componente',
+    arquivo: 'src/js/theme.js',
+    de: "  if (evento.key === 'Escape' && menuAberto()) fechaMenu();",
+    para: "  if (evento.key === 'Escape') fechaMenu();",
+    teste: 'tests/menu.test.mjs',
+  },
+  {
+    porque: 'a guarda passa a valer com QUALQUER nome, e a de nome trocado volta a aprovar',
+    arquivo: 'scripts/lint/rules/componentes.mjs',
+    de: '        if (guardada === tag) return;',
+    para: '        if (guardada !== null) return;',
+    teste: 'tests/componentes.test.mjs',
+  },
+  {
+    porque: 'a busca pela guarda para de exigir um if, e qualquer ancestral serve',
+    arquivo: 'scripts/lint/rules/componentes.mjs',
+    de: "    if (anc.type !== 'IfStatement') continue;",
+    para: '    if (false) continue;',
+    teste: 'tests/componentes.test.mjs',
+  },
   // ── A #5 mudou o rodapé e a doc ficou descrevendo o arranjo anterior ────
   //
   // Quatro páginas afirmaram por semanas que TikTok "não aparece em lugar

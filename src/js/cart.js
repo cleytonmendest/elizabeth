@@ -228,7 +228,9 @@ class CartDrawer extends HTMLElement {
     }
 }
 
-customElements.define('cart-drawer', CartDrawer);
+if (!customElements.get('cart-drawer')) {
+  customElements.define('cart-drawer', CartDrawer);
+}
 
 class AddToCart extends HTMLElement {
     constructor() {
@@ -397,7 +399,9 @@ class AddToCart extends HTMLElement {
     }
 }
 
-customElements.define('add-to-cart', AddToCart);
+if (!customElements.get('add-to-cart')) {
+  customElements.define('add-to-cart', AddToCart);
+}
 
 class RemoveFromCart extends HTMLElement {
     constructor() {
@@ -419,7 +423,9 @@ class RemoveFromCart extends HTMLElement {
     }
 }
 
-customElements.define('remove-from-cart', RemoveFromCart);
+if (!customElements.get('remove-from-cart')) {
+  customElements.define('remove-from-cart', RemoveFromCart);
+}
 
 class QuantityInput extends HTMLElement {
     constructor() {
@@ -460,4 +466,6 @@ class QuantityInput extends HTMLElement {
 }
 
 
-customElements.define('quantity-input', QuantityInput);
+if (!customElements.get('quantity-input')) {
+  customElements.define('quantity-input', QuantityInput);
+}

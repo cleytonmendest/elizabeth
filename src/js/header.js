@@ -24,4 +24,6 @@ class MainHeader extends HTMLElement {
     }
 }
 
-customElements.define('main-header', MainHeader);
+if (!customElements.get('main-header')) {
+  customElements.define('main-header', MainHeader);
+}

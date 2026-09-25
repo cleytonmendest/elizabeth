@@ -144,7 +144,7 @@
                   {% render 'icon-angle-down', size: 16 %}
                 </span>
               </button>
-              <ul class="submenu overflow-hidden transition-all duration-300 ml-4" style="height: 0;" aria-hidden="true">
+              <ul class="submenu overflow-hidden transition-all duration-300 ml-4" style="height: 0;" aria-hidden="true" inert>
                 {% for sublink in link.links %}
                   <li class="py-1">
                     <a href="{{ sublink.url }}" class="color-text text-sm block h-8 flex items-center {% if sublink.links.size > 0 %}font-medium{% endif %}">
