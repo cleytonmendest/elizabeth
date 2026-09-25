@@ -18,7 +18,7 @@
  * usa para afastar o botão de voltar ao topo. O modo transparente usa a mesma
  * medida para puxar o herói para debaixo do cabeçalho.
  *
- * ── O modo transparente (issue 121) ─────────────────────────────────────────────
+ * ── O modo transparente (#121) ─────────────────────────────────────────────
  *
  * Ele exige DUAS coisas verdadeiras, e a segunda não é escolha da lojista:
  *
