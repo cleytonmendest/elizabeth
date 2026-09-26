@@ -194,11 +194,11 @@ These come already in place on the page they belong to. You adjust them; you don
 
 | Section | Page | Main options |
 | --- | --- | --- |
-| **Product** | product | media width and layout, zoom, mobile layout; blocks for price, variant, quantity, stock, description, collapsible rows, badges, payment methods |
+| **Product** | product | media width and layout, zoom, mobile layout; blocks for price, variant, quantity, stock, buy button (with accelerated checkout buttons, on by default), description, collapsible rows, badges, payment methods, custom Liquid and apps |
 | **Collection Page** | collection | products per page and per row, second image on hover, collection image and description, **filters**, sorting, "load more" |
 | **Collections list** | /collections | heading, collections per row and per page, product count |
 | **Cart** | cart | continue shopping, order notes, checkout button text |
-| **Search Page** | search | results per page, filter by type, suggestions when empty, popular searches |
+| **Search Page** | search | results per page, filter by type, **filters**, sorting, suggestions when empty, popular searches |
 | **Main Blog** | blog | articles per page, columns, tag filter, sidebar with search/categories/recent |
 | **Blog Article** | post | featured image, author, tags, sharing, bio, related, prev/next, comments, sidebar |
 | **Page** | pages | show title, text width |

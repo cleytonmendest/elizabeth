@@ -20,8 +20,14 @@
       <div class="{% if media_size == 'medium' or media_size == 'large' %} lg:flex-1 {% elsif media_size == 'small' %} lg:flex-[2] {% endif %}">
         {% render 'main-product-right', blocks: section.blocks %}
 
-        {%- comment -%} Barra fixa de comprar (desktop e mobile) {%- endcomment -%}
-        {% render 'sticky-add-to-cart', product: product %}
+        {%- comment -%}
+          Barra fixa de comprar (desktop e mobile). Não em vale-presente: o
+          form dela não leva o destinatário, e comprar por ela mandava o cartão
+          para a compradora mesmo com o destinatário preenchido na PDP.
+        {%- endcomment -%}
+        {%- unless product.gift_card? -%}
+          {% render 'sticky-add-to-cart', product: product %}
+        {%- endunless -%}
       </div>
     </div>
   </div>

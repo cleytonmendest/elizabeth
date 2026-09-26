@@ -127,7 +127,7 @@ export function run() {
     const markup = withRenderedSnippets(file);
 
     // Liquid permite apelidar o objeto: `assign st = section.settings` e depois
-    // `st.heading`. countdown-timer faz isso com TODOS os seus 19 settings, o
+    // `st.heading`. countdown-timer faz isso com TODOS os seus settings, o
     // que fazia a regra acusar a section inteira. Seguir o alias é obrigatório
     // para a regra dizer a verdade.
     const holders = ['settings'];

@@ -97,6 +97,14 @@
         "mobile_thumbnails": "hide"
       }
     },
+    "product_recommendations_complementares": {
+      "type": "product-recommendations",
+      "settings": {
+        "intent": "complementary",
+        "products_to_show": 4,
+        "show_second_image": true
+      }
+    },
     "product_recommendations_T9kPmn": {
       "type": "product-recommendations",
       "settings": {
@@ -119,6 +127,7 @@
   "order": [
     "177177795783edd889",
     "main",
+    "product_recommendations_complementares",
     "product_recommendations_T9kPmn",
     "recently_viewed_Rv8kQ2"
   ]

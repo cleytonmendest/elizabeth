@@ -78,7 +78,13 @@ class CartManager {
             // `/cart/add.js` devolve o ITEM adicionado, não o carrinho. Quem
             // precisa do carrinho recebe pelo `cartUpdate` que o `getCart()`
             // publica logo em seguida (ver submitHandler).
-            publish(PUB_SUB_EVENTS.itemAdded, result);
+            //
+            // A recusa (422: estoque, limite, destinatário do vale-presente)
+            // volta com `status` e `description` — não é item nenhum, e
+            // publicá-la como `cart:item-added` entregava um erro a quem
+            // espera a linha que acabou de entrar. Quem trata a recusa é o
+            // `<add-to-cart>`, pelo mesmo `status`.
+            if (!result?.status) publish(PUB_SUB_EVENTS.itemAdded, result);
             return result;
         } catch (error) {
             console.error('Erro ao adicionar ao carrinho:', error);
@@ -261,6 +267,7 @@ class AddToCart extends HTMLElement {
         if (this.productContext) {
             this.productContext.addEventListener('variant:change', this._onVariantChange.bind(this));
             this.productContext.addEventListener('quantity:change', this.quantityChangeHandler);
+            this.productContext.addEventListener('selling-plan:change', (event) => this._onSellingPlanChange(event));
         } else {
             console.warn('AddToCart: product-context não encontrado.');
         }
@@ -309,6 +316,15 @@ class AddToCart extends HTMLElement {
         if (variantId && !this.button.disabled) {
             this.button.textContent = this.mediaQuery.matches ? textMobile : textDesktop;
         }
+    }
+
+    // O plano é escolhido nos radios do form da PDP; a barra fixa tem o PRÓPRIO
+    // form, e sem copiar a escolha ela comprava sempre compra única — o que
+    // falha em produto com `requires_selling_plan`. Só o campo ESCONDIDO: no
+    // form da PDP os radios já são o valor.
+    _onSellingPlanChange(event) {
+        const campo = this.form && this.form.querySelector('input[type="hidden"][name="selling_plan"]');
+        if (campo) campo.value = (event.detail && event.detail.sellingPlanId) || '';
     }
 
     _onVariantChange(event) {

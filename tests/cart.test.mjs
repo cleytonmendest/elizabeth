@@ -216,6 +216,20 @@ describe('CartManager', () => {
       expect(eventos.map((e) => e.nome)).toEqual(['cart:item-added']);
       expect(eventos[0].detail.quantity).toBe(3);
     });
+
+    it('a recusa da Shopify NÃO vira cart:item-added', async () => {
+      // O 422 chega com corpo JSON e um fetch que resolve: o `try` não o
+      // distingue de um sucesso. Publicado como item, ele chegava a quem
+      // espera a linha que acabou de entrar com `status` e `description` no
+      // lugar de `quantity` e `final_line_price`.
+      document.body.innerHTML = '<form><input name="id" value="42"></form>';
+      const recusa = { status: 422, message: 'Cart Error', description: 'Esgotado' };
+      respondeCom(recusa);
+
+      await expect(CartManager.addToCart(document.querySelector('form'))).resolves.toEqual(recusa);
+
+      expect(eventos).toEqual([]);
+    });
   });
 
   describe('o contrato de cart-update', () => {

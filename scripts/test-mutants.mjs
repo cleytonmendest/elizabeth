@@ -692,6 +692,20 @@ const MUTANTES = [
     teste: 'tests/cart.test.mjs',
   },
   {
+    porque: 'a barra fixa volta a comprar sempre compra única, ignorando o plano escolhido',
+    arquivo: 'src/js/cart.js',
+    de: "if (campo) campo.value = (event.detail && event.detail.sellingPlanId) || '';",
+    para: 'void campo;',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'a recusa 422 do /cart/add.js volta a ser publicada como item adicionado',
+    arquivo: 'src/js/cart.js',
+    de: 'if (!result?.status) publish(PUB_SUB_EVENTS.itemAdded, result);',
+    para: 'publish(PUB_SUB_EVENTS.itemAdded, result);',
+    teste: 'tests/cart.test.mjs',
+  },
+  {
     porque: 'addToCart volta a mandar Content-Type e o multipart chega ilegível',
     arquivo: 'src/js/cart.js',
     de: "delete config.headers['Content-Type'];",

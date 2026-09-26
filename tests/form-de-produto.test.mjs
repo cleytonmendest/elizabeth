@@ -262,3 +262,48 @@ describe('destinatário do vale-presente — o HTML (#139)', () => {
     expect(form.querySelector('[name="properties[Message]"]').maxLength).toBe(200);
   });
 });
+
+describe('a barra fixa leva o plano escolhido (#135)', () => {
+  // A barra fixa tem o PRÓPRIO form, sem os radios do seletor de planos. Sem
+  // copiar a escolha, comprar por ela mandava compra única — e falhava em
+  // produto com `requires_selling_plan`.
+  const barra = (campo) => {
+    document.body.innerHTML = `
+      <div product-context>
+        <add-to-cart>
+          <form>
+            <input type="hidden" name="id" value="1">
+            ${campo}
+            <button type="submit" name="add" data-text-desktop="Adicionar" data-text-mobile="Adicionar"
+              data-text-sold-out="Esgotado" data-text-unavailable="Indisponível">Adicionar</button>
+          </form>
+        </add-to-cart>
+      </div>`;
+    return document.querySelector('[product-context]');
+  };
+  const escolhePlano = (context, sellingPlanId) =>
+    context.dispatchEvent(
+      new CustomEvent('selling-plan:change', { detail: { sellingPlanId, variantId: 1, prices: null } })
+    );
+
+  it('o campo escondido `selling_plan` acompanha a escolha, e volta a vazio na compra única', () => {
+    const context = barra('<input type="hidden" name="selling_plan" value="">');
+    const campo = document.querySelector('input[name="selling_plan"]');
+
+    escolhePlano(context, 77);
+    expect(campo.value).toBe('77');
+
+    escolhePlano(context, null);
+    expect(campo.value).toBe('');
+  });
+
+  it('no form da PDP os radios são o valor: o evento não mexe neles', () => {
+    const context = barra('<input type="radio" name="selling_plan" value="5" checked>');
+    const radio = document.querySelector('input[name="selling_plan"]');
+
+    escolhePlano(context, 9);
+
+    expect(radio.value).toBe('5');
+    expect(radio.checked).toBe(true);
+  });
+});

@@ -194,11 +194,11 @@ Estas já vêm montadas na página a que pertencem. Você ajusta, não precisa a
 
 | Seção | Página | Principais opções |
 | --- | --- | --- |
-| **Produto** | produto | largura e layout da mídia, zoom, layout no celular; blocos de preço, variante, quantidade, estoque, descrição, linhas recolhíveis, selos, formas de pagamento |
+| **Produto** | produto | largura e layout da mídia, zoom, layout no celular; blocos de preço, variante, quantidade, estoque, botão de comprar (com botões de pagamento acelerado, ligados por padrão), descrição, linhas recolhíveis, selos, formas de pagamento, Liquid personalizado e aplicativos |
 | **Página de Coleção** | coleção | produtos por página e por linha, segunda imagem no hover, imagem e descrição da coleção, **filtros**, ordenação, "carregar mais" |
 | **Lista de coleções** | /collections | título, coleções por linha e por página, contagem de produtos |
 | **Carrinho** | carrinho | continuar comprando, observações, texto do botão de finalizar |
-| **Página de Busca** | busca | resultados por página, filtro por tipo, sugestões sem resultado, buscas populares |
+| **Página de Busca** | busca | resultados por página, filtro por tipo, **filtros**, ordenação, sugestões sem resultado, buscas populares |
 | **Blog Principal** | blog | artigos por página, colunas, filtro de tags, sidebar com busca/categorias/recentes |
 | **Artigo do Blog** | post | imagem destacada, autor, tags, compartilhamento, bio, relacionados, prev/next, comentários, sidebar |
 | **Página** | páginas | mostrar título, largura do texto |

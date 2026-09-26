@@ -80,6 +80,22 @@
             {% unless current_variant.available %}disabled{% endunless %}
           >
 
+          {%- if product.selling_plan_groups.size > 0 -%}
+            {%- comment -%}
+              O seletor de planos mora no form da PDP, e esta barra tem o
+              próprio form: sem este campo ela comprava sempre compra única. O
+              valor nasce igual ao do seletor (snippets/selling-plan-picker) e
+              o <add-to-cart> o acompanha por `selling-plan:change`.
+            {%- endcomment -%}
+            {%- liquid
+              assign sticky_plan = product.selected_selling_plan
+              if sticky_plan == blank and product.requires_selling_plan
+                assign sticky_plan = product.selling_plan_groups.first.selling_plans.first
+              endif
+            -%}
+            <input type="hidden" name="selling_plan" value="{{ sticky_plan.id }}">
+          {%- endif -%}
+
           {%- comment -%}
             O seletor era uma CÓPIA byte a byte do snippet, com uma medida
             diferente — o que a regra `similarity` apontava. Agora é o mesmo
