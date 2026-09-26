@@ -924,6 +924,56 @@ const MUTANTES = [
     para: '  if (true) {',
     teste: 'tests/catraca.test.mjs',
   },
+  // ── A #128: o teto de performance entrou na catraca ─────────────────────
+  {
+    // O buraco que a #128 fechou. `budget.mjs` faz `if (limit == null)
+    // continue`: sem a chave, o eixo inteiro deixa de ser verificado. Contar
+    // isso como ZERO faz a catraca ler o teto como tendo DESPENCADO e aprovar
+    // justamente o PR que desarmou a regra — os dois lados caindo no mesmo
+    // commit, e o gate verde.
+    porque: 'teto apagado passa a contar como zero, e desarmar a regra vira "melhoria"',
+    arquivo: 'scripts/catraca.mjs',
+    de: "  return typeof valor === 'number' ? valor : Infinity;",
+    para: '  return valor ?? 0;',
+    teste: 'tests/catraca.test.mjs',
+  },
+  {
+    // A checagem de teto ausente vive ACIMA da válvula de escape de propósito.
+    // Melhorar um verificador nunca produz um verificador desarmado.
+    porque: 'teto que deixou de existir deixa de reprovar, e vira aviso como qualquer crescimento',
+    arquivo: 'scripts/catraca.mjs',
+    de: '  if (!Number.isFinite(atual)) {',
+    para: '  if (false) {',
+    teste: 'tests/catraca.test.mjs',
+  },
+  {
+    // Um número só, somando os dois eixos, deixa 2 KB de JS a mais passarem
+    // escondidos atrás de 2 KB de CSS a menos. São dois downloads diferentes, e
+    // nenhuma asserção sobre o total pega a compensação.
+    porque: 'os dois eixos viram um total só, e piora de JS é paga com melhora de CSS',
+    arquivo: 'scripts/catraca.mjs',
+    de: '    contar: (json) => teto(json, eixo),',
+    para: "    contar: (json) => teto(json, 'js') + teto(json, 'css'),",
+    teste: 'tests/catraca.test.mjs',
+  },
+  {
+    porque: 'o eixo de CSS perde a catraca e volta a poder ser levantado em silêncio',
+    arquivo: 'scripts/catraca.mjs',
+    de: "  ...['js', 'css'].map((eixo) => ({",
+    para: "  ...['js'].map((eixo) => ({",
+    teste: 'tests/catraca.test.mjs',
+  },
+  {
+    // O CLAUDE.md é o que alguém lê antes de mexer no gate. Uma lista
+    // desatualizada ali faz a pessoa acreditar que um caminho libera o
+    // crescimento quando não libera — e o texto dizia "os dois baselines"
+    // enquanto o arquivo já travava outra coisa.
+    porque: 'o CLAUDE.md volta a poder prometer uma válvula de escape que não existe',
+    arquivo: 'scripts/catraca.mjs',
+    de: "    liberadoPor: ['scripts/lint/rules/budget.mjs'],",
+    para: "    liberadoPor: ['scripts/lint/rules/inventada.mjs'],",
+    teste: 'tests/catraca.test.mjs',
+  },
   {
     porque: 'o total da a11y volta a ser LIDO do campo que a mão edita',
     arquivo: 'scripts/catraca.mjs',

@@ -59,17 +59,26 @@ regravada — seja porque a dívida foi paga (ótimo, trave o progresso), seja
 porque a linha foi escrita à mão para silenciar algo. Ao corrigir dívida, rode
 `npm run lint:baseline` e mencione o número antes → depois no PR.
 
-O total só pode cair, e quem verifica isso é `scripts/catraca.mjs` — um script
-com teste e com mutante, não um bloco de shell dentro do YAML. Ele trava os
-**dois** baselines, o do lint e o de a11y, e conta os itens em vez de acreditar
-no campo `total` que cada arquivo carrega.
+O número só pode cair, e quem verifica isso é `scripts/catraca.mjs` — um
+script com teste e com mutante, não um bloco de shell dentro do YAML. São
+quatro catracas: os dois baselines (lint e a11y), que contam os itens em vez
+de acreditar no campo `total` que cada arquivo carrega, e os **dois eixos do
+teto de performance** (`global.js` e `global.css`), que só podem descer — ver
+[issue #128](https://github.com/cleytonmendest/elizabeth/issues/128).
+
+Os dois eixos do teto são entradas separadas de propósito: um número só
+deixaria 2 KB de JS a mais passarem escondidos atrás de 2 KB de CSS a menos.
+`perAsset` fica de fora, e o motivo está escrito no cabeçalho de
+`scripts/catraca.mjs`.
 
 A única exceção: **melhorar a cobertura de um verificador** encontra violações
 que sempre existiram e não eram vistas. Isso é dívida escondida virando
 visível, não dívida nova. O CI libera o crescimento quando o diff toca
-`scripts/lint/rules/` (lint) ou `e2e/helpers/axe.mjs` / `e2e/a11y.spec.mjs`
-(a11y) — e só aí. A lista que vale é a de `CATRACAS`, em `scripts/catraca.mjs`;
-esta linha é cópia dela.
+`scripts/lint/rules/` (lint), `e2e/helpers/axe.mjs` / `e2e/a11y.spec.mjs`
+(a11y) ou `scripts/lint/rules/budget.mjs` (perf) — e só aí. A lista que vale é
+a de `CATRACAS`, em `scripts/catraca.mjs`, e `tests/catraca.test.mjs` exige que
+este parágrafo cite todos os caminhos dela: "esta linha é cópia dela" era um
+pedido, e pedido é o que este repositório substitui por verificação.
 
 Violação legítima (cor de marca de terceiro, scrim de imagem, lightbox) vai
 para `scripts/lint/config/design-exceptions.json` **com justificativa escrita**
@@ -206,8 +215,10 @@ violação **nova** é erro, e o total só pode cair — mesma regra do lint.
 dois lados — violação nova reprova, **e** o baseline não pode crescer — e a
 a11y só tinha o primeiro: `npm run test:e2e:baseline` está documentado logo
 acima, e quem regravasse para cima passava verde, porque nenhum passo do CI
-lia esse arquivo. Agora os dois baselines passam pela mesma catraca, no job
-`gate` (que não precisa de navegador para comparar dois números).
+lia esse arquivo. O teto de performance teve o mesmo lado só até a #128, com o
+agravante de ser escrito à mão — o que torna a piora visível no diff sem
+torná-la reprovada. Agora os quatro passam pela mesma catraca, no job `gate`
+(que não precisa de navegador para comparar dois números).
 
 A impressão digital é `página|regra`, sem o seletor, pelo mesmo motivo que o
 baseline do lint trava itens e não ocorrências: seletor de axe carrega
