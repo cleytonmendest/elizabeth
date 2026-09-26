@@ -150,6 +150,16 @@
         "filters_header": {
           "content": "Filtros"
         },
+        "filters_paragraph": {
+          "content": "Os filtros (tamanho, cor, preço…) são os mesmos da página de coleção: vêm do app gratuito Search & Discovery do Shopify. Eles só refinam produtos — na aba de artigos ou de páginas, ou numa busca que só achou esses, o painel não aparece."
+        },
+        "enable_filtering": {
+          "label": "Ativar filtros",
+          "info": "Exibe os filtros configurados no app Search & Discovery"
+        },
+        "enable_sorting": {
+          "label": "Ativar ordenação"
+        },
         "enable_type_filter": {
           "label": "Ativar filtro por tipo",
           "info": "Permite filtrar entre produtos, artigos e páginas"

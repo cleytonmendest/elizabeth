@@ -416,6 +416,74 @@ const MUTANTES = [
     para: '    if (false) continue;',
     teste: 'tests/componentes.test.mjs',
   },
+  // ── A #141: o filtro da coleção virou snippet, e a busca ganhou o mesmo ──
+  //
+  // O filtro era markup + `<script>` inline dentro de `main-collection`, sem
+  // um teste. Os três primeiros são a gaveta pisando na trava de rolagem de
+  // outro componente, que é o defeito que o inline tinha e a extração tirou.
+  {
+    porque: 'o Escape volta a fechar a gaveta já fechada e destrava a rolagem do carrinho',
+    arquivo: 'src/js/facets.js',
+    de: "        if (event.key === 'Escape' && this.aberta) this.fecha();",
+    para: "        if (event.key === 'Escape') this.fecha();",
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'cruzar para o desktop volta a destravar a rolagem de quem a travou',
+    arquivo: 'src/js/facets.js',
+    de: '        if (event.matches && this.aberta) this.fecha();',
+    para: '        if (event.matches) this.fecha();',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'a cópia que o editor trocou continua ouvindo o Escape, e destrava a rolagem de outro',
+    arquivo: 'src/js/facets.js',
+    de: "      document.removeEventListener('keydown', this.aoTeclar);",
+    para: '      void 0;',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'no celular cada checkbox recarrega a página, e marcar dois filtros vira impossível',
+    arquivo: 'src/js/facets.js',
+    de: '        if (this.desktop && this.desktop.matches) this.form.submit();',
+    para: '        this.form.submit();',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'a ordenação deixa de enviar no celular, e ela não tem botão de aplicar',
+    arquivo: 'src/js/facets.js',
+    de: "        if (event.target.name === 'sort_by') {",
+    para: '        if (false) {',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'o aviso de recarga é criado uma vez por componente, e o id do aria-describedby se repete',
+    arquivo: 'src/js/facets.js',
+    de: '      if (!texto || document.getElementById(AVISO_ID)) return;',
+    para: '      if (!texto) return;',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'a faixa de preço deixa de contar como filtro ativo, e "limpar todos" some com o preço marcado',
+    arquivo: 'snippets/facets.liquid',
+    de: '            assign active_filter_count = active_filter_count | plus: 1',
+    para: '            assign active_filter_count = active_filter_count | plus: 0',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'o filtro marcado que zerou a busca some do painel, e a cliente não consegue desmarcá-lo',
+    arquivo: 'snippets/facets.liquid',
+    de: '            if value.count > 0 or value.active',
+    para: '            if value.count > 0',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'em real o preço vai com a vírgula da Shopify, e o filtro lê outro número',
+    arquivo: 'snippets/facets.liquid',
+    de: '      if comma_currencies contains cart.currency.iso_code',
+    para: '      if false',
+    teste: 'tests/facets.test.mjs',
+  },
   // ── A #5 mudou o rodapé e a doc ficou descrevendo o arranjo anterior ────
   //
   // Quatro páginas afirmaram por semanas que TikTok "não aparece em lugar
