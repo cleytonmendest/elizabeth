@@ -44,6 +44,24 @@ function avisar(texto) {
   }
 }
 
+/** Como `avisar`, mas do lado que reprova. Mesmo destino, outra cor. */
+function reprovar(texto) {
+  console.log(process.env.CI ? `::error::${texto}` : texto);
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `> [!CAUTION]\n> ${texto}\n\n`);
+  }
+}
+
+/**
+ * O que um pulo sem justificativa escrita recebe no lugar do motivo.
+ *
+ * Constante, e não literal repetido, porque `pulosSemMotivo()` compara contra
+ * ela: duas cópias da mesma string divergem no dia em que alguém ajusta o
+ * texto do resumo, e a checagem passaria a nunca encontrar nada — verde por
+ * desalinhamento, que é o silêncio que este arquivo inteiro combate.
+ */
+export const SEM_MOTIVO = '(sem motivo escrito)';
+
 /**
  * Os testes que NÃO rodaram, agrupados por motivo.
  *
@@ -74,7 +92,7 @@ export function pulos(relatorio) {
         const tipo = anotacao?.type ?? 'skip';
         // Pulo sem motivo escrito é pior que pulo com motivo, e some da mesma
         // forma: nomeá-lo é o mínimo para alguém poder perguntar por quê.
-        const motivo = anotacao?.description || '(sem motivo escrito)';
+        const motivo = anotacao?.description || SEM_MOTIVO;
         const chave = `${tipo}|${motivo}`;
         const antes = contagem.get(chave);
 
@@ -109,6 +127,45 @@ export function resumoDePulos(relatorio) {
   return (
     `${total} ${total === 1 ? 'teste não rodou' : 'testes não rodaram'} nesta execução. ` +
     `O verde acima não cobre o que está listado abaixo:\n${linhas.map((l) => `- ${l}`).join('\n')}`
+  );
+}
+
+/**
+ * Os pulos que chegaram sem motivo escrito.
+ *
+ * ── Por que isto REPROVA, e não avisa ──────────────────────────────────────
+ *
+ * O CLAUDE.md já dizia: "`skip` diz 'não dá para medir aqui' — e só é honesto
+ * COM O MOTIVO ESCRITO, porque `scripts/e2e.mjs` imprime cada pulado com o
+ * motivo no resumo do CI. Sem essa impressão o teste sumiria sem ninguém
+ * notar, que é o perigo real."
+ *
+ * A impressão existia; a exigência não. Um `test.skip()` sem texto aparecia no
+ * resumo como "(sem motivo escrito)" e o run seguia verde — o mesmo
+ * desaparecimento, com uma linha em branco no lugar da explicação. Regra em
+ * prosa é pedido, e este era um pedido. Ver issue #130.
+ *
+ * O caso legítimo continua barato: escrever a frase. O que deixa de ser
+ * possível é retirar um teste da suíte sem dizer por quê.
+ */
+export function pulosSemMotivo(relatorio) {
+  return pulos(relatorio).filter((g) => g.motivo === SEM_MOTIVO);
+}
+
+/** O texto da reprovação, ou `null` quando todo pulo tem motivo. */
+export function erroDePulosMudos(relatorio) {
+  const mudos = pulosSemMotivo(relatorio);
+  if (mudos.length === 0) return null;
+
+  const total = mudos.reduce((soma, g) => soma + g.quantos, 0);
+  const tipos = [...new Set(mudos.map((g) => g.tipo))].sort().join(' / ');
+
+  return (
+    `${total} ${total === 1 ? 'teste saiu' : 'testes saíram'} da suíte sem motivo escrito ` +
+    `(${tipos}). Um pulo sem justificativa some do resumo do CI com a mesma cara de um teste ` +
+    'que nunca existiu. Escreva o motivo no segundo argumento — ' +
+    "test.skip(condicao, 'por que não dá para medir aqui') — ou, se for defeito do tema e " +
+    'não limitação, use `test.fixme` com a issue.'
   );
 }
 
@@ -169,6 +226,14 @@ function main() {
     const relatorio = JSON.parse(fs.readFileSync(path.join(ROOT, ARQUIVO_DE_RELATORIO), 'utf8'));
     const resumo = resumoDePulos(relatorio);
     if (resumo) avisar(resumo);
+
+    // E a quinta: o pulo que não diz por quê. Reprova, em vez de avisar — o
+    // aviso já existia e não impedia nada. Ver `erroDePulosMudos`.
+    const mudo = erroDePulosMudos(relatorio);
+    if (mudo) {
+      reprovar(mudo);
+      return 1;
+    }
   } catch {
     // Sem relatório legível, sem resumo.
   }
