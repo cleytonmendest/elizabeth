@@ -19,6 +19,14 @@
             {% case block.type %}
               {%- when '@app' -%}
                 {% render block %}
+              {%- when 'custom_liquid' -%}
+                {%- comment -%}
+                  Setting `liquid` no schema do bloco, nunca global — ver o mesmo
+                  ramo em snippets/main-product-right.liquid (#145).
+                {%- endcomment -%}
+                {%- if block.settings.custom_liquid != blank -%}
+                  <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>
+                {%- endif -%}
               {%- when 'text' -%}
                 <p
                   class="product__text inline-richtext{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}"
@@ -227,6 +235,21 @@
           "type": "page",
           "id": "page",
           "label": "t:sections.highlighted_product.blocks.collapsible_tab.settings.page.label"
+        }
+      ]
+    },
+    {
+      "type": "@app"
+    },
+    {
+      "type": "custom_liquid",
+      "name": "t:sections.highlighted_product.blocks.custom_liquid.name",
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "custom_liquid",
+          "label": "t:sections.highlighted_product.blocks.custom_liquid.settings.custom_liquid.label",
+          "info": "t:sections.highlighted_product.blocks.custom_liquid.settings.custom_liquid.info"
         }
       ]
     }

@@ -189,7 +189,8 @@
       "zoom": "Zoom image"
     },
     "recommendations": {
-      "title": "You may also like"
+      "title": "You may also like",
+      "complementary_title": "Pairs well with"
     },
     "recently_viewed": {
       "title": "Recently viewed"

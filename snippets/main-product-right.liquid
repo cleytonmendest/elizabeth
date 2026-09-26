@@ -13,6 +13,17 @@
     {% case block.type %}
       {%- when '@app' -%}
         {% render block %}
+      {%- when 'custom_liquid' -%}
+        {%- comment -%}
+          O conteúdo é da lojista, e o setting `liquid` mora no schema do BLOCO de
+          propósito: a regra `remotes` proíbe imprimir cru um setting GLOBAL de
+          texto livre, e um Custom Liquid em config/settings_schema.json seria
+          exatamente essa porta, em toda página (#145). Vazio não renderiza nem o
+          wrapper — a coluna é `flex gap-5`, e um div vazio abriria um vão.
+        {%- endcomment -%}
+        {%- if block.settings.custom_liquid != blank -%}
+          <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>
+        {%- endif -%}
       {%- when 'text' -%}
         <p
           class="product__text inline-richtext{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}"

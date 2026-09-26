@@ -5,7 +5,7 @@ alt: /lojista/sections.html
 
 # 3. Sections, one by one
 
-The theme has **23 sections you add wherever you want**. On top of those, the **header**, the **footer** and **10 page sections** come already in place — you adjust them, you don't add them.
+The theme has **24 sections you add wherever you want**. On top of those, the **header**, the **footer** and **10 page sections** come already in place — you adjust them, you don't add them.
 
 All of them have **Color scheme** — see [Colors and brand](colors-and-brand.html).
 
@@ -105,9 +105,14 @@ A carousel of free-form cards — image, text and link you compose yourself.
 **Use it for:** things that aren't products: categories, benefits, posts.
 
 ### Product recommendations
-Related products, chosen by Shopify.
+Products picked by Shopify for the product page. Under **Recommendation type** you pick the question:
 
-**Use it on:** the product page, below the description.
+- **Related** — similar to the product being viewed. Shopify builds these on its own.
+- **Complementary** — what pairs well with it: the sandals for the dress, the belt for the trousers. You set up the pairs in the **Search & Discovery** app (free, by Shopify).
+
+**Use it on:** the product page. To have both, add the section twice — the **Complementary products** preset comes already set up.
+
+> A product with no complementary pairs set up doesn't show the section, not even the heading. Add pairs gradually, starting with your best sellers.
 
 ### Recently viewed
 The products the shopper opened herself.
@@ -171,6 +176,13 @@ Configures: enable, width, image, heading, body, button, delay, show on scroll, 
 
 ### Apps
 A slot for blocks from apps installed on the store.
+
+### Custom Liquid
+A slot for your own code or an app's: the snippet an app asks you to paste, a conversion pixel on a single page, a custom field (metafield) the theme doesn't show.
+
+Configures: the code, color scheme, top and bottom padding.
+
+> When empty, the section doesn't show on the store. **Product** and **Highlighted Product** take the same content as a block — and app blocks too —, so it can sit next to the buy button.
 
 ---
 

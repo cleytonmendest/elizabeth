@@ -390,6 +390,15 @@
               "label": "Texto de Parcelamento"
             }
           }
+        },
+        "custom_liquid": {
+          "name": "Liquid personalizado",
+          "settings": {
+            "custom_liquid": {
+              "label": "Liquid personalizado",
+              "info": "Para trechos de app, pixels ou código Liquid próprio (ex.: exibir um metafield). Vazio, o bloco não aparece."
+            }
+          }
         }
       }
     },
@@ -1192,6 +1201,15 @@
               "label": "Conteúdo de página"
             }
           }
+        },
+        "custom_liquid": {
+          "name": "Liquid personalizado",
+          "settings": {
+            "custom_liquid": {
+              "label": "Liquid personalizado",
+              "info": "Para trechos de app, pixels ou código Liquid próprio (ex.: exibir um metafield). Vazio, o bloco não aparece."
+            }
+          }
         }
       },
       "presets": {
@@ -1769,10 +1787,19 @@
         },
         "show_quick_add": {
           "label": "Mostrar botão de compra rápida"
+        },
+        "intent": {
+          "label": "Tipo de recomendação",
+          "info": "Complementares mostram o que combina com o produto e são cadastradas no app Search & Discovery. Produto sem par cadastrado não exibe a seção. Com o título em branco, o padrão passa a ser \"Combina com\".",
+          "options": {
+            "related": "Relacionados (parecidos com este)",
+            "complementary": "Complementares (combinam com este)"
+          }
         }
       },
       "presets": {
-        "name": "Recomendações de produto"
+        "name": "Recomendações de produto",
+        "complementary_name": "Produtos complementares"
       }
     },
     "recently_viewed": {
@@ -2038,6 +2065,30 @@
           "label": "Pedir telefone",
           "info": "O campo é opcional para a cliente mesmo quando exibido."
         }
+      }
+    },
+    "custom_liquid": {
+      "name": "Liquid personalizado",
+      "settings": {
+        "custom_liquid": {
+          "label": "Liquid personalizado",
+          "info": "Para trechos de app, pixels ou código Liquid próprio. Vazia, a seção não aparece na loja."
+        },
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
+        "spacing_header": {
+          "content": "Espaçamento"
+        },
+        "padding_top": {
+          "label": "Espaçamento superior"
+        },
+        "padding_bottom": {
+          "label": "Espaçamento inferior"
+        }
+      },
+      "presets": {
+        "name": "Liquid personalizado"
       }
     }
   },

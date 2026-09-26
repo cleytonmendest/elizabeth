@@ -1383,8 +1383,8 @@ const MUTANTES = [
   {
     porque: 'a doc afirma uma contagem de seções que o tema não tem (a rot do ROADMAP)',
     arquivo: 'docs/lojista/sections.md',
-    de: '**23 seções que você adiciona onde quiser**',
-    para: '**24 seções que você adiciona onde quiser**',
+    de: '**24 seções que você adiciona onde quiser**',
+    para: '**25 seções que você adiciona onde quiser**',
     teste: 'tests/docs.test.mjs',
   },
   {
@@ -1710,6 +1710,112 @@ const MUTANTES = [
     de: '  const outros = Object.values(IDIOMA_DA_PASTA).filter((l) => l !== primario);',
     para: '  const outros = [];',
     teste: 'tests/site.test.mjs',
+  },
+  // ── #133 e #145: a coluna de compra aceita app e Liquid da lojista ──────
+  //
+  // O defeito da #133 era exatamente o primeiro: o `when '@app'` existia, o
+  // schema não declarava o tipo, e o editor não oferecia a aba "Apps".
+  {
+    porque: 'a PDP volta a não aceitar app block — o `when` fica sem bloco que o alcance',
+    arquivo: 'sections/main-product.liquid',
+    de: '    {\n      "type": "@app"\n    },\n',
+    para: '',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
+    porque: 'o produto em destaque volta a não aceitar app block',
+    arquivo: 'sections/highlighted-product.liquid',
+    de: '    {\n      "type": "@app"\n    },\n',
+    para: '',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
+    porque: 'o bloco Liquid personalizado sai da PDP, e o `when` dele vira ramo morto',
+    arquivo: 'sections/main-product.liquid',
+    de:
+      ',\n    {\n      "type": "custom_liquid",\n' +
+      '      "name": "t:sections.main_product.blocks.custom_liquid.name",\n' +
+      '      "settings": [\n        {\n          "type": "liquid",\n          "id": "custom_liquid",\n' +
+      '          "label": "t:sections.main_product.blocks.custom_liquid.settings.custom_liquid.label",\n' +
+      '          "info": "t:sections.main_product.blocks.custom_liquid.settings.custom_liquid.info"\n' +
+      '        }\n      ]\n    }',
+    para: '',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
+    porque: 'o bloco Liquid personalizado sai do produto em destaque',
+    arquivo: 'sections/highlighted-product.liquid',
+    de:
+      ',\n    {\n      "type": "custom_liquid",\n' +
+      '      "name": "t:sections.highlighted_product.blocks.custom_liquid.name",\n' +
+      '      "settings": [\n        {\n          "type": "liquid",\n          "id": "custom_liquid",\n' +
+      '          "label": "t:sections.highlighted_product.blocks.custom_liquid.settings.custom_liquid.label",\n' +
+      '          "info": "t:sections.highlighted_product.blocks.custom_liquid.settings.custom_liquid.info"\n' +
+      '        }\n      ]\n    }',
+    para: '',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
+    // A coluna é `flex flex-col gap-5`: um div vazio ainda é item flex, e o
+    // bloco recém-adicionado empurraria o botão de comprar sem mostrar nada.
+    porque: 'o bloco Liquid vazio volta a deixar um div na coluna de compra, e abre um vão',
+    arquivo: 'snippets/main-product-right.liquid',
+    de:
+      '        {%- if block.settings.custom_liquid != blank -%}\n' +
+      '          <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>\n' +
+      '        {%- endif -%}',
+    para: '          <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
+    porque: 'o bloco Liquid vazio volta a deixar rastro no produto em destaque',
+    arquivo: 'sections/highlighted-product.liquid',
+    de:
+      '                {%- if block.settings.custom_liquid != blank -%}\n' +
+      '                  <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>\n' +
+      '                {%- endif -%}',
+    para: '                  <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
+    porque: 'a section Liquid personalizado vazia volta a pintar uma faixa com padding e nada dentro',
+    arquivo: 'sections/custom-liquid.liquid',
+    de: '{%- if section.settings.custom_liquid != blank -%}',
+    para: '{%- if true -%}',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  // ── #140: recomendações complementares ─────────────────────────────────
+  {
+    // O defeito original, replantado: o Liquid cravava `intent=related`, e o
+    // que a lojista cadastrava no Search & Discovery nunca chegava à loja.
+    porque: 'o intent volta a ser cravado em related, e os complementares nunca são pedidos',
+    arquivo: 'src/js/product-recommendations.js',
+    de: "url.searchParams.set('intent', intencao(this.dataset.intent));",
+    para: "url.searchParams.set('intent', 'related');",
+    teste: 'tests/product-recommendations.test.mjs',
+  },
+  {
+    porque: 'resposta vazia deixa a section no fluxo, e o gap entre sections cerca um vão vazio',
+    arquivo: 'src/js/product-recommendations.js',
+    de: '            } else {\n              this.esconde();\n            }',
+    para: '            }',
+    teste: 'tests/product-recommendations.test.mjs',
+  },
+  {
+    porque: 'some só o elemento, e o contêiner da section continua ocupando o gap do <main>',
+    arquivo: 'src/js/product-recommendations.js',
+    de: "(this.closest('.shopify-section') || this).hidden = true;",
+    para: 'this.hidden = true;',
+    teste: 'tests/product-recommendations.test.mjs',
+  },
+  {
+    // A página de erro é HTML válido sem recomendação nenhuma: sem olhar o
+    // status, ela vira "loja sem pares cadastrados", em silêncio.
+    porque: 'erro HTTP passa a ser tratado como resposta vazia, sem nada no console',
+    arquivo: 'src/js/product-recommendations.js',
+    de: 'if (!res.ok) throw new Error(`HTTP ${res.status}`);',
+    para: '// mutante',
+    teste: 'tests/product-recommendations.test.mjs',
   },
 ];
 

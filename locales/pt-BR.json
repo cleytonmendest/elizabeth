@@ -189,7 +189,8 @@
       "zoom": "Ampliar imagem"
     },
     "recommendations": {
-      "title": "Você também pode gostar"
+      "title": "Você também pode gostar",
+      "complementary_title": "Combina com"
     },
     "recently_viewed": {
       "title": "Vistos recentemente"
