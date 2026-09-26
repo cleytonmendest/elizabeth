@@ -194,18 +194,21 @@ class CartDrawer extends HTMLElement {
         }
     }
 
+    /**
+     * Subtotal e total mudam na hora, a partir do JSON. Os descontos do pedido
+     * não são escritos aqui: cada um tem nome, e quem os redesenha é o
+     * servidor, pela região `[data-cart-live="resumo"]` (ver cart-extras.js).
+     * Até a #144 este método escrevia `total_discount` — item e pedido somados
+     * — numa linha só, sob um subtotal que já tinha o desconto de item abatido.
+     */
     async updateCartSummary(cart) {
         const summaryElement = document.querySelector('#cart-summary-total');
         const itemsSubtotalPriceElement = summaryElement.querySelector('.subtotal');
-        const totalDiscountElement = summaryElement.querySelector('.discounts');
         const totalPriceElement = summaryElement.querySelector('.total-price');
 
-        const { items_subtotal_price, total_discount, total_price } = cart;
+        const { items_subtotal_price, total_price } = cart;
 
         itemsSubtotalPriceElement.textContent = formatMoney(items_subtotal_price);
-        if (totalDiscountElement) {
-            totalDiscountElement.textContent = `-${formatMoney(total_discount)}`;
-        }
         totalPriceElement.textContent = formatMoney(total_price);
     }
 

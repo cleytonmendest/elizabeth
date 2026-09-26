@@ -137,7 +137,15 @@
       "order_summary": "Resumo",
       "taxes_shipping_checkout": "Impostos e frete calculados no checkout",
       "note": "Observações do pedido",
-      "note_placeholder": "Alguma instrução especial para a entrega?"
+      "note_placeholder": "Alguma instrução especial para a entrega?",
+      "taxes_included_shipping_checkout": "Impostos incluídos. Frete calculado no checkout.",
+      "taxes_included_shipping_policy_html": "Impostos incluídos. <a href=\"{{ link }}\" class=\"underline\">Frete</a> calculado no checkout.",
+      "taxes_shipping_policy_html": "Impostos e <a href=\"{{ link }}\" class=\"underline\">frete</a> calculados no checkout",
+      "original_price": "Preço original",
+      "discounted_price": "Preço com desconto",
+      "line_discounts": "Descontos neste item",
+      "unit_price": "Preço unitário",
+      "unit_price_separator": "por"
     },
     "label": {
       "product": "Produto",
@@ -567,7 +575,10 @@
       "same_as_shipping": "Mesmo endereço de entrega",
       "need_help": "Precisa de Ajuda?",
       "need_help_text": "Entre em contato conosco se tiver dúvidas sobre seu pedido.",
-      "contact_support": "Falar com Suporte"
+      "contact_support": "Falar com Suporte",
+      "line_discounts": "Descontos neste item",
+      "unit_price": "Preço unitário",
+      "unit_price_separator": "por"
     }
   },
   "contact": {

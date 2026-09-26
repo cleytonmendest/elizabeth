@@ -17,6 +17,19 @@
   Como section estática renderizada pelo layout, o id é o NOME DESTE ARQUIVO.
   Não há chave para renomear, e o que o JS pede é o que o disco tem.
 
+  ── O que se redesenha, e quem redesenha ───────────────────────────────────
+
+  `data-cart-section` publica o id desta section para `src/js/cart-extras.js`,
+  que a pede de volta à Section Rendering API depois de cada mudança no
+  carrinho e troca só as regiões `[data-cart-live]`: o resumo abaixo e o preço
+  e os descontos de cada linha. É o que faz um desconto automático ligado por
+  quantidade aparecer (ou sumir) com o nome dele, sem recarregar. Ver #144.
+
+  O desconto do PEDIDO aparece aqui, um por linha, com o nome; o do ITEM
+  aparece na linha dele (`cart-drawer-item`). Até a #144 esta gaveta mostrava
+  `cart.total_discount`, a soma dos dois, abaixo de um subtotal que já tinha o
+  desconto de item abatido — a conta não fechava para a cliente.
+
   ── O schema é vazio de propósito ──────────────────────────────────────────
 
   Não há setting aqui, e não deve haver: o drawer não tem nada que a lojista
@@ -28,7 +41,7 @@
 <script src="{{ 'cart.js' | asset_url }}" defer></script>
 <script src="{{ 'cart-extras.js' | asset_url }}" defer></script>
 
-<div data-section-id="{{ section.id }}">
+<div data-section-id="{{ section.id }}" data-cart-section="{{ section.id }}">
 <cart-drawer
   class="cart-drawer fixed z-drawer left-0 top-0 w-screen h-full flex justify-end bg-foreground/50"
   role="dialog"
@@ -62,7 +75,7 @@
       </div>
 
       <div id="cart-container" class="{% if cart == empty %}hidden{% else %}flex{% endif %} flex-col h-full">
-        <div class="flex flex-col flex-1 overflow-y-auto" id="cart-drawer-items">
+        <div class="flex flex-col flex-1 overflow-y-auto" id="cart-drawer-items" data-cart-items>
           {% for item in cart.items %}
             {% render 'cart-drawer-item', item: item %}
           {% endfor %}
@@ -70,21 +83,23 @@
         <div class="p-4 border-t border-border shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
           {% render 'cart-free-shipping' %}
 
-          <div id="cart-summary-total" class="summary flex flex-col gap-2 mt-4 mb-4">
+          <div id="cart-summary-total" class="summary flex flex-col gap-2 mt-4 mb-4" data-cart-live="resumo">
             <div class="flex justify-between text-sm">
               <div class="text-foreground/60">{{ 'cart.general.subtotal' | t }}</div>
               <div class="subtotal font-medium">
                 {{ cart.items_subtotal_price | money }}
               </div>
             </div>
-            {% if cart.total_discount > 0 %}
-              <div class="flex justify-between text-sm">
-                <div class="text-foreground/60">{{ 'cart.general.discounts' | t }}</div>
-                <div class="discounts font-medium color-success">
-                  -{{ cart.total_discount | money }}
-                </div>
-              </div>
-            {% endif %}
+            {%- if cart.cart_level_discount_applications.size > 0 -%}
+              <ul class="flex flex-col gap-2 text-sm" role="list" aria-label="{{ 'cart.general.discounts' | t | escape }}">
+                {%- for discount in cart.cart_level_discount_applications -%}
+                  <li class="flex justify-between gap-3">
+                    <span class="min-w-0 break-words text-foreground-muted">{{ discount.title | escape }}</span>
+                    <span class="shrink-0 font-medium">-{{ discount.total_allocated_amount | money }}</span>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
             <div class="flex justify-between items-baseline pt-2 border-t border-border">
               <div class="text-sm font-medium">{{ 'cart.general.total' | t }}</div>
               <div class="total-price text-base font-light">
@@ -122,6 +137,7 @@
             class="color-button flex cursor-pointer h-11 w-full items-center justify-center mt-3 text-xs uppercase tracking-label transition-opacity rounded-theme hover:opacity-90"
             >{{ 'cart.general.checkout' | t }}</a
           >
+          <p class="text-xs text-foreground-muted text-center mt-3">{% render 'cart-tax-note' %}</p>
         </div>
       </div>
     </div>

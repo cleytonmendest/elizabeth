@@ -137,7 +137,15 @@
       "order_summary": "Summary",
       "taxes_shipping_checkout": "Taxes and shipping calculated at checkout",
       "note": "Order notes",
-      "note_placeholder": "Any special instructions for delivery?"
+      "note_placeholder": "Any special instructions for delivery?",
+      "taxes_included_shipping_checkout": "Taxes included. Shipping calculated at checkout.",
+      "taxes_included_shipping_policy_html": "Taxes included. <a href=\"{{ link }}\" class=\"underline\">Shipping</a> calculated at checkout.",
+      "taxes_shipping_policy_html": "Taxes and <a href=\"{{ link }}\" class=\"underline\">shipping</a> calculated at checkout",
+      "original_price": "Original price",
+      "discounted_price": "Discounted price",
+      "line_discounts": "Discounts on this item",
+      "unit_price": "Unit price",
+      "unit_price_separator": "per"
     },
     "label": {
       "product": "Product",
@@ -567,7 +575,10 @@
       "same_as_shipping": "Same as shipping address",
       "need_help": "Need Help?",
       "need_help_text": "Contact us if you have any questions about your order.",
-      "contact_support": "Contact Support"
+      "contact_support": "Contact Support",
+      "line_discounts": "Discounts on this item",
+      "unit_price": "Unit price",
+      "unit_price_separator": "per"
     }
   },
   "contact": {

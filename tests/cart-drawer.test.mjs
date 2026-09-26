@@ -36,7 +36,7 @@ function monta() {
       </div>
     </cart-drawer>
     <div id="cart-summary-total">
-      <span class="subtotal"></span><span class="discounts"></span><span class="total-price"></span>
+      <span class="subtotal"></span><span class="total-price"></span>
     </div>`;
   return {
     bolha: document.querySelector('#qtd-bubble'),

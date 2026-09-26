@@ -1185,6 +1185,98 @@ const MUTANTES = [
     para: '      if (false) el.remove();',
     teste: 'tests/cart-extras.test.mjs',
   },
+  // ── A #144: o desconto que liga e desliga com a quantidade ──────────────
+  //
+  // "Leve 2, pague menos" é automático: a cliente aperta o + e o desconto
+  // passa a valer no checkout. Se o carrinho não o redesenhar, ela vê um
+  // preço e paga outro — e nada fica vermelho, porque o total do JSON muda
+  // certo. O que some é o NOME e o nível do desconto, que só o servidor sabe.
+  {
+    porque: 'o redesenho para de trocar as regiões, e o desconto automático só aparece recarregando',
+    arquivo: 'src/js/cart-extras.js',
+    de: '      if (nova) el.innerHTML = nova.innerHTML;',
+    para: '      if (false) el.innerHTML = nova.innerHTML;',
+    teste: 'tests/cart-extras.test.mjs',
+  },
+  {
+    porque: 'a resposta atrasada de um pedido antigo volta a sobrescrever o carrinho mais novo',
+    arquivo: 'src/js/cart-extras.js',
+    de: '        if (pedido !== ultimoPedido) return;',
+    para: '        if (false) return;',
+    teste: 'tests/cart-extras.test.mjs',
+  },
+  {
+    // O atalho óbvio — trocar a lista inteira sempre — passa em todo teste que
+    // só olha o texto. O que ele quebra é o foco: o + some debaixo do dedo.
+    porque: 'a lista inteira passa a ser trocada a cada mudança, e o + perde o foco',
+    arquivo: 'src/js/cart-extras.js',
+    de: '    if (itens && itensFrescos && chavesDe(itens) !== chavesDe(itensFrescos)) {',
+    para: '    if (itens && itensFrescos) {',
+    teste: 'tests/cart-extras.test.mjs',
+  },
+  {
+    porque: 'o item que o servidor acrescentou (um brinde) nunca entra na lista',
+    arquivo: 'src/js/cart-extras.js',
+    de: '    if (itens && itensFrescos && chavesDe(itens) !== chavesDe(itensFrescos)) {',
+    para: '    if (false) {',
+    teste: 'tests/cart-extras.test.mjs',
+  },
+  {
+    porque: 'o desconto do item some da linha, e o preço riscado fica sem explicação',
+    arquivo: 'snippets/cart-drawer-item.liquid',
+    de: '      {%- if item.line_level_discount_allocations.size > 0 -%}',
+    para: '      {%- if false -%}',
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
+  {
+    porque: 'o preço riscado aparece em toda linha, com desconto ou sem',
+    arquivo: 'snippets/cart-drawer-item.liquid',
+    de: '        {%- if item.original_line_price != item.final_line_price -%}',
+    para: '        {%- if true -%}',
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
+  {
+    // "R$ 89,90/1 kg" não está errado, só é o que nenhuma etiqueta escreve —
+    // e é o formato que o checklist da Theme Store confere.
+    porque: 'o preço unitário passa a escrever o valor de referência 1 ("/1 kg")',
+    arquivo: 'snippets/cart-drawer-item.liquid',
+    de: '            {%- if item.unit_price_measurement.reference_value != 1 -%}',
+    para: '            {%- if true -%}',
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
+  {
+    // A #139: sem o filtro, a cliente lê `__shopify_offset: 180` no carrinho.
+    porque: 'as propriedades privadas do app (as que começam com _) voltam a aparecer',
+    arquivo: 'snippets/line-item-properties.liquid',
+    de: "    {%- if propriedade.last != blank and inicial != '_' -%}",
+    para: '    {%- if propriedade.last != blank -%}',
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
+  {
+    // A #143 em uma linha: a loja com imposto incluso volta a dizer que o
+    // imposto é calculado no checkout, e a cliente espera um acréscimo.
+    porque: '`cart.taxes_included` deixa de ser lido, e a loja com imposto incluso diz o contrário',
+    arquivo: 'snippets/cart-tax-note.liquid',
+    de: '{%- if cart.taxes_included -%}',
+    para: '{%- if false -%}',
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
+  {
+    porque: 'a página do carrinho volta à frase fixa de impostos, sem olhar a loja',
+    arquivo: 'sections/main-cart.liquid',
+    de: "{% render 'cart-tax-note' %}",
+    para: "{{ 'cart.general.taxes_shipping_checkout' | t }}",
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
+  {
+    // Loja sem carteira ativa: a Shopify não desenha botão nenhum, e o
+    // invólucro com margem sobraria como um vão abaixo do checkout.
+    porque: 'o invólucro do checkout acelerado aparece mesmo sem carteira ativa',
+    arquivo: 'sections/main-cart.liquid',
+    de: '            {%- if additional_checkout_buttons -%}',
+    para: '            {%- if true -%}',
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
   {
     // O estado anterior da regra: ela confiava no `ignore` do Theme Check, que
     // usa minimatch — e `**` não atravessa segmento que começa com ponto. Com a

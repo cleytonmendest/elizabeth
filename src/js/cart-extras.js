@@ -5,6 +5,9 @@
  *   1. Atualiza todas as barras de frete grátis ([data-free-shipping-bar]).
  *   2. Na página de carrinho ([data-cart-page]), reflete linhas/resumo/estado-vazio
  *      sem depender da DOM do drawer.
+ *   3. Pede ao servidor as sections que seguem o carrinho ([data-cart-section],
+ *      a gaveta e a página) e troca as regiões [data-cart-live] — descontos,
+ *      preço riscado, preço unitário. Ver `redesenhaPeloServidor`.
  * Carregado globalmente junto do cart.js (via cart-drawer.liquid).
  *
  * `formatMoney` é global e vem de `assets/money.js` — a única formatação de
@@ -70,15 +73,82 @@
       if (price) price.textContent = formatMoney(item.final_line_price);
     });
 
-    // Resumo.
+    // Resumo: os dois números que o JSON já traz mudam na hora. Os descontos
+    // não — o nome de cada um vem do servidor, logo abaixo.
     const sub = page.querySelector('[data-cart-subtotal]');
     const total = page.querySelector('[data-cart-total]');
-    const discount = page.querySelector('[data-cart-discount]');
-    const discountRow = page.querySelector('[data-cart-discount-row]');
     if (sub) sub.textContent = formatMoney(cart.items_subtotal_price);
     if (total) total.textContent = formatMoney(cart.total_price);
-    if (discount) discount.textContent = '-' + formatMoney(cart.total_discount);
-    if (discountRow) discountRow.classList.toggle('hidden', cart.total_discount <= 0);
+  }
+
+  // ---- O que só o servidor sabe desenhar (#144) ------------------------------
+  /**
+   * Um desconto automático liga ou desliga com a quantidade ("leve 2, pague
+   * menos"), e quando liga ele tem NOME, alcance (um item, ou o pedido) e
+   * valor. O JSON do carrinho traz tudo isso, mas desenhar a partir dele seria
+   * escrever em JS uma segunda cópia do markup de `cart-drawer-item` e do
+   * resumo — com as classes, os rótulos acessíveis e a regra de quando cada
+   * coisa aparece. Duas cópias divergem; a primeira divergência seria um
+   * desconto que o Liquid mostra no carregamento e o JS some na primeira
+   * mudança.
+   *
+   * Então quem desenha é o Liquid, sempre. Depois de cada mudança, as
+   * sections marcadas com `[data-cart-section]` (a gaveta e, na página do
+   * carrinho, a página) são pedidas de volta à Section Rendering API, num
+   * pedido só — `?sections=` aceita várias —, e só as regiões
+   * `[data-cart-live]` são trocadas. O seletor de quantidade fica fora delas:
+   * trocar o HTML dele tiraria o foco de quem está clicando no +.
+   *
+   * A lista de linhas inteira só é trocada quando o conjunto de itens mudou
+   * (um brinde que o desconto pôs no carrinho, um item que outra aba tirou):
+   * aí não há região correspondente onde encaixar o HTML novo.
+   *
+   * A fronteira `section-rendering` (scripts/lint/config/boundaries.json)
+   * procura `section_id=` e não enxerga este `sections=`. Este é mais um
+   * consumidor da API, e está dito aqui para ninguém achar que não é.
+   */
+  let ultimoPedido = 0;
+
+  const chavesDe = (lista) => [...lista.querySelectorAll('.cart-item')].map((el) => el.dataset.key).join();
+
+  function aplicaSecao(raiz, fresca) {
+    const itens = raiz.querySelector('[data-cart-items]');
+    const itensFrescos = fresca.querySelector('[data-cart-items]');
+    if (itens && itensFrescos && chavesDe(itens) !== chavesDe(itensFrescos)) {
+      itens.innerHTML = itensFrescos.innerHTML;
+    }
+
+    const regioes = {};
+    fresca.querySelectorAll('[data-cart-live]').forEach((el) => {
+      regioes[el.dataset.cartLive] = el;
+    });
+    raiz.querySelectorAll('[data-cart-live]').forEach((el) => {
+      const nova = regioes[el.dataset.cartLive];
+      if (nova) el.innerHTML = nova.innerHTML;
+    });
+  }
+
+  function redesenhaPeloServidor() {
+    const raizes = [...document.querySelectorAll('[data-cart-section]')];
+    if (!raizes.length || !window.routes) return;
+
+    // Duas mudanças seguidas fazem dois pedidos, e a resposta do primeiro pode
+    // chegar DEPOIS da do segundo. Sem esta guarda, o carrinho de antes da
+    // segunda mudança sobrescreveria o de depois — e ficaria assim.
+    const pedido = ++ultimoPedido;
+    const ids = raizes.map((raiz) => raiz.dataset.cartSection).join(',');
+
+    return fetch(`${window.routes.cart_url}?sections=${ids}`)
+      .then((resposta) => resposta.json())
+      .then((secoes) => {
+        if (pedido !== ultimoPedido) return;
+        const parser = new DOMParser();
+        raizes.forEach((raiz) => {
+          const html = secoes[raiz.dataset.cartSection];
+          if (html) aplicaSecao(raiz, parser.parseFromString(html, 'text/html'));
+        });
+      })
+      .catch((erro) => console.error('Erro ao redesenhar o carrinho:', erro));
   }
 
   /**
@@ -99,6 +169,9 @@
     if (!ehCarrinho(cart)) return;
     updateFreeShippingBars(cart);
     updateCartPage(cart);
+    // Carrinho vazio: a página recarrega (acima) e a gaveta mostra o estado
+    // vazio dela — não há linha nem desconto para redesenhar.
+    if (cart.item_count > 0) redesenhaPeloServidor();
   }
 
   EVENTS.forEach((evt) => document.addEventListener(evt, (e) => onCart(e.detail)));

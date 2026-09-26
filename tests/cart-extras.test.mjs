@@ -11,11 +11,12 @@
  * produto. Estes testes existem para que a afirmação do cabeçalho passe a ser
  * verificada em vez de escrita.
  */
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach, vi } from 'vitest';
 import { loadAsset, loadGlobalAsset } from './helpers/load-asset.mjs';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { textOf, installShopify } from './helpers/dom.mjs';
+import { renderiza, linha, carrinho as carrinhoDaLoja, globaisDaLoja } from './helpers/liquid-carrinho.mjs';
 
 // `cart-extras.js` formata preço com a `formatMoney` global de `money.js`, que
 // por sua vez lê moeda e idioma de `window.Shopify` — a vitrine escreve os
@@ -108,10 +109,10 @@ describe('barra de frete grátis', () => {
  * A página do carrinho — o outro consumidor deste arquivo, e o que não tinha
  * teste nenhum até a #66.
  *
- * `updateCartPage` mexe na DOM por SEIS ganchos que quem edita a section não
- * tem como adivinhar: [data-cart-page], .cart-item[data-key],
- * [data-cart-subtotal], [data-cart-total], [data-cart-discount] e
- * [data-cart-discount-row]. Enquanto a página era `templates/cart.liquid`,
+ * `updateCartPage` mexe na DOM por ganchos que quem edita a section não tem
+ * como adivinhar: [data-cart-page], .cart-item[data-key], [data-cart-subtotal]
+ * e [data-cart-total] — e, desde a #144, as regiões [data-cart-live] que o
+ * servidor redesenha. Enquanto a página era `templates/cart.liquid`,
  * renomear qualquer um deles deixava a suíte VERDE e o resumo do carrinho
  * congelado no valor do carregamento — a cliente mudava a quantidade e o total
  * não mudava junto.
@@ -129,13 +130,10 @@ describe('página do carrinho: o resumo acompanha o carrinho', () => {
         </div>
         <span data-cart-subtotal>R$ 150,00</span>
         <span data-cart-total>R$ 150,00</span>
-        <div class="hidden" data-cart-discount-row><span data-cart-discount>-R$ 0,00</span></div>
       </div>`;
     return {
       subtotal: document.querySelector('[data-cart-subtotal]'),
       total: document.querySelector('[data-cart-total]'),
-      desconto: document.querySelector('[data-cart-discount]'),
-      linhaDesconto: document.querySelector('[data-cart-discount-row]'),
       itens: () => [...document.querySelectorAll('.cart-item')].map((el) => el.dataset.key),
     };
   }
@@ -171,20 +169,6 @@ describe('página do carrinho: o resumo acompanha o carrinho', () => {
     expect(document.querySelector('.cart-item[data-key="bbb"]').dataset.index).toBe('1');
   });
 
-  it('a linha de desconto aparece com desconto e some sem ele', () => {
-    const p = montaPagina();
-    const itens = [{ key: 'aaa', final_line_price: 20000 }, { key: 'bbb', final_line_price: 5000 }];
-
-    publica('cart-update', carrinhoCom(itens, { total_discount: 3000 }));
-
-    expect(p.linhaDesconto.classList.contains('hidden')).toBe(false);
-    expect(textOf(p.desconto)).toBe('-R$ 30,00');
-
-    publica('cart-update', carrinhoCom(itens, { total_discount: 0 }));
-
-    expect(p.linhaDesconto.classList.contains('hidden')).toBe(true);
-  });
-
   it('sem [data-cart-page] não toca em nada — o drawer tem DOM própria', () => {
     // O mesmo evento chega nas duas telas. Se o guarda de `updateCartPage`
     // cair, ele começa a apagar `.cart-item` do drawer pelo data-key.
@@ -210,6 +194,171 @@ describe('página do carrinho: o resumo acompanha o carrinho', () => {
 });
 
 /**
+ * O desconto que liga e desliga com a quantidade — o critério de aceite da
+ * #144 que só o JS alcança.
+ *
+ * "Leve 2, pague menos" é desconto AUTOMÁTICO: a cliente não digita nada, ela
+ * aperta o + e o desconto passa a valer. O nome dele, e se ele vale para o
+ * item ou para o pedido, só o servidor sabe desenhar — então a página e a
+ * gaveta pedem as próprias sections de volta e trocam as regiões
+ * `[data-cart-live]`.
+ *
+ * Os dois lados deste teste saem do Liquid de verdade: a página viva é
+ * `sections/main-cart.liquid` renderizada com o carrinho de ANTES, e a
+ * resposta do "servidor" é o mesmo arquivo renderizado com o carrinho de
+ * DEPOIS. Se o snippet renomear uma região, esquecer a chave da linha ou
+ * deixar de desenhar o desconto, este teste fica vermelho — um fixture escrito
+ * à mão continuaria verde (ADR 0014).
+ */
+describe('os descontos aparecem e somem sem recarregar (#144)', () => {
+  const PAGINA = 'template--1__main';
+  const GAVETA = 'cart-drawer';
+  const SECTION = {
+    id: PAGINA,
+    settings: { color_scheme: 'scheme-1', show_continue_shopping: true, show_notes: false, checkout_label: '' },
+  };
+
+  const pagina = (cart) =>
+    renderiza('sections/main-cart.liquid', { escopo: { section: SECTION }, globais: globaisDaLoja(cart) });
+  const gaveta = (cart) =>
+    renderiza('sections/cart-drawer.liquid', { escopo: { section: { id: GAVETA } }, globais: globaisDaLoja(cart) });
+
+  /** Uma unidade: nenhum desconto vale. */
+  const UMA = carrinhoDaLoja([linha()]);
+  /** Duas unidades: "COMPRE2" no item e "FRETE10" no pedido passam a valer. */
+  const DUAS = carrinhoDaLoja(
+    [linha({ quantity: 2, preco: 40000, desconto: { nome: 'COMPRE2', valor: 4000 } })],
+    { descontosDoPedido: [{ nome: 'FRETE10', valor: 1000 }] }
+  );
+
+  /** O servidor responde, a cada pedido, com as sections do carrinho que recebeu. */
+  function servidor(...carrinhos) {
+    const fila = [...carrinhos];
+    globalThis.fetch = vi.fn(async () => {
+      const cart = fila.shift();
+      return { json: async () => ({ [PAGINA]: pagina(cart), [GAVETA]: gaveta(cart) }) };
+    });
+    return globalThis.fetch;
+  }
+
+  const naPagina = (seletor) => document.querySelector(`[data-cart-page] ${seletor}`);
+  const textoNaPagina = (seletor) => textOf(naPagina(seletor) ?? document.createElement('i'));
+
+  beforeEach(() => {
+    window.routes = { cart_url: '/cart' };
+    document.body.innerHTML = pagina(UMA);
+  });
+
+  afterEach(() => {
+    delete window.routes;
+    delete globalThis.fetch;
+    vi.restoreAllMocks();
+  });
+
+  it('o + que liga o desconto mostra o nome no item e no pedido; o − que desliga some com os dois', async () => {
+    servidor(DUAS, UMA);
+
+    publica('quantity-update', DUAS);
+
+    await vi.waitFor(() => expect(textoNaPagina('.cart-item ul')).toBe('COMPRE2 (-R$ 40,00)'));
+    expect(textoNaPagina('.cart-item s')).toBe('R$ 400,00');
+    expect(textoNaPagina('[data-cart-live="resumo"] ul')).toBe('FRETE10 -R$ 10,00');
+
+    publica('quantity-update', UMA);
+
+    await vi.waitFor(() => expect(naPagina('.cart-item ul')).toBeNull());
+    expect(naPagina('.cart-item s')).toBeNull();
+    expect(naPagina('[data-cart-live="resumo"] ul')).toBeNull();
+  });
+
+  it('pede as sections da página E da gaveta num pedido só', async () => {
+    // A gaveta mora em toda página, inclusive nesta: as duas mostram o mesmo
+    // carrinho, e a Section Rendering API devolve várias sections de uma vez.
+    document.body.innerHTML = gaveta(UMA) + pagina(UMA);
+    const fetch = servidor(DUAS);
+
+    publica('quantity-update', DUAS);
+
+    await vi.waitFor(() => expect(textOf(document.querySelector('#cart-summary-total ul') ?? document.createElement('i'))).toBe('FRETE10 -R$ 10,00'));
+    expect(textoNaPagina('[data-cart-live="resumo"] ul')).toBe('FRETE10 -R$ 10,00');
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith(`/cart?sections=${GAVETA},${PAGINA}`);
+  });
+
+  it('o seletor de quantidade é o MESMO elemento depois do redesenho — o foco não se perde', async () => {
+    // Trocar a lista inteira seria mais simples, e tiraria o foco do + que a
+    // cliente acabou de apertar: o segundo clique cairia no vazio.
+    const seletor = naPagina('quantity-input');
+    servidor(DUAS);
+
+    publica('quantity-update', DUAS);
+
+    await vi.waitFor(() => expect(naPagina('.cart-item ul')).not.toBeNull());
+    expect(naPagina('quantity-input')).toBe(seletor);
+  });
+
+  it('um item que o servidor acrescentou (um brinde) entra na lista', async () => {
+    // Não há região correspondente onde encaixar uma linha nova: quando o
+    // conjunto de itens muda, a lista inteira é trocada.
+    const brinde = linha({ key: '999:brinde', index: 1, preco: 0 });
+    const comBrinde = carrinhoDaLoja([linha(), brinde]);
+    servidor(comBrinde);
+
+    publica('cart-update', comBrinde);
+
+    await vi.waitFor(() =>
+      expect([...document.querySelectorAll('[data-cart-page] .cart-item')].map((el) => el.dataset.key)).toEqual([
+        '111:aaa',
+        '999:brinde',
+      ])
+    );
+  });
+
+  it('a resposta atrasada de um pedido antigo não desfaz o mais novo', async () => {
+    // Dois cliques no + e o servidor responde fora de ordem. Sem a guarda, a
+    // resposta do primeiro (sem desconto) chegaria por último e ficaria na
+    // tela — com o desconto valendo no checkout e sumido do carrinho.
+    const respostas = [];
+    globalThis.fetch = vi.fn(
+      () => new Promise((resolve) => respostas.push(resolve))
+    );
+    const responde = (i, cart) =>
+      respostas[i]({ json: async () => ({ [PAGINA]: pagina(cart), [GAVETA]: gaveta(cart) }) });
+
+    publica('quantity-update', UMA);
+    publica('quantity-update', DUAS);
+    expect(respostas).toHaveLength(2);
+
+    responde(1, DUAS);
+    await vi.waitFor(() => expect(naPagina('.cart-item ul')).not.toBeNull());
+    responde(0, UMA);
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(textoNaPagina('.cart-item ul')).toBe('COMPRE2 (-R$ 40,00)');
+    expect(textoNaPagina('[data-cart-live="resumo"] ul')).toBe('FRETE10 -R$ 10,00');
+  });
+
+  it('servidor fora do ar: fica o que o JSON já escreveu, sem exceção solta', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    globalThis.fetch = vi.fn().mockRejectedValue(new Error('offline'));
+
+    publica('quantity-update', DUAS);
+
+    await vi.waitFor(() => expect(console.error).toHaveBeenCalled());
+    expect(textoNaPagina('[data-cart-total]')).toBe('R$ 350,00');
+  });
+
+  it('carrinho vazio não pede nada — a página recarrega de qualquer jeito', () => {
+    document.body.innerHTML = gaveta(UMA);
+    const fetch = servidor(UMA);
+
+    publica('cart-update', { ...UMA, item_count: 0, items: [] });
+
+    expect(fetch).not.toHaveBeenCalled();
+  });
+});
+
+/**
  * O contrato dos dois lados. Os testes acima usam um fixture escrito à mão: se
  * a section parar de emitir um gancho, eles continuam verdes medindo um
  * carrinho que não existe mais. Este lê o arquivo de verdade.
@@ -222,8 +371,9 @@ describe('sections/main-cart.liquid emite os ganchos que este JS consulta', () =
     ['id="cart-items-container"', 'o container que o cart.js substitui'],
     ['data-cart-subtotal', 'o subtotal do resumo'],
     ['data-cart-total', 'o total do resumo'],
-    ['data-cart-discount', 'o valor do desconto'],
-    ['data-cart-discount-row', 'a linha que ganha e perde `hidden`'],
+    ['data-cart-section="{{ section.id }}"', 'o id que o redesenho pede ao servidor'],
+    ['data-cart-items', 'a lista que é trocada inteira quando os itens mudam'],
+    ['data-cart-live="resumo"', 'o resumo, com os descontos do pedido'],
     ['data-cart-note', 'as observações, sincronizadas com o drawer'],
   ])('%s — %s', (gancho) => {
     expect(section).toContain(gancho);
