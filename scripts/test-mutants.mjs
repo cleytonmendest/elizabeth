@@ -648,6 +648,140 @@ const MUTANTES = [
     para: 'if (false) return;',
     teste: 'tests/add-to-cart.test.mjs',
   },
+  // ── O form de produto: checkout acelerado, parcelamento, vale-presente ──
+  //
+  // #134, #138 e #139. Os três moram no mesmo `{% form 'product' %}`, e o que
+  // os decide é metade Liquid, metade `<add-to-cart>`. Os mutantes de Liquid
+  // são medidos contra o snippet renderizado pelo `liquidjs`
+  // (`tests/helpers/form-de-produto.mjs`), não contra a grafia do arquivo.
+  {
+    porque: 'o acelerado volta a aparecer em vale-presente, e compra o cartão sem destinatário',
+    arquivo: 'snippets/add-to-cart.liquid',
+    de: '    assign mostra_checkout_acelerado = false',
+    para: '    assign mostra_checkout_acelerado = true',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o setting show_dynamic_checkout deixa de ser lido e o acelerado não desliga',
+    arquivo: 'snippets/add-to-cart.liquid',
+    de: '  assign mostra_checkout_acelerado = block.settings.show_dynamic_checkout',
+    para: '  assign mostra_checkout_acelerado = true',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o acelerado deixa de vir ligado por padrão no bloco de compra (#134)',
+    arquivo: 'sections/main-product.liquid',
+    de: '"info": "t:sections.main_product.blocks.buy_button.settings.show_dynamic_checkout.info",\n          "default": true',
+    para: '"info": "t:sections.main_product.blocks.buy_button.settings.show_dynamic_checkout.info",\n          "default": false',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o botão acelerado some do form de produto (#134)',
+    arquivo: 'snippets/add-to-cart.liquid',
+    de: '        {{- form | payment_button -}}',
+    para: '',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o banner do Shop Pay Installments some do form de produto (#138)',
+    arquivo: 'snippets/add-to-cart.liquid',
+    de: '<div class="empty:hidden">{{- form | payment_terms -}}</div>',
+    para: '',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'a variante inicial esgotada volta a oferecer o acelerado ao carregar a página',
+    arquivo: 'snippets/add-to-cart.liquid',
+    de: 'data-checkout-acelerado\n        {% if product.selected_or_first_available_variant.available == false %}',
+    para: 'data-checkout-acelerado\n        {% if false %}',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    // O defeito que já existia: quem abria numa variante esgotada e escolhia
+    // outra mandava um form sem `id`.
+    porque: 'o input id fica desabilitado depois da troca de variante, e o form vai sem id',
+    arquivo: 'src/js/cart.js',
+    de: '            this.hiddenInput.disabled = !aVenda;',
+    para: '            // mutante',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o input id muda em silêncio, e o parcelamento fica no preço da variante inicial',
+    arquivo: 'src/js/cart.js',
+    de: "            this.hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));",
+    para: '            // mutante',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o acelerado continua oferecendo a variante que acabou de esgotar',
+    arquivo: 'src/js/cart.js',
+    de: '        if (acelerado) acelerado.hidden = !aVenda;',
+    para: '        if (acelerado) acelerado.hidden = false;',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'a recusa do /cart/add.js volta a seguir o caminho do sucesso, e o erro nunca aparece',
+    arquivo: 'src/js/cart.js',
+    de: '            if (resultado && resultado.status) {',
+    para: '            if (false) {',
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
+  {
+    porque: 'o erro que já foi posto ao lado do campo é repetido no aviso geral',
+    arquivo: 'src/js/cart.js',
+    de: '        if (tratado) return true;',
+    para: '        // mutante',
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
+  {
+    porque: 'sem JS, o form manda "true" e quem compra para si mesma é recusada por falta de e-mail',
+    arquivo: 'snippets/gift-card-recipient-form.liquid',
+    de: '    value="if_present"',
+    para: '    value="true"',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o erro do submit nativo deixa de estar associado ao campo (aria-describedby)',
+    arquivo: 'snippets/gift-card-recipient-form.liquid',
+    de: '          aria-describedby="destinatario-email-erro-{{ sufixo }}"\n',
+    para: '',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'a caixa desmarcada continua mandando os campos do destinatário',
+    arquivo: 'src/js/gift-card-recipient-form.js',
+    de: '            el.disabled = !marcada;',
+    para: '            el.disabled = false;',
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
+  {
+    porque: 'com JS, o if_present do estado sem JS continua indo junto no form',
+    arquivo: 'src/js/gift-card-recipient-form.js',
+    de: "            if (el.tagName === 'INPUT') el.disabled = true;",
+    para: "            if (el.tagName === 'INPUT') el.disabled = false;",
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
+  {
+    porque: 'o fuso da cliente não é preenchido, e a data de envio passa a valer no fuso da loja',
+    arquivo: 'src/js/gift-card-recipient-form.js',
+    de: '        if (this.offset) this.offset.value = String(new Date().getTimezoneOffset());',
+    para: '        // mutante',
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
+  {
+    porque: 'o erro de campo da Shopify não aparece ao lado do campo',
+    arquivo: 'src/js/gift-card-recipient-form.js',
+    de: "            aviso.textContent = [].concat(mensagens).join(', ');",
+    para: '            // mutante',
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
+  {
+    porque: 'o destinatário mostra o erro sem avisar, e o aviso geral o repete',
+    arquivo: 'src/js/gift-card-recipient-form.js',
+    de: '        evento.preventDefault();',
+    para: '        // mutante',
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
   {
     porque: 'o preço riscado aparece justamente quando não há desconto',
     arquivo: 'src/js/price-component.js',

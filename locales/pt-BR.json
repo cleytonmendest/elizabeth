@@ -580,6 +580,16 @@
       "shop_link": "Começar a comprar",
       "print": "Imprimir",
       "add_to_apple_wallet": "Adicionar à Apple Wallet"
+    },
+    "recipient": {
+      "checkbox": "Enviar como presente para outra pessoa",
+      "no_js_hint": "Para mandar o vale-presente direto para outra pessoa, preencha o e-mail dela. Em branco, ele chega no seu e-mail.",
+      "email_label": "E-mail de quem vai receber",
+      "name_label": "Nome de quem vai receber (opcional)",
+      "message_label": "Mensagem (opcional)",
+      "message_hint": "Até {{ max }} caracteres.",
+      "send_on_label": "Data de envio (opcional)",
+      "send_on_hint": "Até {{ days }} dias a partir de hoje. Sem data, o envio é imediato."
     }
   },
   "newsletter": {

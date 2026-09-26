@@ -580,6 +580,16 @@
       "shop_link": "Start shopping",
       "print": "Print",
       "add_to_apple_wallet": "Add to Apple Wallet"
+    },
+    "recipient": {
+      "checkbox": "Send as a gift to someone else",
+      "no_js_hint": "To send the gift card straight to someone else, enter their email. Leave it blank to receive it yourself.",
+      "email_label": "Recipient email",
+      "name_label": "Recipient name (optional)",
+      "message_label": "Message (optional)",
+      "message_hint": "Up to {{ max }} characters.",
+      "send_on_label": "Send on (optional)",
+      "send_on_hint": "Up to {{ days }} days from today. With no date, it's sent right away."
     }
   },
   "newsletter": {

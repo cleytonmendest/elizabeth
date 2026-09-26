@@ -311,6 +311,10 @@
             },
             "button_text": {
               "label": "Button text"
+            },
+            "show_dynamic_checkout": {
+              "label": "Show dynamic checkout buttons",
+              "info": "Wallets (Shop Pay, Apple Pay, Google Pay, PayPal…) are the ones active in Settings › Payments. Hidden on gift cards, which need the add to cart button to validate the recipient."
             }
           }
         },
@@ -1174,6 +1178,10 @@
             },
             "button_text": {
               "label": "Button text"
+            },
+            "show_dynamic_checkout": {
+              "label": "Show dynamic checkout buttons",
+              "info": "Wallets (Shop Pay, Apple Pay, Google Pay, PayPal…) are the ones active in Settings › Payments. Hidden on gift cards, which need the add to cart button to validate the recipient."
             }
           }
         },

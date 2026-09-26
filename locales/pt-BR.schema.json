@@ -311,6 +311,10 @@
             },
             "button_text": {
               "label": "Texto do botão"
+            },
+            "show_dynamic_checkout": {
+              "label": "Mostrar botões de checkout acelerado",
+              "info": "As carteiras (Shop Pay, Apple Pay, Google Pay, PayPal…) são as ativas em Configurações › Pagamentos. Não aparecem em vale-presente, que precisa do botão de adicionar para validar o destinatário."
             }
           }
         },
@@ -1174,6 +1178,10 @@
             },
             "button_text": {
               "label": "Texto do botão"
+            },
+            "show_dynamic_checkout": {
+              "label": "Mostrar botões de checkout acelerado",
+              "info": "As carteiras (Shop Pay, Apple Pay, Google Pay, PayPal…) são as ativas em Configurações › Pagamentos. Não aparecem em vale-presente, que precisa do botão de adicionar para validar o destinatário."
             }
           }
         },

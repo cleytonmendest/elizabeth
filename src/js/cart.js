@@ -322,10 +322,32 @@ class AddToCart extends HTMLElement {
     }
 
     _updateInputAndButton(variant) {
+        const aVenda = Boolean(variant && variant.available);
+
         // Atualiza o Input Hidden
         if (this.hiddenInput) {
             this.hiddenInput.value = variant ? variant.id : '';
+            // O Liquid desabilita este input quando a variante INICIAL não
+            // está à venda, e a conta precisa ser refeita a cada troca, nos
+            // dois sentidos. Sem isso, quem abria a página numa variante
+            // esgotada e escolhia outra levava um form sem `id` para o
+            // `/cart/add.js`; no caminho inverso, o input seguia habilitado
+            // com o id de uma variante esgotada — e o botão acelerado lê
+            // este mesmo input.
+            this.hiddenInput.disabled = !aVenda;
+            // O banner do Shop Pay Installments (`payment_terms`) e o botão
+            // acelerado (`payment_button`) acompanham a variante por este
+            // input (#134, #138). Trocar `.value` por script não dispara
+            // evento nenhum; o `change` é o aviso que quem escuta um input
+            // espera — e é o que o Dawn, a referência da Shopify, dispara.
+            this.hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
         }
+
+        // Variante esgotada ou inexistente: o botão acelerado não oferece
+        // compra. O botão de adicionar fica desabilitado logo abaixo; o
+        // acelerado não tem esse estado, então sai de cena.
+        const acelerado = this.querySelector('[data-checkout-acelerado]');
+        if (acelerado) acelerado.hidden = !aVenda;
 
         if (!this.button) return;
 
@@ -350,15 +372,61 @@ class AddToCart extends HTMLElement {
 
     async submitHandler(event) {
         event.preventDefault();
+        this._escondeErro();
+        let abreODrawer = true;
         try {
-            await CartManager.addToCart(this.form);
+            const resultado = await CartManager.addToCart(this.form);
+            // `/cart/add.js` recusa com 4xx e um JSON `{ status, message,
+            // description }` — e `fetch` não rejeita por status. Sem esta
+            // checagem a recusa seguia o caminho do sucesso: o drawer abria
+            // sem o item, e o motivo (e-mail do destinatário inválido,
+            // estoque insuficiente) nunca chegava à cliente (#139).
+            if (resultado && resultado.status) {
+                abreODrawer = !this._mostraErro(resultado);
+                return;
+            }
             await this.updateCartDrawer();
             await CartManager.getCart()
         } catch (error) {
             console.error('Erro ao adicionar o produto ao carrinho:', error);
         } finally {
-            document.querySelector('cart-drawer').open();
+            if (abreODrawer) document.querySelector('cart-drawer').open();
         }
+    }
+
+    /**
+     * Mostra a recusa do `/cart/add.js`. Devolve se alguém a mostrou.
+     *
+     * Primeiro pergunta ao próprio formulário: o `cart-error` sai do `<form>`
+     * e sobe, então quem mora DENTRO dele (o formulário de destinatário do
+     * vale-presente) escuta ali e sabe a qual campo cada erro pertence. Quem
+     * põe o erro ao lado do campo cancela o evento, e o aviso geral fica
+     * quieto — o mesmo erro dito duas vezes é ruído.
+     *
+     * O texto é o da Shopify, já no idioma da vitrine: não há frase nossa
+     * aqui para traduzir. Sem lugar para mostrar (o quick-add do card, a
+     * barra fixa), devolve `false` e o drawer abre como antes.
+     */
+    _mostraErro(resultado) {
+        const tratado = !this.form.dispatchEvent(
+            new CustomEvent(PUB_SUB_EVENTS.cartError, { bubbles: true, cancelable: true, detail: resultado }),
+        );
+        if (tratado) return true;
+
+        const aviso = this.querySelector('[data-erro-carrinho]');
+        const texto = typeof resultado.description === 'string' ? resultado.description : resultado.message;
+        if (!aviso || !texto) return false;
+
+        aviso.hidden = false;
+        aviso.textContent = texto;
+        return true;
+    }
+
+    _escondeErro() {
+        const aviso = this.querySelector('[data-erro-carrinho]');
+        if (!aviso) return;
+        aviso.hidden = true;
+        aviso.textContent = '';
     }
 
     /**

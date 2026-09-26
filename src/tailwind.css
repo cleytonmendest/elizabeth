@@ -44,3 +44,22 @@
         display: none;
     }
 }
+
+/*
+ * Checkout acelerado da PDP (#134), vindo de `{{ form | payment_button }}`.
+ *
+ * Os botões moram num shadow DOM FECHADO: seletor de classe não os alcança, e
+ * estas custom properties são a porta que a Shopify publica. Só forma e
+ * esqueleto mudam aqui — a cor de um botão de marca é da carteira, e a Theme
+ * Store reprova tema que a altera.
+ *
+ * - altura: a do botão de adicionar (`h-12`), para os dois formarem coluna;
+ * - raio: o `rounded-theme` que a lojista escolheu;
+ * - esqueleto de carregamento: derivado do texto do scheme. O cinza-claro
+ *   padrão da Shopify vira um retângulo aceso num scheme escuro.
+ */
+shopify-accelerated-checkout {
+    --shopify-accelerated-checkout-button-block-size: 48px;
+    --shopify-accelerated-checkout-button-border-radius: var(--radius-theme);
+    --shopify-accelerated-checkout-skeleton-background-color: rgb(var(--color-foreground) / 0.1);
+}
