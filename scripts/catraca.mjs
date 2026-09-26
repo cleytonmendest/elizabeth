@@ -16,17 +16,47 @@
  * Shell dentro de YAML não tem teste, não roda na máquina de ninguém, e só é
  * exercitado no dia em que já está errado.
  *
- * ── Por que existem DUAS catracas aqui ─────────────────────────────────────
+ * ── Por que existe mais de uma catraca aqui ────────────────────────────────
  *
  * O CLAUDE.md afirmava que a acessibilidade seguia "a mesma regra do lint".
  * Seguia pela metade. A regra tem dois lados:
  *
- *   1. violação NOVA reprova       — o lint faz; e2e/a11y.spec.mjs também
- *   2. o baseline não pode CRESCER — só o lint tinha
+ *   1. violação NOVA reprova    — o lint faz; e2e/a11y.spec.mjs também
+ *   2. o número não pode SUBIR  — só o lint tinha
  *
  * `npm run test:e2e:baseline` está documentado e no package.json. Quem
  * rodasse, commitasse um `a11y-baseline.json` maior e abrisse PR passava
- * verde: nenhum passo lia esse arquivo. Agora os dois passam por aqui.
+ * verde: nenhum passo lia esse arquivo.
+ *
+ * O teto de performance tinha o MESMO lado só, e por dois anos (#27, #32, #96,
+ * #117 mexeram nele). A diferença é que `perf-budget.json` é escrito à mão, não
+ * gerado — o que torna a piora visível no diff, mas não a torna reprovada.
+ * Revisão humana é exatamente aquilo que os três níveis de gate deste
+ * repositório existem para não depender. Ver issue #128.
+ *
+ * ── Dívida medida e teto declarado não são a mesma coisa ───────────────────
+ *
+ * `baseline.json` e `a11y-baseline.json` registram o que EXISTE; `perf-budget`
+ * declara o que NÃO PODE ser passado. O invariante é o mesmo — a guarda não
+ * pode ficar mais fraca sem justificativa —, mas o recado ao leitor não: "a
+ * dívida só pode diminuir, corrija a violação" não serve para um teto. Por isso
+ * cada catraca carrega o próprio vocabulário (`assunto`, `unidade`, `remedio`)
+ * em vez de a mensagem falar de baseline para todas.
+ *
+ * ── Por que `perAsset` ficou FORA ──────────────────────────────────────────
+ *
+ * `perf-budget.json` tem um segundo teto, por arquivo, hoje só para o
+ * `swiper-bundle.min.js`. Ele está fora desta lista de propósito.
+ *
+ * A válvula de escape das outras (`liberadoPor`) não serve para ele: o caso
+ * legítimo de levantá-lo é atualizar a lib e ela crescer, e isso não toca
+ * `scripts/lint/rules/budget.mjs`. Travá-lo obrigaria todo bump de versão a
+ * mexer no verificador só para destravar o número — atrito no lugar errado.
+ *
+ * E o risco que a trava evitaria não existe aqui: `perAsset` só alcança asset
+ * de terceiro vendorizado, que não tem fonte neste repositório. Não há como
+ * levantar esse número para esconder uma regressão NOSSA; levantá-lo é, por
+ * construção, admitir que uma lib de fora engordou.
  *
  * ── O número é DERIVADO, nunca lido ────────────────────────────────────────
  *
@@ -41,25 +71,67 @@ import fs from 'node:fs';
 /**
  * Uma catraca: onde mora o número, como contá-lo, e o que legitima crescer.
  *
- * `cobertura` é a única exceção: melhorar um verificador encontra violações
+ * `liberadoPor` é a única exceção: melhorar um verificador encontra violações
  * que sempre existiram e ninguém via. Isso é dívida escondida virando visível,
  * não dívida nova. O sinal é objetivo — o diff tocou o verificador?
+ *
+ * O campo se chamava `cobertura`, igual ao parâmetro BOOLEANO de `avaliar()`.
+ * Dois significados na mesma palavra: aqui é a lista de caminhos, lá é a
+ * resposta de `tocouCobertura()`. Espalhar uma catraca dentro de `avaliar` —
+ * `avaliar({ ...catraca, base, atual })` — passava o array, que é truthy, e
+ * liberava o crescimento SEMPRE. Aconteceu no primeiro teste escrito contra a
+ * função. Nome próprio para cada coisa é mais barato que a lembrança.
  */
+const PERF = 'scripts/lint/config/perf-budget.json';
+
+/**
+ * O teto de um eixo do orçamento — e `Infinity` quando ele não está lá.
+ *
+ * Não é preciosismo. `scripts/lint/rules/budget.mjs` faz `if (limit == null)
+ * continue`: sem a chave, o eixo inteiro deixa de ser verificado. Um `?? 0`
+ * aqui faria a catraca ler isso como o teto tendo DESPENCADO e aprovar o PR
+ * que desarmou a regra — os dois lados da guarda caindo no mesmo commit.
+ *
+ * `Infinity` diz o que a ausência significa de verdade: teto que não existe é
+ * o teto mais fraco possível. Um valor não numérico (`"34000"` entre aspas, um
+ * `null`) cai no mesmo caminho, e também deve reprovar: a regra o compararia
+ * por coerção e passaria por acidente.
+ */
+const teto = (json, eixo) => {
+  const valor = json.global?.[eixo];
+  return typeof valor === 'number' ? valor : Infinity;
+};
+
 export const CATRACAS = [
   {
     nome: 'lint',
     arquivo: 'scripts/lint/config/baseline.json',
     contar: (json) => (json.fingerprints ?? []).length,
-    cobertura: ['scripts/lint/rules/'],
+    liberadoPor: ['scripts/lint/rules/'],
     comoRegravar: 'npm run lint:baseline',
   },
   {
     nome: 'a11y',
     arquivo: 'e2e/a11y-baseline.json',
     contar: (json) => Object.keys(json.violacoes ?? {}).length,
-    cobertura: ['e2e/helpers/axe.mjs', 'e2e/a11y.spec.mjs'],
+    liberadoPor: ['e2e/helpers/axe.mjs', 'e2e/a11y.spec.mjs'],
     comoRegravar: 'npm run test:e2e:baseline',
   },
+  // Os dois eixos do orçamento são entradas SEPARADAS, e isso é o ponto: um
+  // número só, somando JS e CSS, deixaria 2 KB a mais de JS passarem escondidos
+  // atrás de 2 KB a menos de CSS. São dois downloads diferentes.
+  ...['js', 'css'].map((eixo) => ({
+    nome: `perf-${eixo}`,
+    arquivo: PERF,
+    contar: (json) => teto(json, eixo),
+    liberadoPor: ['scripts/lint/rules/budget.mjs'],
+    comoRegravar: `editar global.${eixo} em ${PERF}, com o motivo num campo $comment_`,
+    assunto: `o teto de ${eixo.toUpperCase()} global`,
+    unidade: 'byte(s)',
+    remedio:
+      'Teto só pode descer — reduza o peso de verdade (co-locar o asset na section que o usa, ' +
+      'ou baixá-lo em runtime pelo componente) em vez de levantar o teto.',
+  })),
 ];
 
 /** O diff tocou algum dos caminhos que legitimam crescimento? */
@@ -74,9 +146,40 @@ export function tocouCobertura(arquivosMudados, prefixos) {
  * `{ ok, nivel, mensagem }`. É a parte onde dá para errar em silêncio — e já
  * se errou —, então é a parte que tem teste.
  */
-export function avaliar({ nome, base, atual, cobertura = false, comoRegravar = '' }) {
+export function avaliar({
+  nome,
+  base,
+  atual,
+  cobertura = false,
+  comoRegravar = '',
+  assunto = 'o baseline',
+  unidade = 'item(ns)',
+  remedio = 'Dívida técnica só pode diminuir — corrija a violação em vez de registrá-la.',
+}) {
+  // Antes de qualquer comparação: o número existe? Um teto apagado desliga o
+  // eixo em `budget.mjs`, e nenhuma exceção de cobertura legitima isso —
+  // melhorar um verificador nunca produz um verificador desarmado. Por isso
+  // este caso está ACIMA do `cobertura`, e não dentro dele.
+  if (!Number.isFinite(atual)) {
+    return {
+      ok: false,
+      nivel: 'semteto',
+      mensagem:
+        `${nome}: ${assunto} não é mais um número neste PR (era ${base}). Sem o campo, a regra ` +
+        'que o lê desliga o eixo inteiro — os dois lados da guarda caem no mesmo commit.',
+    };
+  }
+
+  if (!Number.isFinite(base)) {
+    return {
+      ok: true,
+      nivel: 'novo',
+      mensagem: `${nome}: ${assunto} nasce em ${atual} ${unidade} neste PR. Daqui só pode descer.`,
+    };
+  }
+
   if (atual <= base) {
-    return { ok: true, nivel: 'ok', mensagem: `${nome}: ${base} → ${atual} item(ns).` };
+    return { ok: true, nivel: 'ok', mensagem: `${nome}: ${base} → ${atual} ${unidade}.` };
   }
 
   if (cobertura) {
@@ -84,9 +187,9 @@ export function avaliar({ nome, base, atual, cobertura = false, comoRegravar = '
       ok: true,
       nivel: 'cobertura',
       mensagem:
-        `${nome}: o baseline subiu de ${base} para ${atual} itens, mas o verificador mudou neste ` +
-        'PR — crescimento tratado como cobertura nova, não dívida nova. Confirme no corpo do PR ' +
-        'que o tema não piorou.',
+        `${nome}: ${assunto} subiu de ${base} para ${atual} ${unidade}, mas o verificador mudou ` +
+        'neste PR — crescimento tratado como cobertura nova, não piora real. Confirme no corpo ' +
+        'do PR que o tema não piorou.',
     };
   }
 
@@ -94,9 +197,9 @@ export function avaliar({ nome, base, atual, cobertura = false, comoRegravar = '
     ok: false,
     nivel: 'cresceu',
     mensagem:
-      `${nome}: o baseline cresceu de ${base} para ${atual} itens sem nenhuma mudança no ` +
-      `verificador. Dívida técnica só pode diminuir — corrija a violação em vez de registrá-la. ` +
-      `(Regravar com "${comoRegravar}" só é legítimo depois de REDUZIR o número.)`,
+      `${nome}: ${assunto} subiu de ${base} para ${atual} ${unidade} sem nenhuma mudança no ` +
+      `verificador. ${remedio} ` +
+      `(Mudar o número por "${comoRegravar}" só é legítimo depois de REDUZIR o que ele mede.)`,
   };
 }
 
@@ -222,7 +325,8 @@ function main() {
     if (!veredito.ok) falhou = true;
   };
 
-  for (const { nome, arquivo, contar, cobertura, comoRegravar } of CATRACAS) {
+  for (const catraca of CATRACAS) {
+    const { nome, arquivo, contar, liberadoPor, comoRegravar } = catraca;
     let cruBase = null;
     try {
       // stderr capturado, não herdado: a ausência do caminho é um desfecho
@@ -251,8 +355,11 @@ function main() {
         nome,
         base: contar(JSON.parse(cruBase)),
         atual: contar(JSON.parse(fs.readFileSync(arquivo, 'utf8'))),
-        cobertura: tocouCobertura(mudados, cobertura),
+        cobertura: tocouCobertura(mudados, liberadoPor),
         comoRegravar,
+        assunto: catraca.assunto,
+        unidade: catraca.unidade,
+        remedio: catraca.remedio,
       })
     );
   }
