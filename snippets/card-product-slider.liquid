@@ -180,6 +180,16 @@
         <span class="text-xs text-foreground/60 line-through">{{ card_product.compare_at_price | money }}</span>
       {%- endif -%}
     </div>
+    {%- comment -%}
+      Preço unitário (issue #136), da mesma variante que a Shopify escolhe para
+      o card. Sem medida, `price-unit` não renderiza nada — nem um vão.
+    {%- endcomment -%}
+    {%- assign card_variant = card_product.selected_or_first_available_variant -%}
+    {%- render 'price-unit',
+      unit_price: card_variant.unit_price,
+      measurement: card_variant.unit_price_measurement,
+      class: 'mt-1 text-xs text-foreground-muted'
+    -%}
   </div>
 
   {%- comment -%} Mobile: botão Adicionar estático (não há hover no toque) {%- endcomment -%}

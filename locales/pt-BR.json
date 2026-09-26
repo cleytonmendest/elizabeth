@@ -160,6 +160,7 @@
       "sale_price": "Preço promocional",
       "regular_price": "Preço regular",
       "unit_price": "Preço unitário",
+      "unit_price_separator": "por",
       "save": "Economize",
       "vendor": "Fornecedor",
       "type": "Tipo",
@@ -194,6 +195,17 @@
     },
     "recently_viewed": {
       "title": "Vistos recentemente"
+    },
+    "selling_plan": {
+      "legend": "Opções de compra",
+      "one_time": "Compra única",
+      "per_delivery": "por entrega"
+    },
+    "tax": {
+      "included_with_policy_html": "Impostos incluídos. <a href=\"{{ link }}\" class=\"underline\">Frete</a> calculado no checkout.",
+      "included": "Impostos incluídos. Frete calculado no checkout.",
+      "at_checkout_with_policy_html": "Impostos e <a href=\"{{ link }}\" class=\"underline\">frete</a> calculados no checkout.",
+      "at_checkout": "Impostos e frete calculados no checkout."
     },
     "pickup_availability": {
       "title": "Retirada na loja",

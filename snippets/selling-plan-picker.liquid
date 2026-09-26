@@ -1,0 +1,121 @@
+{%- comment -%}
+  Opções de compra — compra única ou plano (assinatura, pré-venda). Issue #135.
+
+  Os planos vêm do app que a lojista instalou (Shopify Subscriptions, um app de
+  pré-venda…): nome, descrição e preço são dele. O tema só oferece a escolha.
+
+  Renderizado DENTRO do form de produto (snippets/add-to-cart.liquid), e é isso
+  que faz funcionar sem JS: os radios se chamam `selling_plan`, então o submit
+  nativo leva o plano escolhido — e o `CartManager.addToCart` também, porque
+  monta o corpo com `new FormData(form)`. "Compra única" é `selling_plan=`
+  vazio, que o /cart/add trata como nenhum plano.
+
+  Qual radio vem marcado:
+  - o plano da URL (`?selling_plan=`), se houver;
+  - senão, o primeiro plano, quando o produto EXIGE um
+    (`requires_selling_plan`) — e aí nem existe a opção de compra única;
+  - senão, compra única.
+  A mesma regra está em snippets/price-v2.liquid, que pinta o preço inicial;
+  `tests/preco-liquid.test.mjs` exige que as duas concordem.
+
+  O JSON `data-selling-plan-prices` é a tabela variante × plano que
+  src/js/selling-plan-picker.js publica no evento `selling-plan:change`, para o
+  <price-component> repintar sem perguntar nada a este componente. Montado à
+  mão, e não com `| json` na alocação, porque a forma do JSON de um drop da
+  Shopify não é contrato documentado — estes campos são.
+
+  Produto sem plano: nada é renderizado, nem o script.
+
+  Parâmetros:
+  - product: objeto do produto (obrigatório)
+{%- endcomment -%}
+{%- if product.selling_plan_groups.size > 0 -%}
+  {%- liquid
+    assign current_variant = product.selected_or_first_available_variant
+    assign selected_plan = product.selected_selling_plan
+    if selected_plan == blank and product.requires_selling_plan
+      assign selected_plan = product.selling_plan_groups.first.selling_plans.first
+    endif
+  -%}
+
+  <selling-plan-picker class="block w-full basis-full" data-variant-id="{{ current_variant.id }}">
+    <fieldset class="flex flex-col gap-2">
+      <legend class="mb-3 text-sm">{{ 'product.selling_plan.legend' | t }}</legend>
+
+      {%- unless product.requires_selling_plan -%}
+        <label class="flex items-center gap-3 py-1 text-sm cursor-pointer">
+          <input
+            type="radio"
+            name="selling_plan"
+            value=""
+            class="accent-foreground"
+            {% if selected_plan == blank %}
+              checked
+            {% endif %}
+          >
+          <span>{{ 'product.selling_plan.one_time' | t }}</span>
+        </label>
+      {%- endunless -%}
+
+      {%- for group in product.selling_plan_groups -%}
+        <fieldset class="flex flex-col gap-2">
+          <legend class="mb-2 text-xs uppercase tracking-label text-foreground-muted">{{ group.name | escape }}</legend>
+          {%- for plan in group.selling_plans -%}
+            <label class="flex items-start gap-3 py-1 text-sm cursor-pointer">
+              <input
+                type="radio"
+                name="selling_plan"
+                value="{{ plan.id }}"
+                class="mt-0.5 accent-foreground"
+                {% if plan.id == selected_plan.id %}
+                  checked
+                {% endif %}
+              >
+              <span class="flex flex-col gap-0.5">
+                <span>{{ plan.name | escape }}</span>
+                {%- if plan.description != blank -%}
+                  <span class="text-xs text-foreground-muted">{{ plan.description | escape }}</span>
+                {%- endif -%}
+              </span>
+            </label>
+          {%- endfor -%}
+        </fieldset>
+      {%- endfor -%}
+    </fieldset>
+
+    {%- comment -%}
+      { "<variante>": { "": compra única, "<plano>": alocação } }. A medida do
+      preço unitário vai junto porque produto de variante única não tem
+      <variant-selects>, e aí este JSON é a única fonte do <price-component>.
+    {%- endcomment -%}
+    <script type="application/json" data-selling-plan-prices>
+      {
+      {%- for variant in product.variants -%}
+        {%- liquid
+          assign measurement = variant.unit_price_measurement
+          if measurement
+            capture measurement_json
+              echo '{"reference_value":'
+              echo measurement.reference_value | json
+              echo ',"reference_unit":'
+              echo measurement.reference_unit | json
+              echo '}'
+            endcapture
+          else
+            assign measurement_json = 'null'
+          endif
+        -%}
+        "{{ variant.id }}": {
+          "": {"price":{{ variant.price | json }},"compare_at_price":{{ variant.compare_at_price | json }},"unit_price":{{ variant.unit_price | json }},"unit_price_measurement":{{ measurement_json }}}
+          {%- for allocation in variant.selling_plan_allocations -%}
+            ,"{{ allocation.selling_plan.id }}": {"price":{{ allocation.price | json }},"compare_at_price":{{ allocation.compare_at_price | json }},"per_delivery_price":{{ allocation.per_delivery_price | json }},"unit_price":{{ allocation.unit_price | json }},"unit_price_measurement":{{ measurement_json }}}
+          {%- endfor -%}
+        }
+        {%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+      }
+    </script>
+  </selling-plan-picker>
+
+  <script src="{{ 'selling-plan-picker.js' | asset_url }}" defer></script>
+{%- endif -%}

@@ -14,6 +14,20 @@
   Não renderiza parcelamento: o tema não tem os dados para calculá-lo. Ver
   docs/adr/0008-o-tema-nao-calcula-dinheiro-que-o-checkout-nao-produz.md — a
   informação de parcelamento é texto do lojista, no bloco `payment_icons`.
+
+  Plano de compra (issue #135): com `use_variant`, o preço inicial é o da
+  alocação do plano que `selling-plan-picker.liquid` deixa MARCADO — o da URL
+  (`?selling_plan=`), ou o primeiro plano quando o produto exige um. A regra de
+  qual plano vem marcado está escrita nos dois arquivos e
+  `tests/preco-liquid.test.mjs` exige que eles concordem: preço de um plano com
+  o radio de outro seria a cliente pagando um valor diferente do que leu.
+  Sem JS, este é o preço que fica na tela.
+
+  Preço unitário (issue #136): `price-unit.liquid`. O elemento só é reservado
+  (escondido) quando ALGUMA variante tem medida — produto de moda comum não
+  carrega markup morto.
+
+  Imposto (issue #143): só com `pdp`. A barra fixa e os cards não repetem a frase.
 {% endcomment %}
 {%- liquid
   if use_variant
@@ -24,6 +38,46 @@
 
   assign compare_at_price = target.compare_at_price
   assign price = target.price | default: 1999
+  assign unit_price = target.unit_price
+
+  assign has_selling_plans = false
+  if use_variant and product.selling_plan_groups.size > 0
+    assign has_selling_plans = true
+  endif
+
+  assign per_delivery_price = nil
+  if has_selling_plans
+    assign selected_plan = product.selected_selling_plan
+    if selected_plan == blank and product.requires_selling_plan
+      assign selected_plan = product.selling_plan_groups.first.selling_plans.first
+    endif
+
+    if selected_plan
+      for allocation in target.selling_plan_allocations
+        if allocation.selling_plan.id == selected_plan.id
+          assign price = allocation.price
+          assign compare_at_price = allocation.compare_at_price
+          assign per_delivery_price = allocation.per_delivery_price
+          assign unit_price = allocation.unit_price | default: unit_price
+          break
+        endif
+      endfor
+    endif
+  endif
+
+  assign show_per_delivery = false
+  if per_delivery_price and per_delivery_price != price
+    assign show_per_delivery = true
+  endif
+
+  assign reserve_unit_price = false
+  if use_variant
+    assign measured_variants = product.variants | map: 'unit_price_measurement' | compact
+    if measured_variants.size > 0
+      assign reserve_unit_price = true
+    endif
+  endif
+
   assign money_price = price | money
 -%}
 
@@ -39,4 +93,54 @@
       {{ money_price }}
     </span>
   </div>
+
+  {%- comment -%}
+    Plano pré-pago (6 entregas pagas de uma vez): o preço acima é o total, e
+    esta linha diz quanto sai cada entrega. Quando os dois são iguais — plano
+    pago a cada entrega, ou compra única — ela fica escondida.
+  {%- endcomment -%}
+  {%- if has_selling_plans -%}
+    <p class="text-xs text-foreground-muted{% unless show_per_delivery %} hidden{% endunless %}" data-per-delivery>
+      <span data-per-delivery-amount>{{ per_delivery_price | money }}</span>
+      {{ 'product.selling_plan.per_delivery' | t }}
+    </p>
+  {%- endif -%}
+
+  {%- render 'price-unit',
+    unit_price: unit_price,
+    measurement: target.unit_price_measurement,
+    reserve: reserve_unit_price,
+    class: 'mt-1 text-xs text-foreground-muted'
+  -%}
 </price-component>
+{%- comment -%}
+  Co-locado: o preço de variante só existe onde este snippet é renderizado, e
+  no layout o arquivo pesava em toda página (carrinho, conta, 404). Pode sair
+  mais de uma vez na mesma página (PDP + barra fixa): o componente é seguro
+  para isso — ver o cabeçalho de src/js/price-component.js.
+{%- endcomment -%}
+<script src="{{ 'price-component.js' | asset_url }}" defer></script>
+
+{%- if pdp -%}
+  {%- comment -%}
+    Loja brasileira costuma operar com "Todos os preços incluem impostos"
+    ligado, e aí "impostos calculados no checkout" sugere um acréscimo que não
+    vai acontecer. `cart.taxes_included` é a configuração da loja, não do tema.
+    O link para a política de frete só existe quando a política foi publicada.
+  {%- endcomment -%}
+  <p class="mt-1 text-xs text-foreground-muted" data-tax-note>
+    {%- if cart.taxes_included -%}
+      {%- if shop.shipping_policy.body != blank -%}
+        {{ 'product.tax.included_with_policy_html' | t: link: shop.shipping_policy.url }}
+      {%- else -%}
+        {{ 'product.tax.included' | t }}
+      {%- endif -%}
+    {%- else -%}
+      {%- if shop.shipping_policy.body != blank -%}
+        {{ 'product.tax.at_checkout_with_policy_html' | t: link: shop.shipping_policy.url }}
+      {%- else -%}
+        {{ 'product.tax.at_checkout' | t }}
+      {%- endif -%}
+    {%- endif -%}
+  </p>
+{%- endif -%}

@@ -160,6 +160,7 @@
       "sale_price": "Sale price",
       "regular_price": "Regular price",
       "unit_price": "Unit price",
+      "unit_price_separator": "per",
       "save": "Save",
       "vendor": "Vendor",
       "type": "Type",
@@ -194,6 +195,17 @@
     },
     "recently_viewed": {
       "title": "Recently viewed"
+    },
+    "selling_plan": {
+      "legend": "Purchase options",
+      "one_time": "One-time purchase",
+      "per_delivery": "per delivery"
+    },
+    "tax": {
+      "included_with_policy_html": "Tax included. <a href=\"{{ link }}\" class=\"underline\">Shipping</a> calculated at checkout.",
+      "included": "Tax included. Shipping calculated at checkout.",
+      "at_checkout_with_policy_html": "Taxes and <a href=\"{{ link }}\" class=\"underline\">shipping</a> calculated at checkout.",
+      "at_checkout": "Taxes and shipping calculated at checkout."
     },
     "pickup_availability": {
       "title": "Store pickup",

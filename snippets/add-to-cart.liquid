@@ -50,6 +50,7 @@
         disabled
       {% endif %}
     >
+    {%- render 'selling-plan-picker', product: product -%}
 
     <div class="empty:hidden">{{- form | payment_terms -}}</div>
 
