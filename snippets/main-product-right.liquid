@@ -85,6 +85,7 @@
 
       {%- when 'buy_button' -%}
         {%- render 'add-to-cart', product: product, hasQtd: qtd_side_buy, block: block -%}
+        {%- render 'pickup-availability', product: product -%}
     {% endcase %}
   {% endfor %}
 </div>

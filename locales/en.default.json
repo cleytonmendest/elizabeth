@@ -193,6 +193,15 @@
     },
     "recently_viewed": {
       "title": "Recently viewed"
+    },
+    "pickup_availability": {
+      "title": "Store pickup",
+      "available_at": "Pickup available at {{ location_name }}",
+      "unavailable_at": "Pickup currently unavailable at {{ location_name }}",
+      "available": "Available for pickup",
+      "unavailable": "Currently unavailable for pickup",
+      "check_other_stores": "Check availability at other stores",
+      "view_store_info": "View store information"
     }
   },
   "collection": {

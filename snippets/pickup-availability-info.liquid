@@ -1,0 +1,132 @@
+{%- comment -%}
+  Retirada na loja para UMA variante: o resumo e o diálogo com as lojas (#137).
+
+  Renderizado em dois lugares, e é por isso que é um snippet:
+
+    snippets/pickup-availability.liquid    a PDP, com a variante inicial —
+                                           é o que a cliente sem JS vê
+    sections/pickup-availability.liquid    o fragmento que o componente pede
+                                           à Section Rendering API na troca
+
+  Um arquivo só garante que as duas pinturas não divergem: o HTML que chega na
+  troca é o mesmo que o servidor pintou no carregamento.
+
+  ── A loja principal é a primeira da lista ────────────────────────────────
+
+  `store_availabilities` só traz os locais que estocam a variante, e só os com
+  retirada ativa interessam aqui (Configurações › Frete e entrega › Retirada
+  no local). A Shopify devolve a lista ordenada, e o primeiro é o que o resumo
+  anuncia. Se ele não tem a peça e outro tem, o resumo diz que o principal está
+  indisponível e o botão oferece a lista — a cliente descobre a outra loja em
+  vez de concluir que não há retirada.
+
+  Nenhum local com retirada: o snippet não imprime NADA. Quem o hospeda usa o
+  vazio para se esconder, e o vão entre os blocos da PDP não fica sobrando.
+
+  ── O botão funciona antes do JS ──────────────────────────────────────────
+
+  `command="show-modal"` com `commandfor` abre o <dialog> sem script, nos
+  navegadores que já têm invoker commands: modal, com a página inerte e o foco
+  devolvido ao gatilho no Esc — `e2e/retirada.spec.mjs` mede isso sem o JS.
+  O que o nativo NÃO faz é segurar o Tab: medido, ele escapa para a barra do
+  navegador. Com o JS carregado, `<pickup-availability>` assume o clique e
+  acrescenta essa volta.
+
+  `pick_up_time` já é uma frase pronta, traduzida pela Shopify ("Normalmente
+  fica pronto em 24 horas"). Por isso ela entra inteira depois do separador, e
+  não dentro de uma frase nossa.
+
+  Recebe: variant
+{%- endcomment -%}
+{%- liquid
+  assign locais = variant.store_availabilities | where: 'pick_up_enabled', true
+  assign principal = locais.first
+  assign dialogo_id = 'PickupAvailability-' | append: variant.id
+-%}
+{%- if locais.size > 0 -%}
+  <div class="text-sm" data-pickup-conteudo>
+    <p>
+      {%- if principal.available -%}
+        {{ 'product.pickup_availability.available_at' | t: location_name: principal.location.name }}
+        {%- if principal.pick_up_time != blank -%}
+          <span class="text-foreground-muted"> · {{ principal.pick_up_time | escape }}</span>
+        {%- endif -%}
+      {%- else -%}
+        {{ 'product.pickup_availability.unavailable_at' | t: location_name: principal.location.name }}
+      {%- endif -%}
+    </p>
+    <button
+      type="button"
+      class="mt-1 underline underline-offset-4 hover:opacity-70 transition-opacity"
+      aria-haspopup="dialog"
+      commandfor="{{ dialogo_id }}"
+      command="show-modal"
+      data-pickup-abrir
+    >
+      {%- if locais.size > 1 -%}
+        {{ 'product.pickup_availability.check_other_stores' | t }}
+      {%- else -%}
+        {{ 'product.pickup_availability.view_store_info' | t }}
+      {%- endif -%}
+    </button>
+
+    <dialog
+      id="{{ dialogo_id }}"
+      class="bg-background text-foreground border border-border rounded-theme shadow-panel"
+      aria-labelledby="{{ dialogo_id }}-titulo"
+    >
+      {%- comment -%}
+        O conteúdo mora num filho que preenche o diálogo: assim um clique cujo
+        alvo é o próprio <dialog> só pode ter vindo do véu, e é ele que fecha.
+      {%- endcomment -%}
+      <div class="max-w-md p-6">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 id="{{ dialogo_id }}-titulo" class="text-lg font-light tracking-title">
+              {{ 'product.pickup_availability.title' | t }}
+            </h2>
+            <p class="mt-1 text-foreground-muted">
+              {{ variant.product.title | escape }}
+              {%- unless variant.product.has_only_default_variant %} — {{ variant.title | escape }}{% endunless -%}
+            </p>
+          </div>
+          <button
+            type="button"
+            class="shrink-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-foreground/5"
+            aria-label="{{ 'general.accessibility.close' | t }}"
+            commandfor="{{ dialogo_id }}"
+            command="close"
+            data-pickup-fechar
+          >
+            {% render 'icon-close', size: 20 %}
+          </button>
+        </div>
+
+        <ul class="mt-4">
+          {%- for local in locais -%}
+            <li class="py-4 border-t border-border">
+              <h3 class="font-medium">{{ local.location.name | escape }}</h3>
+              <p class="mt-1 text-foreground-muted">
+                {%- if local.available -%}
+                  {{ 'product.pickup_availability.available' | t }}
+                  {%- if local.pick_up_time != blank %} · {{ local.pick_up_time | escape }}{% endif -%}
+                {%- else -%}
+                  {{ 'product.pickup_availability.unavailable' | t }}
+                {%- endif -%}
+              </p>
+              <div class="mt-2 leading-relaxed">{{ local.location.address | format_address }}</div>
+              {%- assign telefone = local.location.address.phone -%}
+              {%- if telefone != blank -%}
+                <p class="mt-1">
+                  <a href="tel:{{ telefone | remove: ' ' | escape }}" class="underline underline-offset-4">
+                    {{- telefone | escape -}}
+                  </a>
+                </p>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    </dialog>
+  </div>
+{%- endif -%}

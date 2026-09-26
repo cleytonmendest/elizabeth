@@ -193,6 +193,15 @@
     },
     "recently_viewed": {
       "title": "Vistos recentemente"
+    },
+    "pickup_availability": {
+      "title": "Retirada na loja",
+      "available_at": "Retirada disponível em {{ location_name }}",
+      "unavailable_at": "Retirada indisponível no momento em {{ location_name }}",
+      "available": "Disponível para retirada",
+      "unavailable": "Indisponível para retirada no momento",
+      "check_other_stores": "Ver disponibilidade nas outras lojas",
+      "view_store_info": "Ver informações da loja"
     }
   },
   "collection": {

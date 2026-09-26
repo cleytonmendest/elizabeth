@@ -1582,6 +1582,83 @@ const MUTANTES = [
     para: "      '64px',",
     teste: 'tests/sticky-atc.test.mjs',
   },
+  // ── Retirada na loja (#137) ─────────────────────────────────────────────
+  //
+  // O defeito caro aqui é o silencioso: a tela anunciando a loja de OUTRA
+  // variante. Nada quebra, nada vai para o console, e a cliente vai até a loja
+  // buscar um tamanho que não está lá.
+  {
+    porque: 'a resposta atrasada de uma variante anterior volta a pintar por cima da atual',
+    arquivo: 'src/js/pickup-availability.js',
+    de: '        if (pedido !== this.pedido) return;',
+    para: '        // mutante',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    // O caso que o contador ingênuo esquece: voltar para a variante que JÁ
+    // está na tela não busca nada — e por isso não invalidava a que estava em
+    // voo, que chegava e pintava a outra.
+    porque: 'voltar à variante da tela deixa de invalidar o pedido em voo',
+    arquivo: 'src/js/pickup-availability.js',
+    de: '        const pedido = ++this.pedido;\n        if (id && id === this.dataset.variantId) return;',
+    para: '        if (id && id === this.dataset.variantId) return;\n        const pedido = ++this.pedido;',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    // Loja com idioma no caminho (`/en/`) receberia o fragmento no idioma
+    // padrão — a mesma quebra do mutante da rota do carrinho, acima.
+    porque: 'a URL do fragmento volta a ser cravada em vez de vir de Shopify.routes.root',
+    arquivo: 'src/js/pickup-availability.js',
+    de: 'await fetch(`${raiz}variants/${id}/?section_id=${SECAO}`)',
+    para: 'await fetch(`/variants/${id}/?section_id=${SECAO}`)',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    porque: 'a variante sem retirada deixa o elemento vazio na coluna, e o gap abre um vão',
+    arquivo: 'src/js/pickup-availability.js',
+    de: '        this.hidden = !conteudo;',
+    para: '        // mutante',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    porque: 'o diálogo abre e o foco fica no gatilho, atrás do véu',
+    arquivo: 'src/js/pickup-availability.js',
+    de: '        if (fechar) fechar.focus();',
+    para: '        // mutante',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    porque: 'o diálogo fecha e o foco não volta ao gatilho',
+    arquivo: 'src/js/pickup-availability.js',
+    de: '        if (gatilho) gatilho.focus();',
+    para: '        // mutante',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    // Não é redundante com o modal nativo: medido em `e2e/retirada.spec.mjs`,
+    // sem este ouvinte o Tab do último focável sai para a barra do navegador.
+    porque: 'o Tab deixa de dar a volta dentro do diálogo, e o foco escapa dele',
+    arquivo: 'src/js/pickup-availability.js',
+    de: "        if (event.key !== 'Tab') return;",
+    para: '        return;',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    // Depósito que estoca a peça e não atende cliente viraria "retirada
+    // indisponível em Depósito" — uma loja inventada no resumo.
+    porque: 'local sem retirada ativa volta a ser anunciado como loja',
+    arquivo: 'snippets/pickup-availability-info.liquid',
+    de: "  assign locais = variant.store_availabilities | where: 'pick_up_enabled', true",
+    para: '  assign locais = variant.store_availabilities',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    porque: 'a PDP sem retirada nasce com o elemento vazio na coluna, e o vão aparece sem JS',
+    arquivo: 'snippets/pickup-availability.liquid',
+    de: '{% if conteudo == blank %} hidden{% endif %}',
+    para: '',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
   {
     // A afirmação errada que este PR corrigiu: o §4 dizia que cada preset traz
     // o próprio arranjo de home. A chave existe e está VAZIA nos quatro, e o
