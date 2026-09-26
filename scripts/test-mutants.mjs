@@ -245,6 +245,61 @@ const MUTANTES = [
     para: '      if (false) continue;',
     teste: 'tests/svgcolors.test.mjs',
   },
+  // ── A #142: o corte ignorava o ponto focal da lojista ───────────────────
+  //
+  // O defeito não tem sintoma: a foto aparece, só que cortada no centro em vez
+  // de no rosto da modelo. Nenhum teste de "a imagem carregou" o vê, e por isso
+  // dez arquivos passaram assim. Estes mutantes existem para a regra não virar
+  // o mesmo silêncio.
+  {
+    porque: 'a regra deixa de acusar — a <img> à mão volta a cortar pelo centro sem ninguém ver',
+    arquivo: 'scripts/lint/rules/pontofocal.mjs',
+    de: '    if (PONTO_FOCAL.test(tag)) continue;',
+    para: '    continue;',
+    teste: 'tests/pontofocal.test.mjs',
+  },
+  {
+    porque: 'object-position com valor cravado passa como ponto focal — outro ponto que a lojista não escolheu',
+    arquivo: 'scripts/lint/rules/pontofocal.mjs',
+    de: 'export const PONTO_FOCAL = /object-position\\s*:\\s*\\{\\{[^}]*\\bfocal_point\\b/;',
+    para: 'export const PONTO_FOCAL = /object-position/;',
+    teste: 'tests/pontofocal.test.mjs',
+  },
+  {
+    porque: 'o Liquid deixa de ser mascarado, e um `{% if a > b %}` entre atributos encerra a tag',
+    arquivo: 'scripts/lint/rules/pontofocal.mjs',
+    de: '  const mascarado = semLiquid(limpo);',
+    para: '  const mascarado = limpo;',
+    teste: 'tests/pontofocal.test.mjs',
+  },
+  {
+    porque: 'a tag passa a terminar no primeiro `>`, mesmo dentro de um valor entre aspas',
+    arquivo: 'scripts/lint/rules/pontofocal.mjs',
+    de: "const TAG_IMG = /<img\\b(?:[^>\"']|\"[^\"]*\"|'[^']*')*>/gi;",
+    para: 'const TAG_IMG = /<img\\b[^>]*>/gi;',
+    teste: 'tests/pontofocal.test.mjs',
+  },
+  {
+    porque: 'exemplo dentro de {% comment %} volta a ser acusado como markup',
+    arquivo: 'scripts/lint/rules/pontofocal.mjs',
+    de: '  const limpo = stripInert(src);',
+    para: '  const limpo = src;',
+    teste: 'tests/pontofocal.test.mjs',
+  },
+  {
+    porque: 'o código perde a origem, e a exceção da busca preditiva vira licença para o arquivo inteiro',
+    arquivo: 'scripts/lint/rules/pontofocal.mjs',
+    de: '  if (liquid) return liquid[1];',
+    para: "  if (liquid) return 'src-vazio';",
+    teste: 'tests/pontofocal.test.mjs',
+  },
+  {
+    porque: 'a miniatura do sticky perde o ponto focal e volta a cortar pelo centro',
+    arquivo: 'snippets/sticky-add-to-cart.liquid',
+    de: '          style="object-position: {{ product.featured_image.presentation.focal_point }}"',
+    para: '          style=""',
+    teste: 'tests/pontofocal.test.mjs',
+  },
   // ── A #106: stripInert decide o que TODAS as regras enxergam ────────────
   //
   // Erro aqui não aparece como erro: aparece como uma regra acusando um trecho

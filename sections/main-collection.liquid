@@ -15,18 +15,18 @@
 <div class="page-width !py-8">
   {%- if collection.image and section.settings.show_collection_image -%}
     <div class="collection-hero mb-10 md:mb-12 relative h-64 md:h-[26rem] rounded-theme overflow-hidden">
-      <img
-        src="{{ collection.image | image_url: width: 1600 }}"
-        srcset="{{ collection.image | image_url: width: 600 }} 600w,
-                {{ collection.image | image_url: width: 1200 }} 1200w,
-                {{ collection.image | image_url: width: 1600 }} 1600w"
-        sizes="100vw"
-        alt="{{ collection.image.alt | escape }}"
-        class="w-full h-full object-cover"
-        width="{{ collection.image.width }}"
-        height="{{ collection.image.height }}"
-        loading="eager"
-      >
+      {%- comment -%} `image_tag` aplica o ponto focal no corte do `object-cover` (#142). {%- endcomment -%}
+      {%- assign collection_image_alt = collection.image.alt | default: '' -%}
+      {{
+        collection.image
+        | image_url: width: 1600
+        | image_tag:
+          widths: '600, 1200, 1600',
+          sizes: '100vw',
+          alt: collection_image_alt,
+          class: 'w-full h-full object-cover',
+          loading: 'eager'
+      }}
       <div class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center text-center px-4">
         <h1 class="text-white text-3xl md:text-5xl font-light tracking-title">
           {{ collection.title }}

@@ -194,15 +194,16 @@
                 {%- comment -%} Product Image {%- endcomment -%}
                 <div class="flex-shrink-0 w-20 h-20 bg-foreground/5 rounded-theme overflow-hidden">
                   {%- if line_item.image -%}
-                    <img
-                      src="{{ line_item.image | image_url: width: 160 }}"
-                      alt="{{ line_item.title }}"
-                      width="{{ line_item.image.width }}"
-                      height="{{ line_item.image.height }}"
-                      class="w-full h-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                    >
+                    {%- comment -%} `image_tag` aplica o ponto focal no corte do `object-cover` (#142). {%- endcomment -%}
+                    {{
+                      line_item.image
+                      | image_url: width: 160
+                      | image_tag:
+                        alt: line_item.title,
+                        class: 'w-full h-full object-cover',
+                        loading: 'lazy',
+                        decoding: 'async'
+                    }}
                   {%- else -%}
                     <div class="w-full h-full flex items-center justify-center">
                       <svg class="w-8 h-8 text-foreground/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

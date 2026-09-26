@@ -36,6 +36,11 @@
         Miniatura: quem chega até aqui rolou para longe da galeria e perdeu a
         referência do que está comprando. Só em telas largas, onde sobra
         espaço. `aria-hidden` porque o título ao lado já nomeia o produto.
+
+        A tag é escrita à mão por causa do `aria-hidden`: o filtro que gera a
+        tag de imagem não documenta parâmetro com hífen, e um erro de parse
+        aqui derrubaria a barra em toda PDP. Por isso o ponto focal vai
+        declarado no `style` — é o que o filtro faria sozinho. Ver #142.
       {%- endcomment -%}
       {%- if product.featured_image -%}
         <img
@@ -46,6 +51,7 @@
           height="64"
           loading="lazy"
           class="hidden lg:block w-12 aspect-product object-cover rounded-theme-sm flex-shrink-0"
+          style="object-position: {{ product.featured_image.presentation.focal_point }}"
         >
       {%- endif -%}
 

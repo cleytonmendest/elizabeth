@@ -37,15 +37,17 @@
   <div class="pt-5 color-border border-t flex items-center gap-3">
     <div class="flex-shrink-0">
       {% if customer_image != blank %}
-        <img
-          src="{{ customer_image | image_url: width: 120 }}"
-          alt="{{ customer_name | escape }}"
-          width="120"
-          height="120"
-          class="w-11 h-11 rounded-full object-cover"
-          loading="lazy"
-          decoding="async"
-        >
+        {%- comment -%} `image_tag` aplica o ponto focal no corte do `object-cover` (#142). {%- endcomment -%}
+        {%- assign customer_image_alt = customer_name | default: '' -%}
+        {{
+          customer_image
+          | image_url: width: 120
+          | image_tag:
+            alt: customer_image_alt,
+            class: 'w-11 h-11 rounded-full object-cover',
+            loading: 'lazy',
+            decoding: 'async'
+        }}
       {% else %}
         <div class="w-11 h-11 rounded-full color-border border flex items-center justify-center">
           <span class="text-base font-medium color-text">{{ customer_name | slice: 0 | upcase }}</span>

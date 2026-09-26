@@ -149,6 +149,10 @@ class Search extends HTMLElement {
             }
 
             if (image) {
+                // Sem `object-position`: `/search/suggest.json` não traz o
+                // ponto focal da lojista, então esta miniatura corta pelo
+                // centro. Limite da fonte, documentado no template em
+                // snippets/search-component.liquid. Ver #142.
                 image.src = product.image || '';
                 image.alt = product.title;
             }

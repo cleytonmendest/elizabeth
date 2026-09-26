@@ -221,15 +221,17 @@
                     <a href="{{ article.url }}" class="block">
                       {%- if article.image -%}
                         <div class="aspect-video overflow-hidden bg-foreground/5">
-                          <img
-                            src="{{ article.image | image_url: width: 600 }}"
-                            alt="{{ article.image.alt | escape }}"
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            width="{{ article.image.width }}"
-                            height="{{ article.image.height }}"
-                            loading="lazy"
-                            decoding="async"
-                          >
+                          {%- comment -%} `image_tag` aplica o ponto focal no corte do `object-cover` (#142). {%- endcomment -%}
+                          {%- assign article_image_alt = article.image.alt | default: '' -%}
+                          {{
+                            article.image
+                            | image_url: width: 600
+                            | image_tag:
+                              alt: article_image_alt,
+                              class: 'w-full h-full object-cover transition-transform duration-500 group-hover:scale-105',
+                              loading: 'lazy',
+                              decoding: 'async'
+                          }}
                         </div>
                       {%- endif -%}
                       <div class="p-4">

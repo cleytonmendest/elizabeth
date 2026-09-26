@@ -54,7 +54,20 @@
       <template id="search-result-template">
         <a href="#" class="search-result-item flex items-center gap-3 p-3 hover:bg-foreground/5 transition-colors border-b border-border last:border-b-0">
           <div class="flex-shrink-0 w-16 h-16 bg-foreground/10 rounded-theme overflow-hidden">
-            {%- comment -%} src/alt preenchidos em runtime pelo search-component.js (CDN da Shopify) {%- endcomment -%}
+            {%- comment -%}
+              src/alt preenchidos em runtime pelo search-component.js (CDN da Shopify).
+
+              Sem ponto focal, e é limite da fonte, não esquecimento:
+              `/search/suggest.json` descreve a imagem do produto só como URL
+              (`image`) e, nas variantes, `featured_image` com `url`, `alt`,
+              `width`, `height` e `aspect_ratio` — o ponto focal da lojista não
+              vem. Não há `object-position` para declarar, e o corte desta
+              miniatura fica no centro. Exceção registrada na regra
+              `pontofocal` (design-exceptions.json). O caminho para fechar é
+              renderizar a busca preditiva em Liquid pela Section Rendering API
+              (`/search/suggest?section_id=…`), onde a imagem passa pelo
+              filtro que aplica o ponto focal. Ver #142.
+            {%- endcomment -%}
             {% # theme-check-disable RemoteAsset %}
             <img src="" alt="" width="64" height="64" class="search-result-image w-full h-full object-cover">
             {% # theme-check-enable RemoteAsset %}
