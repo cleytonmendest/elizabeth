@@ -1,10 +1,11 @@
 {%- comment -%}
-  Countdown Timer — contagem regressiva para urgência/escassez.
-  Dois modos: "fixed" (data/hora específica) e "daily" (reseta todo dia num horário).
+  Countdown Timer — contagem regressiva até uma data/hora que a lojista escolhe.
   O alvo é ancorado no fuso da loja (offset via {{ 'now' | date: '%z' }}) e o tick é
-  client-side (<countdown-timer>). Ao zerar (modo fixed) a seção some; no editor do
-  tema permanece visível. Visual: fundo do color scheme + imagem de fundo opcional
-  (scrim no padrão do banner) + CTA único (dropdown de estilo).
+  client-side (<countdown-timer>). Ao zerar a seção some — sempre; no editor do
+  tema permanece visível. Não existe modo recorrente: relógio que recomeça ao
+  zerar é o "fictitious countdown timer" que a Theme Store proíbe (ADR 0016).
+  Visual: fundo do color scheme + imagem de fundo opcional (scrim no padrão do
+  banner) + CTA único (dropdown de estilo).
 {%- endcomment -%}
 
 {%- liquid
@@ -29,31 +30,27 @@
   assign offset = 'now' | date: '%z'
 
   comment
-    Esconde server-side quando a data fixa já passou (evita "flash"), exceto no editor.
+    Esconde server-side quando a data já passou (evita "flash"), exceto no editor.
   endcomment
   assign is_expired = false
-  if st.countdown_type == 'fixed'
-    assign m2 = st.month | prepend: '00' | slice: -2, 2
-    assign d2 = st.day | prepend: '00' | slice: -2, 2
-    assign h2 = st.hour | prepend: '00' | slice: -2, 2
-    assign mi2 = st.minute | prepend: '00' | slice: -2, 2
-    assign target_str = st.year | append: '-' | append: m2 | append: '-' | append: d2 | append: ' ' | append: h2 | append: ':' | append: mi2
-    assign target_epoch = target_str | date: '%s' | times: 1
-    assign now_epoch = 'now' | date: '%s' | times: 1
-    if target_epoch > 0 and target_epoch <= now_epoch
-      assign is_expired = true
-    endif
+  assign m2 = st.month | prepend: '00' | slice: -2, 2
+  assign d2 = st.day | prepend: '00' | slice: -2, 2
+  assign h2 = st.hour | prepend: '00' | slice: -2, 2
+  assign mi2 = st.minute | prepend: '00' | slice: -2, 2
+  assign target_str = st.year | append: '-' | append: m2 | append: '-' | append: d2 | append: ' ' | append: h2 | append: ':' | append: mi2
+  assign target_epoch = target_str | date: '%s' | times: 1
+  assign now_epoch = 'now' | date: '%s' | times: 1
+  if target_epoch > 0 and target_epoch <= now_epoch
+    assign is_expired = true
   endif
 
   comment
     Aviso (apenas no editor): ano no passado ou digitado errado (ex.: "26").
   endcomment
   assign year_invalid = false
-  if st.countdown_type == 'fixed'
-    assign current_year = 'now' | date: '%Y' | times: 1
-    if st.year < current_year
-      assign year_invalid = true
-    endif
+  assign current_year = 'now' | date: '%Y' | times: 1
+  if st.year < current_year
+    assign year_invalid = true
   endif
 
   assign cta_text = st.button_label
@@ -125,7 +122,6 @@
 
         <countdown-timer
           class="block w-full"
-          data-mode="{{ st.countdown_type }}"
           data-year="{{ st.year }}"
           data-month="{{ st.month }}"
           data-day="{{ st.day }}"
@@ -203,17 +199,6 @@
       "id": "color_scheme",
       "label": "t:sections.countdown_timer.settings.color_scheme.label",
       "default": "scheme-1"
-    },
-    {
-      "type": "select",
-      "id": "countdown_type",
-      "label": "t:sections.countdown_timer.settings.countdown_type.label",
-      "info": "t:sections.countdown_timer.settings.countdown_type.info",
-      "default": "fixed",
-      "options": [
-        { "value": "fixed", "label": "t:sections.countdown_timer.settings.countdown_type.options.fixed" },
-        { "value": "daily", "label": "t:sections.countdown_timer.settings.countdown_type.options.daily" }
-      ]
     },
     {
       "type": "header",

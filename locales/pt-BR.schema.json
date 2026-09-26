@@ -1865,17 +1865,9 @@
         "color_scheme": {
           "label": "Esquema de cores"
         },
-        "countdown_type": {
-          "label": "Tipo de contagem",
-          "info": "Data fixa: conta até um momento específico. Diária: reseta todos os dias no horário escolhido.",
-          "options": {
-            "fixed": "Data e hora fixa",
-            "daily": "Diária (recorrente)"
-          }
-        },
         "datetime_header": {
           "content": "Data e hora final",
-          "info": "Use o fuso horário da sua loja. No modo diário, apenas o horário é considerado. Para terminar à meia-noite, escolha 00:00 do dia seguinte."
+          "info": "Use o fuso horário da sua loja. Ao zerar, a seção some da loja. Para terminar à meia-noite, escolha 00:00 do dia seguinte."
         },
         "year": {
           "label": "Ano",

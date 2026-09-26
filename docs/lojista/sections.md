@@ -153,9 +153,9 @@ Configura: eyebrow, título, abrir o primeiro item. Cada pergunta é um bloco.
 ### Contagem Regressiva
 Relógio até uma data.
 
-Configura: tipo de contagem, data e hora, mostrar dias, estilo dos números, alinhamento, largura total, eyebrow, título, texto, imagem, scrim, botão.
+Configura: data e hora, mostrar dias, estilo dos números, alinhamento, largura total, eyebrow, título, texto, imagem, scrim, botão.
 
-> **Quando o relógio zera, a seção some da loja** — no editor ela continua visível, para você poder reconfigurar. Programe o fim junto com o fim real da promoção, ou a página fica com um buraco.
+> **Quando o relógio zera, a seção some da loja** — no editor ela continua visível, para você poder reconfigurar. Programe o fim junto com o fim real da promoção, ou a página fica com um buraco. Não existe contagem que recomeça todo dia: um relógio de urgência que nunca acaba é o que a Shopify proíbe em temas.
 
 ### Posts do Blog
 Últimos posts.

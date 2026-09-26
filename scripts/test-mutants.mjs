@@ -554,10 +554,12 @@ const MUTANTES = [
     teste: 'tests/countdown-timer.test.mjs',
   },
   {
-    porque: 'o modo diário para de pular para o dia seguinte',
+    // O defeito da #146, recolocado: ao zerar, o alvo pula 24h e o relógio
+    // recomeça em vez de a seção sumir — o "fictitious countdown timer".
+    porque: 'o contador volta a recomeçar ao zerar em vez de esconder a seção (issue #146)',
     arquivo: 'src/js/countdown-timer.js',
-    de: 'if (target <= now) target += 86400000;',
-    para: 'if (false) target += 86400000;',
+    de: 'this.render(0);\n      if (this.interval) clearInterval(this.interval);\n      if (!this.designMode) this.hideSection();',
+    para: 'this.target += 86400000;\n      this.render(this.target - Date.now());',
     teste: 'tests/countdown-timer.test.mjs',
   },
   {

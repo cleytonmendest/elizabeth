@@ -153,9 +153,9 @@ Configures: eyebrow, heading, open the first item. Each question is a block.
 ### Countdown Timer
 A clock counting down to a date.
 
-Configures: countdown type, date and time, show days, number style, alignment, full width, eyebrow, heading, body, image, scrim, button.
+Configures: date and time, show days, number style, alignment, full width, eyebrow, heading, body, image, scrim, button.
 
-> **When the clock hits zero, the section disappears from the store** — it stays visible in the editor, so you can reconfigure it. Schedule the end together with the real end of the promotion, or the page is left with a hole.
+> **When the clock hits zero, the section disappears from the store** — it stays visible in the editor, so you can reconfigure it. Schedule the end together with the real end of the promotion, or the page is left with a hole. There is no countdown that restarts every day: an urgency clock that never ends is what Shopify forbids in themes.
 
 ### Blog Posts
 Your latest posts.
