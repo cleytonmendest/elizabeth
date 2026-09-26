@@ -84,6 +84,20 @@ jobs:
           BASE_REF: ${{ github.base_ref || 'main' }}
         run: node scripts/catraca.mjs --base-ref "$BASE_REF"
 
+      # ── ADR é append-only, e isto passou a ser verificado na #130 ─────────
+      #
+      # A regra vivia só no CLAUDE.md e já tinha sido quebrada: o commit
+      # 474f387 removeu 18 linhas do ADR 0007. Mesma forma da catraca — script
+      # com teste e com mutante, e não shell dentro do YAML.
+      #
+      # `if: always()` pelo mesmo motivo dos passos acima: um PR que reprova no
+      # lint E reescreve um ADR precisa descobrir as duas coisas de uma vez.
+      - name: ADR é append-only
+        if: always()
+        env:
+          BASE_REF: ${{ github.base_ref || 'main' }}
+        run: node scripts/adr.mjs --base-ref "$BASE_REF"
+
   test:
     name: Testes unitários
     runs-on: ubuntu-latest

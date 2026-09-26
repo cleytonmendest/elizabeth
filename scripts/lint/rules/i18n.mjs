@@ -42,6 +42,54 @@ const NUMERIC = /^\d+$/;
 const LIQUID_DEFAULT = /([a-zA-Z_][\w.]*)\s*\|\s*default:\s*(['"])([^'"]*)\2/g;
 
 /**
+ * `{{ 'chave' | t: default: 'frase' }}` — a porta que o `LIQUID_DEFAULT` acima
+ * NÃO alcança, e por construção: ele exige um identificador antes do filtro, e
+ * aqui o que vem antes é uma chave entre aspas.
+ *
+ * O CLAUDE.md proibia isto em prosa desde sempre ("Nunca `| t: default: '...'`
+ * — crie a chave de verdade") e nada verificava. Ver issue #130.
+ *
+ * Por que é pior que parece: o `default:` do filtro `t` é o texto que a Shopify
+ * mostra QUANDO A CHAVE NÃO EXISTE. Ou seja, ele não é um valor de reserva —
+ * ele é o "translation missing" silenciado. A chave continua faltando nos dois
+ * locales, o linter de paridade não a vê (porque ela não existe para ser
+ * comparada), e a loja em inglês exibe o português que alguém escreveu aqui.
+ *
+ * Sem filtro de "parece frase", ao contrário do outro: `| default:` recebe
+ * frase e valor de código no mesmo lugar, e precisa separar os dois. Aqui não —
+ * qualquer `t: default:` é uma chave que deveria existir e não existe.
+ *
+ * `[^}%]` mantém a busca dentro da mesma tag: sem isso, um `| t }}` numa linha
+ * e um `default:` trinta linhas abaixo casariam como se fossem o mesmo.
+ */
+const T_COM_DEFAULT =
+  /(['"])([^'"]*)\1\s*\|\s*t(?:ranslate)?\s*:[^}%]*?\bdefault:\s*(['"])([^'"]*)\3/g;
+
+/**
+ * As violações de `| t: default:` de uma fonte. Exportada para o teste injetar
+ * o Liquid: o tema não tem nenhuma ocorrência hoje, então uma varredura real
+ * não exercitaria o caminho que acusa — e teste que só percorre o caminho
+ * verde não sabe se o vermelho existe.
+ */
+export function tDefault(file, src) {
+  return [...src.matchAll(T_COM_DEFAULT)].map((match) => {
+    const [, , chave, , texto] = match;
+    return offense({
+      rule: 'i18n',
+      file,
+      line: lineAt(src, match.index),
+      code: `t-default:${chave}`,
+      message:
+        `\`| t: default: ${JSON.stringify(texto)}\` na chave "${chave}" — o \`default\` do ` +
+        'filtro `t` é o que a Shopify mostra QUANDO A CHAVE NÃO EXISTE, então ele silencia o ' +
+        '"translation missing" em vez de resolvê-lo: a chave continua faltando nos dois ' +
+        'locales, e a loja em outro idioma exibe este texto em português. Crie a chave de ' +
+        'verdade em pt-BR e en.default.',
+    });
+  });
+}
+
+/**
  * `| default:` recebe frase E valor de código no mesmo lugar, então a posição
  * não separa os dois — diferente de todo o resto desta regra. E "tem palavra"
  * também não separa: `'center'`, `'slider'`, `'grid-2'`, `'check-circle'`,
@@ -210,6 +258,12 @@ export function run() {
           );
         }
       }
+    }
+
+    // `{{ 'chave' | t: default: 'frase' }}` — ver `tDefault`.
+    for (const achado of tDefault(file, src)) {
+      if (isAllowed('i18n', file, achado.code)) continue;
+      offenses.push(achado);
     }
 
     // `| default: 'frase'` — a última porta por onde português entra no

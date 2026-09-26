@@ -139,6 +139,90 @@ function resgataMutanteOrfao() {
 const comE2E = process.argv.includes('--e2e');
 
 const MUTANTES = [
+  // ── A #130: sete regras viviam só no CLAUDE.md ──────────────────────────
+  //
+  // Regra em prosa é pedido, e pedido pode ser atendido ou não. A do ADR já
+  // tinha sido desobedecida — o commit 474f387 removeu 18 linhas do ADR 0007
+  // sem nada notar. Estes mutantes existem para que os verificadores novos não
+  // virem a mesma coisa: verde que não prova nada.
+  {
+    porque: 'editar um ADR existente volta a passar — a regra vira prosa de novo',
+    arquivo: 'scripts/adr.mjs',
+    de: '  const editados = mudancas.filter(({ removidas }) => removidas > 0);',
+    para: '  const editados = [];',
+    teste: 'tests/adr.test.mjs',
+  },
+  {
+    // O erro que EU cometi: `git diff` detecta rename por padrão desde a 2.9.
+    // Sem a flag, um `git mv` de ADR passa reportado como "só com acréscimo", e
+    // os links que apontam para o arquivo quebram em silêncio.
+    porque: 'renomear um ADR volta a passar calado, e os links que apontam para ele quebram',
+    arquivo: 'scripts/adr.mjs',
+    de: "  '--no-renames',",
+    para: '  // mutante',
+    teste: 'tests/adr.test.mjs',
+  },
+  {
+    // Regra que só proíbe, sem dizer para onde ir, é burlada pela primeira
+    // pessoa que precisa passar — foi exatamente o que aconteceu no 474f387.
+    porque: 'o recado para de nomear o caminho legítimo, e a regra vira um beco sem saída',
+    arquivo: 'scripts/adr.mjs',
+    de: "      'Para REVOGAR ou corrigir uma decisão, crie um ADR NOVO que supersede o antigo, em vez ' +",
+    para: "      'Não faça isso. ' +",
+    teste: 'tests/adr.test.mjs',
+  },
+  {
+    porque: 'pulo sem motivo volta a ser só um aviso, e o teste some do resumo em silêncio',
+    arquivo: 'scripts/e2e.mjs',
+    de: '  return pulos(relatorio).filter((g) => g.motivo === SEM_MOTIVO);',
+    para: '  return [];',
+    teste: 'tests/e2e.test.mjs',
+  },
+  {
+    // A sentinela é uma constante para que o resumo e a checagem leiam a MESMA
+    // string. Duas cópias divergem, e a checagem passa a nunca achar nada.
+    porque: 'a sentinela do resumo e a da checagem divergem — verde por desalinhamento',
+    arquivo: 'scripts/e2e.mjs',
+    de: "export const SEM_MOTIVO = '(sem motivo escrito)';",
+    para: "export const SEM_MOTIVO = '(outro texto)';",
+    teste: 'tests/e2e.test.mjs',
+  },
+  {
+    // O `default` do filtro `t` é o que a Shopify mostra quando a chave NÃO
+    // existe: ele silencia o "translation missing" em vez de resolvê-lo.
+    porque: '`| t: default:` volta a passar, e português vaza para a loja em inglês',
+    arquivo: 'scripts/lint/rules/i18n.mjs',
+    de: "  /(['\"])([^'\"]*)\\1\\s*\\|\\s*t(?:ranslate)?\\s*:[^}%]*?\\bdefault:\\s*(['\"])([^'\"]*)\\3/g;",
+    para: "  /(['\"])([^'\"]*)\\1\\s*\\|\\s*t(?:ranslate)?\\s*:\\s*NUNCA_CASA/g;",
+    teste: 'tests/i18n-t-default.test.mjs',
+  },
+  {
+    porque: 'camelCase passa a ser aceito como snake_case, e os dois jeitos voltam a conviver',
+    arquivo: 'scripts/lint/rules/snakecase.mjs',
+    de: 'export const ehSnakeCase = (nome) => /^[a-z][a-z0-9_]*$/.test(nome);',
+    para: 'export const ehSnakeCase = () => true;',
+    teste: 'tests/snakecase.test.mjs',
+  },
+  {
+    // O outro lado: acusar DEMAIS. Regra que reclama do que veio da Shopify é
+    // desligada na primeira semana, e o CLAUDE.md fica com mais uma linha que
+    // ninguém obedece — o problema da #130 reconstruído.
+    porque: 'a regra passa a acusar o que vem da Shopify, e alguém a desliga na primeira semana',
+    arquivo: 'scripts/lint/rules/snakecase.mjs',
+    de: '  { regex: /\\{%-?\\s*assign\\s+([a-zA-Z_][\\w]*)\\s*=/g, verbo: \'assign\' },',
+    para: '  { regex: /([a-zA-Z_][\\w]*)/g, verbo: \'assign\' },',
+    teste: 'tests/snakecase.test.mjs',
+  },
+  {
+    // A marca é como a sonda e o Playwright distinguem nossa página da tela de
+    // senha da Shopify. Sem ela, a suíte pode medir a loja publicada achando
+    // que mediu o tema — o defeito da #71, que custou semanas.
+    porque: 'a MARCA do tema some, e a sonda deixa de distinguir nossa página da tela de senha',
+    arquivo: 'snippets/theme-head.liquid',
+    de: "  window.shopUrl = '{{ request.origin }}';",
+    para: '  // mutante',
+    teste: 'tests/marca-do-tema.test.mjs',
+  },
   // ── A #118: cor nomeada não parece cor, e por isso ninguém a via ────────
   {
     porque: 'a regra deixa de olhar `stroke`, e metade do buraco volta a existir',

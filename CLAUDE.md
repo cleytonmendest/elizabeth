@@ -168,9 +168,11 @@ ergonomia. `fixme` diz "isto devia passar e não passa": afrouxar a asserção a
 passar transformaria defeito real em verde, então ele fica vermelho no
 relatório até alguém consertar. É o caso de #68 e #71.
 
-`skip` diz "não dá para medir aqui" — e só é honesto **com o motivo escrito**,
-porque `scripts/e2e.mjs` imprime cada pulado com o motivo no resumo do CI. Sem
-essa impressão o teste sumiria sem ninguém notar, que é o perigo real.
+`skip` diz "não dá para medir aqui" — e só é honesto **com o motivo escrito**.
+`scripts/e2e.mjs` imprime cada pulado com o motivo no resumo do CI, e **reprova**
+o que chegar sem motivo: um pulo mudo some do resumo com a mesma cara de um
+teste que nunca existiu, que é o perigo real. A impressão existia desde sempre;
+a exigência entrou na #130, porque até ali era só um pedido em prosa.
 
 A #64 mudou de lado, e ela é o exemplo de por que a distinção importa. Passou
 três semanas em `fixme` como se fosse defeito do tema; medir provou que é o
@@ -269,7 +271,9 @@ o fundo é pior que não pintar.
 
 **2. Nada de string nova hardcoded.** Storefront usa `{{ '...' | t }}`; schema
 usa `t:sections.<nome>.…`. Toda chave existe em pt-BR **e** en.default. Nunca
-`| t: default: '...'` — crie a chave de verdade. *(Defaults de setting e blocos
+`| t: default: '...'` — crie a chave de verdade, e a regra `i18n` reprova quem
+tentar: o `default` do filtro `t` é o que a Shopify mostra quando a chave NÃO
+existe, então ele silencia o "translation missing" em vez de resolvê-lo. *(Defaults de setting e blocos
 `presets` são conteúdo do lojista: texto literal ali é o correto.)*
 
 ## Comandos
@@ -317,7 +321,16 @@ ele é baixado uma vez só — e não antes da hora — é teste, não linter.
 
 **Componentes:** Web Components (`<variant-selects>`, `<my-slider>`,
 `<countdown-timer>`…). Sempre `if (!customElements.get('nome'))` antes de
-definir. Comunicação por evento, nunca acoplamento direto. O contrato:
+definir — a regra `componentes` reprova quem esquecer.
+
+A comunicação entre eles é por evento. Isso **não** é verificado, e não dá para
+verificar sem falso positivo: um `querySelector` de outro componente pode ser
+acoplamento ou pode ser leitura legítima de DOM compartilhada, e só quem lê o
+caso decide. É julgamento, e julgamento tem dono — o agente `theme-reviewer`.
+Ver [issue #130](https://github.com/cleytonmendest/elizabeth/issues/130), que
+tirou daqui as regras que afirmavam sem medir.
+
+O contrato dos eventos:
 
 | Evento | O detail carrega |
 | --- | --- |
@@ -342,12 +355,16 @@ ou busca.
 
 ## Convenções
 
-- Liquid em `snake_case`; classes Tailwind preferidas a CSS custom
+- Liquid em `snake_case` — a regra `snakecase` reprova o `assign`, o `capture`
+  e o `for` que nomearem de outro jeito. O que vem da Shopify não é nosso para
+  renomear e fica de fora. Classes Tailwind preferidas a CSS custom (isso é
+  julgamento, não regra)
 - Raio: `rounded-theme` é o padrão; `-sm` e `-lg` derivam dele. **O valor é do
   lojista** (`settings.radius_style`), então nunca assuma "8px" — use o token.
   `rounded-full` e `rounded-none` para casos específicos. **Nada de
   `rounded-lg` / `-md` / `-xl`** — o linter reprova.
-- Corpo de texto: `text-sm`. A escala inteira é multiplicada por
+- O corpo de texto do tema é `text-sm` — é o degrau que as sections usam, não
+  uma proibição dos outros. A escala inteira é multiplicada por
   `settings.font_scale`, também do lojista. Degraus em `tailwind.config.js`.
 - Valor arbitrário (`text-[15px]`, `tracking-[0.18em]`) é violação: promova a
   token no config e use o token.
@@ -356,7 +373,12 @@ ou busca.
 
 - **Feature ou bug** → abra uma issue com o template. O critério de aceite tem
   que ser verificável por comando; se não é testável, não é critério.
-- **Decisão estrutural** → ADR em `docs/adr/` (append-only, nunca se edita).
+- **Decisão estrutural** → ADR em `docs/adr/`. **Append-only**, e agora
+  verificado: `scripts/adr.mjs` reprova o PR que remover linha de um ADR
+  existente. Para revogar ou corrigir uma decisão, escreva um ADR NOVO que
+  supersede o antigo — a decisão velha precisa continuar legível para quem for
+  entender por que ela valia. Acrescentar texto ao ADR existente é permitido;
+  renomear conta como apagar, porque o nome do arquivo é o alvo dos links.
 - **Dívida** → agente `debt-cleaner`, ou issue com label `debt`.
 - **Revisão de julgamento** (legibilidade, acoplamento, sem-JS) → agente
   `theme-reviewer`, depois que o lint estiver verde.
