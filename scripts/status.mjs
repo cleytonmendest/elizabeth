@@ -15,6 +15,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { measure } from './lint/rules/budget.mjs';
+import { contagem } from './lint/rules/themestore.mjs';
 import { loadRules } from './lint/lib.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -39,6 +40,13 @@ for (const rule of await loadRules()) {
 const budget = measure();
 const kb = (n) => `${(n / 1024).toFixed(0)} KB`;
 
+// A contagem regressiva da submissão. A linha "Requisitos da Theme Store" da
+// tabela conta ACHADOS (um por lugar onde o recurso falta), que é o que a
+// catraca trava; esta conta REQUISITOS, que é o que a Shopify revisa.
+const loja = contagem();
+const issues = loja.pendentes.map((linha) => `#${linha.issue}`).join(', ');
+const lojaTexto = `${loja.pendentes.length} de ${loja.total} requisitos de código pendentes${issues ? ` (${issues})` : ''}`;
+
 const clean = rows.every((r) => r.fresh === 0);
 
 // Duas métricas distintas, e confundi-las já produziu relatório errado:
@@ -58,6 +66,7 @@ if (asMarkdown) {
     console.log(`| ${r.title} | ${r.fresh === 0 ? '—' : `**${r.fresh}**`} | ${r.debt || '—'} |`);
   }
   console.log(`\n**Peso global:** ${kb(budget.js)} de JS · ${kb(budget.css)} de CSS em toda página.`);
+  console.log(`\n**Theme Store:** ${lojaTexto} · \`npm run lint -- --rules=themestore\``);
 } else {
   const pad = Math.max(...rows.map((r) => r.title.length));
   console.log('\nEstado do tema\n');
@@ -67,6 +76,7 @@ if (asMarkdown) {
     console.log(`  ${mark}  ${r.title.padEnd(pad)}  ${r.fresh === 0 ? 'limpo' : `${r.fresh} nova(s)`}${debt}`);
   }
   console.log(`\n  Peso global: ${kb(budget.js)} JS · ${kb(budget.css)} CSS (toda página)`);
+  console.log(`  Theme Store: ${lojaTexto}`);
   console.log(`  Dívida no baseline: ${items} itens · ${occurrences} ocorrências\n`);
 }
 

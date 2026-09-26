@@ -223,6 +223,63 @@ const MUTANTES = [
     para: '  // mutante',
     teste: 'tests/marca-do-tema.test.mjs',
   },
+  // ── A #147: os requisitos da Theme Store, medidos ───────────────────────
+  //
+  // A label `theme-store-blocker` mostrava uma issue com doze faltando. A
+  // regra que substituiu a memória precisa conseguir acusar — e cada caminho
+  // pelo qual ela ficaria verde com o recurso ausente tem um mutante aqui.
+  {
+    porque: 'a regra deixa de acusar ausência, e os doze requisitos passam como cumpridos',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: '          if (padrao(esperado)(texto)) continue;',
+    para: '          continue;',
+    teste: 'tests/themestore.test.mjs',
+  },
+  {
+    porque: 'um `{% comment %}payment_button{% endcomment %}` volta a cumprir o requisito',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: '  return stripInert(bruto).replace(/\\{%-?\\s*#[\\s\\S]*?%\\}/g, branco);',
+    para: '  return bruto;',
+    teste: 'tests/themestore.test.mjs',
+  },
+  {
+    // A quinta forma de comentário, que `stripInert` ainda não conhece.
+    porque: 'a tag inline `{% # payment_button %}` volta a cumprir o requisito',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: '  return stripInert(bruto).replace(/\\{%-?\\s*#[\\s\\S]*?%\\}/g, branco);',
+    para: '  return stripInert(bruto);',
+    teste: 'tests/themestore.test.mjs',
+  },
+  {
+    // O defeito que fez a regra `budget` subir o teto três vezes.
+    porque: 'a regra volta a ler um nível só, e o payment_button do snippet some da conta',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: "  return arquivos.flatMap((arquivo) => fontesGlobais(arquivo, ler)).join('\\n');",
+    para: "  return arquivos.map(ler).join('\\n');",
+    teste: 'tests/themestore.test.mjs',
+  },
+  {
+    porque: 'o alvo renomeado passa calado — "passa porque não achou o arquivo"',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: '      for (const alvo of perdidos) {',
+    para: '      for (const alvo of []) {',
+    teste: 'tests/themestore.test.mjs',
+  },
+  {
+    porque: 'linha da tabela sem link para shopify.dev volta a ser aceita',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: "    if (!/^https:\\/\\/shopify\\.dev\\/\\S+$/.test(linha.link ?? '')) {",
+    para: '    if (false) {',
+    teste: 'tests/themestore.test.mjs',
+  },
+  {
+    // O estado real da #133: o `case` renderiza `@app`, o schema não declara.
+    porque: 'o schema sem bloco @app passa, e o editor continua sem a aba de apps',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: '    if (pedido.bloco && !blocos.some((bloco) => bloco?.type === pedido.bloco)) return false;',
+    para: '    // mutante',
+    teste: 'tests/themestore.test.mjs',
+  },
   // ── A #118: cor nomeada não parece cor, e por isso ninguém a via ────────
   {
     porque: 'a regra deixa de olhar `stroke`, e metade do buraco volta a existir',
@@ -2003,6 +2060,24 @@ const MUTANTES = [
     para:
       '| **Botânico** | Fraunces | `#F4F2EC` | `#2E3A2E` | `#7C8B6E` |\n' +
       '| **Veludo** | Cormorant | `#1A1014` | `#F5E6E8` | `#8E3B52` |',
+    teste: 'tests/docs.test.mjs',
+  },
+  {
+    // A #148: a §4 decidiu um estilo listado, e o §6 continuava pedindo uma
+    // demo por preset. Este é o texto exato que estava lá.
+    porque: 'o §6 volta a pedir uma loja demo por preset, contra a decisão da §4',
+    arquivo: 'docs/THEME_STORE_SUBMISSION.md',
+    de: '- [ ] URL da **loja demo** — uma só, a do estilo listado (seção 4).',
+    para: '- [ ] URL de cada **loja demo** (uma por preset).',
+    teste: 'tests/docs.test.mjs',
+  },
+  {
+    // E a linha de performance como estava: sem número de requisito, só
+    // celular, sem as três páginas. 55 no celular passava nela.
+    porque: 'a §0 volta a mirar "Lighthouse mobile > 50" em vez do requisito',
+    arquivo: 'docs/THEME_STORE_SUBMISSION.md',
+    de: '| **Performance**: Lighthouse de performance com média **≥ 60**, em **desktop e celular**, na média de home, coleção e produto |',
+    para: '| **Performance** (Lighthouse mobile > 50) |',
     teste: 'tests/docs.test.mjs',
   },
   {

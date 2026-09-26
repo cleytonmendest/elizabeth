@@ -339,6 +339,82 @@ describe('o checklist de submissão aponta para a doc publicada', () => {
     }
   });
 
+  it('com UM estilo listado, nada no checklist pede uma loja demo por preset', () => {
+    // A §4 decidiu um estilo listado e uma loja demo — e duas linhas mais
+    // abaixo continuaram no modelo antigo: "URL de cada loja demo (uma por
+    // preset)" no §6 e "Loja(s) demo criada(s) ..., uma por preset" no
+    // checklist final. Quem seguisse o checklist montaria quatro lojas. Ver a
+    // issue #148.
+    //
+    // A decisão é LIDA da tabela da §4, e não cravada aqui: se um dia a
+    // listagem anunciar mais estilos, "uma demo por estilo" volta a ser o
+    // pedido certo e este teste sai do caminho sozinho.
+    const secao = trecho(checklist, '4. Presets / estilos');
+    const estilos = Number(secao.match(/^\| \*\*Style\*\* na listagem \|.*\| \*\*(\d+)\*\* \|$/m)?.[1]);
+    expect(estilos, 'a §4 deveria dizer, na tabela, quantos estilos a listagem anuncia').toBeGreaterThan(0);
+    if (estilos !== 1) return;
+
+    // As citações (`>`) ficam de fora: é lá que o documento explica a regra
+    // da Theme Store para VÁRIOS estilos, que não é pedido nenhum hoje.
+    const multiplas = /\b(?:por|cada)\s+(?:preset|estilo)\b|\bcada\s+demo\b|\bdemos\b|\bloja\(s\)|\blojas\s+demo\b/i;
+    const pedidos = checklist
+      .split('\n')
+      .filter((linha) => !/^\s*>/.test(linha))
+      .filter((linha) => /\bdemos?\b/i.test(linha) && multiplas.test(linha));
+
+    expect(pedidos, 'a §4 decidiu um estilo listado — e uma loja demo').toEqual([]);
+  });
+
+  it('a §0 dá os números do Lighthouse, os dois dispositivos e as três páginas', () => {
+    // A linha dizia "Lighthouse mobile > 50". O requisito é média ≥ 60 de
+    // performance E ≥ 90 de acessibilidade, em desktop E celular, na média de
+    // home, coleção e produto. As quatro diferenças iam no sentido de passar
+    // com menos: um tema com 55 no celular passava no checklist e seria
+    // reprovado na submissão (#148).
+    //
+    // O número é da Shopify, e nenhum teste daqui lê a página dela — por isso
+    // o piso mora neste objeto, com a data da conferência. Quando a #58 criar
+    // a configuração dos limiares do Lighthouse, ele sai daqui e passa a ser
+    // lido de lá: uma fonte só, para o documento e para o gate.
+    const PISO = { performance: 60, acessibilidade: 90 }; // conferido em 26/09/2026
+    const secao = trecho(checklist, '0. Pré-requisitos de código (bloqueadores)');
+
+    for (const [assunto, piso] of Object.entries(PISO)) {
+      const linha = secao
+        .split('\n')
+        .find((l) => l.startsWith('|') && /Lighthouse/.test(l) && new RegExp(assunto, 'i').test(l));
+      expect(linha, `a §0 não tem a linha de ${assunto} do Lighthouse`).toBeTruthy();
+
+      const numero = linha.match(/≥\s*\*{0,2}\s*(\d+)/);
+      expect(numero, `a linha de ${assunto} não diz o número`).toBeTruthy();
+      expect(Number(numero[1]), `a linha de ${assunto} mira abaixo do requisito`).toBeGreaterThanOrEqual(piso);
+
+      for (const termo of [/desktop/i, /celular/i, /home/i, /coleção/i, /produto/i]) {
+        expect(linha, `a linha de ${assunto} não cita ${termo.source}`).toMatch(termo);
+      }
+    }
+
+    // E de onde veio, com a data: requisito que a Shopify muda precisa dizer
+    // quando foi conferido, para quem ler saber o quanto confiar.
+    expect(secao).toContain('https://shopify.dev/docs/storefronts/themes/store/requirements');
+    expect(secao).toMatch(/conferido em \d{2}\/\d{2}\/\d{4}/);
+  });
+
+  it('a §0 aponta para regras que existem', () => {
+    // "Recursos obrigatórios" aponta para `--rules=themestore` (#147). Um nome
+    // de regra errado aqui levaria a pessoa a um "Regra desconhecida" — ou,
+    // pior, a concluir que ninguém mede o que a linha diz que é medido.
+    const secao = trecho(checklist, '0. Pré-requisitos de código (bloqueadores)');
+    const citadas = [...secao.matchAll(/--rules=([\w,]+)/g)].flatMap((m) => m[1].split(','));
+    const existentes = fs
+      .readdirSync(path.join(ROOT, 'scripts/lint/rules'))
+      .map((arquivo) => arquivo.replace(/\.mjs$/, ''));
+
+    expect(citadas).toContain('themestore');
+    for (const regra of citadas) expect(existentes, `--rules=${regra}`).toContain(regra);
+    expect(secao).toContain('theme-store-blocker');
+  });
+
   it('não sobrou referência ao ROADMAP removido', () => {
     // O arquivo apontava para `docs/ROADMAP.md` como "fonte da verdade" MESES
     // depois de a ADR 0001 removê-lo. Um link morto num checklist é pior que

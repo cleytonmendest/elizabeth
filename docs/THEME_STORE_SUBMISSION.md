@@ -25,10 +25,25 @@ npm run gate      # build + linters + testes
 | Bloqueador | Quem verifica |
 | --- | --- |
 | **i18n** completo (storefront + schema, PT-BR + EN), sem string hardcoded | `npm run lint -- --rules=i18n` |
-| **Acessibilidade** WCAG 2.1 AA | `npm run test:e2e` (axe) + `e2e/a11y-baseline.json` |
-| **Performance** (Lighthouse mobile > 50) | validar na loja **publicada** — nenhum gate mede isto |
+| **Recursos obrigatórios** (seção "Features" dos requisitos, e o que as páginas de produto e de carrinho precisam suportar) | `npm run lint -- --rules=themestore` — uma linha por requisito em `scripts/lint/config/theme-store.json`, cada uma com a issue que a acompanha. As abertas: [`label:theme-store-blocker`](https://github.com/cleytonmendest/elizabeth/issues?q=is%3Aopen+label%3Atheme-store-blocker) |
+| **Acessibilidade**: WCAG 2.1 AA, **e** Lighthouse de acessibilidade com média **≥ 90**, em **desktop e celular**, na média de home, coleção e produto | WCAG: `npm run test:e2e` (axe) + `e2e/a11y-baseline.json`. Lighthouse: validar na loja **publicada** — nenhum gate mede ainda ([#58](https://github.com/cleytonmendest/elizabeth/issues/58)) |
+| **Performance**: Lighthouse de performance com média **≥ 60**, em **desktop e celular**, na média de home, coleção e produto | validar na loja **publicada** — nenhum gate mede ainda ([#58](https://github.com/cleytonmendest/elizabeth/issues/58)) |
 | **Code Quality** (Theme Check 0 offenses) | `npm run gate` |
 | **Documentação merchant** | seção 5 abaixo |
+
+Os dois limiares do Lighthouse são da Shopify
+([requisitos](https://shopify.dev/docs/storefronts/themes/store/requirements),
+"Lighthouse performance and accessibility"; conferido em 26/09/2026). A média é
+simples, das três páginas, e vale para **cada** dispositivo; a Shopify roda o
+teste sobre um conjunto de dados de referência dela, com as seções preenchidas
+por imagem e conteúdo reais — seção vazia não serve de medida. A linha de
+performance dizia "Lighthouse mobile > 50", e a de acessibilidade não citava o
+Lighthouse: um tema com 55 no celular passaria aqui e seria reprovado na
+submissão ([#148](https://github.com/cleytonmendest/elizabeth/issues/148)).
+
+A regra `themestore` verifica **presença**, não funcionamento: ela garante que
+`payment_button` está na árvore do form de produto, não que o botão compra a
+variante certa. O comportamento de cada recurso é dos testes da issue dele.
 
 > A checklist marcada à mão foi o que apodreceu antes. Se você sentir vontade
 > de escrever aqui "isto já está pronto", o lugar certo é um linter ou um
@@ -41,7 +56,7 @@ npm run gate      # build + linters + testes
 - [ ] **Shopify Partner account** ativa.
 - [ ] Criar a loja demo como **"client transfer store"** pelo Partner Dashboard (⚠️ **não** é dev store comum).
 - [ ] **Uma loja demo**, do estilo listado (ver seção 4).
-- [ ] Cada demo deve bater com a **indústria** (moda feminina) e o **tamanho de catálogo** que o preset mira.
+- [ ] A demo deve bater com a **indústria** (moda feminina) e o **tamanho de catálogo** que o estilo listado mira.
 - [ ] **Pagamentos:** usar **Bogus Gateway** ou **Shopify Payments em modo teste**; desabilitar as demais opções de checkout.
 
 ---
@@ -167,7 +182,7 @@ saiu como doze fragmentos sem `<head>`, com o build relatando sucesso.
 - [ ] Metadados da listagem: nome, descrição, lista de features, preço.
 - [ ] **URL da documentação** na listagem: <https://cleytonmendest.github.io/elizabeth/>
 - [ ] **Contato de suporte** na listagem.
-- [ ] URL de cada **loja demo** (uma por preset).
+- [ ] URL da **loja demo** — uma só, a do estilo listado (seção 4).
 - [ ] Submeter pelo **Partner Dashboard** → aguardar revisão da Shopify (rigorosa nos bloqueadores da seção 0).
 
 ---
@@ -175,13 +190,13 @@ saiu como doze fragmentos sem `<head>`, com o build relatando sucesso.
 ## Checklist rápido de "pronto para submeter"
 
 - [ ] Bloqueadores de código (seção 0) todos ✅
-- [ ] Loja(s) demo criada(s) como client transfer store, uma por preset
+- [ ] Loja demo criada como client transfer store (seção 1)
 - [ ] Catálogo com imagens reais, licenciadas e consistentes
 - [ ] Conteúdo 100% autêntico (zero Lorem Ipsum), PT-BR + EN traduzidos
 - [ ] Um estilo listado ("Elizabeth"), uma loja demo — os 4 presets seguem entregues no tema
 - [ ] Documentação merchant publicada ✅ · URL e contato de suporte na listagem da Theme Store
 - [ ] Versão + release notes
-- [ ] Revisão final de Lighthouse (Perf/A11y/Best Practices) na loja **publicada**
+- [ ] Revisão final de Lighthouse na loja **publicada**: performance e acessibilidade dentro dos limiares da seção 0, em desktop **e** celular
 
 ---
 
