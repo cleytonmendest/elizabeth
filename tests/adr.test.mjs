@@ -124,7 +124,21 @@ describe('a leitura do `git diff --numstat`', () => {
 
 describe('contra o git de verdade', () => {
   let repo;
-  const git = (...args) => execFileSync('git', args, { cwd: repo, encoding: 'utf8' });
+
+  // O repo de mentira não herda NENHUMA variável `GIT_*`. Dentro de um hook o
+  // git exporta `GIT_DIR` e `GIT_INDEX_FILE`, e o `cwd` não vence o `GIT_DIR`:
+  // num checkout comum o valor é o relativo `.git` e cai por acaso dentro do
+  // repo temporário, mas num `git worktree` ele é ABSOLUTO. Medido na
+  // força-tarefa das #133-#148: o pre-commit de um worktree rodou esta suíte, e
+  // o `git init` e os `git config` daqui marcaram o repositório real como bare,
+  // gravaram "Teste <teste@exemplo>" como autor e o `git commit -m base`
+  // pendurou num branch de trabalho um commit que apagava os 377 arquivos do
+  // tema.
+  const semGit = Object.fromEntries(
+    Object.entries(process.env).filter(([nome]) => !nome.startsWith('GIT_'))
+  );
+  const git = (...args) =>
+    execFileSync('git', args, { cwd: repo, encoding: 'utf8', env: semGit });
 
   /** O que o script veria, rodando o MESMO comando neste repo de mentira. */
   const veredito = () => avaliar(mudancasDoDiff(git(...ARGUMENTOS('base'))));
