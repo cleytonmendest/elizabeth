@@ -375,6 +375,23 @@ const MUTANTES = [
     teste: 'tests/pontofocal.test.mjs',
   },
   {
+    // O breadcrumb saiu do layout e passou a morar em cada section principal.
+    // Esquecer uma é a regressão mais provável: a página perde o breadcrumb e
+    // nada fica vermelho, porque página sem breadcrumb é uma página válida.
+    porque: 'a PDP perde o breadcrumb quando ele sai do layout',
+    arquivo: 'sections/main-product.liquid',
+    de: "  {%- render 'breadcrumb' -%}\n",
+    para: '',
+    teste: 'tests/breadcrumb.test.mjs',
+  },
+  {
+    porque: 'o `.page-width` volta a zerar o padding vertical, e todo `py-*` ao lado dele some',
+    arquivo: 'snippets/theme-styles.liquid',
+    de: '          padding-inline: 16px;',
+    para: '          padding: 0 16px;',
+    teste: 'tests/breadcrumb.test.mjs',
+  },
+  {
     porque: 'a miniatura do sticky perde o ponto focal e volta a cortar pelo centro',
     arquivo: 'snippets/sticky-add-to-cart.liquid',
     de: '          style="object-position: {{ product.featured_image.presentation.focal_point }}"',

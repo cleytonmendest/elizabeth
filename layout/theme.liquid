@@ -65,8 +65,22 @@
       style="gap: var(--spacing-sections)"
       tabindex="-1"
     >
-      {% render 'breadcrumb' %}
-      {{ content_for_layout }}
+      {%- comment -%}
+        O breadcrumb é da section principal de cada template, e não do layout:
+        aqui fora ele não tinha color scheme, ficava branco sobre uma PDP
+        escura, e o `gap` do <main> abria uma faixa entre ele e a página. As
+        páginas de conta são `.liquid` sem section, com o scheme num setting
+        global — para elas o layout junta os dois num bloco da mesma cor.
+        `tests/breadcrumb.test.mjs` confere que cada template o tem uma vez.
+      {%- endcomment -%}
+      {%- if template.directory == 'customers' -%}
+        <div class="color-{{ settings.customer_color_scheme }} color-background color-text">
+          {%- render 'breadcrumb' -%}
+          {{ content_for_layout }}
+        </div>
+      {%- else -%}
+        {{ content_for_layout }}
+      {%- endif -%}
     </main>
 
     {% sections 'footer-group' %}

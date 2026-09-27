@@ -12,6 +12,7 @@
   claras nas laterais. É o mesmo desenho de main-cart, main-search e as outras.
 {%- endcomment -%}
 <div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  {%- render 'breadcrumb' -%}
 <div class="page-width !py-8">
   {%- if collection.image and section.settings.show_collection_image -%}
     <div class="collection-hero mb-10 md:mb-12 relative h-64 md:h-[26rem] rounded-theme overflow-hidden">

@@ -15,10 +15,17 @@
   faixa visível entre o cabeçalho e a imagem.
 
   Caixa que só existe quando há conteúdo resolve os dois casos de uma vez.
+
+  E quem o renderiza é a section principal de cada template, DENTRO da cor
+  dela — no layout ele ficava sem color scheme, branco sobre uma PDP escura.
+  Ver o comentário em layout/theme.liquid.
+
+  O `py-4` passou a valer quando o `.page-width` deixou de zerar o padding
+  vertical; o `my-2` do <nav> compensava isso e saiu.
 {%- endcomment -%}
 {%- if template.name != 'index' -%}
   <div class="page-width py-4 w-full">
-  <nav aria-label="{{ 'general.breadcrumbs.aria_label' | t }}" class="breadcrumb-nav sm:text-sm text-xs w-full my-2">
+  <nav aria-label="{{ 'general.breadcrumbs.aria_label' | t }}" class="breadcrumb-nav sm:text-sm text-xs w-full">
     <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
       <li>
         <a href="{{ routes.root_url }}" class="text-foreground-muted hover:underline hover:text-foreground">{{ 'general.breadcrumbs.home' | t }}</a>

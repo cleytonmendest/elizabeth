@@ -1,6 +1,7 @@
 {{ 'rich-text.css' | asset_url | stylesheet_tag }}
 
 <article class="article color-{{ section.settings.color_scheme }} color-background color-text">
+  {%- render 'breadcrumb' -%}
   {%- comment -%} Hero Image {%- endcomment -%}
   {% if article.image and section.settings.show_featured_image %}
     <div class="w-full {% if section.settings.hero_fullwidth %}{% else %}page-width{% endif %} !mb-8 !lg:mb-12">

@@ -68,6 +68,7 @@
 {%- endcomment -%}
 
 <div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  {%- render 'breadcrumb' -%}
   <div class="page-width w-full !py-10 md:!py-14 min-h-page flex flex-col" data-cart-page data-cart-section="{{ section.id }}">
     <h1 class="text-3xl md:text-4xl font-light tracking-title mb-8 md:mb-10">{{ 'cart.general.title' | t }}</h1>
 

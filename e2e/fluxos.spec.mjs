@@ -354,3 +354,23 @@ test('barra fixa: texto no desktop, ícone de sacola no celular, e respiro em vo
   const largura = await botao.evaluate((el) => el.getBoundingClientRect().width);
   expect(largura, 'o texto não pode mais ocupar a largura do botão no celular').toBeLessThan(80);
 });
+
+test('o breadcrumb da PDP mora na section do produto, na cor dela e com respiro', async ({ page }) => {
+  // Renderizado pelo layout, ele ficava fora de qualquer color scheme: branco
+  // sobre uma PDP escura, com a faixa do `gap` do <main> entre os dois. E o
+  // `py-4` dele era zerado pelo `.page-width` — cascata que o jsdom não vê.
+  await abrePDP(page);
+
+  await expect(page.locator('nav.breadcrumb-nav'), 'um breadcrumb só na página').toHaveCount(1);
+
+  const medida = await page.evaluate(() => {
+    const nav = document.querySelector('nav.breadcrumb-nav');
+    const produto = document.querySelector('[product-context]');
+    return {
+      mesmaCor: nav.closest('.color-background') === produto.closest('.color-background'),
+      respiro: parseFloat(getComputedStyle(nav.closest('.page-width')).paddingTop),
+    };
+  });
+  expect(medida.mesmaCor, 'o breadcrumb está dentro do wrapper de cor da section do produto').toBe(true);
+  expect(medida.respiro, 'o `py-4` do breadcrumb vale').toBeGreaterThanOrEqual(16);
+});

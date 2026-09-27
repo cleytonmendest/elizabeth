@@ -1,6 +1,7 @@
 {% paginate blog.articles by section.settings.posts_per_page %}
 
 <div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  {%- render 'breadcrumb' -%}
 <div class="page-width !py-8 !lg:py-12">
   {%- comment -%} Header do Blog {%- endcomment -%}
   <div class="mb-8 lg:mb-12">

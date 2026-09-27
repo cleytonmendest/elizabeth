@@ -88,10 +88,17 @@
           line-height: 1.5;
         }
 
+        /*
+         * Só o eixo horizontal. `padding: 0 16px` também zerava o vertical, e
+         * este <style> vem depois do application.css: com a mesma
+         * especificidade, ele anulava todo `py-*` posto junto de `page-width`
+         * (o breadcrumb, a busca, a página, o contato ficavam sem respiro), e
+         * 20 sections só escapavam com `!py-*`.
+         */
         .page-width {
           max-width: var(--page-width);
           margin: 0 auto;
-          padding: 0 16px;
+          padding-inline: 16px;
         }
 
         .overflow-hidden {

@@ -2,11 +2,13 @@
 {% assign media_position = section.settings.media_position %}
 
 <div class="color-{{ section.settings.color_scheme }} color-background color-text">
-  <div class="page-width">
-    {% comment %}
-      {%- comment -%} Breadcrumb {%- endcomment -%}
-      {% render 'breadcrumb' %}
-    {% endcomment %}
+  {%- render 'breadcrumb' -%}
+  {%- comment -%}
+    O respiro de baixo é da section, e fica DENTRO da cor dela: o `gap` do
+    <main> entre sections é pintado pelo fundo da página, e num scheme escuro o
+    conteúdo encostava na borda. Em cima quem dá o respiro é o breadcrumb.
+  {%- endcomment -%}
+  <div class="page-width pb-12 lg:pb-16">
 
     <div
       product-context
