@@ -318,3 +318,39 @@ test('o "Compre já" sem marca veste as cores do color scheme', async ({ page })
     .poll(async () => (await medir()).fundo[0], { message: 'fundo do "Compre já" no hover = texto do scheme a 5%' })
     .toBe(repouso.fundoNoHover);
 });
+
+test('barra fixa: texto no desktop, ícone de sacola no celular, e respiro em volta', async ({ page }) => {
+  // Dois defeitos que só o navegador vê. No celular, texto longo quebrava o
+  // botão da barra — agora ele é um ícone, e o texto fica para o leitor de
+  // tela. E o `.page-width` zerava o `py-3` da barra, com a miniatura
+  // encostada nas bordas: cascata de CSS não existe no jsdom.
+  await abrePDP(page);
+
+  const barra = page.locator('[data-sticky-atc]');
+  test.skip((await barra.count()) === 0, 'produto sem barra fixa (vale-presente)');
+  const botao = barra.locator('button[name="add"]');
+  test.skip(await botao.isDisabled(), 'variante inicial esgotada: a barra mostra "Esgotado", não o ícone');
+
+  // A barra sobe quando o botão principal sai da tela.
+  const rolaAteOFim = () => page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  const texto = await botao.getAttribute('data-text-desktop');
+
+  await rolaAteOFim();
+  await expect(barra).toHaveClass(/visible/);
+  await expect(botao.locator('[data-rotulo]')).toBeVisible();
+  await expect(botao.locator('[data-icone-sacola]')).toBeHidden();
+
+  const respiro = await barra.locator('.page-width').evaluate((el) => parseFloat(getComputedStyle(el).paddingTop));
+  expect(respiro, 'padding vertical do miolo da barra (o `py-3` que o `.page-width` zerava)').toBeGreaterThanOrEqual(12);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await rolaAteOFim();
+  await expect(barra).toHaveClass(/visible/);
+
+  await expect(botao.locator('[data-icone-sacola] svg')).toBeVisible();
+  // O nome continua sendo o texto traduzido: o ícone é aria-hidden, e o
+  // rótulo sai da tela sem sair da árvore de acessibilidade.
+  await expect(botao).toHaveAccessibleName(texto);
+  const largura = await botao.evaluate((el) => el.getBoundingClientRect().width);
+  expect(largura, 'o texto não pode mais ocupar a largura do botão no celular').toBeLessThan(80);
+});

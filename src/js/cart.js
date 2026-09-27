@@ -281,8 +281,8 @@ class AddToCart extends HTMLElement {
         }
 
         // O Liquid renderiza um texto só — ele não sabe a largura da tela. Sem
-        // este ajuste no load, a barra fixa nasce com o texto curto ("Adicionar")
-        // e só troca para o longo no primeiro resize ou troca de variante.
+        // este ajuste no load, um botão que declara texto curto e longo nasce
+        // com o do servidor e só troca no primeiro resize ou troca de variante.
         this._onResize();
     }
 
@@ -314,8 +314,15 @@ class AddToCart extends HTMLElement {
 
         const variantId = this.hiddenInput?.value;
         if (variantId && !this.button.disabled) {
-            this.button.textContent = this.mediaQuery.matches ? textMobile : textDesktop;
+            this._escreveRotulo(this.mediaQuery.matches ? textMobile : textDesktop);
         }
+    }
+
+    // O texto vai para o `[data-rotulo]` quando o botão tem um. A barra fixa
+    // guarda ali o texto e, ao lado, o ícone de sacola que o celular mostra no
+    // lugar dele: escrever no botão inteiro apagaria o ícone.
+    _escreveRotulo(texto) {
+        (this.button.querySelector('[data-rotulo]') ?? this.button).textContent = texto;
     }
 
     // O plano é escolhido nos radios do form da PDP; a barra fixa tem o PRÓPRIO
@@ -379,13 +386,16 @@ class AddToCart extends HTMLElement {
 
         if (variant && variant.available) {
             this.button.disabled = false;
-            if (textDesktop && textMobile) {
-                this.button.textContent = this.mediaQuery.matches ? textMobile : textDesktop;
-            }
+            // O texto curto é opcional. Quem não o declara usa o longo em
+            // qualquer largura: o botão da PDP, que ocupa a linha inteira e
+            // precisa mostrar o texto da lojista também no celular, e a barra
+            // fixa, onde no celular quem troca o texto pelo ícone é o CSS.
+            const texto = (this.mediaQuery.matches && textMobile) || textDesktop;
+            if (texto) this._escreveRotulo(texto);
         } else {
             this.button.disabled = true;
             const label = variant ? textSoldOut : textUnavailable;
-            if (label) this.button.textContent = label;
+            if (label) this._escreveRotulo(label);
         }
     }
 

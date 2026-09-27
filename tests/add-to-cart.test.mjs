@@ -4,12 +4,13 @@
  * Este componente aparece em três markups diferentes, e a diferença entre eles
  * é justamente o que quase quebrou a vitrine:
  *
- *   snippets/add-to-cart.liquid         botão com os quatro data-text-*
- *   snippets/sticky-add-to-cart.liquid  idem, textos curto/longo diferentes
+ *   snippets/add-to-cart.liquid         botão com os data-text-*, sem texto curto
+ *   snippets/sticky-add-to-cart.liquid  ícone de sacola + `[data-rotulo]`, sem texto curto
  *   snippets/card-quick-add.liquid      botão com SVG dentro e NENHUM data-text-*
  *
  * O terceiro é um `<add-to-cart>` legítimo. Escrever `textContent` nele apaga
- * o ícone. Todo teste aqui existe para manter essa distinção viva.
+ * o ícone. O segundo tem ícone E texto, e o componente escreve só no rótulo.
+ * Todo teste aqui existe para manter essas distinções vivas.
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { loadAsset } from './helpers/load-asset.mjs';
@@ -67,6 +68,36 @@ function montaQuickAdd() {
       </form>
     </add-to-cart>`;
   return { botao: document.querySelector('button[name="add"]') };
+}
+
+/**
+ * Barra fixa: ícone de sacola ao lado do `[data-rotulo]`, e sem texto curto —
+ * no celular quem troca o texto pelo ícone é o CSS, não o componente.
+ */
+function montaBarraFixa({ disabled = false } = {}) {
+  document.body.innerHTML = `
+    <div product-context>
+      <add-to-cart>
+        <form>
+          <input type="hidden" name="id" value="42">
+          <button
+            type="submit"
+            name="add"
+            data-text-desktop="ADICIONAR AO CARRINHO"
+            data-text-sold-out="ESGOTADO"
+            data-text-unavailable="INDISPONÍVEL"
+            ${disabled ? 'disabled' : ''}
+          ><span data-icone-sacola><svg class="icon-cart"></svg></span><span data-rotulo>${
+            disabled ? 'ESGOTADO' : 'ADICIONAR AO CARRINHO'
+          }</span></button>
+        </form>
+      </add-to-cart>
+    </div>`;
+  return {
+    context: document.querySelector('[product-context]'),
+    botao: document.querySelector('button[name="add"]'),
+    rotulo: document.querySelector('[data-rotulo]'),
+  };
 }
 
 const trocaVariante = (context, variant) =>
@@ -128,6 +159,32 @@ describe('botão sem data-text-* (quick-add do card)', () => {
 
     expect(botao.querySelector('svg')).not.toBeNull();
     expect(textOf(botao)).toBe('COMPRAR');
+  });
+});
+
+describe('botão com ícone e rótulo (barra fixa)', () => {
+  it('esgotada: o texto vai para o rótulo, e o ícone continua no botão', () => {
+    const { context, botao, rotulo } = montaBarraFixa();
+
+    trocaVariante(context, { id: 99, available: false });
+
+    expect(botao.disabled).toBe(true);
+    expect(textOf(rotulo)).toBe('ESGOTADO');
+    expect(botao.querySelector('[data-icone-sacola] svg')).not.toBeNull();
+  });
+
+  it('de volta à venda NO CELULAR: sem texto curto declarado, o longo volta', () => {
+    // A condição antiga exigia os dois textos para reescrever: sem o curto, o
+    // botão ficava "ESGOTADO" e habilitado depois de a cliente escolher uma
+    // variante à venda.
+    mql = installMatchMedia(true);
+    const { context, botao, rotulo } = montaBarraFixa({ disabled: true });
+
+    trocaVariante(context, { id: 99, available: true });
+
+    expect(botao.disabled).toBe(false);
+    expect(textOf(rotulo)).toBe('ADICIONAR AO CARRINHO');
+    expect(botao.querySelector('[data-icone-sacola] svg')).not.toBeNull();
   });
 });
 

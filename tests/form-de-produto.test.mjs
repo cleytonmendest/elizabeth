@@ -125,6 +125,19 @@ describe('a troca de variante no <add-to-cart>', () => {
     expect(acelerado.hidden).toBe(false);
   });
 
+  it('no celular, o texto que a lojista escreveu sobrevive à troca de variante', () => {
+    // O botão declarava um texto "de celular" que era sempre o traduzido. No
+    // celular, a primeira troca de variante apagava o texto da lojista e
+    // punha "ADICIONAR AO CARRINHO" no lugar. O botão ocupa a linha inteira:
+    // não precisa de texto curto.
+    installMatchMedia(true);
+    const { context, botao } = monta({ block: bloco({ button_text: 'LEVAR PARA CASA' }) });
+
+    trocaVariante(context, { id: 99, available: true });
+
+    expect(botao.textContent.trim()).toBe('LEVAR PARA CASA');
+  });
+
   it('à venda → esgotada: o acelerado sai e o `id` não vai', () => {
     const { context, form, acelerado } = monta({ block: bloco({ show_dynamic_checkout: true }) });
 

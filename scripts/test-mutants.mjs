@@ -750,6 +750,27 @@ const MUTANTES = [
     para: 'if (false) return;',
     teste: 'tests/add-to-cart.test.mjs',
   },
+  {
+    porque: 'o componente volta a escrever no botão inteiro, e o ícone de sacola da barra fixa some',
+    arquivo: 'src/js/cart.js',
+    de: "(this.button.querySelector('[data-rotulo]') ?? this.button).textContent = texto;",
+    para: 'this.button.textContent = texto;',
+    teste: 'tests/add-to-cart.test.mjs',
+  },
+  {
+    porque: 'sem texto curto declarado, o botão volta à venda e continua dizendo "ESGOTADO" no celular',
+    arquivo: 'src/js/cart.js',
+    de: 'const texto = (this.mediaQuery.matches && textMobile) || textDesktop;',
+    para: 'const texto = this.mediaQuery.matches ? textMobile : textDesktop;',
+    teste: 'tests/add-to-cart.test.mjs',
+  },
+  {
+    porque: 'o botão da PDP volta a declarar um texto de celular, e o texto da lojista some no celular',
+    arquivo: 'snippets/add-to-cart.liquid',
+    de: "        data-text-sold-out=\"{{ 'product.general.sold_out' | t }}\"",
+    para: "        data-text-mobile=\"{{ 'product.general.add_to_cart' | t }}\"\n        data-text-sold-out=\"{{ 'product.general.sold_out' | t }}\"",
+    teste: 'tests/form-de-produto.test.mjs',
+  },
   // ── O form de produto: checkout acelerado, parcelamento, vale-presente ──
   //
   // #134, #138 e #139. Os três moram no mesmo `{% form 'product' %}`, e o que

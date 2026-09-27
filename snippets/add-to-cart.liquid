@@ -72,7 +72,6 @@
         aria-live="polite"
         data-sold-out-message="true"
         data-text-desktop="{% if block.settings.button_text != blank %}{{ block.settings.button_text }}{% else %}{{ 'product.general.add_to_cart' | t }}{% endif %}"
-        data-text-mobile="{{ 'product.general.add_to_cart' | t }}"
         data-text-sold-out="{{ 'product.general.sold_out' | t }}"
         data-text-unavailable="{{ 'product.general.unavailable' | t }}"
         {% if product.selected_or_first_available_variant.available == false %}
