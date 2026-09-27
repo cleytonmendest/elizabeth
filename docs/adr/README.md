@@ -53,3 +53,4 @@ Numeração sequencial, nunca reutilizada.
 | [0010](0010-moeda-em-js-vem-do-window-shopify.md) | A moeda do JS vem do `window.Shopify`, e existe um único formatador | Aceito |
 | [0011](0011-asset-pesado-e-baixado-pelo-componente-que-precisa-dele.md) | Asset pesado é baixado pelo componente que precisa dele, não pelo layout | Aceito |
 | [0016](0016-o-tema-nao-exibe-urgencia-que-nao-acaba.md) | O tema não exibe urgência que não acaba | Aceito |
+| [0017](0017-texto-de-botao-compartilhado-vem-do-locale.md) | Texto de botão que aparece em vários lugares vem do locale, não de um setting | Aceito |

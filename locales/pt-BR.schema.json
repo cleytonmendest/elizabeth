@@ -316,10 +316,6 @@
             "settings_header": {
               "content": "Configurações de botão"
             },
-            "button_text": {
-              "label": "Texto do botão",
-              "info": "Deixe em branco para usar o texto traduzido do tema, que acompanha o idioma da loja."
-            },
             "show_dynamic_checkout": {
               "label": "Mostrar botões de checkout acelerado",
               "info": "As carteiras (Shop Pay, Apple Pay, Google Pay, PayPal…) são as ativas em Configurações › Pagamentos. Não aparecem em vale-presente, que precisa do botão de adicionar para validar o destinatário."
@@ -1189,10 +1185,6 @@
           "settings": {
             "settings_header": {
               "content": "Configurações de botão"
-            },
-            "button_text": {
-              "label": "Texto do botão",
-              "info": "Deixe em branco para usar o texto traduzido do tema, que acompanha o idioma da loja."
             },
             "show_dynamic_checkout": {
               "label": "Mostrar botões de checkout acelerado",

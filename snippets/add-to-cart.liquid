@@ -71,7 +71,7 @@
         aria-haspopup="dialog"
         aria-live="polite"
         data-sold-out-message="true"
-        data-text-desktop="{% if block.settings.button_text != blank %}{{ block.settings.button_text }}{% else %}{{ 'product.general.add_to_cart' | t }}{% endif %}"
+        data-text-desktop="{{ 'product.general.add_to_cart' | t }}"
         data-text-sold-out="{{ 'product.general.sold_out' | t }}"
         data-text-unavailable="{{ 'product.general.unavailable' | t }}"
         {% if product.selected_or_first_available_variant.available == false %}
@@ -83,9 +83,15 @@
           componente só reescreve o botão na troca de variante, então renderizar
           "ADICIONAR AO CARRINHO" num produto esgotado deixava o rótulo errado
           até alguém mexer no seletor.
+
+          O texto é SÓ do locale, e não de um campo do bloco. A lojista o muda em
+          Loja virtual › Temas › Editar conteúdo padrão do tema, e a mudança vale
+          para esta PDP, a barra fixa e o card de uma vez, em cada idioma — os
+          três leem as mesmas chaves. O campo que havia aqui mudava só a PDP, e
+          a loja ficava com dois textos para o mesmo botão.
         {%- endcomment -%}
         {%- if product.selected_or_first_available_variant.available -%}
-          {% if block.settings.button_text != blank %}{{ block.settings.button_text }}{% else %}{{ 'product.general.add_to_cart' | t }}{% endif %}
+          {{ 'product.general.add_to_cart' | t }}
         {%- else -%}
           {{ 'product.general.sold_out' | t }}
         {%- endif -%}

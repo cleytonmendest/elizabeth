@@ -125,17 +125,18 @@ describe('a troca de variante no <add-to-cart>', () => {
     expect(acelerado.hidden).toBe(false);
   });
 
-  it('no celular, o texto que a lojista escreveu sobrevive à troca de variante', () => {
-    // O botão declarava um texto "de celular" que era sempre o traduzido. No
-    // celular, a primeira troca de variante apagava o texto da lojista e
-    // punha "ADICIONAR AO CARRINHO" no lugar. O botão ocupa a linha inteira:
-    // não precisa de texto curto.
+  it('o texto é o do locale, mesmo com um `button_text` antigo salvo no bloco', () => {
+    // O campo "Texto do botão" mudava só a PDP, e a loja ficava com um texto
+    // aqui e outro no card de prateleira. Agora os três botões leem as mesmas
+    // chaves, que a lojista edita em "Editar conteúdo padrão do tema". Um
+    // template salvo antes da mudança ainda pode trazer o campo — ele não
+    // pode voltar a valer só aqui.
     installMatchMedia(true);
     const { context, botao } = monta({ block: bloco({ button_text: 'LEVAR PARA CASA' }) });
+    expect(botao.textContent.trim()).toBe('ADICIONAR AO CARRINHO');
 
     trocaVariante(context, { id: 99, available: true });
-
-    expect(botao.textContent.trim()).toBe('LEVAR PARA CASA');
+    expect(botao.textContent.trim()).toBe('ADICIONAR AO CARRINHO');
   });
 
   it('à venda → esgotada: o acelerado sai e o `id` não vai', () => {

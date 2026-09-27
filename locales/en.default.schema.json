@@ -316,10 +316,6 @@
             "settings_header": {
               "content": "Button settings"
             },
-            "button_text": {
-              "label": "Button text",
-              "info": "Leave blank to use the theme's translated text, which follows the store's language."
-            },
             "show_dynamic_checkout": {
               "label": "Show dynamic checkout buttons",
               "info": "Wallets (Shop Pay, Apple Pay, Google Pay, PayPal…) are the ones active in Settings › Payments. Hidden on gift cards, which need the add to cart button to validate the recipient."
@@ -1189,10 +1185,6 @@
           "settings": {
             "settings_header": {
               "content": "Button settings"
-            },
-            "button_text": {
-              "label": "Button text",
-              "info": "Leave blank to use the theme's translated text, which follows the store's language."
             },
             "show_dynamic_checkout": {
               "label": "Show dynamic checkout buttons",

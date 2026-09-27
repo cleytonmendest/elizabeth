@@ -782,10 +782,10 @@ const MUTANTES = [
     teste: 'tests/add-to-cart.test.mjs',
   },
   {
-    porque: 'o botão da PDP volta a declarar um texto de celular, e o texto da lojista some no celular',
+    porque: 'o botão da PDP volta a ler um texto só dele, e a loja fica com um texto na PDP e outro no card',
     arquivo: 'snippets/add-to-cart.liquid',
-    de: "        data-text-sold-out=\"{{ 'product.general.sold_out' | t }}\"",
-    para: "        data-text-mobile=\"{{ 'product.general.add_to_cart' | t }}\"\n        data-text-sold-out=\"{{ 'product.general.sold_out' | t }}\"",
+    de: "        data-text-desktop=\"{{ 'product.general.add_to_cart' | t }}\"",
+    para: "        data-text-desktop=\"{% if block.settings.button_text != blank %}{{ block.settings.button_text }}{% else %}{{ 'product.general.add_to_cart' | t }}{% endif %}\"",
     teste: 'tests/form-de-produto.test.mjs',
   },
   // ── O form de produto: checkout acelerado, parcelamento, vale-presente ──
