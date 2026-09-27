@@ -35,9 +35,7 @@
         },
         "buy_button_HnrRzY": {
           "type": "buy_button",
-          "settings": {
-            "button_text": "ADICIONAR AO CARRINHO"
-          }
+          "settings": {}
         },
         "inventory_St0ckk": {
           "type": "inventory",

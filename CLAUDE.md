@@ -274,7 +274,11 @@ usa `t:sections.<nome>.…`. Toda chave existe em pt-BR **e** en.default. Nunca
 `| t: default: '...'` — crie a chave de verdade, e a regra `i18n` reprova quem
 tentar: o `default` do filtro `t` é o que a Shopify mostra quando a chave NÃO
 existe, então ele silencia o "translation missing" em vez de resolvê-lo. *(Defaults de setting e blocos
-`presets` são conteúdo do lojista: texto literal ali é o correto.)*
+`presets` são conteúdo do lojista: texto literal ali é o correto — exceto quando
+o Liquid já cai num texto traduzido com o campo vazio. Aí o campo nasce vazio,
+com um `info` dizendo isso, e a regra `i18n` reprova o literal no schema, no
+preset e no template: foi ele que deixou o botão de compra em português na loja
+em inglês.)*
 
 ## Comandos
 

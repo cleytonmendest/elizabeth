@@ -197,6 +197,30 @@ const MUTANTES = [
     teste: 'tests/i18n-t-default.test.mjs',
   },
   {
+    // O botão de compra é lido em `add-to-cart`, dois `render` abaixo da
+    // section que declara o setting. Sem seguir a cadeia, a regra só enxerga
+    // o caso em que section e Liquid são o mesmo arquivo — e o da PDP some.
+    porque: 'o modo 6 deixa de seguir os `render`, e o botão da PDP volta a nascer em português sem acusação',
+    arquivo: 'scripts/lint/rules/i18n.mjs',
+    de: '    return (renderiza.get(de) ?? []).some((proximo) => alcanca(proximo, alvo, vistos));',
+    para: '    return false;',
+    teste: 'tests/i18n-fallback.test.mjs',
+  },
+  {
+    porque: 'o modo 6 deixa de ler os templates, e o valor salvo no product.json volta a esconder a tradução',
+    arquivo: 'scripts/lint/rules/i18n.mjs',
+    de: '            if (entrada?.type !== tipoDa(section)) continue;',
+    para: '            continue;',
+    teste: 'tests/i18n-fallback.test.mjs',
+  },
+  {
+    porque: 'o modo 6 passa a acusar o campo vazio — o jeito certo vira violação',
+    arquivo: 'scripts/lint/rules/i18n.mjs',
+    de: "const preenchido = (valor) => typeof valor === 'string' && valor.trim() !== '';",
+    para: "const preenchido = (valor) => typeof valor === 'string';",
+    teste: 'tests/i18n-fallback.test.mjs',
+  },
+  {
     porque: 'camelCase passa a ser aceito como snake_case, e os dois jeitos voltam a conviver',
     arquivo: 'scripts/lint/rules/snakecase.mjs',
     de: 'export const ehSnakeCase = (nome) => /^[a-z][a-z0-9_]*$/.test(nome);',

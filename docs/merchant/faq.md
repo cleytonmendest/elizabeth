@@ -92,6 +92,9 @@ Same thing: create the page in the admin and build the content with the **Rich t
 ### Is the theme translated?
 Yes, Portuguese and English. To add other languages: **Settings → Languages** in the admin, then translate with the **Translate & Adapt** app (free, from Shopify).
 
+### I switched the store to English and some text stayed in Portuguese
+Text you typed into an editor field is your content, and it doesn't change with the language on its own: translate it in the **Translate & Adapt** app. Fields that say **"Leave blank to use the theme's translated text"** (the buy button, the checkout button, the 404 page button) follow the language when left empty. Clear them to go back to the translated text.
+
 ### How do I show the language and currency selector?
 In the **Footer** section, turn on **Show language selector** and **Show country/currency selector**. They only appear if the store has more than one language or market configured in **Settings → Markets**.
 

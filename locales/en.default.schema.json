@@ -61,7 +61,8 @@
           "label": "Show search field"
         },
         "button_label": {
-          "label": "Button text"
+          "label": "Button text",
+          "info": "Leave blank to use the theme's translated text, which follows the store's language."
         }
       }
     },
@@ -316,7 +317,8 @@
               "content": "Button settings"
             },
             "button_text": {
-              "label": "Button text"
+              "label": "Button text",
+              "info": "Leave blank to use the theme's translated text, which follows the store's language."
             },
             "show_dynamic_checkout": {
               "label": "Show dynamic checkout buttons",
@@ -1189,7 +1191,8 @@
               "content": "Button settings"
             },
             "button_text": {
-              "label": "Button text"
+              "label": "Button text",
+              "info": "Leave blank to use the theme's translated text, which follows the store's language."
             },
             "show_dynamic_checkout": {
               "label": "Show dynamic checkout buttons",

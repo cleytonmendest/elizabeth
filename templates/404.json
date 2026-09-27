@@ -4,8 +4,7 @@
       "type": "main-404",
       "settings": {
         "color_scheme": "scheme-1",
-        "show_search": true,
-        "button_label": "Voltar à página inicial"
+        "show_search": true
       }
     }
   },

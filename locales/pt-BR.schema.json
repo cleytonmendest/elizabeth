@@ -61,7 +61,8 @@
           "label": "Mostrar campo de busca"
         },
         "button_label": {
-          "label": "Texto do botão"
+          "label": "Texto do botão",
+          "info": "Deixe em branco para usar o texto traduzido do tema, que acompanha o idioma da loja."
         }
       }
     },
@@ -316,7 +317,8 @@
               "content": "Configurações de botão"
             },
             "button_text": {
-              "label": "Texto do botão"
+              "label": "Texto do botão",
+              "info": "Deixe em branco para usar o texto traduzido do tema, que acompanha o idioma da loja."
             },
             "show_dynamic_checkout": {
               "label": "Mostrar botões de checkout acelerado",
@@ -1189,7 +1191,8 @@
               "content": "Configurações de botão"
             },
             "button_text": {
-              "label": "Texto do botão"
+              "label": "Texto do botão",
+              "info": "Deixe em branco para usar o texto traduzido do tema, que acompanha o idioma da loja."
             },
             "show_dynamic_checkout": {
               "label": "Mostrar botões de checkout acelerado",

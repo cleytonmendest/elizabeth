@@ -92,6 +92,9 @@ Mesma coisa: crie a página no admin e monte o conteúdo com as seções **Texto
 ### O tema é traduzido?
 Sim, português e inglês. Para adicionar outros idiomas: **Configurações → Idiomas** no admin, e depois traduza pelo app **Translate & Adapt** (gratuito, da Shopify).
 
+### Mudei a loja para inglês e um texto continuou em português
+Texto que você escreveu num campo do editor é conteúdo seu, e não muda sozinho com o idioma: traduza-o no app **Translate & Adapt**. Os campos que dizem **"Deixe em branco para usar o texto traduzido do tema"** (o botão de compra, o de finalizar compra, o da página 404) acompanham o idioma se ficarem vazios. Apague o texto deles para voltar ao traduzido.
+
 ### Como mostro o seletor de idioma e moeda?
 Na seção **Footer**, ligue **Mostrar seletor de idioma** e **Mostrar seletor de país/moeda**. Eles só aparecem se a loja tiver mais de um idioma ou mercado configurado em **Configurações → Mercados**.
 
