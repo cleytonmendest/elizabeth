@@ -1,0 +1,57 @@
+/*
+ * Checkout acelerado da PDP (#134), vindo de `{{ form | payment_button }}`.
+ *
+ * Co-locado: só existe onde `snippets/add-to-cart.liquid` renderiza o botão
+ * (PDP e "Produto em destaque"), e é esse snippet que carrega o arquivo. No
+ * `application.css` estes bytes pesavam em toda página — carrinho, conta, 404.
+ *
+ * Passa pelo Tailwind, e não é escrito à mão, por causa do `@apply`: a
+ * tipografia do botão sem marca é a do botão de adicionar, e ela vem dos
+ * tokens (`text-xs` escala com `--font-scale`, `tracking-label` é do tema).
+ * Copiar os valores para cá seria uma segunda fonte que diverge em silêncio.
+ * `scripts/lint/rules/build.mjs` compara este fonte com o gerado.
+ */
+
+/*
+ * Os botões de MARCA moram num shadow DOM FECHADO: seletor de classe não os
+ * alcança, e estas custom properties são a porta que a Shopify publica. Só
+ * forma e esqueleto mudam aqui — a cor de um botão de marca é da carteira, e a
+ * Theme Store reprova tema que a altera.
+ *
+ * - altura: a do botão de adicionar (`h-12`), para os dois formarem coluna;
+ * - raio: o `rounded-theme` que a lojista escolheu;
+ * - esqueleto de carregamento: derivado do texto do scheme. O cinza-claro
+ *   padrão da Shopify vira um retângulo aceso num scheme escuro.
+ */
+shopify-accelerated-checkout {
+    --shopify-accelerated-checkout-button-block-size: 48px;
+    --shopify-accelerated-checkout-button-border-radius: var(--radius-theme);
+    --shopify-accelerated-checkout-skeleton-background-color: rgb(var(--color-foreground) / 0.1);
+}
+
+/*
+ * O botão SEM marca ("Compre já") é outra história. É o `fallback` que a
+ * Shopify mostra quando nenhuma carteira é elegível, e ele nascia com o azul
+ * da Shopify (#1990c6): cor que a lojista não escolheu e que nenhum scheme
+ * prevê — num scheme escuro, um retângulo azul aceso no meio da PDP. Não é
+ * botão de marca, então a regra da Theme Store não o protege, e o tema o pinta
+ * como botão SECUNDÁRIO (mesmas cores de `.color-button-secondary`), com a
+ * tipografia do botão de adicionar ao lado. A classe extra no seletor vence a
+ * folha da Shopify, inclusive no `:hover:not([disabled])` dela.
+ *
+ * `display` fica de fora de propósito: é por ele que a Shopify esconde este
+ * botão quando uma carteira toma o lugar.
+ *
+ * `e2e/fluxos.spec.mjs` mede isto na loja: se a Shopify um dia mover este
+ * botão para o shadow DOM, o teste reprova em vez de passar sem medir.
+ */
+.shopify-payment-button .shopify-payment-button__button--unbranded {
+    @apply h-12 text-xs font-medium uppercase tracking-label rounded-theme;
+    background-color: rgb(var(--color-background));
+    color: rgb(var(--color-secondary-button-text));
+    border: 1px solid rgb(var(--color-border));
+}
+
+.shopify-payment-button .shopify-payment-button__button--unbranded:hover:not([disabled]) {
+    background-color: rgb(var(--color-text) / 0.05);
+}

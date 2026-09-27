@@ -1,5 +1,11 @@
+{%- comment -%}
+  O raio é o do scheme (`rounded-theme`), como o do botão de adicionar ao lado
+  e o do seletor do mini-carrinho: era o único controle reto da linha de
+  compra. O campo é transparente para mostrar o fundo da section — sem isso o
+  navegador pinta o `input` de branco, que num scheme escuro some o número.
+{%- endcomment -%}
 {%- assign qty_height = height_class | default: 'h-10' -%}
-<quantity-selector class="border border-border p-1 flex {{ qty_height }} w-fit max-w-28">
+<quantity-selector class="border border-border rounded-theme p-1 flex {{ qty_height }} w-fit max-w-28">
   <button
     type="button"
     name="minus"
@@ -16,7 +22,7 @@
     aria-label="{{ 'product.general.quantity' | t }}"
     inputmode="numeric"
     pattern="[0-9]*"
-    class="h-full text-center w-qty-field"
+    class="h-full text-center w-qty-field bg-transparent"
   >
   <button
     type="button"

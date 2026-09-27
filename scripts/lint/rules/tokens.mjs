@@ -18,13 +18,14 @@
  * Exceções legítimas (cor de marca, scrim de imagem, lightbox) vivem em
  * scripts/lint/config/design-exceptions.json e exigem justificativa escrita.
  */
-import { allLiquid, lineAt, offense, read, stripInert } from '../lib.mjs';
+import { allLiquid, lineAt, list, offense, read, stripInert } from '../lib.mjs';
 import { isAllowed } from '../exceptions.mjs';
+import { CSS as CSS_GERADO } from '../../build-css.mjs';
 
 export const meta = {
   name: 'tokens',
   title: 'Design tokens',
-  description: 'Nenhum hex, cinza ou valor arbitrário fora dos tokens do tema.',
+  description: 'Nenhum hex, cinza ou valor arbitrário fora dos tokens do tema — no Liquid e no CSS escrito à mão.',
   ratchet: true,
 };
 
@@ -108,8 +109,83 @@ export const CHECKS = [
   },
 ];
 
+/**
+ * O CSS escrito à mão também consome o color scheme — e passava batido.
+ *
+ * A regra só lia `.liquid`. Foi por esse buraco que `assets/variant-selector.css`
+ * pintou os seletores de variante da PDP de `#000`, `#666` e `#ddd`: num scheme
+ * escuro, a borda do hover era preta sobre fundo preto, e o linter dizia "tudo
+ * limpo". No CSS a pergunta é só a de COR: raio, tipografia e espaçamento em
+ * CSS cru são julgamento, não contrato — o que pinta é o que a lojista edita.
+ */
+export const CSS_CHECKS = [
+  {
+    code: 'hex',
+    pattern: CHECKS.find((c) => c.code === 'hex').pattern,
+    message: (v) =>
+      `Cor fixa ${v} no CSS — o lojista não consegue mudar pelo color scheme. Use a variável do scheme: rgb(var(--color-foreground)), rgb(var(--color-border)), …`,
+  },
+  {
+    code: 'rgb',
+    // Só com NÚMERO dentro: `rgb(var(--color-border))` é o jeito certo.
+    pattern: /\b(?:rgba?|hsla?)\(\s*[\d.][^)]*\)/g,
+    message: (v) =>
+      `Cor fixa ${v} no CSS — o lojista não consegue mudar pelo color scheme. Use rgb(var(--color-…)), com alfa se precisar: rgb(var(--color-foreground) / 0.6).`,
+  },
+  {
+    code: 'nomeada',
+    // Como valor (`color: black`) ou dentro de um atalho (`1px solid white`).
+    // O lookahead exige o fim da declaração, e é o que deixa `white-space` passar.
+    pattern: /(?<=[:\s])(?:black|white|gray|grey|silver)(?=\s*(?:;|!|\}))/g,
+    message: (v) => `Cor nomeada ${v} no CSS ignora o color scheme. Use rgb(var(--color-foreground)) ou rgb(var(--color-background)).`,
+  },
+  {
+    code: 'palette',
+    // No fonte do Tailwind: `theme('colors.gray.400')` é a paleta dele.
+    pattern: /theme\(\s*['"]colors\.[^'"]+['"]\s*\)/g,
+    message: (v) => `${v} é da paleta do Tailwind, não do color scheme. Use rgb(var(--color-border)) ou outra variável do scheme.`,
+  },
+];
+
+/**
+ * Os CSS que o tema escreve. O GERADO fica de fora porque o fonte dele, em
+ * `src/`, já é lido — lê-lo de novo repetiria cada acusação. A lista é a mesma
+ * que a regra `build` confere. O Swiper é biblioteca de
+ * terceiro, baixada sob demanda pelo `<my-slider>`, e o fonte dele não é nosso.
+ */
+const CSS_DE_TERCEIRO = new Set(['assets/swiper-bundle.min.css']);
+
+export function cssDoTema() {
+  const gerados = new Set(CSS_GERADO.map(([, destino]) => destino));
+  return [
+    ...list('assets', '.css').filter((f) => !gerados.has(f) && !CSS_DE_TERCEIRO.has(f)),
+    ...list('src', '.css'),
+  ];
+}
+
+/** O que a regra acusa num CSS. Pura: recebe o nome e o texto. */
+export function acusaCss(file, texto) {
+  // Comentário explica a cor que foi removida; ele não pinta nada. As quebras
+  // de linha ficam, para a linha apontada ser a da declaração.
+  const src = texto.replace(/\/\*[\s\S]*?\*\//g, (bloco) => bloco.replace(/[^\n]/g, ''));
+  const offenses = [];
+  for (const check of CSS_CHECKS) {
+    for (const match of src.matchAll(check.pattern)) {
+      const value = match[0];
+      const code = `${check.code}:${value}`;
+      if (isAllowed('tokens', file, code)) continue;
+      offenses.push(
+        offense({ rule: 'tokens', file, line: lineAt(src, match.index), code, message: check.message(value) })
+      );
+    }
+  }
+  return offenses;
+}
+
 export function run() {
   const offenses = [];
+
+  for (const file of cssDoTema()) offenses.push(...acusaCss(file, read(file)));
 
   for (const file of allLiquid()) {
     const src = stripInert(read(file));

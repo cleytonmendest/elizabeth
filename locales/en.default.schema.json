@@ -251,7 +251,13 @@
           "name": "Product name"
         },
         "price": {
-          "name": "Product price"
+          "name": "Product price",
+          "settings": {
+            "show_tax_note": {
+              "label": "Show taxes and shipping notice",
+              "info": "The text follows your store's tax settings, per country: when prices include tax, it reads \"Taxes included\". Turn it off if the notice doesn't apply to your store."
+            }
+          }
         },
         "inventory": {
           "name": "Inventory status",
@@ -1139,7 +1145,13 @@
           "name": "Product name"
         },
         "price": {
-          "name": "Product price"
+          "name": "Product price",
+          "settings": {
+            "show_tax_note": {
+              "label": "Show taxes and shipping notice",
+              "info": "The text follows your store's tax settings, per country: when prices include tax, it reads \"Taxes included\". Turn it off if the notice doesn't apply to your store."
+            }
+          }
         },
         "quantity_selector": {
           "name": "Quantity selector",

@@ -94,6 +94,12 @@
     </div>
 
     {%- if mostra_checkout_acelerado -%}
+      {%- comment -%}
+        Co-locado: forma dos botões de carteira e as cores do scheme no
+        "Compre já" sem marca. Fonte em src/checkout-acelerado.css. Fica FORA
+        do div abaixo, que se esconde quando está vazio.
+      {%- endcomment -%}
+      {{ 'checkout-acelerado.css' | asset_url | stylesheet_tag }}
       <div
         class="empty:hidden"
         data-checkout-acelerado

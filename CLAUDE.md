@@ -293,8 +293,12 @@ shopify theme push    # deploy
 - `sections/` — seções do editor · `snippets/` — componentes menores
 - `templates/` — templates JSON (OS 2.0) + `customers/*.liquid` (legado)
 - `assets/` — CSS compilado, Web Components, Swiper
-- `src/js/*.js` → `assets/*.js` e `src/tailwind.css` → `assets/application.css`
-  — **os dois são gerados; nunca editar `assets/` à mão.** A Shopify serve
+- `src/js/*.js` → `assets/*.js` e `src/*.css` → `assets/` (os pares estão em
+  `scripts/build-css.mjs`: o `application.css` global e o CSS co-locado do
+  checkout acelerado, que também passa pelo Tailwind por causa do `@apply`)
+  — **são gerados; nunca editar esses arquivos em `assets/` à mão.** O CSS
+  escrito à mão em `assets/` (ex.: `variant-selector.css`) é lido pela regra
+  `tokens`, que reprova cor fixa ali também. A Shopify serve
   `assets/` direto, então o que está lá é o que a cliente baixa: minificado, com
   o fonte em `src/`, que o `.shopifyignore` não empurra. A regra `build` compara
   byte a byte e reprova artefato fora de sincronia — inclusive edição à mão, que

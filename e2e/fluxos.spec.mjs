@@ -234,3 +234,87 @@ test('busca preditiva responde enquanto a cliente digita', async ({ page }) => {
     await expect(itens.first()).toHaveAttribute('href', /\/products\//);
   }
 });
+
+test('o "Compre já" sem marca veste as cores do color scheme', async ({ page }) => {
+  // O botão nascia com o azul da Shopify (#1990c6), cor que nenhum scheme do
+  // tema prevê. A regra que o pinta mora em src/checkout-acelerado.css e mira
+  // uma classe que a SHOPIFY escreve — nenhum linter nosso sabe se ela ainda
+  // existe, nem se o botão continua no DOM da página, onde a folha do tema o
+  // alcança. Só a loja responde isso.
+  await abrePDP(page);
+
+  const bloco = page.locator('[data-checkout-acelerado]').first();
+  test.skip(
+    (await bloco.count()) === 0,
+    'PDP sem checkout acelerado: a lojista desligou "Mostrar botões de checkout acelerado", ou o produto é vale-presente'
+  );
+  test.skip(
+    (await bloco.getAttribute('hidden')) !== null,
+    'variante esgotada: o tema esconde o checkout acelerado, e não há botão para medir'
+  );
+
+  // Sem marca é o `fallback`: aparece quando nenhuma carteira é elegível. O
+  // atributo `recommended` diz o que a Shopify recomendou ANTES do navegador
+  // opinar, então ele só decide o pulo depois da espera — carteira recomendada
+  // que o Chromium não suporta também cai no fallback, e aí dá para medir.
+  const botao = bloco.locator('.shopify-payment-button__button--unbranded');
+  const apareceu = await botao
+    .waitFor({ state: 'visible', timeout: 15_000 })
+    .then(() => true, () => false);
+  if (!apareceu) {
+    const recomendado = await bloco.locator('shopify-accelerated-checkout').getAttribute('recommended');
+    test.skip(
+      Boolean(recomendado) && recomendado !== 'null',
+      'a Shopify exibiu um botão de carteira: a cor dele é da marca, e a Theme Store proíbe o tema de mudá-la'
+    );
+    throw new Error(
+      'O "Compre já" não apareceu no DOM da página. Se a Shopify o levou para dentro do shadow DOM, ' +
+        'a regra de `.shopify-payment-button__button--unbranded` em src/checkout-acelerado.css não o alcança mais — ' +
+        'e o botão voltou para a cor da Shopify.'
+    );
+  }
+
+  // O esperado não é número escrito aqui: é o que o scheme em volta do botão
+  // resolve. Uma sonda no mesmo bloco herda as mesmas variáveis e diz o valor.
+  const medir = () =>
+    botao.evaluate((el) => {
+      const sonda = document.createElement('span');
+      sonda.style.backgroundColor = 'rgb(var(--color-background))';
+      sonda.style.color = 'rgb(var(--color-secondary-button-text))';
+      sonda.style.borderColor = 'rgb(var(--color-border))';
+      sonda.style.outlineColor = 'rgb(var(--color-text) / 0.05)';
+      el.closest('[data-checkout-acelerado]').append(sonda);
+      const [visto, esperado] = [getComputedStyle(el), getComputedStyle(sonda)];
+      const medida = {
+        fundo: [visto.backgroundColor, esperado.backgroundColor],
+        texto: [visto.color, esperado.color],
+        borda: [visto.borderTopColor, esperado.borderTopColor],
+        fundoNoHover: esperado.outlineColor,
+      };
+      sonda.remove();
+      return medida;
+    });
+
+  // O mouse fica onde o clique da coleção o deixou, e esse ponto pode cair em
+  // cima do botão na PDP: sem tirá-lo dali, o "repouso" mediria o hover.
+  await page.mouse.move(0, 0);
+  await expect
+    .poll(async () => {
+      const { fundo } = await medir();
+      return fundo[0] === fundo[1];
+    }, { message: 'fundo do "Compre já" = fundo do scheme' })
+    .toBe(true);
+
+  const repouso = await medir();
+  expect(repouso.fundo[0], 'fundo do "Compre já" = fundo do scheme').toBe(repouso.fundo[1]);
+  expect(repouso.texto[0], 'texto do "Compre já" = texto do botão secundário').toBe(repouso.texto[1]);
+  expect(repouso.borda[0], 'borda do "Compre já" = borda do scheme').toBe(repouso.borda[1]);
+
+  // O hover é onde a folha da Shopify tem o seletor mais forte
+  // (`:hover:not([disabled])`), e é por isso que ele é medido à parte. O poll
+  // espera a transição de fundo que a própria Shopify declara no botão.
+  await botao.hover();
+  await expect
+    .poll(async () => (await medir()).fundo[0], { message: 'fundo do "Compre já" no hover = texto do scheme a 5%' })
+    .toBe(repouso.fundoNoHover);
+});

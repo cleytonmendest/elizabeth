@@ -5,6 +5,8 @@
   - product: {Object} Product Liquid object (optional)
   - use_variant: {Boolean} Renders selected or first variant price instead of overall product pricing (optional)
   - pdp: {Boolean} Escala de página de produto (preço maior) em vez da de prateleira (optional)
+  - tax_note: {Boolean} `false` esconde a frase de impostos e frete da PDP — é o
+    setting `show_tax_note` do bloco de preço. Omitido, ela aparece (optional)
   Usage:
   {% render 'price', product: product %}
 
@@ -28,6 +30,11 @@
   carrega markup morto.
 
   Imposto (issue #143): só com `pdp`. A barra fixa e os cards não repetem a frase.
+  O TEXTO segue `cart.taxes_included`, que a Shopify já resolve pelo país da
+  cliente quando a loja inclui imposto só em alguns mercados. Se a frase existe
+  é outra pergunta, e quem responde é a lojista (`tax_note`): no Brasil o preço
+  de vitrine já embute o imposto por lei, e numa loja com frete grátis para o
+  país inteiro "frete calculado no checkout" informa o que não acontece.
 {% endcomment %}
 {%- liquid
   if use_variant
@@ -121,7 +128,7 @@
 {%- endcomment -%}
 <script src="{{ 'price-component.js' | asset_url }}" defer></script>
 
-{%- if pdp -%}
+{%- if pdp and tax_note != false -%}
   {%- comment -%}
     Loja brasileira costuma operar com "Todos os preços incluem impostos"
     ligado, e aí "impostos calculados no checkout" sugere um acréscimo que não

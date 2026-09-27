@@ -69,6 +69,12 @@ Não. Ela é visual. A regra de verdade é **Configurações → Envio e entrega
 ### Como coloco parcelamento?
 Depende do gateway de pagamento, não do tema. Configure em **Configurações → Pagamentos**. Se o gateway expõe parcelamento, ele aparece.
 
+### Como tiro o botão "Compre já" da página de produto?
+No editor, abra a página de produto, clique no bloco **Botão Comprar** e desmarque **Mostrar botões de checkout acelerado**. O mesmo controle existe na seção **Produto Destaque**. Quando nenhuma carteira digital está disponível, o botão aparece como "Compre já" e usa as cores do esquema da seção. Os botões de carteira (Shop Pay, Google Pay…) mantêm as cores da marca, que a Shopify não permite mudar.
+
+### Como escondo "Impostos e frete calculados no checkout"?
+O texto muda sozinho conforme **Configurações → Impostos e taxas**: se os preços da loja já incluem impostos, ele diz "Impostos incluídos". A regra pode ser diferente por país, e o texto acompanha o país da cliente. Para não mostrar a frase, abra o bloco **Preço do Produto** no editor e desmarque **Mostrar aviso de impostos e frete**.
+
 ---
 
 ## Blog e páginas

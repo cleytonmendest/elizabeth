@@ -649,6 +649,13 @@ const MUTANTES = [
     teste: 'tests/build-js.test.mjs',
   },
   {
+    porque: 'a regra build esquece o CSS co-locado, e uma edição à mão em assets/checkout-acelerado.css sobrevive a tudo',
+    arquivo: 'scripts/build-css.mjs',
+    de: "  ['src/checkout-acelerado.css', 'assets/checkout-acelerado.css'],\n",
+    para: '',
+    teste: 'tests/build-css.test.mjs',
+  },
+  {
     porque: 'formatMoney deixa de converter centavos em unidades da moeda',
     arquivo: 'src/js/money.js',
     de: '.format(cents / 100)',
@@ -929,6 +936,27 @@ const MUTANTES = [
     arquivo: 'snippets/price-v2.liquid',
     de: "        {{ 'product.tax.included_with_policy_html' | t: link: shop.shipping_policy.url }}",
     para: "        {{ 'product.tax.included' | t }}",
+    teste: 'tests/preco-liquid.test.mjs',
+  },
+  {
+    porque: 'desligar o aviso de impostos no bloco de preço não desliga nada',
+    arquivo: 'snippets/price-v2.liquid',
+    de: '{%- if pdp and tax_note != false -%}',
+    para: '{%- if pdp -%}',
+    teste: 'tests/preco-liquid.test.mjs',
+  },
+  {
+    porque: 'o setting do aviso de impostos existe no editor e a PDP não o entrega ao snippet',
+    arquivo: 'snippets/main-product-right.liquid',
+    de: ", pdp: true, tax_note: block.settings.show_tax_note -%}",
+    para: ", pdp: true -%}",
+    teste: 'tests/preco-liquid.test.mjs',
+  },
+  {
+    porque: 'o aviso de impostos nasce desligado no produto em destaque',
+    arquivo: 'sections/highlighted-product.liquid',
+    de: '"info": "t:sections.highlighted_product.blocks.price.settings.show_tax_note.info",\n          "default": true',
+    para: '"info": "t:sections.highlighted_product.blocks.price.settings.show_tax_note.info",\n          "default": false',
     teste: 'tests/preco-liquid.test.mjs',
   },
   {
@@ -1443,6 +1471,23 @@ const MUTANTES = [
     de: '    pattern: /\\btext-foreground\\/(?:[0-9]|[1-4][0-9]|5[0-7])\\b/g,',
     para: '    pattern: /\\btext-foreground\\/(?:[0-9]|[1-4][0-9])\\b/g,',
     teste: 'tests/tokens.test.mjs',
+  },
+  {
+    // O buraco por onde `assets/variant-selector.css` pintou a PDP de `#000`:
+    // a regra só lia `.liquid`. Sem o CSS na varredura ela volta a ficar verde
+    // com cor fixa no arquivo.
+    porque: 'o CSS escrito à mão sai da varredura de cor, e #000 volta a pintar a PDP sem acusação',
+    arquivo: 'scripts/lint/rules/tokens.mjs',
+    de: "    ...list('assets', '.css').filter((f) => !gerados.has(f) && !CSS_DE_TERCEIRO.has(f)),",
+    para: "    ...list('assets', '.css').filter(() => false),",
+    teste: 'tests/tokens-css.test.mjs',
+  },
+  {
+    porque: 'o comentário deixa de ser descartado, e a explicação da cor removida vira acusação',
+    arquivo: 'scripts/lint/rules/tokens.mjs',
+    de: "(bloco) => bloco.replace(/[^\\n]/g, ''));",
+    para: "(bloco) => bloco);",
+    teste: 'tests/tokens-css.test.mjs',
   },
   {
     // O atributo `class` quebra linha — o `<aside>` de `main-collection` espalha

@@ -251,7 +251,13 @@
           "name": "Nome do Produto"
         },
         "price": {
-          "name": "Preço do Produto"
+          "name": "Preço do Produto",
+          "settings": {
+            "show_tax_note": {
+              "label": "Mostrar aviso de impostos e frete",
+              "info": "O texto segue a configuração de impostos da loja, por país: com preços que já incluem impostos, ele diz \"Impostos incluídos\". Desative se o aviso não se aplica à sua loja."
+            }
+          }
         },
         "inventory": {
           "name": "Status de Estoque",
@@ -1139,7 +1145,13 @@
           "name": "Nome do Produto"
         },
         "price": {
-          "name": "Preço do Produto"
+          "name": "Preço do Produto",
+          "settings": {
+            "show_tax_note": {
+              "label": "Mostrar aviso de impostos e frete",
+              "info": "O texto segue a configuração de impostos da loja, por país: com preços que já incluem impostos, ele diz \"Impostos incluídos\". Desative se o aviso não se aplica à sua loja."
+            }
+          }
         },
         "quantity_selector": {
           "name": "Seletor de quantidade",

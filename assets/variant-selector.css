@@ -1,5 +1,11 @@
 /* ============================================
    Variant Selector Styles - Design Minimalista
+   ============================================
+
+   Toda cor aqui sai do color scheme da section, como no resto do tema: estes
+   seletores vivem na PDP, que a lojista pode pôr num scheme escuro. Com as
+   cores fixas de antes (#000, #666, #ddd), a borda do hover era preta sobre
+   fundo preto. A regra `tokens` lê este arquivo desde então.
    ============================================ */
 
 /* Swatch hover effects - sutil */
@@ -9,7 +15,7 @@
 }
 
 .swatch-label:hover:not(.is-unavailable) {
-  border-color: #000;
+  border-color: rgb(var(--color-foreground));
 }
 
 /* Unavailable swatch - diagonal line through */
@@ -20,7 +26,7 @@
   left: 50%;
   width: 110%;
   height: 1px;
-  background-color: #999;
+  background-color: rgb(var(--color-foreground));
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
@@ -28,7 +34,7 @@
   opacity: 0.4;
   cursor: not-allowed;
   border-style: dashed;
-  border-color: #ddd;
+  border-color: rgb(var(--color-border));
 }
 
 /* Text option buttons - minimalista */
@@ -38,7 +44,7 @@
 }
 
 .not-swatch:hover:not(.is-unavailable) {
-  border-color: #666;
+  border-color: rgb(var(--color-foreground) / 0.6);
 }
 
 /* Unavailable text option - strikethrough */
@@ -47,11 +53,11 @@
   cursor: not-allowed;
   text-decoration: line-through;
   border-style: dashed;
-  border-color: #ddd;
+  border-color: rgb(var(--color-border));
 }
 
 /* Selected value label */
 .variant-selected-value {
   font-weight: 500;
-  color: #000;
+  color: rgb(var(--color-foreground));
 }

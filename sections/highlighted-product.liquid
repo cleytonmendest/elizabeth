@@ -47,7 +47,7 @@
 
               {%- when 'price' -%}
                 <div role="status" {{ block.shopify_attributes }}>
-                  {%- render 'price-v2', product: product, use_variant: true, pdp: true -%}
+                  {%- render 'price-v2', product: product, use_variant: true, pdp: true, tax_note: block.settings.show_tax_note -%}
                 </div>
 
               {%- when 'variant_picker' -%}
@@ -121,7 +121,16 @@
     {
       "type": "price",
       "name": "t:sections.highlighted_product.blocks.price.name",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_tax_note",
+          "label": "t:sections.highlighted_product.blocks.price.settings.show_tax_note.label",
+          "info": "t:sections.highlighted_product.blocks.price.settings.show_tax_note.info",
+          "default": true
+        }
+      ]
     },
     {
       "type": "quantity_selector",

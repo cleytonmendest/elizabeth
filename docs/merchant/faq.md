@@ -69,6 +69,12 @@ No. It's visual. The real rule is **Settings → Shipping and delivery**. Config
 ### How do I offer installments?
 That depends on the payment gateway, not on the theme. Configure it in **Settings → Payments**. If the gateway exposes installments, they show up.
 
+### How do I remove the "Buy it now" button from the product page?
+In the editor, open the product page, click the **Buy button** block and uncheck **Show dynamic checkout buttons**. The same control exists in the **Highlighted Product** section. When no digital wallet is available, the button shows as "Buy it now" and uses the section's color scheme. Wallet buttons (Shop Pay, Google Pay…) keep their brand colors, which Shopify doesn't allow themes to change.
+
+### How do I hide "Taxes and shipping calculated at checkout"?
+The text changes on its own based on **Settings → Taxes and duties**: if your prices already include taxes, it reads "Taxes included". The rule can differ by country, and the text follows the customer's country. To hide the notice, open the **Product price** block in the editor and uncheck **Show taxes and shipping notice**.
+
 ---
 
 ## Blog and pages

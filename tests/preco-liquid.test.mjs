@@ -12,6 +12,8 @@
  * `tests/helpers/liquid-loja.mjs` (o `t` lê o pt-BR de verdade).
  */
 import { describe, it, expect } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
 import { renderiza, textoVisivel } from './helpers/liquid-loja.mjs';
 
 const POR_100ML = { measured_type: 'volume', quantity_value: '50.0', quantity_unit: 'ml', reference_value: 100, reference_unit: 'ml' };
@@ -167,6 +169,40 @@ describe('price-v2 — imposto na PDP (issue #143)', () => {
   it('só na PDP: sem `pdp` (barra fixa, card) a frase não aparece', () => {
     const el = renderiza('price-v2', { product: produtoSimples(), use_variant: true, cart: { taxes_included: true }, shop: {} });
     expect(el.querySelector('[data-tax-note]')).toBeNull();
+  });
+
+  it.each([true, false])('o bloco desligou (`tax_note: false`): nada, com imposto incluso=%s', (incluso) => {
+    // No Brasil o preço de vitrine já embute o imposto, e "frete calculado no
+    // checkout" é falso numa loja com frete grátis para o país inteiro. O
+    // texto certo o tema escolhe sozinho; se a frase existe, é a lojista.
+    const el = precoDaPdp(produtoSimples(), { tax_note: false, cart: { taxes_included: incluso } });
+    expect(el.querySelector('[data-tax-note]')).toBeNull();
+  });
+
+  it('ligado, ou sem o parâmetro (styleguide), a frase continua', () => {
+    expect(precoDaPdp(produtoSimples(), { tax_note: true }).querySelector('[data-tax-note]')).not.toBeNull();
+    expect(precoDaPdp(produtoSimples()).querySelector('[data-tax-note]')).not.toBeNull();
+  });
+});
+
+describe('o bloco de preço decide se a frase de imposto existe', () => {
+  // As duas metades valem juntas: o setting declarado com default ligado, e a
+  // chamada que o entrega ao snippet. Um setting que ninguém lê desligaria
+  // nada no editor — o defeito que o ADR 0004 registrou na barra fixa.
+  const RAIZ = path.resolve(import.meta.dirname, '..');
+  const ler = (arquivo) => fs.readFileSync(path.join(RAIZ, arquivo), 'utf8');
+  const blocoDePreco = (section) => {
+    const [, json] = /\{%-?\s*schema\s*-?%\}([\s\S]*?)\{%-?\s*endschema\s*-?%\}/.exec(ler(`sections/${section}`));
+    return JSON.parse(json).blocks.find((b) => b.type === 'price');
+  };
+
+  it.each([
+    ['main-product.liquid', 'snippets/main-product-right.liquid'],
+    ['highlighted-product.liquid', 'sections/highlighted-product.liquid'],
+  ])('%s: `show_tax_note` nasce ligado e chega ao price-v2', (section, quemRenderiza) => {
+    const setting = blocoDePreco(section).settings.find((s) => s.id === 'show_tax_note');
+    expect(setting).toMatchObject({ type: 'checkbox', default: true });
+    expect(ler(quemRenderiza)).toMatch(/render 'price-v2',[^%]*\bpdp: true, tax_note: block\.settings\.show_tax_note\b/);
   });
 });
 

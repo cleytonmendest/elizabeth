@@ -5,7 +5,7 @@
   "description": "Tema Shopify Online Store 2.0 para moda feminina (TailwindCSS, vanilla JS, Swiper).",
   "scripts": {
     "tail": "tailwindcss -i ./src/tailwind.css -o ./assets/application.css --watch --minify",
-    "build": "tailwindcss -i ./src/tailwind.css -o ./assets/application.css --minify && node scripts/build-js.mjs",
+    "build": "tailwindcss -i ./src/tailwind.css -o ./assets/application.css --minify && tailwindcss -i ./src/checkout-acelerado.css -o ./assets/checkout-acelerado.css --minify && node scripts/build-js.mjs",
     "lint": "node scripts/lint/index.mjs",
     "lint:fast": "node scripts/lint/index.mjs --fast",
     "lint:baseline": "node scripts/lint/index.mjs --write-baseline",
