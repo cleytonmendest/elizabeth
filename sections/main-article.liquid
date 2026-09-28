@@ -4,7 +4,7 @@
   {%- render 'breadcrumb' -%}
   {%- comment -%} Hero Image {%- endcomment -%}
   {% if article.image and section.settings.show_featured_image %}
-    <div class="w-full {% if section.settings.hero_fullwidth %}{% else %}page-width{% endif %} !mb-8 !lg:mb-12">
+    <div class="w-full {% if section.settings.hero_fullwidth %}{% else %}page-width{% endif %} !mb-8 lg:!mb-12">
       <div class="relative overflow-hidden {% unless section.settings.hero_fullwidth %}rounded-theme{% endunless %} aspect-ultrawide bg-foreground/5">
         {%- comment -%}
           `image_tag` aplica o ponto focal no corte do `object-cover` (#142).

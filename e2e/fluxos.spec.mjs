@@ -390,3 +390,21 @@ test('section vazia não abre vão no <main>', async ({ page }) => {
 
   for (const { id, display } of vazias) expect(display, `${id} está vazia e ocupa espaço`).toBe('none');
 });
+
+test('o blog tem o espaçamento de desktop que o markup declara', async ({ page }) => {
+  // Escrito `!lg:py-12`, o espaçamento de desktop não existia: com o `!` antes
+  // da variante o Tailwind não gera classe nenhuma, e o desktop ficava com os
+  // 32px do mobile (#151). O jsdom não calcula cascata; só o navegador mede.
+  const resposta = await page.request.get('/blogs/news');
+  test.skip(resposta.status() === 404, 'a loja não tem o blog /blogs/news para medir');
+
+  const respiro = async () =>
+    page.evaluate(() => parseFloat(getComputedStyle(document.querySelector('#MainContent h1').closest('.page-width')).paddingTop));
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await abrePaginaDoTema(page, '/blogs/news');
+  expect(await respiro(), '`lg:py-12` vale no desktop').toBe(48);
+
+  await page.setViewportSize({ width: 375, height: 800 });
+  expect(await respiro(), '`py-8` continua valendo no celular').toBe(32);
+});
