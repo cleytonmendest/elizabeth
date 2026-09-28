@@ -23,10 +23,15 @@
  * isso, um arquivo escrito direto em `assets/` simplesmente nunca seria
  * minificado, e a #96 voltaria de fininho um arquivo por vez.
  *
+ * E reprova aviso do esbuild sobre o `tailwind.config.js` (#150). A comparação
+ * de CSS não vê config errado: com `minWidth` declarado duas vezes, o artefato
+ * estava em dia com o config — o config é que tinha perdido dois tokens.
+ *
  * É a única regra que executa um processo externo, então roda por último e
  * fica de fora do hook por arquivo (é lenta demais para isso).
  */
 import { execFileSync } from 'node:child_process';
+import esbuild from 'esbuild';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -44,7 +49,44 @@ export const meta = {
 
 
 export function run() {
-  return [...CSS.flatMap(([fonte, destino]) => cssDesatualizado(fonte, destino)), ...jsDesatualizado()];
+  return [
+    ...configComAviso(),
+    ...CSS.flatMap(([fonte, destino]) => cssDesatualizado(fonte, destino)),
+    ...jsDesatualizado(),
+  ];
+}
+
+const CONFIG = 'tailwind.config.js';
+
+/**
+ * O `tailwind.config.js` é programa, e o erro dele não aparece em lugar nenhum.
+ *
+ * Chave repetida num objeto literal não é erro de JavaScript: a segunda
+ * substitui a primeira em silêncio. `theme.extend` teve `minWidth` e
+ * `maxWidth` declarados duas vezes, o Tailwind recebeu só a segunda
+ * declaração de cada, e `min-w-menu-col` e `max-w-dropdown` nunca chegaram ao
+ * CSS. O menu usava duas classes que não geravam nada, e a regra `tokens`
+ * ficava satisfeita: ela sabe que `min-w-[150px]` é arbitrário, não se
+ * `min-w-menu-col` existe.
+ *
+ * O esbuild, que já está aqui por causa do JS, acusa a duplicata e os outros
+ * enganos que reconhece. Todo aviso dele sobre este arquivo reprova.
+ */
+export function configComAviso(fonte = fs.readFileSync(abs(CONFIG), 'utf8')) {
+  const { warnings } = esbuild.transformSync(fonte, { loader: 'js', logLevel: 'silent' });
+
+  return warnings.map((aviso) =>
+    offense({
+      rule: 'build',
+      file: CONFIG,
+      line: aviso.location?.line ?? 1,
+      code: `config:${aviso.id || 'esbuild'}`,
+      message:
+        aviso.id === 'duplicate-object-key'
+          ? `${aviso.text}. A segunda declaração substitui a primeira em silêncio, e os tokens da primeira somem do CSS. Junte as duas num objeto só.`
+          : `O esbuild acusa: ${aviso.text}.`,
+    })
+  );
 }
 
 function cssDesatualizado(fonte, destino) {

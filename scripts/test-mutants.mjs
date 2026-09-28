@@ -697,6 +697,22 @@ const MUTANTES = [
     teste: 'tests/build-css.test.mjs',
   },
   {
+    // O defeito da #150 de volta: `maxWidth` declarado duas vezes, e o
+    // Tailwind recebe só a segunda. `max-w-dropdown` some do CSS sem erro.
+    porque: 'uma família do config volta a ser declarada duas vezes, e o token da primeira some do CSS',
+    arquivo: 'tailwind.config.js',
+    de: "        dropdown: '28rem',\n",
+    para: "        dropdown: '28rem',\n      },\n      maxWidth: {\n",
+    teste: 'tests/tailwind-config.test.mjs',
+  },
+  {
+    porque: 'a regra build para de ler o aviso do esbuild, e chave duplicada no config volta a passar calada',
+    arquivo: 'scripts/lint/rules/build.mjs',
+    de: '  return warnings.map((aviso) =>',
+    para: '  return [].map((aviso) =>',
+    teste: 'tests/tailwind-config.test.mjs',
+  },
+  {
     porque: 'formatMoney deixa de converter centavos em unidades da moeda',
     arquivo: 'src/js/money.js',
     de: '.format(cents / 100)',

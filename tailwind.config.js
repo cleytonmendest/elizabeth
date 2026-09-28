@@ -121,21 +121,35 @@ module.exports = {
       maxHeight: {
         'below-header': 'calc(100vh - var(--header-height, 6rem))',
       },
-      // Largura mínima de cada coluna do mega menu. Abaixo disto o título da
-      // coleção quebra em duas linhas e o painel vira uma escada.
+      // UM objeto por família, sempre. Chave repetida num objeto literal não é
+      // erro de JavaScript: a segunda substitui a primeira em silêncio. Este
+      // arquivo teve `minWidth` e `maxWidth` declarados duas vezes, e o
+      // Tailwind recebeu só a segunda declaração de cada — `min-w-menu-col` e
+      // `max-w-dropdown` nunca chegaram ao CSS (#150). A regra `build` agora
+      // reprova o aviso do esbuild sobre este arquivo.
       minWidth: {
+        // Cada coluna do mega menu. Abaixo disto o título da coleção quebra
+        // em duas linhas e o painel vira uma escada.
         'menu-col': '150px',
+        // Piso do botão de ação. Sem ele o rótulo troca ("Adicionar" →
+        // "Esgotado") e a barra inteira pula de largura.
+        action: '100px',
       },
-      // Teto de largura do dropdown do menu. Ele cresce com o conteúdo
-      // (`w-max`), e sem teto um item de coleção com nome longo esticaria a
-      // caixa até atravessar a tela.
       maxWidth: {
+        // Teto do dropdown do menu. Ele cresce com o conteúdo (`w-max`), e
+        // sem teto um item de coleção com nome longo esticaria a caixa até
+        // atravessar a tela.
         dropdown: '28rem',
+        // Miolo da barra fixa. O `page-width` do lojista vai a 2560px, e com
+        // ele a barra punha título numa borda e botão na outra, com um buraco
+        // no meio (issue #46). Este é o teto do CONTEÚDO, não da página.
+        bar: '64rem',
       },
       // Sombra da barra fixa de comprar. O valor que estava no markup era
       // `shadow-[0_-2px_8px_rgba(0,0,0,0.08)]`: preto cravado num tema cujo
       // princípio é que cor vem do color scheme. Num scheme escuro ela some.
       // Aqui ela sai de `--color-shadow`, que a lojista escolhe por scheme.
+      // A do painel do mega menu tem a mesma origem.
       boxShadow: {
         bar: '0 -2px 8px rgb(var(--color-shadow) / 0.08)',
         panel: '0 10px 20px -8px rgb(var(--color-shadow) / 0.15)',
@@ -151,20 +165,6 @@ module.exports = {
       width: {
         'qty-step':  '25px',  // botão + / − · ícone de 16px com folga de toque
         'qty-field': '50px',  // campo numérico · cabe 3 dígitos sem cortar
-      },
-      // Piso do botão de ação. Sem ele o rótulo troca ("Adicionar" →
-      // "Esgotado") e a barra inteira pula de largura.
-      minWidth: {
-        action: '100px',
-      },
-      // Sombra do painel do mega menu — mesma origem da `bar`: cor do scheme,
-      // não preto cravado.
-      // (declarada junto de `bar`, abaixo)
-      // Largura do miolo da barra fixa. O `page-width` do lojista vai a 2560px,
-      // e com ele a barra punha título numa borda e botão na outra, com um
-      // buraco no meio (issue #46). Este é o teto do CONTEÚDO, não da página.
-      maxWidth: {
-        bar: '64rem',
       },
       // Proporções — `video` (16/9) já é degrau do Tailwind e continua valendo.
       aspectRatio: {
