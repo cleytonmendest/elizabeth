@@ -102,6 +102,26 @@ export const CHECKS = [
       'Use text-foreground-muted, que deriva do par que a lojista escolheu. Ver #105.',
   },
   {
+    code: 'important',
+    // O `!` de importância vem DEPOIS das variantes no Tailwind v3: `lg:!py-12`.
+    // Escrito antes, `!lg:py-12` não gera CSS nenhum e não dá erro em lugar
+    // nenhum — o desktop fica com o valor do mobile. Blog, destaque, imagens
+    // com link e artigo passaram a vida assim, sem o espaçamento de desktop
+    // que o próprio markup declarava (#151).
+    //
+    // O lookbehind exige início de classe (espaço, aspas ou começo do texto),
+    // para não casar `!=` do Liquid nem `!x` dentro de JavaScript.
+    pattern: /(?<![^\s"'])![a-z0-9-]+:[^\s"'{}]+/g,
+    message: (v) => {
+      const semBang = v.slice(1);
+      const corte = semBang.lastIndexOf(':');
+      return (
+        `${v} não gera CSS: no Tailwind v3 o ! vem depois das variantes. ` +
+        `Escreva ${semBang.slice(0, corte + 1)}!${semBang.slice(corte + 1)}.`
+      );
+    },
+  },
+  {
     code: 'zindex',
     pattern: /(?<![-\w])z-(?!base\b|raised\b|above\b|sticky\b|overlay\b|drawer\b|modal\b|auto\b|\[)\d+\b/g,
     message: (v) =>

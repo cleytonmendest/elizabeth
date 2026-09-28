@@ -9,7 +9,7 @@
 -%}
 
 <section class="color-{{ section.settings.color_scheme }} color-background">
-  <div class="page-width flex flex-col lg:flex-row !py-8 !lg:py-12">
+  <div class="page-width flex flex-col lg:flex-row py-8 lg:py-12">
     {% for block in section.blocks %}
       {% if block.type == 'image' %}
         <div class="flex-1 {{ block.shopify_attributes }}">

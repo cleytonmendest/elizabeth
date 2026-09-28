@@ -706,6 +706,20 @@ const MUTANTES = [
     teste: 'tests/tailwind-config.test.mjs',
   },
   {
+    porque: 'o ! volta para antes da variante, e o artigo perde a margem de desktop sem erro em lugar nenhum',
+    arquivo: 'sections/main-article.liquid',
+    de: ' !mb-8 lg:!mb-12"',
+    para: ' !mb-8 !lg:mb-12"',
+    teste: 'tests/tokens-important.test.mjs',
+  },
+  {
+    porque: 'a regra tokens para de acusar o ! antes da variante, e a classe que não gera CSS volta a passar',
+    arquivo: 'scripts/lint/rules/tokens.mjs',
+    de: "    pattern: /(?<![^\\s\"'])![a-z0-9-]+:[^\\s\"'{}]+/g,",
+    para: '    pattern: /NUNCA_CASA_IMPORTANT/g,',
+    teste: 'tests/tokens-important.test.mjs',
+  },
+  {
     porque: 'a regra build para de ler o aviso do esbuild, e chave duplicada no config volta a passar calada',
     arquivo: 'scripts/lint/rules/build.mjs',
     de: '  return warnings.map((aviso) =>',
