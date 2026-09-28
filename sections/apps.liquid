@@ -6,18 +6,25 @@
   tema não tiver este arquivo, a página quebra ao renderizar.
 
   `templates/product.json` já referenciava esta section sem que ela existisse.
+
+  Sem bloco de app, nada é renderizado — nem o fundo, nem o padding. Antes ela
+  desenhava 48px de faixa vazia no topo da PDP, entre o cabeçalho e o
+  breadcrumb. O vão do `gap` do <main> em volta da section vazia é tirado por
+  `.shopify-section:not(:has(*))`, em src/tailwind.css.
 {%- endcomment -%}
 
-<div class="color-{{ section.settings.color_scheme }} color-background color-text">
-  <div
-    class="page-width"
-    style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;"
-  >
-    {%- for block in section.blocks -%}
-      {%- render block -%}
-    {%- endfor -%}
+{%- if section.blocks.size > 0 -%}
+  <div class="color-{{ section.settings.color_scheme }} color-background color-text">
+    <div
+      class="page-width"
+      style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;"
+    >
+      {%- for block in section.blocks -%}
+        {%- render block -%}
+      {%- endfor -%}
+    </div>
   </div>
-</div>
+{%- endif -%}
 
 {% schema %}
 {

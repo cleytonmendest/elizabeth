@@ -32,6 +32,7 @@
     label.not-swatch.is-unavailable {
         text-decoration: line-through;
     }
+
 }
 
 @layer utilities {
@@ -43,4 +44,18 @@
     .no-scrollbar::-webkit-scrollbar {
         display: none;
     }
+}
+
+/*
+ * Section que não renderizou nenhum elemento sai do fluxo. O <main> separa as
+ * sections com `gap`, e o wrapper que a Shopify põe em volta de cada uma
+ * continua lá mesmo vazio: a section Apps sem app e o Liquid personalizado sem
+ * conteúdo abriam um vão dos dois lados. `:has(*)` e não `:empty` porque o
+ * wrapper guarda a quebra de linha que sobra depois do schema.
+ *
+ * Fora de `@layer` de propósito: ali o Tailwind descarta seletor cuja classe
+ * não aparece nos arquivos do tema, e `shopify-section` é posta pela Shopify.
+ */
+#MainContent > .shopify-section:not(:has(*)) {
+    display: none;
 }

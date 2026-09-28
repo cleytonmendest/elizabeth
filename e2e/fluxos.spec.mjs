@@ -374,3 +374,19 @@ test('o breadcrumb da PDP mora na section do produto, na cor dela e com respiro'
   expect(medida.mesmaCor, 'o breadcrumb está dentro do wrapper de cor da section do produto').toBe(true);
   expect(medida.respiro, 'o `py-4` do breadcrumb vale').toBeGreaterThanOrEqual(16);
 });
+
+test('section vazia não abre vão no <main>', async ({ page }) => {
+  // A section Apps sem app desenhava 48px de faixa no topo da PDP, e mesmo sem
+  // desenhar nada o wrapper da Shopify continuava no <main> recebendo o `gap`
+  // dos dois lados. O template de produto do tema traz essa section vazia.
+  await abrePDP(page);
+
+  const vazias = await page.evaluate(() =>
+    [...document.querySelectorAll('#MainContent > .shopify-section')]
+      .filter((secao) => !secao.firstElementChild)
+      .map((secao) => ({ id: secao.id, display: getComputedStyle(secao).display }))
+  );
+  test.skip(vazias.length === 0, 'a PDP da loja não tem section vazia para medir (alguém pôs um app na section Apps)');
+
+  for (const { id, display } of vazias) expect(display, `${id} está vazia e ocupa espaço`).toBe('none');
+});

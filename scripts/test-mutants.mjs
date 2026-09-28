@@ -2285,6 +2285,13 @@ const MUTANTES = [
     teste: 'tests/blocos-do-produto.test.mjs',
   },
   {
+    porque: 'a section Apps sem app volta a desenhar uma faixa vazia no topo da PDP',
+    arquivo: 'sections/apps.liquid',
+    de: '{%- if section.blocks.size > 0 -%}',
+    para: '{%- if true -%}',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
     porque: 'a section Liquid personalizado vazia volta a pintar uma faixa com padding e nada dentro',
     arquivo: 'sections/custom-liquid.liquid',
     de: '{%- if section.settings.custom_liquid != blank -%}',

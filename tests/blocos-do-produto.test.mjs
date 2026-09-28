@@ -197,6 +197,29 @@ describe.each(COLUNAS)('bloco Liquid personalizado na coluna do $nome', ({ rende
   });
 });
 
+describe('a section Apps', () => {
+  // O `{% render block %}` de um app block é da Shopify: aqui ele vira um
+  // marcador, e o que se mede é a casca em volta dele.
+  const secao = (blocks) =>
+    engine.parseAndRenderSync(
+      semSchema('sections/apps.liquid').replace(/\{%-?\s*render block\s*-?%\}/, '<div data-app="{{ block.type }}"></div>'),
+      { section: { id: 'apps', blocks, settings: { color_scheme: 'scheme-1', padding_top: 24, padding_bottom: 24 } } }
+    );
+
+  it('sem app, não desenha nada — nem fundo, nem padding', () => {
+    // Ela desenhava 48px de faixa vazia no topo da PDP, entre o cabeçalho e o
+    // breadcrumb, em toda loja sem app de avaliações ou de assinatura.
+    expect(secao([]).trim()).toBe('');
+  });
+
+  it('com app, o bloco fica dentro do esquema e do padding da section', () => {
+    const html = secao([{ type: '@app', id: 'app_1' }]);
+    expect(html).toContain('color-scheme-1 color-background color-text');
+    expect(html).toContain('padding-top: 24px; padding-bottom: 24px;');
+    expect(html).toContain('data-app="@app"');
+  });
+});
+
 describe('a section Liquid personalizado', () => {
   const secao = (settings) =>
     engine.parseAndRenderSync(semSchema('sections/custom-liquid.liquid'), {
