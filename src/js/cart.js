@@ -24,7 +24,6 @@ const PUB_SUB_EVENTS = {
     cartUpdate: 'cart-update',
     itemAdded: 'cart:item-added',
     quantityUpdate: 'quantity-update',
-    variantChange: 'variant-change',
     cartError: 'cart-error',
 };
 

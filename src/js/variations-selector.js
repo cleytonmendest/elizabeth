@@ -38,12 +38,13 @@ class VariantSelects extends HTMLElement {
 
         this._updateURL();
 
+        // Sem `bubbles`, igual ao disparo da troca em `onVariantChange` (#157).
+        // Só este borbulhava: um ouvinte no `document` recebia a variante da
+        // carga, de todo produto da página, e nunca a troca feita pela cliente.
         this.productContext.dispatchEvent(new CustomEvent('variant:change', {
             detail: {
                 variant: this.currentVariant
-            },
-            bubbles: true,
-            composed: true
+            }
         }));
 
         this.changeHandler = this.onVariantChange.bind(this);

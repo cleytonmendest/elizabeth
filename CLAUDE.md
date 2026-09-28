@@ -338,21 +338,34 @@ caso decide. É julgamento, e julgamento tem dono — o agente `theme-reviewer`.
 Ver [issue #130](https://github.com/cleytonmendest/elizabeth/issues/130), que
 tirou daqui as regras que afirmavam sem medir.
 
-O contrato dos eventos:
+O contrato dos eventos. `tests/contrato-de-eventos.test.mjs` exige que esta
+tabela liste todo evento que `src/js/` dispara, e só eles, com o lugar onde
+cada um circula — até a [#152](https://github.com/cleytonmendest/elizabeth/issues/152)
+ela era uma cópia do código que ninguém conferia, e faltavam dois.
 
-| Evento | O detail carrega |
-| --- | --- |
-| `cart-update` | o **carrinho** (`items`, `item_count`, `total_price`) |
-| `quantity-update` | o **carrinho** |
-| `cart:item-added` | o **item** que acabou de entrar (o que `/cart/add.js` devolve) |
-| `variant:change` | a variante escolhida, ou `undefined` |
-| `cart-error` | o erro |
+| Evento | Circula em | O detail carrega |
+| --- | --- | --- |
+| `cart-update` | `document` | o **carrinho** (`items`, `item_count`, `total_price`) |
+| `quantity-update` | `document` | o **carrinho** |
+| `cart:item-added` | `document` | o **item** que acabou de entrar (o que `/cart/add.js` devolve) |
+| `cart-error` | `document`, e no form do produto, borbulhando, para quem mora dentro dele | o erro |
+| `variant:change` | contexto do produto | `{ variant }`: a variante escolhida, ou `undefined` |
+| `quantity:change` | contexto do produto | `{ quantity }` |
+| `selling-plan:change` | contexto do produto | `{ sellingPlanId, variantId, prices }` |
 
 Os dois primeiros e o terceiro têm nomes diferentes porque carregam coisas
 diferentes — até a v2.31.0 o `addToCart` publicava o item como se fosse
 carrinho, e a barra de frete grátis exibia "Faltam R$ NaN" ([issue #4](https://github.com/cleytonmendest/elizabeth/issues/4)).
 Quem escuta `cart-update` ainda checa o formato: o nome é genérico e app de
 terceiro divide a mesma página.
+
+Os três últimos são **do produto**: saem do `[product-context]` de cada um e
+não borbulham, então cada produto da página ouve só os próprios — é para isso
+que o contexto existe. Escute no contexto
+(`this.closest('[product-context]')`), nunca no `document`: ali não chega
+nada. Até a [#157](https://github.com/cleytonmendest/elizabeth/issues/157) a
+galeria e o aviso de estoque da PDP escutavam lá, e nunca receberam uma troca
+de variante da cliente. A fronteira `eventos-de-produto` reprova quem tentar.
 
 **Globais:** `window.shopUrl` sai de `snippets/theme-head.liquid` — é a MARCA
 do tema, e os três layouts a emitem, porque é por ela que a sonda e o

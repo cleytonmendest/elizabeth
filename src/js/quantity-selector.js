@@ -51,10 +51,11 @@ class QuantitySelector extends HTMLElement {
         this.input.dispatchEvent(new Event('change', { bubbles: true }));
 
         if (this.productContext) {
+            // Sem `bubbles`, como os outros eventos de produto: ele é do
+            // contexto deste produto e não sai dele (#157). Borbulhando, um
+            // ouvinte no `document` recebia a quantidade de todo produto da página.
             this.productContext.dispatchEvent(new CustomEvent('quantity:change', {
                 detail: { quantity: parseInt(this.input.value, 10) },
-                bubbles: true,
-                composed: true
             }));
         } else {
             console.warn('QuantitySelector: productContext não encontrado, evento quantity:change não foi disparado no contexto esperado.');

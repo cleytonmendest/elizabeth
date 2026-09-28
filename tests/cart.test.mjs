@@ -52,11 +52,14 @@ describe('publish', () => {
     // Este teste reprovou quando `cart:item-added` entrou, que é o
     // comportamento certo: mudança de contrato tem que ser deliberada, não
     // escorregar junto com um commit de outra coisa.
+    //
+    // E reprovou de novo quando `variantChange: 'variant-change'` saiu (#152):
+    // o nome estava declarado e ninguém o publicava, a um hífen do
+    // `variant:change` que o seletor dispara de verdade.
     expect(PUB_SUB_EVENTS).toEqual({
       cartUpdate: 'cart-update',
       itemAdded: 'cart:item-added',
       quantityUpdate: 'quantity-update',
-      variantChange: 'variant-change',
       cartError: 'cart-error',
     });
   });

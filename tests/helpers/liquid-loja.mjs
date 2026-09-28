@@ -33,9 +33,16 @@ const LOCALE = JSON.parse(
 );
 
 function traduz(key, ...args) {
-  const valor = key.split('.').reduce((no, parte) => (no == null ? undefined : no[parte]), LOCALE);
-  if (typeof valor !== 'string') return `translation missing: pt-BR.${key}`;
   const vars = Object.fromEntries(args.filter(Array.isArray));
+  let valor = key.split('.').reduce((no, parte) => (no == null ? undefined : no[parte]), LOCALE);
+  // Chave com plural (`{ one, other }`): a Shopify escolhe pela variável
+  // `count`. A regra aqui é a do inglês — 1 é singular —, que basta para o
+  // que os testes pedem; o português da loja trata o 0 do mesmo jeito que a
+  // Shopify o trataria só se algum teste passar a depender disso.
+  if (valor && typeof valor === 'object' && 'count' in vars) {
+    valor = Number(vars.count) === 1 ? valor.one : valor.other;
+  }
+  if (typeof valor !== 'string') return `translation missing: pt-BR.${key}`;
   return valor.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, nome) => String(vars[nome] ?? ''));
 }
 

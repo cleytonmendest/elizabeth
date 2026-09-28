@@ -49,6 +49,15 @@
       "severity": "warn",
       "reason": "Três features já buscam HTML pela Section Rendering API, cada uma com seu próprio fetch, parse e tratamento de erro. Ainda não é duplicação suficiente para justificar um helper, mas o quarto consumidor é o sinal de que virou.",
       "guidance": "Se você é o quarto: extraia um helper compartilhado (buscar, fazer parse do HTML, tratar erro de rede) antes de escrever o quarto fetch, e mova os três existentes para ele."
+    },
+    {
+      "capability": "eventos-de-produto",
+      "pattern": "\\b(document(\\.body)?|window)\\s*\\.\\s*addEventListener\\(\\s*['\"`](variant|quantity|selling-plan):change['\"`]",
+      "files": ["src/js/*.js", "sections/*.liquid", "snippets/*.liquid", "layout/*.liquid"],
+      "owners": [],
+      "severity": "error",
+      "reason": "Os eventos de produto (variant:change, quantity:change, selling-plan:change) são disparados no [product-context] de cada produto e não borbulham: cada produto escuta só os próprios. A galeria e o aviso de estoque da PDP escutavam no document, e a troca de variante feita pela cliente nunca chegava lá — os dois nunca acompanharam a variante. E se chegasse seria pior: um produto em destaque na mesma página trocaria a foto e o estoque da PDP. Ver issue #157.",
+      "guidance": "Escute no contexto do próprio componente: this.closest('[product-context]').addEventListener('variant:change', …). Num script inline, parta de document.currentScript. A tabela de eventos do CLAUDE.md diz onde cada evento circula."
     }
   ]
 }
