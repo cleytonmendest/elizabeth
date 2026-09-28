@@ -719,7 +719,7 @@ const MUTANTES = [
     para: '    pattern: /NUNCA_CASA_IMPORTANT/g,',
     teste: 'tests/tokens-important.test.mjs',
   },
-  // ── #157: os eventos de produto ficam no contexto do produto ────────────
+  // ── #157 e #152: os eventos de produto e o contrato que os descreve ──────
   {
     porque: 'a galeria volta a escutar no document, e a foto não acompanha a troca de variante da cliente',
     arquivo: 'src/js/product-gallery.js',
@@ -761,6 +761,41 @@ const MUTANTES = [
     de: '                detail: { quantity: parseInt(this.input.value, 10) },\n',
     para: '                detail: { quantity: parseInt(this.input.value, 10) },\n                bubbles: true,\n',
     teste: 'tests/eventos-de-produto.test.mjs',
+  },
+  {
+    porque: 'um evento some da tabela do CLAUDE.md, e ela volta a ser uma cópia desatualizada do código',
+    arquivo: 'CLAUDE.md',
+    de: '| `selling-plan:change` | contexto do produto | `{ sellingPlanId, variantId, prices }` |\n',
+    para: '',
+    teste: 'tests/contrato-de-eventos.test.mjs',
+  },
+  {
+    porque: 'a tabela diz que um evento de produto circula no document, e manda escutar onde ele não chega',
+    arquivo: 'CLAUDE.md',
+    de: '| `quantity:change` | contexto do produto |',
+    para: '| `quantity:change` | `document` |',
+    teste: 'tests/contrato-de-eventos.test.mjs',
+  },
+  {
+    porque: 'um evento é renomeado no fonte e a tabela continua com o nome velho',
+    arquivo: 'src/js/quantity-selector.js',
+    de: "new CustomEvent('quantity:change'",
+    para: "new CustomEvent('quantity:mudou'",
+    teste: 'tests/contrato-de-eventos.test.mjs',
+  },
+  {
+    porque: 'a fronteira eventos-de-produto esquece um evento, e ouvir selling-plan:change no document volta a passar',
+    arquivo: 'scripts/lint/config/boundaries.json',
+    de: '(variant|quantity|selling-plan):change',
+    para: '(variant|quantity):change',
+    teste: 'tests/contrato-de-eventos.test.mjs',
+  },
+  {
+    porque: 'um nome de evento declarado e nunca publicado volta ao PUB_SUB_EVENTS, a um hífen do variant:change',
+    arquivo: 'src/js/cart.js',
+    de: "    quantityUpdate: 'quantity-update',\n",
+    para: "    quantityUpdate: 'quantity-update',\n    variantChange: 'variant-change',\n",
+    teste: 'tests/contrato-de-eventos.test.mjs',
   },
   {
     porque: 'a regra build para de ler o aviso do esbuild, e chave duplicada no config volta a passar calada',
