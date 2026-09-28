@@ -37,6 +37,10 @@ cp docs/adr/TEMPLATE.md docs/adr/000N-titulo-em-kebab-case.md
 
 Numeração sequencial, nunca reutilizada.
 
+E acrescente a linha dele no índice abaixo, com o título do H1 e o status do
+arquivo: `scripts/adr.mjs` reprova ADR sem linha, linha sem ADR e status que
+diverge do arquivo.
+
 ## Índice
 
 | # | Decisão | Status |
@@ -52,5 +56,9 @@ Numeração sequencial, nunca reutilizada.
 | [0009](0009-a-guarda-prova-o-documento-nao-a-url.md) | A guarda do clique prova o DOCUMENTO, e a suíte ganha um servidor local para medir isso | Aceito |
 | [0010](0010-moeda-em-js-vem-do-window-shopify.md) | A moeda do JS vem do `window.Shopify`, e existe um único formatador | Aceito |
 | [0011](0011-asset-pesado-e-baixado-pelo-componente-que-precisa-dele.md) | Asset pesado é baixado pelo componente que precisa dele, não pelo layout | Aceito |
+| [0012](0012-rede-social-no-tema-e-a-que-tem-icone.md) | Rede social declarada no tema é a que tem ícone no rodapé | Aceito |
+| [0013](0013-o-js-servido-e-gerado-e-o-teste-le-o-gerado.md) | O JS servido é gerado, e o teste lê o gerado | Aceito |
+| [0014](0014-decisao-em-liquid-vira-snippet-testavel.md) | Decisão escrita em Liquid vira snippet testável | Aceito |
+| [0015](0015-o-cabecalho-transparente-herda-a-cor-do-heroi.md) | O cabeçalho transparente herda a cor do herói | Aceito |
 | [0016](0016-o-tema-nao-exibe-urgencia-que-nao-acaba.md) | O tema não exibe urgência que não acaba | Aceito |
 | [0017](0017-texto-de-botao-compartilhado-vem-do-locale.md) | Texto de botão que aparece em vários lugares vem do locale, não de um setting | Aceito |

@@ -55,8 +55,13 @@
  * um criado — o apagado tem remoções, e a mesma checagem o barra.
  */
 import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export const PASTA = 'docs/adr/';
+
+const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 /** Os argumentos do `git diff`, exportados para o teste rodá-los de verdade. */
 export const ARGUMENTOS = (base) => [
@@ -119,9 +124,82 @@ export function mudancasDoDiff(numstat) {
     }));
 }
 
+// ── O índice (#155) ────────────────────────────────────────────────────────
+
+/**
+ * O índice de `docs/adr/README.md` confere com a pasta?
+ *
+ * Ele pulou do 0011 para o 0016: quatro ADRs aceitos, do 0012 ao 0015, sem
+ * linha — entre eles o 0013, que o CLAUDE.md cita para explicar por que o
+ * teste lê `assets/`. Quem abria o índice para entender por que algo é assim
+ * não os achava. A checagem de append-only acima não via, e não tinha como: o
+ * índice não PERDEU linha, ele nunca as ganhou.
+ *
+ * Puro: recebe os ADRs (de `adrsDaPasta`) e o texto do README, e devolve as
+ * divergências, uma frase cada. Lista vazia é índice em dia.
+ *
+ * O título é comparado sem diferenciar maiúsculas: o H1 do 0011 grita
+ * "COMPONENTE" e o índice não, e isso não é divergência. O status é comparado
+ * inteiro, porque é ele que muda quando um ADR é superado — o arquivo passa a
+ * dizer "Substituído por NNNN", e o índice não pode continuar dizendo "Aceito".
+ */
+export function divergenciasDoIndice(adrs, readme) {
+  const linhas = [...readme.matchAll(/^\| \[(\d{4})\]\(([^)]+)\) \| (.+?) \| (.+?) \|$/gm)].map(
+    ([, numero, arquivo, titulo, status]) => ({ numero, arquivo, titulo, status })
+  );
+  const porArquivo = new Map(adrs.map((adr) => [adr.arquivo, adr]));
+  const indexados = new Set(linhas.map((linha) => linha.arquivo));
+  const divergencias = [];
+
+  for (const adr of adrs) {
+    if (!indexados.has(adr.arquivo)) divergencias.push(`${adr.numero} não tem linha no índice (${adr.arquivo}).`);
+  }
+
+  for (const linha of linhas) {
+    const adr = porArquivo.get(linha.arquivo);
+    if (!adr) {
+      divergencias.push(`A linha ${linha.numero} aponta para ${linha.arquivo}, que não existe.`);
+      continue;
+    }
+    if (linha.numero !== adr.numero) {
+      divergencias.push(`A linha ${linha.numero} aponta para ${linha.arquivo}, que é o ${adr.numero}.`);
+    }
+    if (linha.titulo.toLowerCase() !== adr.titulo.toLowerCase()) {
+      divergencias.push(`${adr.numero}: o índice diz "${linha.titulo}", e o H1 do ADR diz "${adr.titulo}".`);
+    }
+    if (linha.status !== adr.status) {
+      divergencias.push(`${adr.numero}: o índice diz "${linha.status}", e o ADR diz "${adr.status}".`);
+    }
+  }
+
+  return divergencias;
+}
+
+/**
+ * Os ADRs de `docs/adr/`, lidos do disco: número, arquivo, título do H1
+ * (`# 12. Título`) e o `- **Status:**`. Um ADR sem H1 ou sem status sai com
+ * o campo vazio, e o índice diverge dele — que é o aviso certo.
+ */
+export function adrsDaPasta(raiz = RAIZ) {
+  const pasta = path.join(raiz, PASTA);
+  return fs
+    .readdirSync(pasta)
+    .filter((arquivo) => /^\d{4}-.*\.md$/.test(arquivo))
+    .sort()
+    .map((arquivo) => {
+      const texto = fs.readFileSync(path.join(pasta, arquivo), 'utf8');
+      return {
+        numero: arquivo.slice(0, 4),
+        arquivo,
+        titulo: texto.match(/^# \d+\. (.+)$/m)?.[1].trim() ?? '',
+        status: texto.match(/^- \*\*Status:\*\* (.+)$/m)?.[1].trim() ?? '',
+      };
+    });
+}
+
 // ---------------------------------------------------------------------------
 
-const git = (args) => execFileSync('git', args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+const git =(args) => execFileSync('git', args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
 
 const anotar = (nivel, texto) =>
   console.log(process.env.CI ? `::${nivel}::${texto}` : `[${nivel}] ${texto}`);
@@ -150,7 +228,18 @@ function main() {
   if (veredito.ok) console.log(veredito.mensagem);
   else anotar('error', veredito.mensagem);
 
-  return veredito.ok ? 0 : 1;
+  const indice = divergenciasDoIndice(adrsDaPasta(), fs.readFileSync(path.join(RAIZ, PASTA, 'README.md'), 'utf8'));
+
+  if (indice.length === 0) console.log('ADR: o índice confere com a pasta.');
+  else
+    anotar(
+      'error',
+      `O índice de ${PASTA}README.md não confere com a pasta:\n  · ${indice.join('\n  · ')}\n\n` +
+        'Cada ADR tem uma linha no índice, com o título do H1 e o status do arquivo. ' +
+        'Quando um ADR for superado, o status muda nos dois lugares.'
+    );
+
+  return veredito.ok && indice.length === 0 ? 0 : 1;
 }
 
 if (process.argv[1] && process.argv[1].endsWith('adr.mjs')) {
