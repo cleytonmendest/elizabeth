@@ -1,0 +1,87 @@
+{%- comment -%}
+  O aviso de estoque de UMA variante: a decisão e o desenho, num lugar só.
+
+  snippets/inventory-status.liquid o usa de três jeitos:
+  - com `variante`: o aviso da variante com que a página abre, desenhado no
+    servidor (vale sem JavaScript);
+  - com `modelo: 'baixo' | 'disponivel' | 'esgotado'`: o desenho do estado com
+    o texto vazio, que o script preenche quando a cliente troca de variante;
+  - com `variante` e `modo: 'dados'`: `[estado, título, subtítulo]` em JSON,
+    ou nada quando a variante não tem aviso.
+
+  Por que o texto sai daqui, e não do JavaScript (#157): o `| json` da Shopify
+  não exporta `inventory_quantity` de variante de produto (proteção contra
+  robôs), e o singular e o plural da frase são do locale. O Liquid sabe as
+  duas coisas; o script só escolhe qual mostrar. O JSON leva o que o aviso
+  MOSTRARIA para aquela variante, e nada além: a quantidade de uma variante
+  com estoque acima do limite não sai da loja.
+
+  Parâmetros: variante, limite, mostra_quantidade, estilo, modo, modelo.
+{%- endcomment -%}
+
+{%- liquid
+  assign estado = 'nada'
+  assign titulo = ''
+  assign subtitulo = ''
+
+  if modelo
+    assign estado = modelo
+  elsif variante.inventory_management != blank
+    assign quantidade = variante.inventory_quantity
+    if variante.available == false
+      assign estado = 'esgotado'
+      assign titulo = 'product.inventory.out_of_stock' | t
+    elsif limite == 0 or quantidade <= limite
+      if quantidade > 0 and quantidade <= 10
+        assign estado = 'baixo'
+        if mostra_quantidade
+          assign titulo = 'product.inventory.low_stock_with_quantity' | t: count: quantidade
+          assign subtitulo = 'product.inventory.low_stock_message' | t
+        else
+          assign titulo = 'product.inventory.low_stock' | t
+          assign subtitulo = 'product.inventory.last_units' | t
+        endif
+      elsif quantidade > 10
+        assign estado = 'disponivel'
+        if mostra_quantidade and limite == 0
+          assign titulo = 'product.inventory.units_available' | t: quantity: quantidade
+        else
+          assign titulo = 'product.inventory.in_stock' | t
+        endif
+      endif
+    endif
+  endif
+
+  assign caixa_alta = ''
+  if estilo == 'uppercase'
+    assign caixa_alta = ' uppercase tracking-label'
+  endif
+-%}
+
+{%- if modo == 'dados' -%}
+  {%- unless estado == 'nada' -%}[{{ estado | json }},{{ titulo | json }},{{ subtitulo | json }}]{%- endunless -%}
+{%- elsif estado == 'baixo' -%}
+  <div class="flex items-center gap-2 p-3 color-error-bg border color-border rounded-theme">
+    <svg class="w-5 h-5 color-error flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+    </svg>
+    <div class="flex-1">
+      <p class="color-error font-medium text-sm{{ caixa_alta }}" data-titulo>{{ titulo }}</p>
+      <p class="color-error text-xs mt-0.5" data-subtitulo>{{ subtitulo }}</p>
+    </div>
+  </div>
+{%- elsif estado == 'disponivel' -%}
+  <div class="flex items-center gap-2 color-success">
+    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <p class="text-sm font-medium{{ caixa_alta }}" data-titulo>{{ titulo }}</p>
+  </div>
+{%- elsif estado == 'esgotado' -%}
+  <div class="flex items-center gap-2 color-text-muted">
+    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+    </svg>
+    <p class="text-sm font-medium{{ caixa_alta }}" data-titulo>{{ titulo }}</p>
+  </div>
+{%- endif -%}

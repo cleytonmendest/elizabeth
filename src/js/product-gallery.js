@@ -123,9 +123,17 @@ class ProductGallery {
   /**
    * Atualiza a galeria quando a variante muda.
    * Sincroniza a galeria mobile (Swiper) com a mídia da variante.
+   *
+   * Escuta no [product-context] DESTE produto (#157). Ouvia no `document`, e a
+   * troca feita pela cliente nunca chegava lá: o evento sai do contexto e não
+   * borbulha. Este código nunca tinha rodado. E se borbulhasse seria pior — a
+   * galeria da PDP trocaria de foto pela variante de outro produto da página.
    */
   setupVariantChange() {
-    document.addEventListener('variant:change', (event) => {
+    const contexto = this.gallery.closest('[product-context]');
+    if (!contexto) return;
+
+    contexto.addEventListener('variant:change', (event) => {
       const variant = event.detail.variant;
       if (!variant || !variant.featured_media) return;
 

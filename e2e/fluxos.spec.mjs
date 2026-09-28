@@ -132,6 +132,45 @@ test('trocar de variante muda preço e URL juntos', async ({ page }) => {
   expect(precoAntes).not.toBeNull();
 });
 
+test('trocar de variante traz a foto da variante na galeria de miniaturas', async ({ page }) => {
+  // A galeria escutava `variant:change` no `document`, onde a troca da cliente
+  // nunca chegava (#157): este código nunca tinha rodado na loja. O que se mede
+  // é a costura inteira — o JSON das variantes traz `featured_media`, o evento
+  // chega ao contexto, e a imagem visível passa a ser a da variante.
+  await abrePDP(page);
+  test.skip(
+    (await page.locator('[data-product-gallery]').count()) === 0,
+    'a PDP da loja não usa o layout de miniaturas, o único cuja galeria acompanha a variante'
+  );
+
+  const radios = page.locator('variant-selects fieldset input[type="radio"]');
+  const total = await radios.count();
+  let medidas = 0;
+
+  for (let i = 0; i < total; i += 1) {
+    const radio = radios.nth(i);
+    if (await radio.isChecked()) continue;
+    await page.locator(`label[for="${await radio.getAttribute('id')}"]`).click();
+
+    const esperada = await page.evaluate(() => {
+      const id = new URL(window.location.href).searchParams.get('variant');
+      const variantes = JSON.parse(document.querySelector('variant-selects [data-variants]').textContent);
+      const midia = variantes.find((v) => String(v.id) === id)?.featured_media?.id;
+      const naGaleria = midia && document.querySelector(`[data-product-gallery] .product-gallery__image[data-media-id="${midia}"]`);
+      return naGaleria ? String(midia) : null;
+    });
+    if (!esperada) continue;
+
+    await expect(page.locator('[data-product-gallery] .product-gallery__image:not(.hidden)')).toHaveAttribute(
+      'data-media-id',
+      esperada
+    );
+    medidas += 1;
+  }
+
+  test.skip(medidas === 0, 'nenhuma variante do produto tem foto própria (featured_media) na galeria');
+});
+
 test('filtrar a coleção mantém a lista utilizável', async ({ page }) => {
   await abrePaginaDoTema(page, '/collections/all');
   const filtros = page.locator('[data-filters-panel] input[type="checkbox"]');

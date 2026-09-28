@@ -1,188 +1,113 @@
 {%- comment -%}
-  Indicador de Status de Estoque
+  Indicador de status de estoque do bloco de produto.
 
   Parâmetros:
   - block: bloco com configurações (obrigatório)
   - product: produto atual (obrigatório)
-  - current_variant: variante selecionada (opcional, usa primeira variante se não fornecida)
+  - current_variant: variante selecionada (opcional, usa a primeira disponível)
+
+  O aviso acompanha a troca de variante (#157). O script abaixo escutava no
+  `document`, onde a troca feita pela cliente nunca chega — o evento sai do
+  [product-context] e não borbulha —, e o aviso ficava para sempre com o
+  estoque da variante com que a página abriu. Agora ele escuta no contexto
+  DESTE produto, e nada que ele lê sai de fora deste bloco.
+
+  A decisão (qual aviso, qual texto) mora em inventory-status-aviso.liquid, e
+  o script não calcula nada: ele troca o conteúdo pelo modelo do estado e
+  põe o texto que o Liquid já escreveu para aquela variante. O contêiner
+  existe sempre, escondido quando a variante não tem aviso: sem isso, abrir
+  numa variante sem aviso deixava o script sem lugar onde escrever.
 {%- endcomment -%}
 
 {%- liquid
   assign current_variant = current_variant | default: product.selected_or_first_available_variant
-  assign inventory_threshold = block.settings.inventory_threshold | default: 10
-  assign show_quantity = block.settings.show_inventory_quantity | default: true
-  assign text_style = block.settings.text_style | default: 'body'
-
-  assign inventory_quantity = current_variant.inventory_quantity
-  assign inventory_management = current_variant.inventory_management
+  assign limite = block.settings.inventory_threshold | default: 10
+  # `allow_false`: sem ele o `default` troca o `false` do checkbox por `true`,
+  # e "mostrar quantidade" desligado não desligava nada.
+  assign mostra_quantidade = block.settings.show_inventory_quantity | default: true, allow_false: true
+  assign estilo = block.settings.text_style | default: 'body'
+  assign estados = 'baixo,disponivel,esgotado' | split: ','
 -%}
 
-{%- comment -%} Só mostra se houver gerenciamento de estoque {%- endcomment -%}
-{% if inventory_management != blank and current_variant.available %}
+{%- capture aviso_inicial -%}
+  {%- render 'inventory-status-aviso',
+    variante: current_variant,
+    limite: limite,
+    mostra_quantidade: mostra_quantidade,
+    estilo: estilo
+  -%}
+{%- endcapture -%}
 
-  {%- comment -%} Lógica de exibição:
-    - Se threshold = 0: sempre mostra quantidade se disponível
-    - Se threshold > 0: só mostra se quantidade <= threshold
-  {%- endcomment -%}
-
-  {% if inventory_threshold == 0 or inventory_quantity <= inventory_threshold %}
-    <div
-      class="product-inventory-status"
-      {{ block.shopify_attributes }}
-      data-inventory-status
-    >
-      {%- comment -%} Badge de Urgência (estoque baixo) {%- endcomment -%}
-      {% if inventory_quantity > 0 and inventory_quantity <= 10 %}
-        <div class="flex items-center gap-2 p-3 color-error-bg border color-border rounded-theme">
-          <svg class="w-5 h-5 color-error flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-          </svg>
-
-          <div class="flex-1">
-            {% if show_quantity %}
-              <p class="color-error font-medium text-sm{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
-                {{ 'product.inventory.low_stock_with_quantity' | t: count: inventory_quantity }}
-              </p>
-              <p class="color-error text-xs mt-0.5">{{ 'product.inventory.low_stock_message' | t }}</p>
-            {% else %}
-              <p class="color-error font-medium text-sm{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
-                {{ 'product.inventory.low_stock' | t }}
-              </p>
-              <p class="color-error text-xs mt-0.5">{{ 'product.inventory.last_units' | t }}</p>
-            {% endif %}
-          </div>
-        </div>
-
-      {%- comment -%} Badge Informativo (estoque disponível acima de 10) {%- endcomment -%}
-      {% elsif inventory_quantity > 10 %}
-        <div class="flex items-center gap-2 color-success">
-          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-
-          {% if show_quantity and inventory_threshold == 0 %}
-            <p class="text-sm font-medium{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
-              {{ 'product.inventory.units_available' | t: quantity: inventory_quantity }}
-            </p>
-          {% else %}
-            <p class="text-sm font-medium{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
-              {{ 'product.inventory.in_stock' | t }}
-            </p>
-          {% endif %}
-        </div>
-      {% endif %}
-    </div>
+<div
+  class="product-inventory-status"
+  {{ block.shopify_attributes }}
+  data-inventory-status
+  {% if aviso_inicial == '' %}
+    hidden
   {% endif %}
+>
+  <div data-estoque-aviso>{{ aviso_inicial }}</div>
 
-{%- comment -%} Mensagem de fora de estoque {%- endcomment -%}
-{% elsif inventory_management != blank and current_variant.available == false %}
-  <div
-    class="product-inventory-status"
-    {{ block.shopify_attributes }}
-    data-inventory-status
-  >
-    <div class="flex items-center gap-2 color-text-muted">
-      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-      </svg>
-      <p class="text-sm font-medium{% if text_style == 'uppercase' %} uppercase tracking-wide{% endif %}">
-        {{ 'product.inventory.out_of_stock' | t }}
-      </p>
-    </div>
-  </div>
-{% endif %}
+  {%- unless product.has_only_default_variant -%}
+    {%- for estado in estados -%}
+      <template data-estoque-modelo="{{ estado }}">
+        {%- render 'inventory-status-aviso', modelo: estado, estilo: estilo -%}
+      </template>
+    {%- endfor -%}
 
-{%- comment -%} JavaScript para atualizar quando variante mudar {%- endcomment -%}
-<script>
-  if (!window.inventoryStatusInitialized) {
-    window.inventoryStatusInitialized = true;
+    {%- capture mapa -%}
+      {%- assign separador = '' -%}
+      {%- for variante in product.variants -%}
+        {%- capture dados -%}
+          {%- render 'inventory-status-aviso',
+            variante: variante,
+            limite: limite,
+            mostra_quantidade: mostra_quantidade,
+            estilo: estilo,
+            modo: 'dados'
+          -%}
+        {%- endcapture -%}
+        {%- if dados != '' -%}
+          {{- separador }}"{{ variante.id }}":{{ dados -}}
+          {%- assign separador = ',' -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+    <script type="application/json" data-estoque-variantes>{ {{- mapa -}} }</script>
 
-    // Traduções i18n
-    const i18n = {
-      lowStock: "{{ 'product.inventory.low_stock' | t }}",
-      lowStockMessage: "{{ 'product.inventory.low_stock_message' | t }}",
-      lastUnits: "{{ 'product.inventory.last_units' | t }}",
-      inStock: "{{ 'product.inventory.in_stock' | t }}",
-      outOfStock: "{{ 'product.inventory.out_of_stock' | t }}",
-      unitsAvailable: "{{ 'product.inventory.units_available' | t }}",
-      unit: "{{ 'product.inventory.low_stock_with_quantity' | t: count: 1 }}",
-      units: "{{ 'product.inventory.low_stock_with_quantity' | t: count: 2 }}"
-    };
+    <script>
+      (function () {
+        var raiz = document.currentScript && document.currentScript.parentElement;
+        var contexto = raiz && raiz.closest('[product-context]');
+        if (!contexto) return;
 
-    document.addEventListener('DOMContentLoaded', function() {
-      const productContext = document.querySelector('[product-context]');
-      if (!productContext) return;
+        var avisos = JSON.parse(raiz.querySelector('[data-estoque-variantes]').textContent);
+        var alvo = raiz.querySelector('[data-estoque-aviso]');
 
-      // Escuta mudanças de variante
-      document.addEventListener('variant:change', function(event) {
-        const variant = event.detail.variant;
-        const inventoryStatusEl = document.querySelector('[data-inventory-status]');
+        contexto.addEventListener('variant:change', function (event) {
+          var variante = event.detail && event.detail.variant;
+          if (!variante) return;
 
-        if (!inventoryStatusEl || !variant) return;
+          // [estado, título, subtítulo]; variante sem aviso não está no mapa.
+          var aviso = avisos[variante.id];
+          var modelo = aviso && raiz.querySelector('template[data-estoque-modelo="' + aviso[0] + '"]');
 
-        const threshold = {{ inventory_threshold }};
-        const showQuantity = {{ show_quantity }};
-        const quantity = variant.inventory_quantity;
-        const available = variant.available;
-        const inventoryManagement = variant.inventory_management;
-
-        // Se não há gerenciamento de estoque, esconde
-        if (!inventoryManagement) {
-          inventoryStatusEl.style.display = 'none';
-          return;
-        }
-
-        inventoryStatusEl.style.display = 'block';
-
-        // Atualiza o conteúdo baseado no estoque da variante
-        if (available && (threshold === 0 || quantity <= threshold)) {
-          if (quantity > 0 && quantity <= 10) {
-            // Estoque baixo - urgência
-            const quantityText = showQuantity
-              ? (quantity === 1 ? i18n.unit : i18n.units.replace(/\d+/, quantity))
-              : i18n.lowStock;
-            const subtitleText = showQuantity
-              ? i18n.lowStockMessage
-              : i18n.lastUnits;
-
-            inventoryStatusEl.innerHTML = `
-              <div class="flex items-center gap-2 p-3 color-error-bg border color-border rounded-theme">
-                <svg class="w-5 h-5 color-error flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                </svg>
-                <div class="flex-1">
-                  <p class="color-error font-medium text-sm">${quantityText}</p>
-                  <p class="color-error text-xs mt-0.5">${subtitleText}</p>
-                </div>
-              </div>
-            `;
-          } else if (quantity > 10) {
-            // Estoque disponível
-            const quantityText = (showQuantity && threshold === 0)
-              ? i18n.unitsAvailable.replace('{{ quantity }}', quantity)
-              : i18n.inStock;
-
-            inventoryStatusEl.innerHTML = `
-              <div class="flex items-center gap-2 color-success">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <p class="text-sm font-medium">${quantityText}</p>
-              </div>
-            `;
+          if (!modelo) {
+            alvo.replaceChildren();
+            raiz.hidden = true;
+            return;
           }
-        } else if (!available) {
-          // Fora de estoque
-          inventoryStatusEl.innerHTML = `
-            <div class="flex items-center gap-2 color-text-muted">
-              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-              <p class="text-sm font-medium">${i18n.outOfStock}</p>
-            </div>
-          `;
-        }
-      });
-    });
-  }
-</script>
+
+          var copia = modelo.content.cloneNode(true);
+          var titulo = copia.querySelector('[data-titulo]');
+          var subtitulo = copia.querySelector('[data-subtitulo]');
+          if (titulo) titulo.textContent = aviso[1];
+          if (subtitulo) subtitulo.textContent = aviso[2];
+
+          alvo.replaceChildren(copia);
+          raiz.hidden = false;
+        });
+      })();
+    </script>
+  {%- endunless -%}
+</div>
