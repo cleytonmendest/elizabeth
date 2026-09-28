@@ -61,7 +61,8 @@
           "label": "Show search field"
         },
         "button_label": {
-          "label": "Button text"
+          "label": "Button text",
+          "info": "Leave blank to use the theme's translated text, which follows the store's language."
         }
       }
     },
@@ -149,6 +150,16 @@
         },
         "filters_header": {
           "content": "Filters"
+        },
+        "filters_paragraph": {
+          "content": "Filters (size, color, price…) are the same as on the collection page: they come from Shopify's free Search & Discovery app. They only refine products — on the articles or pages tab, or in a search that only found those, the panel doesn't show."
+        },
+        "enable_filtering": {
+          "label": "Enable filters",
+          "info": "Shows the filters configured in the Search & Discovery app"
+        },
+        "enable_sorting": {
+          "label": "Enable sorting"
         },
         "enable_type_filter": {
           "label": "Enable type filter",
@@ -241,7 +252,13 @@
           "name": "Product name"
         },
         "price": {
-          "name": "Product price"
+          "name": "Product price",
+          "settings": {
+            "show_tax_note": {
+              "label": "Show taxes and shipping notice",
+              "info": "The text follows your store's tax settings, per country: when prices include tax, it reads \"Taxes included\". Turn it off if the notice doesn't apply to your store."
+            }
+          }
         },
         "inventory": {
           "name": "Inventory status",
@@ -299,8 +316,9 @@
             "settings_header": {
               "content": "Button settings"
             },
-            "button_text": {
-              "label": "Button text"
+            "show_dynamic_checkout": {
+              "label": "Show dynamic checkout buttons",
+              "info": "Wallets (Shop Pay, Apple Pay, Google Pay, PayPal…) are the ones active in Settings › Payments. Hidden on gift cards, which need the add to cart button to validate the recipient."
             }
           }
         },
@@ -378,6 +396,15 @@
             },
             "installment_text": {
               "label": "Installment text"
+            }
+          }
+        },
+        "custom_liquid": {
+          "name": "Custom Liquid",
+          "settings": {
+            "custom_liquid": {
+              "label": "Custom Liquid",
+              "info": "For app snippets, tracking pixels or your own Liquid code (e.g. showing a metafield). When empty, the block doesn't show."
             }
           }
         }
@@ -1116,7 +1143,13 @@
           "name": "Product name"
         },
         "price": {
-          "name": "Product price"
+          "name": "Product price",
+          "settings": {
+            "show_tax_note": {
+              "label": "Show taxes and shipping notice",
+              "info": "The text follows your store's tax settings, per country: when prices include tax, it reads \"Taxes included\". Turn it off if the notice doesn't apply to your store."
+            }
+          }
         },
         "quantity_selector": {
           "name": "Quantity selector",
@@ -1153,8 +1186,9 @@
             "settings_header": {
               "content": "Button settings"
             },
-            "button_text": {
-              "label": "Button text"
+            "show_dynamic_checkout": {
+              "label": "Show dynamic checkout buttons",
+              "info": "Wallets (Shop Pay, Apple Pay, Google Pay, PayPal…) are the ones active in Settings › Payments. Hidden on gift cards, which need the add to cart button to validate the recipient."
             }
           }
         },
@@ -1180,6 +1214,15 @@
             },
             "page": {
               "label": "Page content"
+            }
+          }
+        },
+        "custom_liquid": {
+          "name": "Custom Liquid",
+          "settings": {
+            "custom_liquid": {
+              "label": "Custom Liquid",
+              "info": "For app snippets, tracking pixels or your own Liquid code (e.g. showing a metafield). When empty, the block doesn't show."
             }
           }
         }
@@ -1759,10 +1802,19 @@
         },
         "show_quick_add": {
           "label": "Show quick add button"
+        },
+        "intent": {
+          "label": "Recommendation type",
+          "info": "Complementary shows what pairs well with the product, and is set up in the Search & Discovery app. A product without pairs doesn't show the section. With the heading left blank, the default becomes \"Pairs well with\".",
+          "options": {
+            "related": "Related (similar to this one)",
+            "complementary": "Complementary (pairs well with this one)"
+          }
         }
       },
       "presets": {
-        "name": "Product recommendations"
+        "name": "Product recommendations",
+        "complementary_name": "Complementary products"
       }
     },
     "recently_viewed": {
@@ -1865,17 +1917,9 @@
         "color_scheme": {
           "label": "Color scheme"
         },
-        "countdown_type": {
-          "label": "Countdown type",
-          "info": "Fixed date: counts to a specific moment. Daily: resets every day at the chosen time.",
-          "options": {
-            "fixed": "Fixed date and time",
-            "daily": "Daily (recurring)"
-          }
-        },
         "datetime_header": {
           "content": "End date and time",
-          "info": "Uses your store's timezone. In daily mode, only the time is used. To end at midnight, pick 00:00 of the next day."
+          "info": "Uses your store's timezone. When it hits zero, the section disappears from the store. To end at midnight, pick 00:00 of the next day."
         },
         "year": {
           "label": "Year",
@@ -2036,6 +2080,30 @@
           "label": "Ask for a phone number",
           "info": "The field stays optional for the customer even when shown."
         }
+      }
+    },
+    "custom_liquid": {
+      "name": "Custom Liquid",
+      "settings": {
+        "custom_liquid": {
+          "label": "Custom Liquid",
+          "info": "For app snippets, tracking pixels or your own Liquid code. When empty, the section doesn't show on the store."
+        },
+        "color_scheme": {
+          "label": "Color scheme"
+        },
+        "spacing_header": {
+          "content": "Spacing"
+        },
+        "padding_top": {
+          "label": "Top padding"
+        },
+        "padding_bottom": {
+          "label": "Bottom padding"
+        }
+      },
+      "presets": {
+        "name": "Custom Liquid"
       }
     }
   },

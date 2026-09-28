@@ -1,27 +1,9 @@
 {% assign sort_by = collection.sort_by | default: collection.default_sort_by %}
 {%- assign products_per_page = section.settings.products_per_page | default: 12 -%}
 
-{%- comment -%}
-  Detecção de moeda com vírgula decimal (ex: BRL, EUR) para os inputs do filtro de
-  preço — o param do Shopify espera ponto decimal e sem separador de milhar.
-{%- endcomment -%}
-{%- assign comma_currencies = 'ANG,ARS,BRL,BYN,CLF,CLP,COP,CRC,CZK,DKK,EUR,HRK,HUF,IDR,ISK,MZN,NOK,PLN,RON,RUB,SEK,TRY,UYU,VND' | split: ',' -%}
-{%- assign uses_comma_decimals = false -%}
-{%- if comma_currencies contains cart.currency.iso_code -%}
-  {%- assign uses_comma_decimals = true -%}
-{%- endif -%}
-
-{%- comment -%} Conta filtros ativos (para "limpar" e estados) {%- endcomment -%}
-{%- assign active_filter_count = 0 -%}
-{%- for filter in collection.filters -%}
-  {%- if filter.type == 'price_range' -%}
-    {%- if filter.min_value.value != blank or filter.max_value.value != blank -%}
-      {%- assign active_filter_count = active_filter_count | plus: 1 -%}
-    {%- endif -%}
-  {%- else -%}
-    {%- assign active_filter_count = active_filter_count | plus: filter.active_values.size -%}
-  {%- endif -%}
-{%- endfor -%}
+{%- comment -%} Conta filtros ativos (para "limpar" e estados) — a regra mora em snippets/facets.liquid {%- endcomment -%}
+{%- capture active_filter_count -%}{%- render 'facets', part: 'count', filters: collection.filters -%}{%- endcapture -%}
+{%- assign active_filter_count = active_filter_count | plus: 0 -%}
 
 {%- comment -%}
   O portador do color scheme é este div EXTERNO, e ele pinta o próprio fundo.
@@ -30,21 +12,22 @@
   claras nas laterais. É o mesmo desenho de main-cart, main-search e as outras.
 {%- endcomment -%}
 <div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  {%- render 'breadcrumb' -%}
 <div class="page-width !py-8">
   {%- if collection.image and section.settings.show_collection_image -%}
     <div class="collection-hero mb-10 md:mb-12 relative h-64 md:h-[26rem] rounded-theme overflow-hidden">
-      <img
-        src="{{ collection.image | image_url: width: 1600 }}"
-        srcset="{{ collection.image | image_url: width: 600 }} 600w,
-                {{ collection.image | image_url: width: 1200 }} 1200w,
-                {{ collection.image | image_url: width: 1600 }} 1600w"
-        sizes="100vw"
-        alt="{{ collection.image.alt | escape }}"
-        class="w-full h-full object-cover"
-        width="{{ collection.image.width }}"
-        height="{{ collection.image.height }}"
-        loading="eager"
-      >
+      {%- comment -%} `image_tag` aplica o ponto focal no corte do `object-cover` (#142). {%- endcomment -%}
+      {%- assign collection_image_alt = collection.image.alt | default: '' -%}
+      {{
+        collection.image
+        | image_url: width: 1600
+        | image_tag:
+          widths: '600, 1200, 1600',
+          sizes: '100vw',
+          alt: collection_image_alt,
+          class: 'w-full h-full object-cover',
+          loading: 'eager'
+      }}
       <div class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center text-center px-4">
         <h1 class="text-white text-3xl md:text-5xl font-light tracking-title">
           {{ collection.title }}
@@ -72,184 +55,20 @@
     {%- assign show_filters = true -%}
   {%- endif -%}
 
+  {%- capture clear_url -%}{{ collection.url }}{% if sort_by != blank %}?sort_by={{ sort_by }}{% endif %}{%- endcapture -%}
+
   {%- paginate collection.products by products_per_page -%}
+    <facet-filters class="block" data-reload-message="{{ 'collection.general.sort_reloaded' | t | escape }}">
     <form data-filter-form method="get" class="flex flex-col lg:flex-row gap-8">
       {%- if show_filters -%}
-        {%- comment -%} Filtros nativos: sidebar inline no desktop, drawer off-canvas no mobile {%- endcomment -%}
-        <div
-          class="fixed inset-0 z-overlay bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"
-          data-filters-overlay
-        ></div>
-        <aside
-          class="filters-panel fixed inset-y-0 left-0 z-drawer w-80 max-w-[85vw] -translate-x-full overflow-y-auto bg-background p-6 transition-transform duration-300 lg:static lg:z-auto lg:w-64 lg:max-w-none lg:translate-x-0 lg:overflow-visible lg:bg-transparent lg:p-0 lg:transition-none flex-shrink-0"
-          data-filters-panel
-          aria-label="{{ 'collection.filters.title' | t }}"
-        >
-          <div class="lg:sticky lg:top-20">
-            {%- comment -%} Cabeçalho do drawer (somente mobile) {%- endcomment -%}
-            <div class="flex items-center justify-between mb-6 lg:hidden">
-              <h2 class="text-xs uppercase tracking-label text-foreground/60">{{ 'collection.filters.title' | t }}</h2>
-              <button
-                type="button"
-                data-filters-close
-                aria-label="{{ 'collection.filters.close' | t }}"
-                class="text-foreground/60 hover:text-foreground transition-colors"
-              >
-                {% render 'icon-close', size: 20 %}
-              </button>
-            </div>
-
-            <div class="flex items-center justify-between mb-5">
-              <h2 class="hidden lg:block text-xs uppercase tracking-label text-foreground/60">{{ 'collection.filters.title' | t }}</h2>
-              {%- if active_filter_count > 0 -%}
-                <a
-                  href="{{ collection.url }}{% if sort_by != blank %}?sort_by={{ sort_by }}{% endif %}"
-                  class="text-xs uppercase tracking-[0.12em] text-foreground-muted hover:text-foreground underline underline-offset-4 transition-colors"
-                >
-                  {{ 'collection.filters.clear_all' | t }}
-                </a>
-              {%- endif -%}
-            </div>
-
-            {%- comment -%} Preserva a ordenação ao aplicar filtros {%- endcomment -%}
-            <input type="hidden" name="sort_by" value="{{ sort_by }}">
-
-            {%- for filter in collection.filters -%}
-              <details class="mb-4 border-b border-border pb-4" open>
-                <summary class="cursor-pointer list-none text-sm font-medium flex justify-between items-center gap-2">
-                  <span>{{ filter.label | escape }}</span>
-                  <span class="filter-chevron shrink-0 transition-transform opacity-60">
-                    {% render 'icon-angle-down', size: 16 %}
-                  </span>
-                </summary>
-
-                {%- case filter.type -%}
-                  {%- when 'price_range' -%}
-                    {%- liquid
-                      assign min_input = ''
-                      assign max_input = ''
-                      if filter.min_value.value != blank
-                        if uses_comma_decimals
-                          assign min_input = filter.min_value.value | money_without_currency | replace: '.', '' | replace: ',', '.'
-                        else
-                          assign min_input = filter.min_value.value | money_without_currency | replace: ',', ''
-                        endif
-                      endif
-                      if filter.max_value.value != blank
-                        if uses_comma_decimals
-                          assign max_input = filter.max_value.value | money_without_currency | replace: '.', '' | replace: ',', '.'
-                        else
-                          assign max_input = filter.max_value.value | money_without_currency | replace: ',', ''
-                        endif
-                      endif
-                      if uses_comma_decimals
-                        assign range_max = filter.range_max | money_without_currency | replace: '.', '' | replace: ',', '.'
-                      else
-                        assign range_max = filter.range_max | money_without_currency | replace: ',', ''
-                      endif
-                    -%}
-                    <div class="mt-3 flex items-center gap-2">
-                      <div class="flex items-center gap-1 flex-1">
-                        <span class="text-xs text-foreground-muted">{{ cart.currency.symbol }}</span>
-                        <input
-                          type="number"
-                          inputmode="decimal"
-                          name="{{ filter.min_value.param_name }}"
-                          value="{{ min_input }}"
-                          placeholder="0"
-                          min="0"
-                          max="{{ range_max }}"
-                          aria-label="{{ 'collection.filters.from' | t }}"
-                          class="w-full border border-border rounded-theme-sm px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/40"
-                        >
-                      </div>
-                      <span class="text-foreground-muted">—</span>
-                      <div class="flex items-center gap-1 flex-1">
-                        <span class="text-xs text-foreground-muted">{{ cart.currency.symbol }}</span>
-                        <input
-                          type="number"
-                          inputmode="decimal"
-                          name="{{ filter.max_value.param_name }}"
-                          value="{{ max_input }}"
-                          placeholder="{{ range_max }}"
-                          min="0"
-                          max="{{ range_max }}"
-                          aria-label="{{ 'collection.filters.to' | t }}"
-                          class="w-full border border-border rounded-theme-sm px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/40"
-                        >
-                      </div>
-                    </div>
-
-                  {%- else -%}
-                    {%- if filter.presentation == 'swatch' -%}
-                      {%- comment -%} Filtro em swatch (cor/imagem via Search & Discovery) {%- endcomment -%}
-                      <div class="mt-3 flex flex-wrap gap-2.5 max-h-64 overflow-y-auto">
-                        {%- for value in filter.values -%}
-                          {%- liquid
-                            assign disabled = false
-                            if value.count == 0 and value.active == false
-                              assign disabled = true
-                            endif
-                          -%}
-                          <label
-                            class="filter-swatch relative block cursor-pointer {% if disabled %}opacity-40 cursor-not-allowed{% endif %}"
-                            title="{{ value.label | escape }} ({{ value.count }})"
-                          >
-                            <input
-                              type="checkbox"
-                              class="filter-checkbox sr-only peer"
-                              name="{{ value.param_name }}"
-                              value="{{ value.value }}"
-                              {% if value.active %}checked{% endif %}
-                              {% if disabled %}disabled{% endif %}
-                            >
-                            <span
-                              class="block w-8 h-8 rounded-full border border-border bg-cover bg-center transition-shadow peer-checked:ring-2 peer-checked:ring-foreground peer-checked:ring-offset-2 peer-checked:ring-offset-background peer-focus-visible:ring-2 peer-focus-visible:ring-foreground/40 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background"
-                              {% if value.swatch.image %}style="background-image:url({{ value.swatch.image | image_url: width: 48 }});"{% elsif value.swatch.color %}style="background-color:{{ value.swatch.color }};"{% endif %}
-                            ></span>
-                            <span class="sr-only">{{ value.label | escape }} ({{ value.count }})</span>
-                          </label>
-                        {%- endfor -%}
-                      </div>
-                    {%- else -%}
-                      <div class="mt-3 space-y-2 max-h-64 overflow-y-auto">
-                        {%- for value in filter.values -%}
-                          {%- liquid
-                            assign disabled = false
-                            if value.count == 0 and value.active == false
-                              assign disabled = true
-                            endif
-                          -%}
-                          <label class="flex items-center gap-2 text-sm cursor-pointer {% if disabled %}opacity-40 cursor-not-allowed{% endif %}">
-                            <input
-                              type="checkbox"
-                              class="filter-checkbox rounded-theme-sm border-border text-foreground focus:ring-foreground/40"
-                              name="{{ value.param_name }}"
-                              value="{{ value.value }}"
-                              {% if value.active %}checked{% endif %}
-                              {% if disabled %}disabled{% endif %}
-                            >
-                            <span>{{ value.label | escape }}</span>
-                            <span class="text-foreground-muted text-xs">({{ value.count }})</span>
-                          </label>
-                        {%- endfor -%}
-                      </div>
-                    {%- endif -%}
-                {%- endcase -%}
-              </details>
-            {%- endfor -%}
-
-            {%- comment -%} Botão de aplicar (mobile / fallback sem JS) {%- endcomment -%}
-            <div class="mt-6 lg:hidden">
-              <button
-                type="submit"
-                class="w-full color-button text-xs uppercase tracking-label py-3 hover:opacity-90 transition-opacity rounded-theme"
-              >
-                {{ 'collection.filters.apply' | t }}
-              </button>
-            </div>
-          </div>
-        </aside>
+        {%- comment -%} Filtros nativos: o mesmo snippet da busca (#141) {%- endcomment -%}
+        {%- render 'facets',
+          part: 'panel',
+          filters: collection.filters,
+          active_filter_count: active_filter_count,
+          sort_by: sort_by,
+          clear_url: clear_url
+        -%}
       {%- endif -%}
       {%- comment -%} fim filtros {%- endcomment -%}
 
@@ -260,19 +79,7 @@
           {%- comment -%} Esquerda: gatilho de filtros (mobile) {%- endcomment -%}
           <div class="justify-self-start">
             {%- if show_filters -%}
-              <button
-                type="button"
-                data-filters-open
-                class="lg:hidden inline-flex items-center gap-2 border border-border rounded-theme px-4 py-2 text-sm text-foreground/80 hover:border-foreground/30 transition-colors"
-              >
-                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M6 12h12M10 20h4" />
-                </svg>
-                {{ 'collection.filters.title' | t }}
-                {%- if active_filter_count > 0 -%}
-                  <span class="color-badge inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-xs px-1">{{ active_filter_count }}</span>
-                {%- endif -%}
-              </button>
+              {%- render 'facets', part: 'trigger', active_filter_count: active_filter_count -%}
             {%- endif -%}
           </div>
 
@@ -302,6 +109,10 @@
                 <option value="created-descending" {% if sort_by == 'created-descending' %}selected{% endif %}>{{ 'collection.sorting.date_descending' | t }}</option>
                 <option value="created-ascending" {% if sort_by == 'created-ascending' %}selected{% endif %}>{{ 'collection.sorting.date_ascending' | t }}</option>
               </select>
+              {%- comment -%} Sem JS a troca não envia sozinha; o form é GET e só precisa de um botão {%- endcomment -%}
+              <noscript>
+                <button type="submit" class="border border-border rounded-theme px-3 py-2 text-sm">{{ 'collection.filters.apply' | t }}</button>
+              </noscript>
             {%- endif -%}
           </div>
         </div>
@@ -364,64 +175,18 @@
         {%- endif -%}
       </div>
     </form>
+    </facet-filters>
   {%- endpaginate -%}
 </div>
 </div>
 
-<style>
-  #shopify-section-{{ section.id }} .filters-panel.is-open { transform: translateX(0); }
-  #shopify-section-{{ section.id }} [data-filters-overlay].is-open { opacity: 1; pointer-events: auto; }
-  #shopify-section-{{ section.id }} details > summary::-webkit-details-marker { display: none; }
-  #shopify-section-{{ section.id }} details[open] .filter-chevron { transform: rotate(180deg); }
-</style>
+{%- comment -%} Gaveta, auto-envio e aviso de recarga: o mesmo componente da busca {%- endcomment -%}
+<script src="{{ 'facets.js' | asset_url }}" defer></script>
 
 <script>
   (function () {
     const root = document.getElementById('shopify-section-{{ section.id }}');
     if (!root) return;
-
-    // Drawer de filtros (mobile)
-    const panel = root.querySelector('[data-filters-panel]');
-    const overlay = root.querySelector('[data-filters-overlay]');
-    if (panel && overlay) {
-      const open = () => {
-        panel.classList.add('is-open');
-        overlay.classList.add('is-open');
-        document.body.classList.add('overflow-hidden');
-      };
-      const close = () => {
-        panel.classList.remove('is-open');
-        overlay.classList.remove('is-open');
-        document.body.classList.remove('overflow-hidden');
-      };
-      root.querySelectorAll('[data-filters-open]').forEach((b) => b.addEventListener('click', open));
-      root.querySelectorAll('[data-filters-close]').forEach((b) => b.addEventListener('click', close));
-      overlay.addEventListener('click', close);
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-      window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => { if (e.matches) close(); });
-    }
-
-    // Aplica filtros/ordenação. No desktop, auto-submete ao mudar; no mobile,
-    // o usuário usa o botão "Aplicar" (submit nativo). Ordenação sempre submete.
-    const form = root.querySelector('[data-filter-form]');
-    if (form) {
-      const isDesktop = () => window.matchMedia('(min-width: 1024px)').matches;
-      form.addEventListener('change', (e) => {
-        if (e.target.name === 'sort_by') { form.submit(); return; }
-        if (isDesktop()) form.submit();
-      });
-    }
-
-    // Nota de acessibilidade para leitores de tela
-    if (!document.getElementById('a11y-refresh-page-message')) {
-      const a11yRefreshMessage = document.createElement('span');
-      a11yRefreshMessage.id = 'a11y-refresh-page-message';
-      a11yRefreshMessage.className = 'sr-only';
-      a11yRefreshMessage.setAttribute('role', 'status');
-      a11yRefreshMessage.setAttribute('aria-live', 'polite');
-      a11yRefreshMessage.textContent = {{ 'collection.general.sort_reloaded' | t | json }};
-      document.body.appendChild(a11yRefreshMessage);
-    }
 
     // "Carregar mais" via Section Rendering API. Progressive enhancement:
     // sem JS, a paginação numerada (fallback) continua funcionando.

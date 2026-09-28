@@ -48,30 +48,43 @@
     <a class="block" href="{{ card_product.url }}" aria-label="{{ card_product.title | escape }}">
       <div class="relative w-full overflow-hidden rounded-theme bg-foreground/5">
         {%- if card_product.featured_image -%}
-          <img
-            class="w-full h-auto aspect-product object-cover transition-opacity duration-500 ease-in-out {% if show_second_image and card_product.images.size > 1 %}group-hover:opacity-0{% endif %}"
-            src="{{ card_product.featured_image | image_url: width: 400 }}"
-            srcset="{{ card_product.featured_image | image_url: width: 200 }} 200w,
-                    {{ card_product.featured_image | image_url: width: 400 }} 400w,
-                    {{ card_product.featured_image | image_url: width: 600 }} 600w"
-            sizes="{{ image_sizes | default: '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw' }}"
-            alt="{{ card_product.featured_image.alt | default: card_product.title | escape }}"
-            width="{{ card_product.featured_image.width }}"
-            height="{{ card_product.featured_image.height }}"
-            loading="{{ loading_attr }}"
-            decoding="async"
-          >
+          {%- comment -%}
+            `image_tag`, e não `<img>` à mão: é ele que aplica o ponto focal que
+            a lojista marca no admin (`object-position`). Com a tag escrita à
+            mão o corte do `object-cover` ficava sempre no centro. Ver #142.
+            O alt vai sem `| escape` porque o `image_tag` já escapa.
+          {%- endcomment -%}
+          {%- liquid
+            assign card_image_class = 'w-full h-auto aspect-product object-cover transition-opacity duration-500 ease-in-out'
+            if show_second_image and card_product.images.size > 1
+              assign card_image_class = card_image_class | append: ' group-hover:opacity-0'
+            endif
+            assign card_image_alt = card_product.featured_image.alt | default: card_product.title
+            assign card_image_sizes = image_sizes | default: '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw'
+          -%}
+          {{
+            card_product.featured_image
+            | image_url: width: 600
+            | image_tag:
+              class: card_image_class,
+              widths: '200, 400, 600',
+              sizes: card_image_sizes,
+              alt: card_image_alt,
+              loading: loading_attr,
+              decoding: 'async'
+          }}
           {%- if show_second_image and card_product.images.size > 1 -%}
             {%- assign second_image = card_product.images[1] -%}
-            <img
-              class="absolute top-0 left-0 w-full h-auto aspect-product object-cover opacity-0 transition-opacity ease-in-out duration-500 group-hover:opacity-100"
-              src="{{ second_image | image_url: width: 400 }}"
-              alt="{{ second_image.alt | default: card_product.title | escape }}"
-              width="{{ second_image.width }}"
-              height="{{ second_image.height }}"
-              loading="{{ loading_attr }}"
-              decoding="async"
-            >
+            {%- assign second_image_alt = second_image.alt | default: card_product.title -%}
+            {{
+              second_image
+              | image_url: width: 400
+              | image_tag:
+                class: 'absolute top-0 left-0 w-full h-auto aspect-product object-cover opacity-0 transition-opacity ease-in-out duration-500 group-hover:opacity-100',
+                alt: second_image_alt,
+                loading: loading_attr,
+                decoding: 'async'
+            }}
           {%- endif -%}
         {%- else -%}
           <div class="w-full aspect-product flex items-center justify-center bg-foreground/10">
@@ -167,6 +180,16 @@
         <span class="text-xs text-foreground/60 line-through">{{ card_product.compare_at_price | money }}</span>
       {%- endif -%}
     </div>
+    {%- comment -%}
+      Preço unitário (issue #136), da mesma variante que a Shopify escolhe para
+      o card. Sem medida, `price-unit` não renderiza nada — nem um vão.
+    {%- endcomment -%}
+    {%- assign card_variant = card_product.selected_or_first_available_variant -%}
+    {%- render 'price-unit',
+      unit_price: card_variant.unit_price,
+      measurement: card_variant.unit_price_measurement,
+      class: 'mt-1 text-xs text-foreground-muted'
+    -%}
   </div>
 
   {%- comment -%} Mobile: botão Adicionar estático (não há hover no toque) {%- endcomment -%}

@@ -8,6 +8,11 @@
  *
  * O relógio é congelado nos testes (`vi.setSystemTime`): um contador testado
  * contra o relógio real é um teste que muda de resultado sozinho.
+ *
+ * E o contador sempre ACABA. Até a #146 havia um modo "daily" que, ao zerar,
+ * recomeçava para o dia seguinte — o "fictitious countdown timer" que a
+ * Theme Store reprova. Os testes daqui não verificam só que ele funciona: eles
+ * exigem que ele não afirme urgência que não termina (ADR 0016).
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { loadAsset } from './helpers/load-asset.mjs';
@@ -72,17 +77,16 @@ describe('parseOffset', () => {
   });
 });
 
-describe('modo fixed', () => {
-  const emUmaHora = {
-    'data-mode': 'fixed',
-    'data-utc-offset': SAO_PAULO,
-    'data-year': 2026,
-    'data-month': 8,
-    'data-day': 30,
-    'data-hour': 10, // 10:00 na loja (-03:00) = 13:00 UTC = daqui a 1 hora
-    'data-minute': 0,
-  };
+const emUmaHora = {
+  'data-utc-offset': SAO_PAULO,
+  'data-year': 2026,
+  'data-month': 8,
+  'data-day': 30,
+  'data-hour': 10, // 10:00 na loja (-03:00) = 13:00 UTC = daqui a 1 hora
+  'data-minute': 0,
+};
 
+describe('contagem até a data', () => {
   it('conta a partir do relógio da loja, não do navegador', () => {
     monta(emUmaHora);
     expect(lido()).toBe('00:01:00:00');
@@ -141,7 +145,7 @@ describe('modo fixed', () => {
   it('configuração incompleta esconde a seção sem tentar contar', () => {
     // Sem ano/mês/dia não há alvo. Deixar o markup na página mostraria
     // "00:00:00:00" para sempre.
-    monta({ 'data-mode': 'fixed', 'data-utc-offset': SAO_PAULO, 'data-hour': 10 });
+    monta({ 'data-utc-offset': SAO_PAULO, 'data-hour': 10 });
 
     expect(secao().hasAttribute('hidden')).toBe(true);
     expect(vi.getTimerCount()).toBe(0);
@@ -156,45 +160,86 @@ describe('modo fixed', () => {
   });
 });
 
-describe('modo daily', () => {
-  const diario = (hora, minuto = 0) => ({
-    'data-mode': 'daily',
-    'data-utc-offset': SAO_PAULO,
-    'data-hour': hora,
-    'data-minute': minuto,
-  });
+describe('ao zerar, esconde a seção — em toda configuração', () => {
+  // A #146: um modo "daily" recomeçava a contagem para o dia seguinte e
+  // exibia "Oferta por tempo limitado" com um relógio que nunca acabava. Este
+  // bloco não pergunta se o contador funciona; pergunta se ele ACABA. Cada
+  // linha abaixo chega a zero daqui a um minuto, e todas precisam terminar do
+  // mesmo jeito — inclusive a marcação antiga que ainda dizia `daily`.
+  //
+  // 09:01 na loja (-03:00) = 12:01 UTC = daqui a 1 minuto.
+  const umMinuto = { ...emUmaHora, 'data-hour': 9, 'data-minute': 1 };
 
-  it('conta até o horário de hoje quando ele ainda não passou', () => {
-    monta(diario(10)); // são 09:00 na loja
-    expect(lido()).toBe('00:01:00:00');
-  });
-
-  it('horário já passado hoje vira o de amanhã', () => {
-    monta(diario(8)); // 08:00 na loja já passou
-    expect(lido()).toBe('00:23:00:00');
-  });
-
-  it('ao zerar, reinicia para o dia seguinte em vez de esconder a seção', () => {
-    // É a diferença entre os dois modos: "fixed" é uma data que acaba,
-    // "daily" é um prazo que se repete (ex.: "peça até as 14h e enviamos hoje").
-    monta(diario(9, 1)); // 09:01 na loja = daqui a 1 minuto
+  it.each([
+    ['com dias', umMinuto],
+    ['sem dias', { ...umMinuto, 'data-show-days': 'false' }],
+    ['num fuso a leste (+05:30)', { ...umMinuto, 'data-utc-offset': '+0530', 'data-hour': 17, 'data-minute': 31 }],
+    ['sem offset (conta em UTC)', { 'data-year': 2026, 'data-month': 8, 'data-day': 30, 'data-hour': 12, 'data-minute': 1 }],
+    ['marcação antiga com data-mode="fixed"', { ...umMinuto, 'data-mode': 'fixed' }],
+    ['marcação antiga com data-mode="daily"', { ...umMinuto, 'data-mode': 'daily' }],
+  ])('%s', (_nome, dataset) => {
+    monta(dataset);
+    // A linha precisa estar mesmo a um minuto do alvo — senão o resto do teste
+    // mede outra coisa.
+    expect(lido()).toBe('00:00:01:00');
+    expect(secao().hasAttribute('hidden')).toBe(false);
 
     vi.advanceTimersByTime(60 * 1000); // chega no alvo
 
+    expect(lido()).toBe('00:00:00:00');
+    expect(secao().hasAttribute('hidden')).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+
+    // E continua acabado: nada volta a contar no dia seguinte.
+    vi.advanceTimersByTime(24 * 60 * 60 * 1000);
+    expect(lido()).toBe('00:00:00:00');
+    expect(secao().hasAttribute('hidden')).toBe(true);
+  });
+});
+
+describe('loja que tinha salvo o modo diário antes da #146', () => {
+  // O setting `countdown_type` saiu do schema e o Liquid não emite mais
+  // `data-mode`. A loja que escolheu "Diária" passa a renderizar o que está
+  // guardado nos campos de data — que nunca foram apagados, só ignorados
+  // naquele modo. O atributo continua aqui para provar que, se chegar (uma
+  // cópia antiga da section, uma página em cache), ele não traz o reinício de
+  // volta: é ignorado.
+  const legado = { 'data-mode': 'daily', 'data-utc-offset': SAO_PAULO };
+
+  it('sem data válida: esconde na loja, sem tentar contar', () => {
+    monta({ ...legado, 'data-hour': 14 });
+
+    expect(secao().hasAttribute('hidden')).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('sem data válida, no editor: continua visível para a lojista escolher a data', () => {
+    window.Shopify.designMode = true;
+    monta({ ...legado, 'data-hour': 14 });
+
     expect(secao().hasAttribute('hidden')).toBe(false);
-    // 24h cheias até a próxima ocorrência — "01 dia", não "24 horas".
-    expect(lido()).toBe('01:00:00:00');
-    expect(vi.getTimerCount()).toBe(1);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('com data: conta até a data, não até o horário de hoje', () => {
+    // O modo diário contaria 1 hora (10:00 de hoje); a data guardada é 02/09.
+    monta({ ...emUmaHora, ...legado, 'data-month': 9, 'data-day': 2 });
+
+    expect(lido()).toBe('03:01:00:00');
+  });
+
+  it('com data vencida: esconde em vez de pular para amanhã', () => {
+    // O modo diário mostraria 23 horas, até as 08:00 de amanhã.
+    monta({ ...emUmaHora, ...legado, 'data-year': 2020, 'data-hour': 8 });
+
+    expect(secao().hasAttribute('hidden')).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
   });
 });
 
 describe('ciclo de vida', () => {
   it('remover o elemento para o intervalo', () => {
-    const el = monta({
-      'data-mode': 'daily',
-      'data-utc-offset': SAO_PAULO,
-      'data-hour': 23,
-    });
+    const el = monta(emUmaHora);
     expect(vi.getTimerCount()).toBe(1);
 
     el.remove();

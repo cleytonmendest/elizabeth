@@ -69,6 +69,12 @@ Não. Ela é visual. A regra de verdade é **Configurações → Envio e entrega
 ### Como coloco parcelamento?
 Depende do gateway de pagamento, não do tema. Configure em **Configurações → Pagamentos**. Se o gateway expõe parcelamento, ele aparece.
 
+### Como tiro o botão "Compre já" da página de produto?
+No editor, abra a página de produto, clique no bloco **Botão Comprar** e desmarque **Mostrar botões de checkout acelerado**. O mesmo controle existe na seção **Produto Destaque**. Quando nenhuma carteira digital está disponível, o botão aparece como "Compre já" e usa as cores do esquema da seção. Os botões de carteira (Shop Pay, Google Pay…) mantêm as cores da marca, que a Shopify não permite mudar.
+
+### Como escondo "Impostos e frete calculados no checkout"?
+O texto muda sozinho conforme **Configurações → Impostos e taxas**: se os preços da loja já incluem impostos, ele diz "Impostos incluídos". A regra pode ser diferente por país, e o texto acompanha o país da cliente. Para não mostrar a frase, abra o bloco **Preço do Produto** no editor e desmarque **Mostrar aviso de impostos e frete**.
+
 ---
 
 ## Blog e páginas
@@ -85,6 +91,12 @@ Mesma coisa: crie a página no admin e monte o conteúdo com as seções **Texto
 
 ### O tema é traduzido?
 Sim, português e inglês. Para adicionar outros idiomas: **Configurações → Idiomas** no admin, e depois traduza pelo app **Translate & Adapt** (gratuito, da Shopify).
+
+### Como mudo o texto do botão "Adicionar ao carrinho"?
+Em **Loja virtual → Temas → ⋯ → Editar conteúdo padrão do tema**, busque por "Adicionar ao carrinho". A mudança vale de uma vez para a página de produto, a barra fixa de compra e os cards de produto, e cada idioma tem o seu texto. O card usa a versão curta ("Adicionar"), na mesma tela: mude as duas para o texto ficar igual em toda a loja.
+
+### Mudei a loja para inglês e um texto continuou em português
+Texto que você escreveu num campo do editor é conteúdo seu, e não muda sozinho com o idioma: traduza-o no app **Translate & Adapt**. Os campos que dizem **"Deixe em branco para usar o texto traduzido do tema"** (o botão de finalizar compra, o da página 404) acompanham o idioma se ficarem vazios. Apague o texto deles para voltar ao traduzido.
 
 ### Como mostro o seletor de idioma e moeda?
 Na seção **Footer**, ligue **Mostrar seletor de idioma** e **Mostrar seletor de país/moeda**. Eles só aparecem se a loja tiver mais de um idioma ou mercado configurado em **Configurações → Mercados**.

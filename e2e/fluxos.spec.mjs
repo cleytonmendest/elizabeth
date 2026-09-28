@@ -234,3 +234,159 @@ test('busca preditiva responde enquanto a cliente digita', async ({ page }) => {
     await expect(itens.first()).toHaveAttribute('href', /\/products\//);
   }
 });
+
+test('o "Compre já" sem marca veste as cores do color scheme', async ({ page }) => {
+  // O botão nascia com o azul da Shopify (#1990c6), cor que nenhum scheme do
+  // tema prevê. A regra que o pinta mora em src/checkout-acelerado.css e mira
+  // uma classe que a SHOPIFY escreve — nenhum linter nosso sabe se ela ainda
+  // existe, nem se o botão continua no DOM da página, onde a folha do tema o
+  // alcança. Só a loja responde isso.
+  await abrePDP(page);
+
+  const bloco = page.locator('[data-checkout-acelerado]').first();
+  test.skip(
+    (await bloco.count()) === 0,
+    'PDP sem checkout acelerado: a lojista desligou "Mostrar botões de checkout acelerado", ou o produto é vale-presente'
+  );
+  test.skip(
+    (await bloco.getAttribute('hidden')) !== null,
+    'variante esgotada: o tema esconde o checkout acelerado, e não há botão para medir'
+  );
+
+  // Sem marca é o `fallback`: aparece quando nenhuma carteira é elegível. O
+  // atributo `recommended` diz o que a Shopify recomendou ANTES do navegador
+  // opinar, então ele só decide o pulo depois da espera — carteira recomendada
+  // que o Chromium não suporta também cai no fallback, e aí dá para medir.
+  const botao = bloco.locator('.shopify-payment-button__button--unbranded');
+  const apareceu = await botao
+    .waitFor({ state: 'visible', timeout: 15_000 })
+    .then(() => true, () => false);
+  if (!apareceu) {
+    const recomendado = await bloco.locator('shopify-accelerated-checkout').getAttribute('recommended');
+    test.skip(
+      Boolean(recomendado) && recomendado !== 'null',
+      'a Shopify exibiu um botão de carteira: a cor dele é da marca, e a Theme Store proíbe o tema de mudá-la'
+    );
+    throw new Error(
+      'O "Compre já" não apareceu no DOM da página. Se a Shopify o levou para dentro do shadow DOM, ' +
+        'a regra de `.shopify-payment-button__button--unbranded` em src/checkout-acelerado.css não o alcança mais — ' +
+        'e o botão voltou para a cor da Shopify.'
+    );
+  }
+
+  // O esperado não é número escrito aqui: é o que o scheme em volta do botão
+  // resolve. Uma sonda no mesmo bloco herda as mesmas variáveis e diz o valor.
+  const medir = () =>
+    botao.evaluate((el) => {
+      const sonda = document.createElement('span');
+      sonda.style.backgroundColor = 'rgb(var(--color-background))';
+      sonda.style.color = 'rgb(var(--color-secondary-button-text))';
+      sonda.style.borderColor = 'rgb(var(--color-border))';
+      sonda.style.outlineColor = 'rgb(var(--color-text) / 0.05)';
+      el.closest('[data-checkout-acelerado]').append(sonda);
+      const [visto, esperado] = [getComputedStyle(el), getComputedStyle(sonda)];
+      const medida = {
+        fundo: [visto.backgroundColor, esperado.backgroundColor],
+        texto: [visto.color, esperado.color],
+        borda: [visto.borderTopColor, esperado.borderTopColor],
+        fundoNoHover: esperado.outlineColor,
+      };
+      sonda.remove();
+      return medida;
+    });
+
+  // O mouse fica onde o clique da coleção o deixou, e esse ponto pode cair em
+  // cima do botão na PDP: sem tirá-lo dali, o "repouso" mediria o hover.
+  await page.mouse.move(0, 0);
+  await expect
+    .poll(async () => {
+      const { fundo } = await medir();
+      return fundo[0] === fundo[1];
+    }, { message: 'fundo do "Compre já" = fundo do scheme' })
+    .toBe(true);
+
+  const repouso = await medir();
+  expect(repouso.fundo[0], 'fundo do "Compre já" = fundo do scheme').toBe(repouso.fundo[1]);
+  expect(repouso.texto[0], 'texto do "Compre já" = texto do botão secundário').toBe(repouso.texto[1]);
+  expect(repouso.borda[0], 'borda do "Compre já" = borda do scheme').toBe(repouso.borda[1]);
+
+  // O hover é onde a folha da Shopify tem o seletor mais forte
+  // (`:hover:not([disabled])`), e é por isso que ele é medido à parte. O poll
+  // espera a transição de fundo que a própria Shopify declara no botão.
+  await botao.hover();
+  await expect
+    .poll(async () => (await medir()).fundo[0], { message: 'fundo do "Compre já" no hover = texto do scheme a 5%' })
+    .toBe(repouso.fundoNoHover);
+});
+
+test('barra fixa: texto no desktop, ícone de sacola no celular, e respiro em volta', async ({ page }) => {
+  // Dois defeitos que só o navegador vê. No celular, texto longo quebrava o
+  // botão da barra — agora ele é um ícone, e o texto fica para o leitor de
+  // tela. E o `.page-width` zerava o `py-3` da barra, com a miniatura
+  // encostada nas bordas: cascata de CSS não existe no jsdom.
+  await abrePDP(page);
+
+  const barra = page.locator('[data-sticky-atc]');
+  test.skip((await barra.count()) === 0, 'produto sem barra fixa (vale-presente)');
+  const botao = barra.locator('button[name="add"]');
+  test.skip(await botao.isDisabled(), 'variante inicial esgotada: a barra mostra "Esgotado", não o ícone');
+
+  // A barra sobe quando o botão principal sai da tela.
+  const rolaAteOFim = () => page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  const texto = await botao.getAttribute('data-text-desktop');
+
+  await rolaAteOFim();
+  await expect(barra).toHaveClass(/visible/);
+  await expect(botao.locator('[data-rotulo]')).toBeVisible();
+  await expect(botao.locator('[data-icone-sacola]')).toBeHidden();
+
+  const respiro = await barra.locator('.page-width').evaluate((el) => parseFloat(getComputedStyle(el).paddingTop));
+  expect(respiro, 'padding vertical do miolo da barra (o `py-3` que o `.page-width` zerava)').toBeGreaterThanOrEqual(12);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await rolaAteOFim();
+  await expect(barra).toHaveClass(/visible/);
+
+  await expect(botao.locator('[data-icone-sacola] svg')).toBeVisible();
+  // O nome continua sendo o texto traduzido: o ícone é aria-hidden, e o
+  // rótulo sai da tela sem sair da árvore de acessibilidade.
+  await expect(botao).toHaveAccessibleName(texto);
+  const largura = await botao.evaluate((el) => el.getBoundingClientRect().width);
+  expect(largura, 'o texto não pode mais ocupar a largura do botão no celular').toBeLessThan(80);
+});
+
+test('o breadcrumb da PDP mora na section do produto, na cor dela e com respiro', async ({ page }) => {
+  // Renderizado pelo layout, ele ficava fora de qualquer color scheme: branco
+  // sobre uma PDP escura, com a faixa do `gap` do <main> entre os dois. E o
+  // `py-4` dele era zerado pelo `.page-width` — cascata que o jsdom não vê.
+  await abrePDP(page);
+
+  await expect(page.locator('nav.breadcrumb-nav'), 'um breadcrumb só na página').toHaveCount(1);
+
+  const medida = await page.evaluate(() => {
+    const nav = document.querySelector('nav.breadcrumb-nav');
+    const produto = document.querySelector('[product-context]');
+    return {
+      mesmaCor: nav.closest('.color-background') === produto.closest('.color-background'),
+      respiro: parseFloat(getComputedStyle(nav.closest('.page-width')).paddingTop),
+    };
+  });
+  expect(medida.mesmaCor, 'o breadcrumb está dentro do wrapper de cor da section do produto').toBe(true);
+  expect(medida.respiro, 'o `py-4` do breadcrumb vale').toBeGreaterThanOrEqual(16);
+});
+
+test('section vazia não abre vão no <main>', async ({ page }) => {
+  // A section Apps sem app desenhava 48px de faixa no topo da PDP, e mesmo sem
+  // desenhar nada o wrapper da Shopify continuava no <main> recebendo o `gap`
+  // dos dois lados. O template de produto do tema traz essa section vazia.
+  await abrePDP(page);
+
+  const vazias = await page.evaluate(() =>
+    [...document.querySelectorAll('#MainContent > .shopify-section')]
+      .filter((secao) => !secao.firstElementChild)
+      .map((secao) => ({ id: secao.id, display: getComputedStyle(secao).display }))
+  );
+  test.skip(vazias.length === 0, 'a PDP da loja não tem section vazia para medir (alguém pôs um app na section Apps)');
+
+  for (const { id, display } of vazias) expect(display, `${id} está vazia e ocupa espaço`).toBe('none');
+});

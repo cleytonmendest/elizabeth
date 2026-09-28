@@ -137,7 +137,15 @@
       "order_summary": "Summary",
       "taxes_shipping_checkout": "Taxes and shipping calculated at checkout",
       "note": "Order notes",
-      "note_placeholder": "Any special instructions for delivery?"
+      "note_placeholder": "Any special instructions for delivery?",
+      "taxes_included_shipping_checkout": "Taxes included. Shipping calculated at checkout.",
+      "taxes_included_shipping_policy_html": "Taxes included. <a href=\"{{ link }}\" class=\"underline\">Shipping</a> calculated at checkout.",
+      "taxes_shipping_policy_html": "Taxes and <a href=\"{{ link }}\" class=\"underline\">shipping</a> calculated at checkout",
+      "original_price": "Original price",
+      "discounted_price": "Discounted price",
+      "line_discounts": "Discounts on this item",
+      "unit_price": "Unit price",
+      "unit_price_separator": "per"
     },
     "label": {
       "product": "Product",
@@ -160,6 +168,7 @@
       "sale_price": "Sale price",
       "regular_price": "Regular price",
       "unit_price": "Unit price",
+      "unit_price_separator": "per",
       "save": "Save",
       "vendor": "Vendor",
       "type": "Type",
@@ -189,10 +198,31 @@
       "zoom": "Zoom image"
     },
     "recommendations": {
-      "title": "You may also like"
+      "title": "You may also like",
+      "complementary_title": "Pairs well with"
     },
     "recently_viewed": {
       "title": "Recently viewed"
+    },
+    "selling_plan": {
+      "legend": "Purchase options",
+      "one_time": "One-time purchase",
+      "per_delivery": "per delivery"
+    },
+    "tax": {
+      "included_with_policy_html": "Tax included. <a href=\"{{ link }}\" class=\"underline\">Shipping</a> calculated at checkout.",
+      "included": "Tax included. Shipping calculated at checkout.",
+      "at_checkout_with_policy_html": "Taxes and <a href=\"{{ link }}\" class=\"underline\">shipping</a> calculated at checkout.",
+      "at_checkout": "Taxes and shipping calculated at checkout."
+    },
+    "pickup_availability": {
+      "title": "Store pickup",
+      "available_at": "Pickup available at {{ location_name }}",
+      "unavailable_at": "Pickup currently unavailable at {{ location_name }}",
+      "available": "Available for pickup",
+      "unavailable": "Currently unavailable for pickup",
+      "check_other_stores": "Check availability at other stores",
+      "view_store_info": "View store information"
     }
   },
   "collection": {
@@ -545,7 +575,10 @@
       "same_as_shipping": "Same as shipping address",
       "need_help": "Need Help?",
       "need_help_text": "Contact us if you have any questions about your order.",
-      "contact_support": "Contact Support"
+      "contact_support": "Contact Support",
+      "line_discounts": "Discounts on this item",
+      "unit_price": "Unit price",
+      "unit_price_separator": "per"
     }
   },
   "contact": {
@@ -570,6 +603,16 @@
       "shop_link": "Start shopping",
       "print": "Print",
       "add_to_apple_wallet": "Add to Apple Wallet"
+    },
+    "recipient": {
+      "checkbox": "Send as a gift to someone else",
+      "no_js_hint": "To send the gift card straight to someone else, enter their email. Leave it blank to receive it yourself.",
+      "email_label": "Recipient email",
+      "name_label": "Recipient name (optional)",
+      "message_label": "Message (optional)",
+      "message_hint": "Up to {{ max }} characters.",
+      "send_on_label": "Send on (optional)",
+      "send_on_hint": "Up to {{ days }} days from today. With no date, it's sent right away."
     }
   },
   "newsletter": {

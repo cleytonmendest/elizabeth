@@ -78,7 +78,13 @@ class CartManager {
             // `/cart/add.js` devolve o ITEM adicionado, não o carrinho. Quem
             // precisa do carrinho recebe pelo `cartUpdate` que o `getCart()`
             // publica logo em seguida (ver submitHandler).
-            publish(PUB_SUB_EVENTS.itemAdded, result);
+            //
+            // A recusa (422: estoque, limite, destinatário do vale-presente)
+            // volta com `status` e `description` — não é item nenhum, e
+            // publicá-la como `cart:item-added` entregava um erro a quem
+            // espera a linha que acabou de entrar. Quem trata a recusa é o
+            // `<add-to-cart>`, pelo mesmo `status`.
+            if (!result?.status) publish(PUB_SUB_EVENTS.itemAdded, result);
             return result;
         } catch (error) {
             console.error('Erro ao adicionar ao carrinho:', error);
@@ -194,18 +200,21 @@ class CartDrawer extends HTMLElement {
         }
     }
 
+    /**
+     * Subtotal e total mudam na hora, a partir do JSON. Os descontos do pedido
+     * não são escritos aqui: cada um tem nome, e quem os redesenha é o
+     * servidor, pela região `[data-cart-live="resumo"]` (ver cart-extras.js).
+     * Até a #144 este método escrevia `total_discount` — item e pedido somados
+     * — numa linha só, sob um subtotal que já tinha o desconto de item abatido.
+     */
     async updateCartSummary(cart) {
         const summaryElement = document.querySelector('#cart-summary-total');
         const itemsSubtotalPriceElement = summaryElement.querySelector('.subtotal');
-        const totalDiscountElement = summaryElement.querySelector('.discounts');
         const totalPriceElement = summaryElement.querySelector('.total-price');
 
-        const { items_subtotal_price, total_discount, total_price } = cart;
+        const { items_subtotal_price, total_price } = cart;
 
         itemsSubtotalPriceElement.textContent = formatMoney(items_subtotal_price);
-        if (totalDiscountElement) {
-            totalDiscountElement.textContent = `-${formatMoney(total_discount)}`;
-        }
         totalPriceElement.textContent = formatMoney(total_price);
     }
 
@@ -258,6 +267,7 @@ class AddToCart extends HTMLElement {
         if (this.productContext) {
             this.productContext.addEventListener('variant:change', this._onVariantChange.bind(this));
             this.productContext.addEventListener('quantity:change', this.quantityChangeHandler);
+            this.productContext.addEventListener('selling-plan:change', (event) => this._onSellingPlanChange(event));
         } else {
             console.warn('AddToCart: product-context não encontrado.');
         }
@@ -271,8 +281,8 @@ class AddToCart extends HTMLElement {
         }
 
         // O Liquid renderiza um texto só — ele não sabe a largura da tela. Sem
-        // este ajuste no load, a barra fixa nasce com o texto curto ("Adicionar")
-        // e só troca para o longo no primeiro resize ou troca de variante.
+        // este ajuste no load, um botão que declara texto curto e longo nasce
+        // com o do servidor e só troca no primeiro resize ou troca de variante.
         this._onResize();
     }
 
@@ -304,8 +314,24 @@ class AddToCart extends HTMLElement {
 
         const variantId = this.hiddenInput?.value;
         if (variantId && !this.button.disabled) {
-            this.button.textContent = this.mediaQuery.matches ? textMobile : textDesktop;
+            this._escreveRotulo(this.mediaQuery.matches ? textMobile : textDesktop);
         }
+    }
+
+    // O texto vai para o `[data-rotulo]` quando o botão tem um. A barra fixa
+    // guarda ali o texto e, ao lado, o ícone de sacola que o celular mostra no
+    // lugar dele: escrever no botão inteiro apagaria o ícone.
+    _escreveRotulo(texto) {
+        (this.button.querySelector('[data-rotulo]') ?? this.button).textContent = texto;
+    }
+
+    // O plano é escolhido nos radios do form da PDP; a barra fixa tem o PRÓPRIO
+    // form, e sem copiar a escolha ela comprava sempre compra única — o que
+    // falha em produto com `requires_selling_plan`. Só o campo ESCONDIDO: no
+    // form da PDP os radios já são o valor.
+    _onSellingPlanChange(event) {
+        const campo = this.form && this.form.querySelector('input[type="hidden"][name="selling_plan"]');
+        if (campo) campo.value = (event.detail && event.detail.sellingPlanId) || '';
     }
 
     _onVariantChange(event) {
@@ -322,10 +348,32 @@ class AddToCart extends HTMLElement {
     }
 
     _updateInputAndButton(variant) {
+        const aVenda = Boolean(variant && variant.available);
+
         // Atualiza o Input Hidden
         if (this.hiddenInput) {
             this.hiddenInput.value = variant ? variant.id : '';
+            // O Liquid desabilita este input quando a variante INICIAL não
+            // está à venda, e a conta precisa ser refeita a cada troca, nos
+            // dois sentidos. Sem isso, quem abria a página numa variante
+            // esgotada e escolhia outra levava um form sem `id` para o
+            // `/cart/add.js`; no caminho inverso, o input seguia habilitado
+            // com o id de uma variante esgotada — e o botão acelerado lê
+            // este mesmo input.
+            this.hiddenInput.disabled = !aVenda;
+            // O banner do Shop Pay Installments (`payment_terms`) e o botão
+            // acelerado (`payment_button`) acompanham a variante por este
+            // input (#134, #138). Trocar `.value` por script não dispara
+            // evento nenhum; o `change` é o aviso que quem escuta um input
+            // espera — e é o que o Dawn, a referência da Shopify, dispara.
+            this.hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
         }
+
+        // Variante esgotada ou inexistente: o botão acelerado não oferece
+        // compra. O botão de adicionar fica desabilitado logo abaixo; o
+        // acelerado não tem esse estado, então sai de cena.
+        const acelerado = this.querySelector('[data-checkout-acelerado]');
+        if (acelerado) acelerado.hidden = !aVenda;
 
         if (!this.button) return;
 
@@ -338,27 +386,76 @@ class AddToCart extends HTMLElement {
 
         if (variant && variant.available) {
             this.button.disabled = false;
-            if (textDesktop && textMobile) {
-                this.button.textContent = this.mediaQuery.matches ? textMobile : textDesktop;
-            }
+            // O texto curto é opcional. Quem não o declara usa o longo em
+            // qualquer largura: o botão da PDP, que ocupa a linha inteira e
+            // precisa mostrar o texto da lojista também no celular, e a barra
+            // fixa, onde no celular quem troca o texto pelo ícone é o CSS.
+            const texto = (this.mediaQuery.matches && textMobile) || textDesktop;
+            if (texto) this._escreveRotulo(texto);
         } else {
             this.button.disabled = true;
             const label = variant ? textSoldOut : textUnavailable;
-            if (label) this.button.textContent = label;
+            if (label) this._escreveRotulo(label);
         }
     }
 
     async submitHandler(event) {
         event.preventDefault();
+        this._escondeErro();
+        let abreODrawer = true;
         try {
-            await CartManager.addToCart(this.form);
+            const resultado = await CartManager.addToCart(this.form);
+            // `/cart/add.js` recusa com 4xx e um JSON `{ status, message,
+            // description }` — e `fetch` não rejeita por status. Sem esta
+            // checagem a recusa seguia o caminho do sucesso: o drawer abria
+            // sem o item, e o motivo (e-mail do destinatário inválido,
+            // estoque insuficiente) nunca chegava à cliente (#139).
+            if (resultado && resultado.status) {
+                abreODrawer = !this._mostraErro(resultado);
+                return;
+            }
             await this.updateCartDrawer();
             await CartManager.getCart()
         } catch (error) {
             console.error('Erro ao adicionar o produto ao carrinho:', error);
         } finally {
-            document.querySelector('cart-drawer').open();
+            if (abreODrawer) document.querySelector('cart-drawer').open();
         }
+    }
+
+    /**
+     * Mostra a recusa do `/cart/add.js`. Devolve se alguém a mostrou.
+     *
+     * Primeiro pergunta ao próprio formulário: o `cart-error` sai do `<form>`
+     * e sobe, então quem mora DENTRO dele (o formulário de destinatário do
+     * vale-presente) escuta ali e sabe a qual campo cada erro pertence. Quem
+     * põe o erro ao lado do campo cancela o evento, e o aviso geral fica
+     * quieto — o mesmo erro dito duas vezes é ruído.
+     *
+     * O texto é o da Shopify, já no idioma da vitrine: não há frase nossa
+     * aqui para traduzir. Sem lugar para mostrar (o quick-add do card, a
+     * barra fixa), devolve `false` e o drawer abre como antes.
+     */
+    _mostraErro(resultado) {
+        const tratado = !this.form.dispatchEvent(
+            new CustomEvent(PUB_SUB_EVENTS.cartError, { bubbles: true, cancelable: true, detail: resultado }),
+        );
+        if (tratado) return true;
+
+        const aviso = this.querySelector('[data-erro-carrinho]');
+        const texto = typeof resultado.description === 'string' ? resultado.description : resultado.message;
+        if (!aviso || !texto) return false;
+
+        aviso.hidden = false;
+        aviso.textContent = texto;
+        return true;
+    }
+
+    _escondeErro() {
+        const aviso = this.querySelector('[data-erro-carrinho]');
+        if (!aviso) return;
+        aviso.hidden = true;
+        aviso.textContent = '';
     }
 
     /**

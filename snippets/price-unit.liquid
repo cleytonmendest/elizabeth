@@ -1,0 +1,33 @@
+{%- comment -%}
+  Preço unitário — "R$ 12,90/100ml". Issue #136.
+
+  Produto vendido por medida (tecido por metro, kit de meias, perfume por ml)
+  precisa mostrar o preço de referência junto do preço. Em moda isso é raro, e
+  é exatamente por isso que o formato mora num lugar só: a loja de dev não tem
+  produto com preço unitário, então nenhuma olhada na vitrine denuncia a falta.
+
+  O valor de referência 1 é omitido — "R$ 5,00/kg", e não "R$ 5,00/1kg".
+
+  A barra é símbolo, então ela é escondida do leitor de tela, que ouve a
+  palavra do locale no lugar dela: "Preço unitário R$ 12,90 por 100ml". As
+  quatro peças ficam numa linha só porque qualquer espaço entre elas apareceria
+  na tela ("R$ 12,90/ 100ml"); o NBSP dentro do `sr-only` é o espaço que só o
+  leitor de tela ouve.
+
+  Parâmetros:
+  - unit_price: preço unitário, em centavos (variant.unit_price,
+    selling_plan_allocation.unit_price)
+  - measurement: variant.unit_price_measurement (nil = sem preço unitário)
+  - reserve: renderiza o elemento ESCONDIDO mesmo sem medida, para o
+    <price-component> preencher quando a cliente trocar para uma variante que
+    tenha. Sem `reserve`, variante sem preço unitário não renderiza nada.
+  - class: classes do parágrafo
+
+  Os `data-unit-price*` são os pontos em que src/js/price-component.js escreve.
+{%- endcomment -%}
+{%- if measurement or reserve -%}
+  <p class="{{ class }}{% if measurement == blank %} hidden{% endif %}" data-unit-price>
+    <span class="sr-only">{{ 'product.general.unit_price' | t }}</span>
+    <span data-unit-price-amount>{{ unit_price | money }}</span><span aria-hidden="true">/</span><span class="sr-only">&nbsp;{{ 'product.general.unit_price_separator' | t }}&nbsp;</span><span data-unit-price-reference>{% if measurement.reference_value != 1 %}{{ measurement.reference_value }}{% endif %}{{ measurement.reference_unit }}</span>
+  </p>
+{%- endif -%}

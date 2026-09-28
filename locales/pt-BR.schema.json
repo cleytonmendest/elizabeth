@@ -61,7 +61,8 @@
           "label": "Mostrar campo de busca"
         },
         "button_label": {
-          "label": "Texto do botão"
+          "label": "Texto do botão",
+          "info": "Deixe em branco para usar o texto traduzido do tema, que acompanha o idioma da loja."
         }
       }
     },
@@ -149,6 +150,16 @@
         },
         "filters_header": {
           "content": "Filtros"
+        },
+        "filters_paragraph": {
+          "content": "Os filtros (tamanho, cor, preço…) são os mesmos da página de coleção: vêm do app gratuito Search & Discovery do Shopify. Eles só refinam produtos — na aba de artigos ou de páginas, ou numa busca que só achou esses, o painel não aparece."
+        },
+        "enable_filtering": {
+          "label": "Ativar filtros",
+          "info": "Exibe os filtros configurados no app Search & Discovery"
+        },
+        "enable_sorting": {
+          "label": "Ativar ordenação"
         },
         "enable_type_filter": {
           "label": "Ativar filtro por tipo",
@@ -241,7 +252,13 @@
           "name": "Nome do Produto"
         },
         "price": {
-          "name": "Preço do Produto"
+          "name": "Preço do Produto",
+          "settings": {
+            "show_tax_note": {
+              "label": "Mostrar aviso de impostos e frete",
+              "info": "O texto segue a configuração de impostos da loja, por país: com preços que já incluem impostos, ele diz \"Impostos incluídos\". Desative se o aviso não se aplica à sua loja."
+            }
+          }
         },
         "inventory": {
           "name": "Status de Estoque",
@@ -299,8 +316,9 @@
             "settings_header": {
               "content": "Configurações de botão"
             },
-            "button_text": {
-              "label": "Texto do botão"
+            "show_dynamic_checkout": {
+              "label": "Mostrar botões de checkout acelerado",
+              "info": "As carteiras (Shop Pay, Apple Pay, Google Pay, PayPal…) são as ativas em Configurações › Pagamentos. Não aparecem em vale-presente, que precisa do botão de adicionar para validar o destinatário."
             }
           }
         },
@@ -378,6 +396,15 @@
             },
             "installment_text": {
               "label": "Texto de Parcelamento"
+            }
+          }
+        },
+        "custom_liquid": {
+          "name": "Liquid personalizado",
+          "settings": {
+            "custom_liquid": {
+              "label": "Liquid personalizado",
+              "info": "Para trechos de app, pixels ou código Liquid próprio (ex.: exibir um metafield). Vazio, o bloco não aparece."
             }
           }
         }
@@ -1116,7 +1143,13 @@
           "name": "Nome do Produto"
         },
         "price": {
-          "name": "Preço do Produto"
+          "name": "Preço do Produto",
+          "settings": {
+            "show_tax_note": {
+              "label": "Mostrar aviso de impostos e frete",
+              "info": "O texto segue a configuração de impostos da loja, por país: com preços que já incluem impostos, ele diz \"Impostos incluídos\". Desative se o aviso não se aplica à sua loja."
+            }
+          }
         },
         "quantity_selector": {
           "name": "Seletor de quantidade",
@@ -1153,8 +1186,9 @@
             "settings_header": {
               "content": "Configurações de botão"
             },
-            "button_text": {
-              "label": "Texto do botão"
+            "show_dynamic_checkout": {
+              "label": "Mostrar botões de checkout acelerado",
+              "info": "As carteiras (Shop Pay, Apple Pay, Google Pay, PayPal…) são as ativas em Configurações › Pagamentos. Não aparecem em vale-presente, que precisa do botão de adicionar para validar o destinatário."
             }
           }
         },
@@ -1180,6 +1214,15 @@
             },
             "page": {
               "label": "Conteúdo de página"
+            }
+          }
+        },
+        "custom_liquid": {
+          "name": "Liquid personalizado",
+          "settings": {
+            "custom_liquid": {
+              "label": "Liquid personalizado",
+              "info": "Para trechos de app, pixels ou código Liquid próprio (ex.: exibir um metafield). Vazio, o bloco não aparece."
             }
           }
         }
@@ -1759,10 +1802,19 @@
         },
         "show_quick_add": {
           "label": "Mostrar botão de compra rápida"
+        },
+        "intent": {
+          "label": "Tipo de recomendação",
+          "info": "Complementares mostram o que combina com o produto e são cadastradas no app Search & Discovery. Produto sem par cadastrado não exibe a seção. Com o título em branco, o padrão passa a ser \"Combina com\".",
+          "options": {
+            "related": "Relacionados (parecidos com este)",
+            "complementary": "Complementares (combinam com este)"
+          }
         }
       },
       "presets": {
-        "name": "Recomendações de produto"
+        "name": "Recomendações de produto",
+        "complementary_name": "Produtos complementares"
       }
     },
     "recently_viewed": {
@@ -1865,17 +1917,9 @@
         "color_scheme": {
           "label": "Esquema de cores"
         },
-        "countdown_type": {
-          "label": "Tipo de contagem",
-          "info": "Data fixa: conta até um momento específico. Diária: reseta todos os dias no horário escolhido.",
-          "options": {
-            "fixed": "Data e hora fixa",
-            "daily": "Diária (recorrente)"
-          }
-        },
         "datetime_header": {
           "content": "Data e hora final",
-          "info": "Use o fuso horário da sua loja. No modo diário, apenas o horário é considerado. Para terminar à meia-noite, escolha 00:00 do dia seguinte."
+          "info": "Use o fuso horário da sua loja. Ao zerar, a seção some da loja. Para terminar à meia-noite, escolha 00:00 do dia seguinte."
         },
         "year": {
           "label": "Ano",
@@ -2036,6 +2080,30 @@
           "label": "Pedir telefone",
           "info": "O campo é opcional para a cliente mesmo quando exibido."
         }
+      }
+    },
+    "custom_liquid": {
+      "name": "Liquid personalizado",
+      "settings": {
+        "custom_liquid": {
+          "label": "Liquid personalizado",
+          "info": "Para trechos de app, pixels ou código Liquid próprio. Vazia, a seção não aparece na loja."
+        },
+        "color_scheme": {
+          "label": "Esquema de cores"
+        },
+        "spacing_header": {
+          "content": "Espaçamento"
+        },
+        "padding_top": {
+          "label": "Espaçamento superior"
+        },
+        "padding_bottom": {
+          "label": "Espaçamento inferior"
+        }
+      },
+      "presets": {
+        "name": "Liquid personalizado"
       }
     }
   },

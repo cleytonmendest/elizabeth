@@ -20,19 +20,19 @@
     {% if show_image %}
       <div class="relative overflow-hidden rounded-theme mb-4 aspect-video bg-foreground/5">
         {% if article.image %}
-          <img
-            src="{{ article.image | image_url: width: 600 }}"
-            srcset="{{ article.image | image_url: width: 400 }} 400w,
-                    {{ article.image | image_url: width: 600 }} 600w,
-                    {{ article.image | image_url: width: 800 }} 800w"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            alt="{{ article.image.alt | escape | default: article.title }}"
-            width="{{ article.image.width }}"
-            height="{{ article.image.height }}"
-            loading="lazy"
-            decoding="async"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          >
+          {%- comment -%} `image_tag` aplica o ponto focal no corte do `object-cover` (#142). {%- endcomment -%}
+          {%- assign card_article_alt = article.image.alt | default: article.title -%}
+          {{
+            article.image
+            | image_url: width: 800
+            | image_tag:
+              widths: '400, 600, 800',
+              sizes: '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw',
+              alt: card_article_alt,
+              loading: 'lazy',
+              decoding: 'async',
+              class: 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500'
+          }}
         {% else %}
           <div class="w-full h-full flex items-center justify-center">
             <svg class="w-16 h-16 text-foreground/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">

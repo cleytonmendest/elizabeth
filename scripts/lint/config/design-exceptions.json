@@ -86,6 +86,16 @@
       "reason": "Logos de bandeira e meio de pagamento com cor de marca própria — o branco aqui é parte do desenho oficial (o cartão, o texto do logo, o contorno), e trocá-lo pelo texto do color scheme descaracterizaria marca de terceiro, o que as guidelines das bandeiras vedam. Medido antes de registrar: cada um destes tem pelo menos uma cor que não é preto nem branco, ou um fundo de cartão que o torna legível em qualquer scheme. Fora desta lista ficaram icon-pay-boleto e icon-pay-yapay, que são monocromáticos de verdade e continuam como dívida visível."
     },
     {
+      "rule": "pontofocal",
+      "files": [
+        "snippets/search-component.liquid"
+      ],
+      "codes": [
+        "img:src-vazio"
+      ],
+      "reason": "A miniatura da busca preditiva é um <template> preenchido por src/js/search-component.js com o que /search/suggest.json devolve — e essa fonte descreve a imagem só por URL (e, nas variantes, featured_image com url, alt, width, height e aspect_ratio). O ponto focal da lojista não vem, então não há object-position para declarar: o corte fica no centro por limite da API, não por esquecimento. O código img:src-vazio libera só a tag montada em runtime; uma <img> com src em Liquid neste arquivo continua reprovando. Fechar de verdade é renderizar a busca preditiva em Liquid pela Section Rendering API (/search/suggest?section_id=…), onde image_tag existe. Ver #142."
+    },
+    {
       "rule": "editable",
       "files": [
         "sections/cart-drawer.liquid"

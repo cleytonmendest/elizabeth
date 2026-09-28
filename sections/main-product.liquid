@@ -2,11 +2,13 @@
 {% assign media_position = section.settings.media_position %}
 
 <div class="color-{{ section.settings.color_scheme }} color-background color-text">
-  <div class="page-width">
-    {% comment %}
-      {%- comment -%} Breadcrumb {%- endcomment -%}
-      {% render 'breadcrumb' %}
-    {% endcomment %}
+  {%- render 'breadcrumb' -%}
+  {%- comment -%}
+    O respiro de baixo é da section, e fica DENTRO da cor dela: o `gap` do
+    <main> entre sections é pintado pelo fundo da página, e num scheme escuro o
+    conteúdo encostava na borda. Em cima quem dá o respiro é o breadcrumb.
+  {%- endcomment -%}
+  <div class="page-width pb-12 lg:pb-16">
 
     <div
       product-context
@@ -20,8 +22,14 @@
       <div class="{% if media_size == 'medium' or media_size == 'large' %} lg:flex-1 {% elsif media_size == 'small' %} lg:flex-[2] {% endif %}">
         {% render 'main-product-right', blocks: section.blocks %}
 
-        {%- comment -%} Barra fixa de comprar (desktop e mobile) {%- endcomment -%}
-        {% render 'sticky-add-to-cart', product: product %}
+        {%- comment -%}
+          Barra fixa de comprar (desktop e mobile). Não em vale-presente: o
+          form dela não leva o destinatário, e comprar por ela mandava o cartão
+          para a compradora mesmo com o destinatário preenchido na PDP.
+        {%- endcomment -%}
+        {%- unless product.gift_card? -%}
+          {% render 'sticky-add-to-cart', product: product %}
+        {%- endunless -%}
       </div>
     </div>
   </div>
@@ -176,7 +184,16 @@
     {
       "type": "price",
       "name": "t:sections.main_product.blocks.price.name",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_tax_note",
+          "label": "t:sections.main_product.blocks.price.settings.show_tax_note.label",
+          "info": "t:sections.main_product.blocks.price.settings.show_tax_note.info",
+          "default": true
+        }
+      ]
     },
     {
       "type": "inventory",
@@ -289,10 +306,11 @@
           "content": "t:sections.main_product.blocks.buy_button.settings.settings_header.content"
         },
         {
-          "type": "text",
-          "label": "t:sections.main_product.blocks.buy_button.settings.button_text.label",
-          "id": "button_text",
-          "default": "ADICIONAR AO CARRINHO"
+          "type": "checkbox",
+          "id": "show_dynamic_checkout",
+          "label": "t:sections.main_product.blocks.buy_button.settings.show_dynamic_checkout.label",
+          "info": "t:sections.main_product.blocks.buy_button.settings.show_dynamic_checkout.info",
+          "default": true
         }
       ]
     },
@@ -456,6 +474,21 @@
           "id": "installment_text",
           "label": "t:sections.main_product.blocks.payment_icons.settings.installment_text.label",
           "default": "Parcele em até 6x sem juros no cartão de crédito"
+        }
+      ]
+    },
+    {
+      "type": "@app"
+    },
+    {
+      "type": "custom_liquid",
+      "name": "t:sections.main_product.blocks.custom_liquid.name",
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "custom_liquid",
+          "label": "t:sections.main_product.blocks.custom_liquid.settings.custom_liquid.label",
+          "info": "t:sections.main_product.blocks.custom_liquid.settings.custom_liquid.info"
         }
       ]
     }

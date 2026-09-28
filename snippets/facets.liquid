@@ -1,0 +1,304 @@
+{%- comment -%}
+  Filtros facetados — o MESMO markup na coleção e na busca (#141).
+
+  Até a #141 este form morava dentro de `main-collection`, e a busca tinha só
+  quatro abas que escondiam, em JS, o que já estava carregado na página atual.
+  Copiar o form para a busca daria dois filtros que divergem com o tempo — o
+  defeito que a regra `similarity` existe para impedir. Então ele saiu para cá,
+  e as duas sections o renderizam.
+
+  O `<form>` e o `<facet-filters>` que o envolvem ficam na SECTION: o form
+  abraça também a barra de ferramentas e a grade, e o que vai nele (a busca
+  precisa de `q` e `type`, a coleção não) é de cada página.
+
+  Parâmetros:
+  - part: o pedaço a renderizar (padrão: 'panel')
+      'count'     devolve só o número de filtros ativos, para `capture`
+      'relevant'  devolve 'true' se algum filtro descreve produto do resultado
+      'trigger'   o botão que abre a gaveta no celular
+      'panel'     o véu, a gaveta/sidebar com os filtros e o estilo dela
+  - filters: `collection.filters` ou `search.filters` (count, relevant, panel)
+  - active_filter_count: o que 'count' devolveu (trigger, panel)
+  - sort_by: a ordenação atual, preservada ao aplicar filtro (panel)
+  - clear_url: a página sem filtro nenhum, com a ordenação (panel)
+
+  'count' e 'relevant' são decisão, e não usam nada da Shopify: são exercitados
+  por `liquidjs` em `tests/facets.test.mjs` (ADR 0014).
+{%- endcomment -%}
+
+{%- case part -%}
+  {%- when 'count' -%}
+    {%- comment -%}
+      Faixa de preço conta UMA vez, com mínimo, máximo ou os dois: para a
+      cliente é um filtro só. Lista e booleano contam cada valor marcado.
+    {%- endcomment -%}
+    {%- liquid
+      assign active_filter_count = 0
+      for filter in filters
+        if filter.type == 'price_range'
+          if filter.min_value.value != blank or filter.max_value.value != blank
+            assign active_filter_count = active_filter_count | plus: 1
+          endif
+        else
+          assign active_filter_count = active_filter_count | plus: filter.active_values.size
+        endif
+      endfor
+      echo active_filter_count
+    -%}
+
+  {%- when 'relevant' -%}
+    {%- comment -%}
+      A busca devolve artigo e página junto com produto, e filtro facetado só
+      fala de produto. Uma busca que só achou artigo não pode mostrar um painel
+      de "Disponibilidade (0)" com tudo desabilitado.
+
+      Filtro marcado conta mesmo com zero resultado: é o estado em que a
+      cliente mais precisa do painel, para desmarcar o que marcou.
+    {%- endcomment -%}
+    {%- liquid
+      assign relevant = false
+      for filter in filters
+        if filter.type == 'price_range'
+          if filter.range_max > 0 or filter.min_value.value != blank or filter.max_value.value != blank
+            assign relevant = true
+          endif
+        else
+          for value in filter.values
+            if value.count > 0 or value.active
+              assign relevant = true
+            endif
+          endfor
+        endif
+      endfor
+      if relevant
+        echo 'true'
+      endif
+    -%}
+
+  {%- when 'trigger' -%}
+    <button
+      type="button"
+      data-filters-open
+      class="lg:hidden inline-flex items-center gap-2 border border-border rounded-theme px-4 py-2 text-sm text-foreground/80 hover:border-foreground/30 transition-colors"
+    >
+      <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M6 12h12M10 20h4" />
+      </svg>
+      {{ 'collection.filters.title' | t }}
+      {%- if active_filter_count > 0 -%}
+        <span class="color-badge inline-flex items-center justify-center min-w-5 h-5 rounded-full text-xs px-1">{{ active_filter_count }}</span>
+      {%- endif -%}
+    </button>
+
+  {%- else -%}
+    {%- comment -%}
+      Moeda com vírgula decimal (ex.: BRL, EUR): o param do Shopify espera
+      ponto decimal e nenhum separador de milhar nos inputs de preço.
+    {%- endcomment -%}
+    {%- liquid
+      assign comma_currencies = 'ANG,ARS,BRL,BYN,CLF,CLP,COP,CRC,CZK,DKK,EUR,HRK,HUF,IDR,ISK,MZN,NOK,PLN,RON,RUB,SEK,TRY,UYU,VND' | split: ','
+      assign uses_comma_decimals = false
+      if comma_currencies contains cart.currency.iso_code
+        assign uses_comma_decimals = true
+      endif
+    -%}
+
+    {%- comment -%} Sidebar inline no desktop, gaveta off-canvas no celular {%- endcomment -%}
+    <div
+      class="fixed inset-0 z-overlay bg-shadow/40 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"
+      data-filters-overlay
+    ></div>
+    <aside
+      class="filters-panel fixed inset-y-0 left-0 z-drawer w-5/6 max-w-xs -translate-x-full overflow-y-auto bg-background p-6 transition-transform duration-300 lg:static lg:z-auto lg:w-64 lg:max-w-none lg:translate-x-0 lg:overflow-visible lg:bg-transparent lg:p-0 lg:transition-none flex-shrink-0"
+      data-filters-panel
+      aria-label="{{ 'collection.filters.title' | t }}"
+    >
+      <div class="lg:sticky lg:top-20">
+        {%- comment -%} Cabeçalho da gaveta (somente celular) {%- endcomment -%}
+        <div class="flex items-center justify-between mb-6 lg:hidden">
+          <h2 class="text-xs uppercase tracking-label text-foreground/60">{{ 'collection.filters.title' | t }}</h2>
+          <button
+            type="button"
+            data-filters-close
+            aria-label="{{ 'collection.filters.close' | t }}"
+            class="text-foreground/60 hover:text-foreground transition-colors"
+          >
+            {% render 'icon-close', size: 20 %}
+          </button>
+        </div>
+
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="hidden lg:block text-xs uppercase tracking-label text-foreground/60">{{ 'collection.filters.title' | t }}</h2>
+          {%- if active_filter_count > 0 -%}
+            <a
+              href="{{ clear_url }}"
+              class="text-xs uppercase tracking-label text-foreground-muted hover:text-foreground underline underline-offset-4 transition-colors"
+            >
+              {{ 'collection.filters.clear_all' | t }}
+            </a>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Preserva a ordenação ao aplicar filtros {%- endcomment -%}
+        <input type="hidden" name="sort_by" value="{{ sort_by }}">
+
+        {%- for filter in filters -%}
+          <details class="mb-4 border-b border-border pb-4" open>
+            <summary class="cursor-pointer list-none text-sm font-medium flex justify-between items-center gap-2">
+              <span>{{ filter.label | escape }}</span>
+              <span class="filter-chevron shrink-0 transition-transform opacity-60">
+                {% render 'icon-angle-down', size: 16 %}
+              </span>
+            </summary>
+
+            {%- case filter.type -%}
+              {%- when 'price_range' -%}
+                {%- liquid
+                  assign min_input = ''
+                  assign max_input = ''
+                  if filter.min_value.value != blank
+                    if uses_comma_decimals
+                      assign min_input = filter.min_value.value | money_without_currency | replace: '.', '' | replace: ',', '.'
+                    else
+                      assign min_input = filter.min_value.value | money_without_currency | replace: ',', ''
+                    endif
+                  endif
+                  if filter.max_value.value != blank
+                    if uses_comma_decimals
+                      assign max_input = filter.max_value.value | money_without_currency | replace: '.', '' | replace: ',', '.'
+                    else
+                      assign max_input = filter.max_value.value | money_without_currency | replace: ',', ''
+                    endif
+                  endif
+                  if uses_comma_decimals
+                    assign range_max = filter.range_max | money_without_currency | replace: '.', '' | replace: ',', '.'
+                  else
+                    assign range_max = filter.range_max | money_without_currency | replace: ',', ''
+                  endif
+                -%}
+                <div class="mt-3 flex items-center gap-2">
+                  <div class="flex items-center gap-1 flex-1">
+                    <span class="text-xs text-foreground-muted">{{ cart.currency.symbol }}</span>
+                    <input
+                      type="number"
+                      inputmode="decimal"
+                      name="{{ filter.min_value.param_name }}"
+                      value="{{ min_input }}"
+                      placeholder="0"
+                      min="0"
+                      max="{{ range_max }}"
+                      aria-label="{{ 'collection.filters.from' | t }}"
+                      class="w-full border border-border rounded-theme-sm px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/40"
+                    >
+                  </div>
+                  <span class="text-foreground-muted">—</span>
+                  <div class="flex items-center gap-1 flex-1">
+                    <span class="text-xs text-foreground-muted">{{ cart.currency.symbol }}</span>
+                    <input
+                      type="number"
+                      inputmode="decimal"
+                      name="{{ filter.max_value.param_name }}"
+                      value="{{ max_input }}"
+                      placeholder="{{ range_max }}"
+                      min="0"
+                      max="{{ range_max }}"
+                      aria-label="{{ 'collection.filters.to' | t }}"
+                      class="w-full border border-border rounded-theme-sm px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/40"
+                    >
+                  </div>
+                </div>
+
+              {%- else -%}
+                {%- if filter.presentation == 'swatch' -%}
+                  {%- comment -%} Filtro em swatch (cor/imagem via Search & Discovery) {%- endcomment -%}
+                  <div class="mt-3 flex flex-wrap gap-2.5 max-h-64 overflow-y-auto">
+                    {%- for value in filter.values -%}
+                      {%- liquid
+                        assign disabled = false
+                        if value.count == 0 and value.active == false
+                          assign disabled = true
+                        endif
+                      -%}
+                      <label
+                        class="filter-swatch relative block cursor-pointer {% if disabled %}opacity-40 cursor-not-allowed{% endif %}"
+                        title="{{ value.label | escape }} ({{ value.count }})"
+                      >
+                        <input
+                          type="checkbox"
+                          class="filter-checkbox sr-only peer"
+                          name="{{ value.param_name }}"
+                          value="{{ value.value }}"
+                          {% if value.active %}checked{% endif %}
+                          {% if disabled %}disabled{% endif %}
+                        >
+                        <span
+                          class="block w-8 h-8 rounded-full border border-border bg-cover bg-center transition-shadow peer-checked:ring-2 peer-checked:ring-foreground peer-checked:ring-offset-2 peer-checked:ring-offset-background peer-focus-visible:ring-2 peer-focus-visible:ring-foreground/40 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background"
+                          {% if value.swatch.image %}style="background-image:url({{ value.swatch.image | image_url: width: 48 }});"{% elsif value.swatch.color %}style="background-color:{{ value.swatch.color }};"{% endif %}
+                        ></span>
+                        <span class="sr-only">{{ value.label | escape }} ({{ value.count }})</span>
+                      </label>
+                    {%- endfor -%}
+                  </div>
+                {%- else -%}
+                  <div class="mt-3 space-y-2 max-h-64 overflow-y-auto">
+                    {%- for value in filter.values -%}
+                      {%- liquid
+                        assign disabled = false
+                        if value.count == 0 and value.active == false
+                          assign disabled = true
+                        endif
+                      -%}
+                      <label class="flex items-center gap-2 text-sm cursor-pointer {% if disabled %}opacity-40 cursor-not-allowed{% endif %}">
+                        <input
+                          type="checkbox"
+                          class="filter-checkbox rounded-theme-sm border-border text-foreground focus:ring-foreground/40"
+                          name="{{ value.param_name }}"
+                          value="{{ value.value }}"
+                          {% if value.active %}checked{% endif %}
+                          {% if disabled %}disabled{% endif %}
+                        >
+                        <span>{{ value.label | escape }}</span>
+                        <span class="text-foreground-muted text-xs">({{ value.count }})</span>
+                      </label>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+            {%- endcase -%}
+          </details>
+        {%- endfor -%}
+
+        {%- comment -%} Botão de aplicar (celular; e no desktop quando não há JS) {%- endcomment -%}
+        <div class="mt-6 lg:hidden" data-filters-apply>
+          <button
+            type="submit"
+            class="w-full color-button text-xs uppercase tracking-label py-3 hover:opacity-90 transition-opacity rounded-theme"
+          >
+            {{ 'collection.filters.apply' | t }}
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <style>
+      facet-filters .filters-panel.is-open { transform: translateX(0); }
+      facet-filters [data-filters-overlay].is-open { opacity: 1; pointer-events: auto; }
+      facet-filters details > summary::-webkit-details-marker { display: none; }
+      facet-filters details[open] .filter-chevron { transform: rotate(180deg); }
+    </style>
+
+    {%- comment -%}
+      Sem JS: a gaveta não abre e o desktop não auto-envia. O form é GET, então
+      basta mostrar os filtros no fluxo da página e o botão de aplicar em
+      qualquer largura — e esconder o gatilho, que sem JS não faz nada.
+    {%- endcomment -%}
+    <noscript>
+      <style>
+        @media (max-width: 1023.98px) {
+          facet-filters .filters-panel { position: static; transform: none; width: auto; max-width: none; }
+        }
+        facet-filters [data-filters-open],
+        facet-filters [data-filters-close] { display: none; }
+        facet-filters [data-filters-apply] { display: block; }
+      </style>
+    </noscript>
+{%- endcase -%}

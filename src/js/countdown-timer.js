@@ -1,15 +1,16 @@
 /**
  * Countdown Timer — <countdown-timer>
- * - Modo "fixed": conta até uma data/hora específica (ancorada no fuso da loja).
- * - Modo "daily": reseta todos os dias num horário fixo (recorrente).
- * Todo o alvo é calculado a partir do offset do fuso da loja (data-utc-offset),
- * então todas as visitantes contam para o MESMO instante, independente do fuso
- * do navegador. Ao zerar (modo fixed) a seção é escondida; no editor do tema
- * (designMode) nunca esconde, para o lojista conseguir editar.
+ * Conta até uma data/hora específica, ancorada no fuso da loja
+ * (data-utc-offset): todas as visitantes contam para o MESMO instante,
+ * independente do fuso do navegador.
+ *
+ * Ao zerar, a seção é escondida — sempre. Não existe modo que recomece a
+ * contagem: relógio que volta a 24h ao chegar em zero é o "fictitious
+ * countdown timer" que a Theme Store proíbe (ADR 0016, issue #146). No editor
+ * do tema (designMode) nunca esconde, para o lojista conseguir editar.
  */
 class CountdownTimer extends HTMLElement {
   connectedCallback() {
-    this.mode = this.dataset.mode === 'daily' ? 'daily' : 'fixed';
     this.showDays = this.dataset.showDays !== 'false';
     this.offsetMin = this.parseOffset(this.dataset.utcOffset);
     this.designMode = !!(window.Shopify && window.Shopify.designMode);
@@ -44,8 +45,6 @@ class CountdownTimer extends HTMLElement {
   }
 
   computeTarget() {
-    if (this.mode === 'daily') return this.nextDaily();
-
     const y = parseInt(this.dataset.year, 10);
     const mo = parseInt(this.dataset.month, 10); // 1-12
     let d = parseInt(this.dataset.day, 10);
@@ -64,32 +63,14 @@ class CountdownTimer extends HTMLElement {
     return Date.UTC(y, mo - 1, d, h, mi, 0) - this.offsetMin * 60000;
   }
 
-  /** Próxima ocorrência de hour:minute no fuso da loja. */
-  nextDaily() {
-    const h = parseInt(this.dataset.hour, 10) || 0;
-    const mi = parseInt(this.dataset.minute, 10) || 0;
-    const now = Date.now();
-    const shopNow = new Date(now + this.offsetMin * 60000); // relógio da loja via getUTC*
-    let target =
-      Date.UTC(shopNow.getUTCFullYear(), shopNow.getUTCMonth(), shopNow.getUTCDate(), h, mi, 0) -
-      this.offsetMin * 60000;
-    if (target <= now) target += 86400000;
-    return target;
-  }
-
   tick() {
-    let diff = this.target - Date.now();
+    const diff = this.target - Date.now();
 
     if (diff <= 0) {
-      if (this.mode === 'daily') {
-        this.target = this.nextDaily();
-        diff = this.target - Date.now();
-      } else {
-        this.render(0);
-        if (this.interval) clearInterval(this.interval);
-        if (!this.designMode) this.hideSection();
-        return;
-      }
+      this.render(0);
+      if (this.interval) clearInterval(this.interval);
+      if (!this.designMode) this.hideSection();
+      return;
     }
 
     this.render(diff);

@@ -23,14 +23,36 @@
 
     [data-cart-page]          raiz que o cart-extras usa para saber que está na
                               PÁGINA (e não no drawer) antes de mexer na DOM
-    #cart-items-container     mesmo id do drawer — o cart.js troca o conteúdo
-                              dele pela resposta do servidor
+    [data-cart-section]       o id desta section, que o cart-extras pede à
+                              Section Rendering API depois de cada mudança
+    #cart-items-container     id DIFERENTE do `#cart-drawer-items` da gaveta
+                              (#68); `[data-cart-items]` é o que o JS procura
     .cart-item[data-key]      vem do snippet `cart-drawer-item`, compartilhado
-    [data-cart-subtotal]      resumo reativo, atualizado sem recarregar
+    [data-cart-live]          região que o servidor redesenha: o resumo aqui, e
+                              o preço e os descontos de cada linha no snippet
+    [data-cart-subtotal]      resumo reativo, atualizado sem esperar o servidor
     [data-cart-total]
-    [data-cart-discount]      e [data-cart-discount-row], que ganha/perde
-                              `hidden` conforme o desconto
     [data-cart-note]          sincronizado com o campo do drawer pelo JS
+
+  ── Os descontos (#144) ────────────────────────────────────────────────────
+
+  O resumo mostrava uma linha só, "Descontos −R$ 38,00", com
+  `cart.total_discount` — a soma dos descontos de ITEM e de PEDIDO. Além de
+  não dizer de onde vinha o desconto, a conta não fechava: o subtotal
+  (`items_subtotal_price`) já sai com o desconto de item abatido, e a linha o
+  subtraía de novo aos olhos da cliente.
+
+  Agora cada nível mora no seu lugar. O desconto de item aparece na linha dele
+  (preço riscado, nome e valor — ver `cart-drawer-item`); o do pedido aparece
+  aqui, um por linha, com o nome. Subtotal menos a lista dá o total.
+
+  Não há campo para digitar cupom, e não é esquecimento: a Theme Store trata
+  "cart-level discount codes" como funcionalidade de app. O que o tema faz é
+  EXIBIR o que o checkout ou a URL `/discount/CODIGO` já aplicaram.
+
+  Quando a quantidade liga ou desliga um desconto automático, quem sabe o nome
+  dele é o servidor — por isso o resumo e as linhas são redesenhados pela
+  Section Rendering API, e não remendados campo a campo em JS.
 
   ── Por que `cart_notes` continua global ───────────────────────────────────
 
@@ -46,14 +68,15 @@
 {%- endcomment -%}
 
 <div class="color-{{ section.settings.color_scheme }} color-background color-text">
-  <div class="page-width w-full !py-10 md:!py-14 min-h-page flex flex-col" data-cart-page>
+  {%- render 'breadcrumb' -%}
+  <div class="page-width w-full !py-10 md:!py-14 min-h-page flex flex-col" data-cart-page data-cart-section="{{ section.id }}">
     <h1 class="text-3xl md:text-4xl font-light tracking-title mb-8 md:mb-10">{{ 'cart.general.title' | t }}</h1>
 
     {%- if cart.item_count > 0 -%}
       <div class="flex flex-col lg:flex-row gap-10 lg:gap-12">
         {%- comment -%} Itens (mesmo snippet do drawer — fonte do #cart-items-container) {%- endcomment -%}
         <div class="flex-1 min-w-0">
-          <div id="cart-items-container" class="border-t border-border">
+          <div id="cart-items-container" class="border-t border-border" data-cart-items>
             {%- for item in cart.items -%}
               {% render 'cart-drawer-item', item: item %}
             {%- endfor -%}
@@ -77,15 +100,21 @@
 
             {% render 'cart-free-shipping' %}
 
-            <div class="mt-5 space-y-2.5 text-sm">
+            <div class="mt-5 space-y-2.5 text-sm" data-cart-live="resumo">
               <div class="flex justify-between">
                 <span class="text-foreground/60">{{ 'cart.general.subtotal' | t }}</span>
                 <span class="font-medium" data-cart-subtotal>{{ cart.items_subtotal_price | money }}</span>
               </div>
-              <div class="flex justify-between {% if cart.total_discount <= 0 %}hidden{% endif %}" data-cart-discount-row>
-                <span class="text-foreground/60">{{ 'cart.general.discounts' | t }}</span>
-                <span class="font-medium color-success" data-cart-discount>-{{ cart.total_discount | money }}</span>
-              </div>
+              {%- if cart.cart_level_discount_applications.size > 0 -%}
+                <ul class="space-y-2.5" role="list" aria-label="{{ 'cart.general.discounts' | t | escape }}">
+                  {%- for discount in cart.cart_level_discount_applications -%}
+                    <li class="flex justify-between gap-3">
+                      <span class="min-w-0 break-words text-foreground-muted">{{ discount.title | escape }}</span>
+                      <span class="shrink-0 font-medium">-{{ discount.total_allocated_amount | money }}</span>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
             </div>
 
             <div class="flex justify-between items-baseline mt-4 pt-4 border-t border-border">
@@ -126,7 +155,20 @@
               </button>
             </form>
 
-            <p class="text-xs text-foreground-muted text-center mt-3">{{ 'cart.general.taxes_shipping_checkout' | t }}</p>
+            {%- comment -%}
+              Checkout acelerado (#134). Quais carteiras aparecem é decisão do
+              admin (Configurações › Pagamentos), não do tema — por isso não há
+              toggle aqui (ADR 0004). Loja sem carteira ativa: a Shopify não
+              renderiza nada, e o invólucro também não, para não sobrar vão.
+              Nenhum CSS do tema toca nos botões: a cor dos de marca é da marca.
+            {%- endcomment -%}
+            {%- if additional_checkout_buttons -%}
+              <div class="additional-checkout-buttons mt-3">
+                {{ content_for_additional_checkout_buttons }}
+              </div>
+            {%- endif -%}
+
+            <p class="text-xs text-foreground-muted text-center mt-3">{% render 'cart-tax-note' %}</p>
           </div>
         </aside>
       </div>

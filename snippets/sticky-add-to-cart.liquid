@@ -6,9 +6,8 @@
   infraestrutura de conversão, não uma escolha de negócio do lojista — ver
   docs/adr/0004-o-que-ganha-um-toggle.md.
 
-  O texto do botão é trocado por <add-to-cart> (assets/cart.js) a partir de
-  data-text-desktop / data-text-mobile — não renderize markup dentro dele,
-  porque o componente escreve textContent.
+  O texto do botão é trocado por <add-to-cart> (assets/cart.js) a partir dos
+  data-text-*, e ele escreve só no `[data-rotulo]` — o ícone ao lado sobrevive.
 
   Parâmetros:
   - product: objeto do produto (obrigatório)
@@ -25,17 +24,27 @@
   data-sticky-atc
   data-product-id="{{ product.id }}"
 >
-  <div class="page-width py-3">
+  <div class="page-width !py-3">
     {%- comment -%}
       O teto de largura é do MIOLO, não da página: com `page-width` sozinho
       (até 2560px, escolha da lojista) o título ficava numa borda da tela e o
       botão na outra, com um buraco no meio. Ver issue #46.
+
+      O `!` não é enfeite: `.page-width` (snippets/theme-styles.liquid) declara
+      `padding: 0 16px` num <style> que vem depois do application.css, e com a
+      mesma especificidade ele zerava o `py-3` — a barra ficava sem respiro,
+      com a miniatura encostada nas bordas.
     {%- endcomment -%}
     <div class="max-w-bar mx-auto flex items-center gap-3 lg:gap-6">
       {%- comment -%}
         Miniatura: quem chega até aqui rolou para longe da galeria e perdeu a
         referência do que está comprando. Só em telas largas, onde sobra
         espaço. `aria-hidden` porque o título ao lado já nomeia o produto.
+
+        A tag é escrita à mão por causa do `aria-hidden`: o filtro que gera a
+        tag de imagem não documenta parâmetro com hífen, e um erro de parse
+        aqui derrubaria a barra em toda PDP. Por isso o ponto focal vai
+        declarado no `style` — é o que o filtro faria sozinho. Ver #142.
       {%- endcomment -%}
       {%- if product.featured_image -%}
         <img
@@ -46,6 +55,7 @@
           height="64"
           loading="lazy"
           class="hidden lg:block w-12 aspect-product object-cover rounded-theme-sm flex-shrink-0"
+          style="object-position: {{ product.featured_image.presentation.focal_point }}"
         >
       {%- endif -%}
 
@@ -74,6 +84,22 @@
             {% unless current_variant.available %}disabled{% endunless %}
           >
 
+          {%- if product.selling_plan_groups.size > 0 -%}
+            {%- comment -%}
+              O seletor de planos mora no form da PDP, e esta barra tem o
+              próprio form: sem este campo ela comprava sempre compra única. O
+              valor nasce igual ao do seletor (snippets/selling-plan-picker) e
+              o <add-to-cart> o acompanha por `selling-plan:change`.
+            {%- endcomment -%}
+            {%- liquid
+              assign sticky_plan = product.selected_selling_plan
+              if sticky_plan == blank and product.requires_selling_plan
+                assign sticky_plan = product.selling_plan_groups.first.selling_plans.first
+              endif
+            -%}
+            <input type="hidden" name="selling_plan" value="{{ sticky_plan.id }}">
+          {%- endif -%}
+
           {%- comment -%}
             O seletor era uma CÓPIA byte a byte do snippet, com uma medida
             diferente — o que a regra `similarity` apontava. Agora é o mesmo
@@ -81,24 +107,35 @@
           {%- endcomment -%}
           {%- render 'quantity-selector' -%}
 
-          {%- comment -%} Botão Add to Cart {%- endcomment -%}
+          {%- comment -%}
+            No celular o botão vira só o ícone de sacola: a barra divide a
+            largura com o nome, o preço e a quantidade, e texto longo a
+            quebrava. O texto continua no botão, só para leitor de tela
+            (`max-sm:sr-only`), e é ele que dá o nome acessível. Esgotado é a
+            exceção: um ícone apagado não diz por quê, então o texto volta e o
+            ícone sai (`group-disabled`).
+          {%- endcomment -%}
           <button
             type="submit"
             name="add"
-            class="flex items-center justify-center bg-button text-button-text px-5 h-10 text-xs font-medium uppercase tracking-label transition-all border-0 cursor-pointer whitespace-nowrap flex-shrink-0 min-w-action hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed active:scale-press active:opacity-95 rounded-theme"
+            class="group flex items-center justify-center gap-2 bg-button text-button-text px-5 max-sm:px-3 h-10 text-xs font-medium uppercase tracking-label transition-all border-0 cursor-pointer whitespace-nowrap flex-shrink-0 sm:min-w-action hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed active:scale-press active:opacity-95 rounded-theme"
             aria-haspopup="dialog"
             aria-live="polite"
             data-text-desktop="{{ 'product.general.add_to_cart' | t }}"
-            data-text-mobile="{{ 'product.general.add_to_cart_short' | t }}"
             data-text-sold-out="{{ 'product.general.sold_out' | t }}"
             data-text-unavailable="{{ 'product.general.unavailable' | t }}"
             {% unless current_variant.available %}disabled{% endunless %}
           >
-            {% if current_variant.available %}
-              {{ 'product.general.add_to_cart_short' | t }}
-            {% else %}
-              {{ 'product.general.sold_out' | t }}
-            {% endif %}
+            <span class="sm:hidden group-disabled:hidden" aria-hidden="true" data-icone-sacola>
+              {%- render 'icon-cart', size: 20 -%}
+            </span>
+            <span class="max-sm:sr-only max-sm:group-disabled:not-sr-only" data-rotulo>
+              {%- if current_variant.available -%}
+                {{- 'product.general.add_to_cart' | t -}}
+              {%- else -%}
+                {{- 'product.general.sold_out' | t -}}
+              {%- endif -%}
+            </span>
           </button>
         {%- endform -%}
       </add-to-cart>

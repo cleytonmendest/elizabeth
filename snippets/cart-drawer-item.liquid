@@ -1,3 +1,31 @@
+{%- comment -%}
+  Uma linha do carrinho. É a MESMA na gaveta (`sections/cart-drawer.liquid`) e
+  na página (`sections/main-cart.liquid`), então o que a cliente precisa saber
+  sobre o item mora aqui, uma vez só.
+
+  ── Além de nome, variante e preço ─────────────────────────────────────────
+
+  Cada bloco abaixo só renderiza quando se aplica. Sem desconto, sem plano, sem
+  propriedade e sem preço unitário, a linha é a de sempre — sem vão.
+
+    plano de venda   assinatura ou pré-venda, pelo nome que o app deu. #135
+    propriedades     o destinatário do vale-presente, a gravação de um app. #139
+    preço riscado    `original_line_price`, quando um desconto mudou a linha. #144
+    preço unitário   "R$ 12,90/100 ml"; o valor de referência some quando é 1
+                     ("R$ 89,90/kg"). #136
+    descontos        nome e valor de cada desconto DESTE item. O do pedido
+                     inteiro mora no resumo da section, não aqui. #144
+
+  ── O contrato com o JS ────────────────────────────────────────────────────
+
+  `[data-cart-live]` marca o que o servidor redesenha depois de cada mudança no
+  carrinho (`src/js/cart-extras.js`): um desconto automático liga ou desliga
+  com a quantidade, e só o Liquid sabe o nome dele. O nome da região carrega a
+  chave da linha para que o HTML novo caia na linha certa.
+
+  O seletor de quantidade fica FORA das regiões, de propósito: trocar o HTML
+  dele tiraria o foco de quem está clicando no + pela segunda vez.
+{%- endcomment -%}
 <div class="flex gap-3 cart-item p-4 border-b border-border last:border-b-0" data-index="{{ item.index | plus: 1 }}" data-product="{{ item.id }}" data-product-id="{{ item.product_id }}" data-key="{{ item.key }}">
   <div class="flex-shrink-0">
     {% if item.image %}
@@ -31,7 +59,11 @@
         {{ item.variant.title }}
       </div>
     {% endunless %}
-    <div class="flex justify-between items-center mt-3">
+    {%- if item.selling_plan_allocation -%}
+      <p class="text-xs text-foreground-muted mt-1">{{ item.selling_plan_allocation.selling_plan.name | escape }}</p>
+    {%- endif -%}
+    {%- render 'line-item-properties', properties: item.properties -%}
+    <div class="flex justify-between items-center gap-3 mt-3">
       <quantity-input class="border border-border flex rounded-theme overflow-hidden" data-max-qtd="{{ item.variant.inventory_quantity }}">
         <button class="w-9 h-9 flex items-center justify-center hover:bg-foreground/5 transition-colors" id="quantity-minus">
           {% render 'minus-icon' %}
@@ -48,9 +80,35 @@
         </button>
       </quantity-input>
 
-      <div class="item-total-price text-sm font-medium">
-        {{ item.final_line_price | money }}
+      <div class="text-right" data-cart-live="preco:{{ item.key }}">
+        {%- if item.original_line_price != item.final_line_price -%}
+          <span class="sr-only">{{ 'cart.general.original_price' | t }}</span>
+          <s class="block text-xs text-foreground-muted">{{ item.original_line_price | money }}</s>
+          <span class="sr-only">{{ 'cart.general.discounted_price' | t }}</span>
+        {%- endif -%}
+        <div class="item-total-price text-sm font-medium">
+          {{ item.final_line_price | money }}
+        </div>
+        {%- if item.unit_price_measurement -%}
+          <div class="text-xs text-foreground-muted" data-unit-price>
+            <span class="sr-only">{{ 'cart.general.unit_price' | t }}</span>
+            {{ item.unit_price | money }}<span aria-hidden="true">/</span><span class="sr-only"> {{ 'cart.general.unit_price_separator' | t }} </span>
+            {%- if item.unit_price_measurement.reference_value != 1 -%}
+              {{ item.unit_price_measurement.reference_value }}&nbsp;
+            {%- endif -%}
+            {{ item.unit_price_measurement.reference_unit }}
+          </div>
+        {%- endif -%}
       </div>
+    </div>
+    <div data-cart-live="descontos:{{ item.key }}">
+      {%- if item.line_level_discount_allocations.size > 0 -%}
+        <ul class="mt-2 space-y-0.5 text-xs text-foreground-muted" role="list" aria-label="{{ 'cart.general.line_discounts' | t | escape }}">
+          {%- for allocation in item.line_level_discount_allocations -%}
+            <li>{{ allocation.discount_application.title | escape }} (-{{ allocation.amount | money }})</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
     </div>
   </div>
 </div>

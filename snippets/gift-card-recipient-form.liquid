@@ -1,0 +1,213 @@
+{%- comment -%}
+  Formulário de destinatário do vale-presente (#139).
+
+  Renderizado DENTRO do `{% form 'product' %}` de `snippets/add-to-cart.liquid`,
+  só quando `product.gift_card?`. As propriedades de linha são as que a Shopify
+  lê para mandar o cartão direto para a presenteada:
+
+    properties[Recipient email]                          obrigatório para enviar
+    properties[Recipient name]                           opcional
+    properties[Message]                                  até 200 caracteres
+    properties[Send on]                                  yyyy-mm-dd, até 90 dias
+    properties[__shopify_send_gift_card_to_recipient]    liga a validação
+    properties[__shopify_offset]                         fuso da cliente, por JS
+
+  Os valores e os erros do último envio vêm de `form.email`, `form.name`,
+  `form.message` e `form.errors` — é o caminho SEM JavaScript: o submit nativo
+  recusado volta para esta página com eles preenchidos. Com JavaScript, o erro
+  chega pelo `cart-error` e quem o põe ao lado do campo é
+  `src/js/gift-card-recipient-form.js`.
+
+  ── O HTML nasce no estado sem JavaScript ──────────────────────────────────
+  Campos visíveis, caixa escondida e desabilitada, e o controle oculto mandando
+  `if_present` (a Shopify só envia para outra pessoa se o e-mail vier
+  preenchido). Tudo que só existe nesse estado carrega `data-sem-js`, e o
+  componente o desliga ao carregar. O porquê de cada escolha está no JS.
+
+  Parâmetros:
+  - form: o objeto `form` do `{% form 'product' %}`
+  - sufixo: torna os `id` únicos na página (quem renderiza passa o `block.id`)
+{%- endcomment -%}
+
+{%- liquid
+  assign max_mensagem = 200
+  assign max_dias = 90
+  assign rotulo_classe = 'block text-sm text-foreground mb-2'
+  assign campo_classe = 'w-full px-4 py-2.5 text-sm bg-background text-foreground border border-border rounded-theme focus:outline-none focus:ring-2 focus:ring-foreground/40 focus:border-transparent'
+  assign dica_classe = 'mt-1 text-xs text-foreground-muted'
+  assign erro_classe = 'mt-1 text-xs color-error'
+
+  assign marcada = false
+  if form.errors or form.email != blank or form.name != blank or form.message != blank
+    assign marcada = true
+  endif
+-%}
+
+<script src="{{ 'gift-card-recipient-form.js' | asset_url }}" defer></script>
+
+<gift-card-recipient-form class="flex flex-col gap-4 border-t border-border pt-4">
+  <div data-caixa hidden>
+    <div class="flex items-center gap-2">
+      <input
+        type="checkbox"
+        id="destinatario-{{ sufixo }}"
+        name="properties[__shopify_send_gift_card_to_recipient]"
+        value="true"
+        aria-controls="destinatario-campos-{{ sufixo }}"
+        class="h-4 w-4 accent-button"
+        data-caixa-destinatario
+        disabled
+        {% if marcada %}
+          checked
+        {% endif %}
+      >
+      <label for="destinatario-{{ sufixo }}" class="text-sm text-foreground">
+        {{- 'gift_card.recipient.checkbox' | t -}}
+      </label>
+    </div>
+  </div>
+
+  <input
+    type="hidden"
+    id="destinatario-controle-{{ sufixo }}"
+    name="properties[__shopify_send_gift_card_to_recipient]"
+    value="if_present"
+    data-sem-js
+  >
+
+  <div id="destinatario-campos-{{ sufixo }}" data-campos>
+    <div class="flex flex-col gap-4">
+      <p class="text-xs text-foreground-muted" data-sem-js>{{ 'gift_card.recipient.no_js_hint' | t }}</p>
+
+      <div>
+        <label for="destinatario-email-{{ sufixo }}" class="{{ rotulo_classe }}">
+          {{- 'gift_card.recipient.email_label' | t -}}
+        </label>
+        <input
+          type="email"
+          id="destinatario-email-{{ sufixo }}"
+          name="properties[Recipient email]"
+          value="{{ form.email | escape }}"
+          autocomplete="off"
+          class="{{ campo_classe }}"
+          aria-describedby="destinatario-email-erro-{{ sufixo }}"
+          data-campo="email"
+          {% if form.errors contains 'email' %}
+            aria-invalid="true"
+          {% endif %}
+        >
+        <p
+          id="destinatario-email-erro-{{ sufixo }}"
+          class="{{ erro_classe }}"
+          data-erro-campo="email"
+          {% unless form.errors contains 'email' %}
+            hidden
+          {% endunless %}
+        >
+          {%- if form.errors contains 'email' -%}{{ form.errors.messages['email'] }}{%- endif -%}
+        </p>
+      </div>
+
+      <div>
+        <label for="destinatario-name-{{ sufixo }}" class="{{ rotulo_classe }}">
+          {{- 'gift_card.recipient.name_label' | t -}}
+        </label>
+        <input
+          type="text"
+          id="destinatario-name-{{ sufixo }}"
+          name="properties[Recipient name]"
+          value="{{ form.name | escape }}"
+          autocomplete="off"
+          class="{{ campo_classe }}"
+          aria-describedby="destinatario-name-erro-{{ sufixo }}"
+          data-campo="name"
+          {% if form.errors contains 'name' %}
+            aria-invalid="true"
+          {% endif %}
+        >
+        <p
+          id="destinatario-name-erro-{{ sufixo }}"
+          class="{{ erro_classe }}"
+          data-erro-campo="name"
+          {% unless form.errors contains 'name' %}
+            hidden
+          {% endunless %}
+        >
+          {%- if form.errors contains 'name' -%}{{ form.errors.messages['name'] }}{%- endif -%}
+        </p>
+      </div>
+
+      <div>
+        <label for="destinatario-message-{{ sufixo }}" class="{{ rotulo_classe }}">
+          {{- 'gift_card.recipient.message_label' | t -}}
+        </label>
+        <textarea
+          id="destinatario-message-{{ sufixo }}"
+          name="properties[Message]"
+          rows="4"
+          maxlength="{{ max_mensagem }}"
+          class="{{ campo_classe }}"
+          aria-describedby="destinatario-message-dica-{{ sufixo }} destinatario-message-erro-{{ sufixo }}"
+          data-campo="message"
+          {% if form.errors contains 'message' %}
+            aria-invalid="true"
+          {% endif %}
+        >{{ form.message | escape }}</textarea>
+        <p id="destinatario-message-dica-{{ sufixo }}" class="{{ dica_classe }}">
+          {{- 'gift_card.recipient.message_hint' | t: max: max_mensagem -}}
+        </p>
+        <p
+          id="destinatario-message-erro-{{ sufixo }}"
+          class="{{ erro_classe }}"
+          data-erro-campo="message"
+          {% unless form.errors contains 'message' %}
+            hidden
+          {% endunless %}
+        >
+          {%- if form.errors contains 'message' -%}{{ form.errors.messages['message'] }}{%- endif -%}
+        </p>
+      </div>
+
+      <div>
+        <label for="destinatario-send_on-{{ sufixo }}" class="{{ rotulo_classe }}">
+          {{- 'gift_card.recipient.send_on_label' | t -}}
+        </label>
+        <input
+          type="date"
+          id="destinatario-send_on-{{ sufixo }}"
+          name="properties[Send on]"
+          value="{{ form.send_on | escape }}"
+          pattern="\d{4}-\d{2}-\d{2}"
+          class="{{ campo_classe }}"
+          aria-describedby="destinatario-send_on-dica-{{ sufixo }} destinatario-send_on-erro-{{ sufixo }}"
+          data-campo="send_on"
+          {% if form.errors contains 'send_on' %}
+            aria-invalid="true"
+          {% endif %}
+        >
+        <p id="destinatario-send_on-dica-{{ sufixo }}" class="{{ dica_classe }}">
+          {{- 'gift_card.recipient.send_on_hint' | t: days: max_dias -}}
+        </p>
+        <p
+          id="destinatario-send_on-erro-{{ sufixo }}"
+          class="{{ erro_classe }}"
+          data-erro-campo="send_on"
+          {% unless form.errors contains 'send_on' %}
+            hidden
+          {% endunless %}
+        >
+          {%- if form.errors contains 'send_on' -%}{{ form.errors.messages['send_on'] }}{%- endif -%}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <input
+    type="hidden"
+    id="destinatario-offset-{{ sufixo }}"
+    name="properties[__shopify_offset]"
+    value=""
+    data-offset
+    disabled
+  >
+</gift-card-recipient-form>

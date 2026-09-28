@@ -45,15 +45,22 @@
       {% assign image_count = product.images.size %}
       <div class="w-full hidden lg:grid lg:gap-4 {% if image_count > 1 %}lg:grid-cols-2{% else %}lg:grid-cols-1{% endif %}">
         {%- for image in product.images -%}
-          <img
-            class="w-full h-full object-cover"
-            src="{{ image | image_url }}"
-            alt="{{ product.title }}"
-            width="{{ image.width }}"
-            height="{{ image.height }}"
-            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-            decoding="async"
-          >
+          {%- comment -%} `image_tag` aplica o ponto focal no corte do `object-cover` (#142). {%- endcomment -%}
+          {%- liquid
+            assign gallery_loading = 'lazy'
+            if forloop.first
+              assign gallery_loading = 'eager'
+            endif
+          -%}
+          {{
+            image
+            | image_url
+            | image_tag:
+              class: 'w-full h-full object-cover',
+              alt: product.title,
+              loading: gallery_loading,
+              decoding: 'async'
+          }}
         {%- endfor -%}
       </div>
       <div class="w-full lg:hidden relative flex items-center">
@@ -84,27 +91,29 @@
                 data-media-id="{{ media.id }}"
                 data-index="{{ forloop.index0 }}"
               >
+                {%- comment -%} `image_tag` aplica o ponto focal no corte do `object-cover` (#142). {%- endcomment -%}
+                {%- assign thumbnail_alt = media.alt | default: '' -%}
                 {% if media.media_type == 'image' %}
-                  <img
-                    src="{{ media.preview_image | image_url: width: 120 }}"
-                    alt="{{ media.alt | escape }}"
-                    width="{{ media.preview_image.width }}"
-                    height="{{ media.preview_image.height }}"
-                    class="w-full h-full object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  >
+                  {{
+                    media.preview_image
+                    | image_url: width: 120
+                    | image_tag:
+                      alt: thumbnail_alt,
+                      class: 'w-full h-full object-cover',
+                      loading: 'lazy',
+                      decoding: 'async'
+                  }}
                 {% elsif media.media_type == 'video' or media.media_type == 'external_video' %}
                   <div class="relative w-full h-full">
-                    <img
-                      src="{{ media.preview_image | image_url: width: 120 }}"
-                      alt="{{ media.alt | escape }}"
-                      width="{{ media.preview_image.width }}"
-                      height="{{ media.preview_image.height }}"
-                      class="w-full h-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                    >
+                    {{
+                      media.preview_image
+                      | image_url: width: 120
+                      | image_tag:
+                        alt: thumbnail_alt,
+                        class: 'w-full h-full object-cover',
+                        loading: 'lazy',
+                        decoding: 'async'
+                    }}
                     <svg class="absolute inset-0 m-auto w-8 h-8 text-white opacity-80" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
                     </svg>

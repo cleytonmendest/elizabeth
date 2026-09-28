@@ -197,6 +197,30 @@ const MUTANTES = [
     teste: 'tests/i18n-t-default.test.mjs',
   },
   {
+    // O botão de compra é lido em `add-to-cart`, dois `render` abaixo da
+    // section que declara o setting. Sem seguir a cadeia, a regra só enxerga
+    // o caso em que section e Liquid são o mesmo arquivo — e o da PDP some.
+    porque: 'o modo 6 deixa de seguir os `render`, e o botão da PDP volta a nascer em português sem acusação',
+    arquivo: 'scripts/lint/rules/i18n.mjs',
+    de: '    return (renderiza.get(de) ?? []).some((proximo) => alcanca(proximo, alvo, vistos));',
+    para: '    return false;',
+    teste: 'tests/i18n-fallback.test.mjs',
+  },
+  {
+    porque: 'o modo 6 deixa de ler os templates, e o valor salvo no product.json volta a esconder a tradução',
+    arquivo: 'scripts/lint/rules/i18n.mjs',
+    de: '            if (entrada?.type !== tipoDa(section)) continue;',
+    para: '            continue;',
+    teste: 'tests/i18n-fallback.test.mjs',
+  },
+  {
+    porque: 'o modo 6 passa a acusar o campo vazio — o jeito certo vira violação',
+    arquivo: 'scripts/lint/rules/i18n.mjs',
+    de: "const preenchido = (valor) => typeof valor === 'string' && valor.trim() !== '';",
+    para: "const preenchido = (valor) => typeof valor === 'string';",
+    teste: 'tests/i18n-fallback.test.mjs',
+  },
+  {
     porque: 'camelCase passa a ser aceito como snake_case, e os dois jeitos voltam a conviver',
     arquivo: 'scripts/lint/rules/snakecase.mjs',
     de: 'export const ehSnakeCase = (nome) => /^[a-z][a-z0-9_]*$/.test(nome);',
@@ -223,6 +247,63 @@ const MUTANTES = [
     para: '  // mutante',
     teste: 'tests/marca-do-tema.test.mjs',
   },
+  // ── A #147: os requisitos da Theme Store, medidos ───────────────────────
+  //
+  // A label `theme-store-blocker` mostrava uma issue com doze faltando. A
+  // regra que substituiu a memória precisa conseguir acusar — e cada caminho
+  // pelo qual ela ficaria verde com o recurso ausente tem um mutante aqui.
+  {
+    porque: 'a regra deixa de acusar ausência, e os doze requisitos passam como cumpridos',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: '          if (padrao(esperado)(texto)) continue;',
+    para: '          continue;',
+    teste: 'tests/themestore.test.mjs',
+  },
+  {
+    porque: 'um `{% comment %}payment_button{% endcomment %}` volta a cumprir o requisito',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: '  return stripInert(bruto).replace(/\\{%-?\\s*#[\\s\\S]*?%\\}/g, branco);',
+    para: '  return bruto;',
+    teste: 'tests/themestore.test.mjs',
+  },
+  {
+    // A quinta forma de comentário, que `stripInert` ainda não conhece.
+    porque: 'a tag inline `{% # payment_button %}` volta a cumprir o requisito',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: '  return stripInert(bruto).replace(/\\{%-?\\s*#[\\s\\S]*?%\\}/g, branco);',
+    para: '  return stripInert(bruto);',
+    teste: 'tests/themestore.test.mjs',
+  },
+  {
+    // O defeito que fez a regra `budget` subir o teto três vezes.
+    porque: 'a regra volta a ler um nível só, e o payment_button do snippet some da conta',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: "  return arquivos.flatMap((arquivo) => fontesGlobais(arquivo, ler)).join('\\n');",
+    para: "  return arquivos.map(ler).join('\\n');",
+    teste: 'tests/themestore.test.mjs',
+  },
+  {
+    porque: 'o alvo renomeado passa calado — "passa porque não achou o arquivo"',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: '      for (const alvo of perdidos) {',
+    para: '      for (const alvo of []) {',
+    teste: 'tests/themestore.test.mjs',
+  },
+  {
+    porque: 'linha da tabela sem link para shopify.dev volta a ser aceita',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: "    if (!/^https:\\/\\/shopify\\.dev\\/\\S+$/.test(linha.link ?? '')) {",
+    para: '    if (false) {',
+    teste: 'tests/themestore.test.mjs',
+  },
+  {
+    // O estado real da #133: o `case` renderiza `@app`, o schema não declara.
+    porque: 'o schema sem bloco @app passa, e o editor continua sem a aba de apps',
+    arquivo: 'scripts/lint/rules/themestore.mjs',
+    de: '    if (pedido.bloco && !blocos.some((bloco) => bloco?.type === pedido.bloco)) return false;',
+    para: '    // mutante',
+    teste: 'tests/themestore.test.mjs',
+  },
   // ── A #118: cor nomeada não parece cor, e por isso ninguém a via ────────
   {
     porque: 'a regra deixa de olhar `stroke`, e metade do buraco volta a existir',
@@ -244,6 +325,78 @@ const MUTANTES = [
     de: "      if (isAllowed('svgcolors', file, code)) continue;",
     para: '      if (false) continue;',
     teste: 'tests/svgcolors.test.mjs',
+  },
+  // ── A #142: o corte ignorava o ponto focal da lojista ───────────────────
+  //
+  // O defeito não tem sintoma: a foto aparece, só que cortada no centro em vez
+  // de no rosto da modelo. Nenhum teste de "a imagem carregou" o vê, e por isso
+  // dez arquivos passaram assim. Estes mutantes existem para a regra não virar
+  // o mesmo silêncio.
+  {
+    porque: 'a regra deixa de acusar — a <img> à mão volta a cortar pelo centro sem ninguém ver',
+    arquivo: 'scripts/lint/rules/pontofocal.mjs',
+    de: '    if (PONTO_FOCAL.test(tag)) continue;',
+    para: '    continue;',
+    teste: 'tests/pontofocal.test.mjs',
+  },
+  {
+    porque: 'object-position com valor cravado passa como ponto focal — outro ponto que a lojista não escolheu',
+    arquivo: 'scripts/lint/rules/pontofocal.mjs',
+    de: 'export const PONTO_FOCAL = /object-position\\s*:\\s*\\{\\{[^}]*\\bfocal_point\\b/;',
+    para: 'export const PONTO_FOCAL = /object-position/;',
+    teste: 'tests/pontofocal.test.mjs',
+  },
+  {
+    porque: 'o Liquid deixa de ser mascarado, e um `{% if a > b %}` entre atributos encerra a tag',
+    arquivo: 'scripts/lint/rules/pontofocal.mjs',
+    de: '  const mascarado = semLiquid(limpo);',
+    para: '  const mascarado = limpo;',
+    teste: 'tests/pontofocal.test.mjs',
+  },
+  {
+    porque: 'a tag passa a terminar no primeiro `>`, mesmo dentro de um valor entre aspas',
+    arquivo: 'scripts/lint/rules/pontofocal.mjs',
+    de: "const TAG_IMG = /<img\\b(?:[^>\"']|\"[^\"]*\"|'[^']*')*>/gi;",
+    para: 'const TAG_IMG = /<img\\b[^>]*>/gi;',
+    teste: 'tests/pontofocal.test.mjs',
+  },
+  {
+    porque: 'exemplo dentro de {% comment %} volta a ser acusado como markup',
+    arquivo: 'scripts/lint/rules/pontofocal.mjs',
+    de: '  const limpo = stripInert(src);',
+    para: '  const limpo = src;',
+    teste: 'tests/pontofocal.test.mjs',
+  },
+  {
+    porque: 'o código perde a origem, e a exceção da busca preditiva vira licença para o arquivo inteiro',
+    arquivo: 'scripts/lint/rules/pontofocal.mjs',
+    de: '  if (liquid) return liquid[1];',
+    para: "  if (liquid) return 'src-vazio';",
+    teste: 'tests/pontofocal.test.mjs',
+  },
+  {
+    // O breadcrumb saiu do layout e passou a morar em cada section principal.
+    // Esquecer uma é a regressão mais provável: a página perde o breadcrumb e
+    // nada fica vermelho, porque página sem breadcrumb é uma página válida.
+    porque: 'a PDP perde o breadcrumb quando ele sai do layout',
+    arquivo: 'sections/main-product.liquid',
+    de: "  {%- render 'breadcrumb' -%}\n",
+    para: '',
+    teste: 'tests/breadcrumb.test.mjs',
+  },
+  {
+    porque: 'o `.page-width` volta a zerar o padding vertical, e todo `py-*` ao lado dele some',
+    arquivo: 'snippets/theme-styles.liquid',
+    de: '          padding-inline: 16px;',
+    para: '          padding: 0 16px;',
+    teste: 'tests/breadcrumb.test.mjs',
+  },
+  {
+    porque: 'a miniatura do sticky perde o ponto focal e volta a cortar pelo centro',
+    arquivo: 'snippets/sticky-add-to-cart.liquid',
+    de: '          style="object-position: {{ product.featured_image.presentation.focal_point }}"',
+    para: '          style=""',
+    teste: 'tests/pontofocal.test.mjs',
   },
   // ── A #106: stripInert decide o que TODAS as regras enxergam ────────────
   //
@@ -416,6 +569,74 @@ const MUTANTES = [
     para: '    if (false) continue;',
     teste: 'tests/componentes.test.mjs',
   },
+  // ── A #141: o filtro da coleção virou snippet, e a busca ganhou o mesmo ──
+  //
+  // O filtro era markup + `<script>` inline dentro de `main-collection`, sem
+  // um teste. Os três primeiros são a gaveta pisando na trava de rolagem de
+  // outro componente, que é o defeito que o inline tinha e a extração tirou.
+  {
+    porque: 'o Escape volta a fechar a gaveta já fechada e destrava a rolagem do carrinho',
+    arquivo: 'src/js/facets.js',
+    de: "        if (event.key === 'Escape' && this.aberta) this.fecha();",
+    para: "        if (event.key === 'Escape') this.fecha();",
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'cruzar para o desktop volta a destravar a rolagem de quem a travou',
+    arquivo: 'src/js/facets.js',
+    de: '        if (event.matches && this.aberta) this.fecha();',
+    para: '        if (event.matches) this.fecha();',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'a cópia que o editor trocou continua ouvindo o Escape, e destrava a rolagem de outro',
+    arquivo: 'src/js/facets.js',
+    de: "      document.removeEventListener('keydown', this.aoTeclar);",
+    para: '      void 0;',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'no celular cada checkbox recarrega a página, e marcar dois filtros vira impossível',
+    arquivo: 'src/js/facets.js',
+    de: '        if (this.desktop && this.desktop.matches) this.form.submit();',
+    para: '        this.form.submit();',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'a ordenação deixa de enviar no celular, e ela não tem botão de aplicar',
+    arquivo: 'src/js/facets.js',
+    de: "        if (event.target.name === 'sort_by') {",
+    para: '        if (false) {',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'o aviso de recarga é criado uma vez por componente, e o id do aria-describedby se repete',
+    arquivo: 'src/js/facets.js',
+    de: '      if (!texto || document.getElementById(AVISO_ID)) return;',
+    para: '      if (!texto) return;',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'a faixa de preço deixa de contar como filtro ativo, e "limpar todos" some com o preço marcado',
+    arquivo: 'snippets/facets.liquid',
+    de: '            assign active_filter_count = active_filter_count | plus: 1',
+    para: '            assign active_filter_count = active_filter_count | plus: 0',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'o filtro marcado que zerou a busca some do painel, e a cliente não consegue desmarcá-lo',
+    arquivo: 'snippets/facets.liquid',
+    de: '            if value.count > 0 or value.active',
+    para: '            if value.count > 0',
+    teste: 'tests/facets.test.mjs',
+  },
+  {
+    porque: 'em real o preço vai com a vírgula da Shopify, e o filtro lê outro número',
+    arquivo: 'snippets/facets.liquid',
+    de: '      if comma_currencies contains cart.currency.iso_code',
+    para: '      if false',
+    teste: 'tests/facets.test.mjs',
+  },
   // ── A #5 mudou o rodapé e a doc ficou descrevendo o arranjo anterior ────
   //
   // Quatro páginas afirmaram por semanas que TikTok "não aparece em lugar
@@ -469,6 +690,13 @@ const MUTANTES = [
     teste: 'tests/build-js.test.mjs',
   },
   {
+    porque: 'a regra build esquece o CSS co-locado, e uma edição à mão em assets/checkout-acelerado.css sobrevive a tudo',
+    arquivo: 'scripts/build-css.mjs',
+    de: "  ['src/checkout-acelerado.css', 'assets/checkout-acelerado.css'],\n",
+    para: '',
+    teste: 'tests/build-css.test.mjs',
+  },
+  {
     porque: 'formatMoney deixa de converter centavos em unidades da moeda',
     arquivo: 'src/js/money.js',
     de: '.format(cents / 100)',
@@ -512,6 +740,20 @@ const MUTANTES = [
     teste: 'tests/cart.test.mjs',
   },
   {
+    porque: 'a barra fixa volta a comprar sempre compra única, ignorando o plano escolhido',
+    arquivo: 'src/js/cart.js',
+    de: "if (campo) campo.value = (event.detail && event.detail.sellingPlanId) || '';",
+    para: 'void campo;',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'a recusa 422 do /cart/add.js volta a ser publicada como item adicionado',
+    arquivo: 'src/js/cart.js',
+    de: 'if (!result?.status) publish(PUB_SUB_EVENTS.itemAdded, result);',
+    para: 'publish(PUB_SUB_EVENTS.itemAdded, result);',
+    teste: 'tests/cart.test.mjs',
+  },
+  {
     porque: 'addToCart volta a mandar Content-Type e o multipart chega ilegível',
     arquivo: 'src/js/cart.js',
     de: "delete config.headers['Content-Type'];",
@@ -526,11 +768,272 @@ const MUTANTES = [
     teste: 'tests/add-to-cart.test.mjs',
   },
   {
+    porque: 'o componente volta a escrever no botão inteiro, e o ícone de sacola da barra fixa some',
+    arquivo: 'src/js/cart.js',
+    de: "(this.button.querySelector('[data-rotulo]') ?? this.button).textContent = texto;",
+    para: 'this.button.textContent = texto;',
+    teste: 'tests/add-to-cart.test.mjs',
+  },
+  {
+    porque: 'sem texto curto declarado, o botão volta à venda e continua dizendo "ESGOTADO" no celular',
+    arquivo: 'src/js/cart.js',
+    de: 'const texto = (this.mediaQuery.matches && textMobile) || textDesktop;',
+    para: 'const texto = this.mediaQuery.matches ? textMobile : textDesktop;',
+    teste: 'tests/add-to-cart.test.mjs',
+  },
+  {
+    porque: 'o botão da PDP volta a ler um texto só dele, e a loja fica com um texto na PDP e outro no card',
+    arquivo: 'snippets/add-to-cart.liquid',
+    de: "        data-text-desktop=\"{{ 'product.general.add_to_cart' | t }}\"",
+    para: "        data-text-desktop=\"{% if block.settings.button_text != blank %}{{ block.settings.button_text }}{% else %}{{ 'product.general.add_to_cart' | t }}{% endif %}\"",
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  // ── O form de produto: checkout acelerado, parcelamento, vale-presente ──
+  //
+  // #134, #138 e #139. Os três moram no mesmo `{% form 'product' %}`, e o que
+  // os decide é metade Liquid, metade `<add-to-cart>`. Os mutantes de Liquid
+  // são medidos contra o snippet renderizado pelo `liquidjs`
+  // (`tests/helpers/form-de-produto.mjs`), não contra a grafia do arquivo.
+  {
+    porque: 'o acelerado volta a aparecer em vale-presente, e compra o cartão sem destinatário',
+    arquivo: 'snippets/add-to-cart.liquid',
+    de: '    assign mostra_checkout_acelerado = false',
+    para: '    assign mostra_checkout_acelerado = true',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o setting show_dynamic_checkout deixa de ser lido e o acelerado não desliga',
+    arquivo: 'snippets/add-to-cart.liquid',
+    de: '  assign mostra_checkout_acelerado = block.settings.show_dynamic_checkout',
+    para: '  assign mostra_checkout_acelerado = true',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o acelerado deixa de vir ligado por padrão no bloco de compra (#134)',
+    arquivo: 'sections/main-product.liquid',
+    de: '"info": "t:sections.main_product.blocks.buy_button.settings.show_dynamic_checkout.info",\n          "default": true',
+    para: '"info": "t:sections.main_product.blocks.buy_button.settings.show_dynamic_checkout.info",\n          "default": false',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o botão acelerado some do form de produto (#134)',
+    arquivo: 'snippets/add-to-cart.liquid',
+    de: '        {{- form | payment_button -}}',
+    para: '',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o banner do Shop Pay Installments some do form de produto (#138)',
+    arquivo: 'snippets/add-to-cart.liquid',
+    de: '<div class="empty:hidden">{{- form | payment_terms -}}</div>',
+    para: '',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'a variante inicial esgotada volta a oferecer o acelerado ao carregar a página',
+    arquivo: 'snippets/add-to-cart.liquid',
+    de: 'data-checkout-acelerado\n        {% if product.selected_or_first_available_variant.available == false %}',
+    para: 'data-checkout-acelerado\n        {% if false %}',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    // O defeito que já existia: quem abria numa variante esgotada e escolhia
+    // outra mandava um form sem `id`.
+    porque: 'o input id fica desabilitado depois da troca de variante, e o form vai sem id',
+    arquivo: 'src/js/cart.js',
+    de: '            this.hiddenInput.disabled = !aVenda;',
+    para: '            // mutante',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o input id muda em silêncio, e o parcelamento fica no preço da variante inicial',
+    arquivo: 'src/js/cart.js',
+    de: "            this.hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));",
+    para: '            // mutante',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o acelerado continua oferecendo a variante que acabou de esgotar',
+    arquivo: 'src/js/cart.js',
+    de: '        if (acelerado) acelerado.hidden = !aVenda;',
+    para: '        if (acelerado) acelerado.hidden = false;',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'a recusa do /cart/add.js volta a seguir o caminho do sucesso, e o erro nunca aparece',
+    arquivo: 'src/js/cart.js',
+    de: '            if (resultado && resultado.status) {',
+    para: '            if (false) {',
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
+  {
+    porque: 'o erro que já foi posto ao lado do campo é repetido no aviso geral',
+    arquivo: 'src/js/cart.js',
+    de: '        if (tratado) return true;',
+    para: '        // mutante',
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
+  {
+    porque: 'sem JS, o form manda "true" e quem compra para si mesma é recusada por falta de e-mail',
+    arquivo: 'snippets/gift-card-recipient-form.liquid',
+    de: '    value="if_present"',
+    para: '    value="true"',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'o erro do submit nativo deixa de estar associado ao campo (aria-describedby)',
+    arquivo: 'snippets/gift-card-recipient-form.liquid',
+    de: '          aria-describedby="destinatario-email-erro-{{ sufixo }}"\n',
+    para: '',
+    teste: 'tests/form-de-produto.test.mjs',
+  },
+  {
+    porque: 'a caixa desmarcada continua mandando os campos do destinatário',
+    arquivo: 'src/js/gift-card-recipient-form.js',
+    de: '            el.disabled = !marcada;',
+    para: '            el.disabled = false;',
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
+  {
+    porque: 'com JS, o if_present do estado sem JS continua indo junto no form',
+    arquivo: 'src/js/gift-card-recipient-form.js',
+    de: "            if (el.tagName === 'INPUT') el.disabled = true;",
+    para: "            if (el.tagName === 'INPUT') el.disabled = false;",
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
+  {
+    porque: 'o fuso da cliente não é preenchido, e a data de envio passa a valer no fuso da loja',
+    arquivo: 'src/js/gift-card-recipient-form.js',
+    de: '        if (this.offset) this.offset.value = String(new Date().getTimezoneOffset());',
+    para: '        // mutante',
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
+  {
+    porque: 'o erro de campo da Shopify não aparece ao lado do campo',
+    arquivo: 'src/js/gift-card-recipient-form.js',
+    de: "            aviso.textContent = [].concat(mensagens).join(', ');",
+    para: '            // mutante',
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
+  {
+    porque: 'o destinatário mostra o erro sem avisar, e o aviso geral o repete',
+    arquivo: 'src/js/gift-card-recipient-form.js',
+    de: '        evento.preventDefault();',
+    para: '        // mutante',
+    teste: 'tests/gift-card-recipient-form.test.mjs',
+  },
+  {
     porque: 'o preço riscado aparece justamente quando não há desconto',
     arquivo: 'src/js/price-component.js',
     de: "classList.toggle('hidden', !listingPrice)",
     para: "classList.toggle('hidden', listingPrice)",
     teste: 'tests/price-component.test.mjs',
+  },
+  // ── #136, #135 e #143: preço unitário, plano de compra e imposto ────────
+  {
+    porque: 'o preço unitário para de acompanhar a variante — fica o da carga da página',
+    arquivo: 'src/js/price-component.js',
+    de: '        this._updateUnitPrice(source.unit_price, source.unit_price_measurement);',
+    para: '',
+    teste: 'tests/price-component.test.mjs',
+  },
+  {
+    porque: 'a referência 1 volta a aparecer: "R$ 5,00/1kg"',
+    arquivo: 'src/js/price-component.js',
+    de: "Number(measurement.reference_value) === 1 ? ''",
+    para: "false ? ''",
+    teste: 'tests/price-component.test.mjs',
+  },
+  {
+    porque: 'a linha opcional nunca se esconde — o preço unitário da variante anterior fica preso na tela',
+    arquivo: 'src/js/price-component.js',
+    de: "element.classList.toggle('hidden', !visible);",
+    para: "element.classList.toggle('hidden', false);",
+    teste: 'tests/price-component.test.mjs',
+  },
+  {
+    porque: 'o preço ignora o plano escolhido e continua o de compra única',
+    arquivo: 'src/js/price-component.js',
+    de: "addEventListener('selling-plan:change', (event) => this._paint(event.detail.prices));",
+    para: "addEventListener('selling-plan:change', () => {});",
+    teste: 'tests/selling-plan-picker.test.mjs',
+  },
+  {
+    porque: 'na troca de variante o seletor republica a alocação da variante ANTIGA',
+    arquivo: 'src/js/selling-plan-picker.js',
+    de: '            this.variantId = String(variant.id);',
+    para: '',
+    teste: 'tests/selling-plan-picker.test.mjs',
+  },
+  {
+    porque: 'o seletor republica no meio do despacho, e o preço de compra única pinta por cima do plano',
+    arquivo: 'src/js/selling-plan-picker.js',
+    de: 'queueMicrotask(() => this.publish());',
+    para: 'this.publish();',
+    teste: 'tests/selling-plan-picker.test.mjs',
+  },
+  {
+    porque: 'o seletor lê o primeiro radio, e não o marcado — o preço fica na compra única',
+    arquivo: 'src/js/selling-plan-picker.js',
+    de: `'input[name="selling_plan"]:checked'`,
+    para: `'input[name="selling_plan"]'`,
+    teste: 'tests/selling-plan-picker.test.mjs',
+  },
+  {
+    porque: 'produto que exige plano volta a oferecer compra única — e o /cart/add a recusa',
+    arquivo: 'snippets/selling-plan-picker.liquid',
+    de: '      {%- unless product.requires_selling_plan -%}',
+    para: '      {%- unless false -%}',
+    teste: 'tests/preco-liquid.test.mjs',
+  },
+  {
+    porque: 'a PDP volta à frase fixa: imposto "calculado no checkout" com o preço já incluindo',
+    arquivo: 'snippets/price-v2.liquid',
+    de: '    {%- if cart.taxes_included -%}',
+    para: '    {%- if false -%}',
+    teste: 'tests/preco-liquid.test.mjs',
+  },
+  {
+    porque: 'a política de frete publicada perde o link na PDP',
+    arquivo: 'snippets/price-v2.liquid',
+    de: "        {{ 'product.tax.included_with_policy_html' | t: link: shop.shipping_policy.url }}",
+    para: "        {{ 'product.tax.included' | t }}",
+    teste: 'tests/preco-liquid.test.mjs',
+  },
+  {
+    porque: 'desligar o aviso de impostos no bloco de preço não desliga nada',
+    arquivo: 'snippets/price-v2.liquid',
+    de: '{%- if pdp and tax_note != false -%}',
+    para: '{%- if pdp -%}',
+    teste: 'tests/preco-liquid.test.mjs',
+  },
+  {
+    porque: 'o setting do aviso de impostos existe no editor e a PDP não o entrega ao snippet',
+    arquivo: 'snippets/main-product-right.liquid',
+    de: ", pdp: true, tax_note: block.settings.show_tax_note -%}",
+    para: ", pdp: true -%}",
+    teste: 'tests/preco-liquid.test.mjs',
+  },
+  {
+    porque: 'o aviso de impostos nasce desligado no produto em destaque',
+    arquivo: 'sections/highlighted-product.liquid',
+    de: '"info": "t:sections.highlighted_product.blocks.price.settings.show_tax_note.info",\n          "default": true',
+    para: '"info": "t:sections.highlighted_product.blocks.price.settings.show_tax_note.info",\n          "default": false',
+    teste: 'tests/preco-liquid.test.mjs',
+  },
+  {
+    porque: 'o preço inicial ignora o plano que vem marcado — a cliente lê um valor e o form manda outro',
+    arquivo: 'snippets/price-v2.liquid',
+    de: '          assign price = allocation.price',
+    para: '          assign price = price',
+    teste: 'tests/preco-liquid.test.mjs',
+  },
+  {
+    porque: 'o card para de mostrar o preço unitário',
+    arquivo: 'snippets/card-product-slider.liquid',
+    de: '      measurement: card_variant.unit_price_measurement,',
+    para: '      measurement: nil,',
+    teste: 'tests/preco-liquid.test.mjs',
   },
   {
     porque: 'a variante passa a casar com combinação parcial',
@@ -554,10 +1057,12 @@ const MUTANTES = [
     teste: 'tests/countdown-timer.test.mjs',
   },
   {
-    porque: 'o modo diário para de pular para o dia seguinte',
+    // O defeito da #146, recolocado: ao zerar, o alvo pula 24h e o relógio
+    // recomeça em vez de a seção sumir — o "fictitious countdown timer".
+    porque: 'o contador volta a recomeçar ao zerar em vez de esconder a seção (issue #146)',
     arquivo: 'src/js/countdown-timer.js',
-    de: 'if (target <= now) target += 86400000;',
-    para: 'if (false) target += 86400000;',
+    de: 'this.render(0);\n      if (this.interval) clearInterval(this.interval);\n      if (!this.designMode) this.hideSection();',
+    para: 'this.target += 86400000;\n      this.render(this.target - Date.now());',
     teste: 'tests/countdown-timer.test.mjs',
   },
   {
@@ -841,6 +1346,98 @@ const MUTANTES = [
     para: '      if (false) el.remove();',
     teste: 'tests/cart-extras.test.mjs',
   },
+  // ── A #144: o desconto que liga e desliga com a quantidade ──────────────
+  //
+  // "Leve 2, pague menos" é automático: a cliente aperta o + e o desconto
+  // passa a valer no checkout. Se o carrinho não o redesenhar, ela vê um
+  // preço e paga outro — e nada fica vermelho, porque o total do JSON muda
+  // certo. O que some é o NOME e o nível do desconto, que só o servidor sabe.
+  {
+    porque: 'o redesenho para de trocar as regiões, e o desconto automático só aparece recarregando',
+    arquivo: 'src/js/cart-extras.js',
+    de: '      if (nova) el.innerHTML = nova.innerHTML;',
+    para: '      if (false) el.innerHTML = nova.innerHTML;',
+    teste: 'tests/cart-extras.test.mjs',
+  },
+  {
+    porque: 'a resposta atrasada de um pedido antigo volta a sobrescrever o carrinho mais novo',
+    arquivo: 'src/js/cart-extras.js',
+    de: '        if (pedido !== ultimoPedido) return;',
+    para: '        if (false) return;',
+    teste: 'tests/cart-extras.test.mjs',
+  },
+  {
+    // O atalho óbvio — trocar a lista inteira sempre — passa em todo teste que
+    // só olha o texto. O que ele quebra é o foco: o + some debaixo do dedo.
+    porque: 'a lista inteira passa a ser trocada a cada mudança, e o + perde o foco',
+    arquivo: 'src/js/cart-extras.js',
+    de: '    if (itens && itensFrescos && chavesDe(itens) !== chavesDe(itensFrescos)) {',
+    para: '    if (itens && itensFrescos) {',
+    teste: 'tests/cart-extras.test.mjs',
+  },
+  {
+    porque: 'o item que o servidor acrescentou (um brinde) nunca entra na lista',
+    arquivo: 'src/js/cart-extras.js',
+    de: '    if (itens && itensFrescos && chavesDe(itens) !== chavesDe(itensFrescos)) {',
+    para: '    if (false) {',
+    teste: 'tests/cart-extras.test.mjs',
+  },
+  {
+    porque: 'o desconto do item some da linha, e o preço riscado fica sem explicação',
+    arquivo: 'snippets/cart-drawer-item.liquid',
+    de: '      {%- if item.line_level_discount_allocations.size > 0 -%}',
+    para: '      {%- if false -%}',
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
+  {
+    porque: 'o preço riscado aparece em toda linha, com desconto ou sem',
+    arquivo: 'snippets/cart-drawer-item.liquid',
+    de: '        {%- if item.original_line_price != item.final_line_price -%}',
+    para: '        {%- if true -%}',
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
+  {
+    // "R$ 89,90/1 kg" não está errado, só é o que nenhuma etiqueta escreve —
+    // e é o formato que o checklist da Theme Store confere.
+    porque: 'o preço unitário passa a escrever o valor de referência 1 ("/1 kg")',
+    arquivo: 'snippets/cart-drawer-item.liquid',
+    de: '            {%- if item.unit_price_measurement.reference_value != 1 -%}',
+    para: '            {%- if true -%}',
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
+  {
+    // A #139: sem o filtro, a cliente lê `__shopify_offset: 180` no carrinho.
+    porque: 'as propriedades privadas do app (as que começam com _) voltam a aparecer',
+    arquivo: 'snippets/line-item-properties.liquid',
+    de: "    {%- if propriedade.last != blank and inicial != '_' -%}",
+    para: '    {%- if propriedade.last != blank -%}',
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
+  {
+    // A #143 em uma linha: a loja com imposto incluso volta a dizer que o
+    // imposto é calculado no checkout, e a cliente espera um acréscimo.
+    porque: '`cart.taxes_included` deixa de ser lido, e a loja com imposto incluso diz o contrário',
+    arquivo: 'snippets/cart-tax-note.liquid',
+    de: '{%- if cart.taxes_included -%}',
+    para: '{%- if false -%}',
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
+  {
+    porque: 'a página do carrinho volta à frase fixa de impostos, sem olhar a loja',
+    arquivo: 'sections/main-cart.liquid',
+    de: "{% render 'cart-tax-note' %}",
+    para: "{{ 'cart.general.taxes_shipping_checkout' | t }}",
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
+  {
+    // Loja sem carteira ativa: a Shopify não desenha botão nenhum, e o
+    // invólucro com margem sobraria como um vão abaixo do checkout.
+    porque: 'o invólucro do checkout acelerado aparece mesmo sem carteira ativa',
+    arquivo: 'sections/main-cart.liquid',
+    de: '            {%- if additional_checkout_buttons -%}',
+    para: '            {%- if true -%}',
+    teste: 'tests/carrinho-liquid.test.mjs',
+  },
   {
     // O estado anterior da regra: ela confiava no `ignore` do Theme Check, que
     // usa minimatch — e `**` não atravessa segmento que começa com ponto. Com a
@@ -936,6 +1533,23 @@ const MUTANTES = [
     de: '    pattern: /\\btext-foreground\\/(?:[0-9]|[1-4][0-9]|5[0-7])\\b/g,',
     para: '    pattern: /\\btext-foreground\\/(?:[0-9]|[1-4][0-9])\\b/g,',
     teste: 'tests/tokens.test.mjs',
+  },
+  {
+    // O buraco por onde `assets/variant-selector.css` pintou a PDP de `#000`:
+    // a regra só lia `.liquid`. Sem o CSS na varredura ela volta a ficar verde
+    // com cor fixa no arquivo.
+    porque: 'o CSS escrito à mão sai da varredura de cor, e #000 volta a pintar a PDP sem acusação',
+    arquivo: 'scripts/lint/rules/tokens.mjs',
+    de: "    ...list('assets', '.css').filter((f) => !gerados.has(f) && !CSS_DE_TERCEIRO.has(f)),",
+    para: "    ...list('assets', '.css').filter(() => false),",
+    teste: 'tests/tokens-css.test.mjs',
+  },
+  {
+    porque: 'o comentário deixa de ser descartado, e a explicação da cor removida vira acusação',
+    arquivo: 'scripts/lint/rules/tokens.mjs',
+    de: "(bloco) => bloco.replace(/[^\\n]/g, ''));",
+    para: "(bloco) => bloco);",
+    teste: 'tests/tokens-css.test.mjs',
   },
   {
     // O atributo `class` quebra linha — o `<aside>` de `main-collection` espalha
@@ -1258,8 +1872,8 @@ const MUTANTES = [
   {
     porque: 'a doc afirma uma contagem de seções que o tema não tem (a rot do ROADMAP)',
     arquivo: 'docs/lojista/sections.md',
-    de: '**23 seções que você adiciona onde quiser**',
-    para: '**24 seções que você adiciona onde quiser**',
+    de: '**24 seções que você adiciona onde quiser**',
+    para: '**25 seções que você adiciona onde quiser**',
     teste: 'tests/docs.test.mjs',
   },
   {
@@ -1457,6 +2071,83 @@ const MUTANTES = [
     para: "      '64px',",
     teste: 'tests/sticky-atc.test.mjs',
   },
+  // ── Retirada na loja (#137) ─────────────────────────────────────────────
+  //
+  // O defeito caro aqui é o silencioso: a tela anunciando a loja de OUTRA
+  // variante. Nada quebra, nada vai para o console, e a cliente vai até a loja
+  // buscar um tamanho que não está lá.
+  {
+    porque: 'a resposta atrasada de uma variante anterior volta a pintar por cima da atual',
+    arquivo: 'src/js/pickup-availability.js',
+    de: '        if (pedido !== this.pedido) return;',
+    para: '        // mutante',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    // O caso que o contador ingênuo esquece: voltar para a variante que JÁ
+    // está na tela não busca nada — e por isso não invalidava a que estava em
+    // voo, que chegava e pintava a outra.
+    porque: 'voltar à variante da tela deixa de invalidar o pedido em voo',
+    arquivo: 'src/js/pickup-availability.js',
+    de: '        const pedido = ++this.pedido;\n        if (id && id === this.dataset.variantId) return;',
+    para: '        if (id && id === this.dataset.variantId) return;\n        const pedido = ++this.pedido;',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    // Loja com idioma no caminho (`/en/`) receberia o fragmento no idioma
+    // padrão — a mesma quebra do mutante da rota do carrinho, acima.
+    porque: 'a URL do fragmento volta a ser cravada em vez de vir de Shopify.routes.root',
+    arquivo: 'src/js/pickup-availability.js',
+    de: 'await fetch(`${raiz}variants/${id}/?section_id=${SECAO}`)',
+    para: 'await fetch(`/variants/${id}/?section_id=${SECAO}`)',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    porque: 'a variante sem retirada deixa o elemento vazio na coluna, e o gap abre um vão',
+    arquivo: 'src/js/pickup-availability.js',
+    de: '        this.hidden = !conteudo;',
+    para: '        // mutante',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    porque: 'o diálogo abre e o foco fica no gatilho, atrás do véu',
+    arquivo: 'src/js/pickup-availability.js',
+    de: '        if (fechar) fechar.focus();',
+    para: '        // mutante',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    porque: 'o diálogo fecha e o foco não volta ao gatilho',
+    arquivo: 'src/js/pickup-availability.js',
+    de: '        if (gatilho) gatilho.focus();',
+    para: '        // mutante',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    // Não é redundante com o modal nativo: medido em `e2e/retirada.spec.mjs`,
+    // sem este ouvinte o Tab do último focável sai para a barra do navegador.
+    porque: 'o Tab deixa de dar a volta dentro do diálogo, e o foco escapa dele',
+    arquivo: 'src/js/pickup-availability.js',
+    de: "        if (event.key !== 'Tab') return;",
+    para: '        return;',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    // Depósito que estoca a peça e não atende cliente viraria "retirada
+    // indisponível em Depósito" — uma loja inventada no resumo.
+    porque: 'local sem retirada ativa volta a ser anunciado como loja',
+    arquivo: 'snippets/pickup-availability-info.liquid',
+    de: "  assign locais = variant.store_availabilities | where: 'pick_up_enabled', true",
+    para: '  assign locais = variant.store_availabilities',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
+  {
+    porque: 'a PDP sem retirada nasce com o elemento vazio na coluna, e o vão aparece sem JS',
+    arquivo: 'snippets/pickup-availability.liquid',
+    de: '{% if conteudo == blank %} hidden{% endif %}',
+    para: '',
+    teste: 'tests/pickup-availability.test.mjs',
+  },
   {
     // A afirmação errada que este PR corrigiu: o §4 dizia que cada preset traz
     // o próprio arranjo de home. A chave existe e está VAZIA nos quatro, e o
@@ -1493,6 +2184,24 @@ const MUTANTES = [
     teste: 'tests/docs.test.mjs',
   },
   {
+    // A #148: a §4 decidiu um estilo listado, e o §6 continuava pedindo uma
+    // demo por preset. Este é o texto exato que estava lá.
+    porque: 'o §6 volta a pedir uma loja demo por preset, contra a decisão da §4',
+    arquivo: 'docs/THEME_STORE_SUBMISSION.md',
+    de: '- [ ] URL da **loja demo** — uma só, a do estilo listado (seção 4).',
+    para: '- [ ] URL de cada **loja demo** (uma por preset).',
+    teste: 'tests/docs.test.mjs',
+  },
+  {
+    // E a linha de performance como estava: sem número de requisito, só
+    // celular, sem as três páginas. 55 no celular passava nela.
+    porque: 'a §0 volta a mirar "Lighthouse mobile > 50" em vez do requisito',
+    arquivo: 'docs/THEME_STORE_SUBMISSION.md',
+    de: '| **Performance**: Lighthouse de performance com média **≥ 60**, em **desktop e celular**, na média de home, coleção e produto |',
+    para: '| **Performance** (Lighthouse mobile > 50) |',
+    teste: 'tests/docs.test.mjs',
+  },
+  {
     // O plantio mostrou que a conferência procurava a URL no documento INTEIRO
     // e não na seção: apagar o endereço do §5 passava verde, porque o §6 o
     // carrega também. O fatiador é o que faz a afirmação e a medida baterem.
@@ -1508,6 +2217,119 @@ const MUTANTES = [
     de: '  const outros = Object.values(IDIOMA_DA_PASTA).filter((l) => l !== primario);',
     para: '  const outros = [];',
     teste: 'tests/site.test.mjs',
+  },
+  // ── #133 e #145: a coluna de compra aceita app e Liquid da lojista ──────
+  //
+  // O defeito da #133 era exatamente o primeiro: o `when '@app'` existia, o
+  // schema não declarava o tipo, e o editor não oferecia a aba "Apps".
+  {
+    porque: 'a PDP volta a não aceitar app block — o `when` fica sem bloco que o alcance',
+    arquivo: 'sections/main-product.liquid',
+    de: '    {\n      "type": "@app"\n    },\n',
+    para: '',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
+    porque: 'o produto em destaque volta a não aceitar app block',
+    arquivo: 'sections/highlighted-product.liquid',
+    de: '    {\n      "type": "@app"\n    },\n',
+    para: '',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
+    porque: 'o bloco Liquid personalizado sai da PDP, e o `when` dele vira ramo morto',
+    arquivo: 'sections/main-product.liquid',
+    de:
+      ',\n    {\n      "type": "custom_liquid",\n' +
+      '      "name": "t:sections.main_product.blocks.custom_liquid.name",\n' +
+      '      "settings": [\n        {\n          "type": "liquid",\n          "id": "custom_liquid",\n' +
+      '          "label": "t:sections.main_product.blocks.custom_liquid.settings.custom_liquid.label",\n' +
+      '          "info": "t:sections.main_product.blocks.custom_liquid.settings.custom_liquid.info"\n' +
+      '        }\n      ]\n    }',
+    para: '',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
+    porque: 'o bloco Liquid personalizado sai do produto em destaque',
+    arquivo: 'sections/highlighted-product.liquid',
+    de:
+      ',\n    {\n      "type": "custom_liquid",\n' +
+      '      "name": "t:sections.highlighted_product.blocks.custom_liquid.name",\n' +
+      '      "settings": [\n        {\n          "type": "liquid",\n          "id": "custom_liquid",\n' +
+      '          "label": "t:sections.highlighted_product.blocks.custom_liquid.settings.custom_liquid.label",\n' +
+      '          "info": "t:sections.highlighted_product.blocks.custom_liquid.settings.custom_liquid.info"\n' +
+      '        }\n      ]\n    }',
+    para: '',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
+    // A coluna é `flex flex-col gap-5`: um div vazio ainda é item flex, e o
+    // bloco recém-adicionado empurraria o botão de comprar sem mostrar nada.
+    porque: 'o bloco Liquid vazio volta a deixar um div na coluna de compra, e abre um vão',
+    arquivo: 'snippets/main-product-right.liquid',
+    de:
+      '        {%- if block.settings.custom_liquid != blank -%}\n' +
+      '          <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>\n' +
+      '        {%- endif -%}',
+    para: '          <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
+    porque: 'o bloco Liquid vazio volta a deixar rastro no produto em destaque',
+    arquivo: 'sections/highlighted-product.liquid',
+    de:
+      '                {%- if block.settings.custom_liquid != blank -%}\n' +
+      '                  <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>\n' +
+      '                {%- endif -%}',
+    para: '                  <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
+    porque: 'a section Apps sem app volta a desenhar uma faixa vazia no topo da PDP',
+    arquivo: 'sections/apps.liquid',
+    de: '{%- if section.blocks.size > 0 -%}',
+    para: '{%- if true -%}',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  {
+    porque: 'a section Liquid personalizado vazia volta a pintar uma faixa com padding e nada dentro',
+    arquivo: 'sections/custom-liquid.liquid',
+    de: '{%- if section.settings.custom_liquid != blank -%}',
+    para: '{%- if true -%}',
+    teste: 'tests/blocos-do-produto.test.mjs',
+  },
+  // ── #140: recomendações complementares ─────────────────────────────────
+  {
+    // O defeito original, replantado: o Liquid cravava `intent=related`, e o
+    // que a lojista cadastrava no Search & Discovery nunca chegava à loja.
+    porque: 'o intent volta a ser cravado em related, e os complementares nunca são pedidos',
+    arquivo: 'src/js/product-recommendations.js',
+    de: "url.searchParams.set('intent', intencao(this.dataset.intent));",
+    para: "url.searchParams.set('intent', 'related');",
+    teste: 'tests/product-recommendations.test.mjs',
+  },
+  {
+    porque: 'resposta vazia deixa a section no fluxo, e o gap entre sections cerca um vão vazio',
+    arquivo: 'src/js/product-recommendations.js',
+    de: '            } else {\n              this.esconde();\n            }',
+    para: '            }',
+    teste: 'tests/product-recommendations.test.mjs',
+  },
+  {
+    porque: 'some só o elemento, e o contêiner da section continua ocupando o gap do <main>',
+    arquivo: 'src/js/product-recommendations.js',
+    de: "(this.closest('.shopify-section') || this).hidden = true;",
+    para: 'this.hidden = true;',
+    teste: 'tests/product-recommendations.test.mjs',
+  },
+  {
+    // A página de erro é HTML válido sem recomendação nenhuma: sem olhar o
+    // status, ela vira "loja sem pares cadastrados", em silêncio.
+    porque: 'erro HTTP passa a ser tratado como resposta vazia, sem nada no console',
+    arquivo: 'src/js/product-recommendations.js',
+    de: 'if (!res.ok) throw new Error(`HTTP ${res.status}`);',
+    para: '// mutante',
+    teste: 'tests/product-recommendations.test.mjs',
   },
 ];
 

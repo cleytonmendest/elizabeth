@@ -8,11 +8,14 @@
  *   3. chave presente em um idioma e ausente no outro
  *   4. chave órfã acumulando no locale (aviso — não quebra a loja)
  *   5. frase cravada num `| default:` do Liquid
+ *   6. setting que nasce preenchido na frente de um texto traduzido
  *
  * O que NÃO é violação, por decisão: `default` de setting e blocos `presets`
  * são conteúdo do lojista (texto literal é o correto — é lá que o texto do
  * modo 5 deve morar), e labels puramente numéricos (dia, hora, minuto) são
- * independentes de idioma.
+ * independentes de idioma. A exceção é o modo 6: quando o próprio Liquid já
+ * tem um texto traduzido para o setting vazio, o literal não é conteúdo — é o
+ * que impede a tradução de aparecer.
  */
 import {
   allLiquid,
@@ -87,6 +90,129 @@ export function tDefault(file, src) {
         'verdade em pt-BR e en.default.',
     });
   });
+}
+
+/**
+ * Modo 6. `{% if block.settings.button_text != blank %}{{ block.settings.button_text }}{% else %}{{ 'product.general.add_to_cart' | t }}{% endif %}`
+ * é o padrão certo: o texto é da lojista quando ela escreve um, e do locale
+ * quando o campo está vazio. O defeito é o campo NASCER preenchido — por um
+ * `default` no schema, por um preset ou pelo valor salvo nos templates que o
+ * tema entrega. Aí o `else` nunca roda, e a loja em inglês mostra
+ * "ADICIONAR AO CARRINHO": foi assim no botão de compra da PDP e no da 404,
+ * enquanto o `checkout_label` do carrinho, vazio, sempre acompanhou o idioma.
+ *
+ * O setting é lido num snippet, mas declarado na section que o renderiza —
+ * às vezes dois níveis acima (`main-product` → `main-product-right` →
+ * `add-to-cart`). Por isso a busca segue os `{% render %}` até as sections.
+ */
+const FALLBACK_TRADUZIDO =
+  /\b(block|section)\.settings\.(\w+)\s*!=\s*blank\s*-?%\}[\s\S]{0,400}?\{%-?\s*else\s*-?%\}[\s\S]{0,200}?'([\w.]+)'\s*\|\s*t\b/g;
+
+const RENDER = /\{%-?\s*(?:render|include)\s+'([\w-]+)'/g;
+
+const preenchido = (valor) => typeof valor === 'string' && valor.trim() !== '';
+
+const lerJson = (src) => JSON.parse(src.replace(/^\s*\/\*[\s\S]*?\*\//, ''));
+
+/**
+ * As violações do modo 6 num tema dado como `Map(caminho → conteúdo)`, com
+ * `sections/`, `snippets/` e os JSON de `templates/` e dos grupos de section.
+ * Pura para o teste montar um tema de mentira: no tema de verdade, depois da
+ * correção, não sobra ocorrência para exercitar o caminho que acusa.
+ */
+export function fallbacksPreenchidos(arquivos) {
+  const liquid = [...arquivos.keys()].filter((f) => /^(sections|snippets)\/[^/]+\.liquid$/.test(f));
+  const renderiza = new Map(
+    liquid.map((f) => [
+      f,
+      [...stripInert(arquivos.get(f)).matchAll(RENDER)].map((m) => `snippets/${m[1]}.liquid`),
+    ])
+  );
+  const alcanca = (de, alvo, vistos = new Set()) => {
+    if (de === alvo) return true;
+    if (vistos.has(de)) return false;
+    vistos.add(de);
+    return (renderiza.get(de) ?? []).some((proximo) => alcanca(proximo, alvo, vistos));
+  };
+  const tipoDa = (section) => section.replace(/^sections\/|\.liquid$/g, '');
+  const jsons = [...arquivos.keys()].filter((f) => /^(templates\/.+|sections\/[^/]+)\.json$/.test(f));
+
+  const achados = new Map();
+  const acusa = (file, code, message, line) => {
+    const chave = `${file}|${code}`;
+    if (!achados.has(chave)) achados.set(chave, offense({ rule: 'i18n', file, line, code, message }));
+  };
+  const porque = (id, chave, onde) =>
+    `o Liquid (${onde}) usa '${chave}' | t quando "${id}" está vazio, mas o campo nasce preenchido — ` +
+    'então o texto traduzido nunca aparece, e a loja em outro idioma mostra este literal. Deixe o ' +
+    'campo vazio e diga no `info` que vazio usa o texto traduzido (como `checkout_label` do carrinho).';
+
+  for (const onde of liquid) {
+    for (const match of stripInert(arquivos.get(onde)).matchAll(FALLBACK_TRADUZIDO)) {
+      const [, escopo, id, chave] = match;
+      const sections = liquid.filter((f) => f.startsWith('sections/') && alcanca(f, onde));
+
+      for (const section of sections) {
+        const parsed = extractSchema(arquivos.get(section));
+        if (!parsed?.json) continue;
+        const { settings = [], blocks = [], presets = [] } = parsed.json;
+
+        const donos = escopo === 'section' ? [{ tipo: null, settings }] : blocks.map((b) => ({ tipo: b.type, settings: b.settings ?? [] }));
+        for (const dono of donos) {
+          const setting = dono.settings.find((s) => s.id === id);
+          if (!preenchido(setting?.default)) continue;
+          const nome = dono.tipo ? `${dono.tipo}.${id}` : id;
+          acusa(section, `fallback-preenchido:${nome}`, `\`default\` ${JSON.stringify(setting.default)} em "${nome}": ${porque(id, chave, onde)}`, parsed.line);
+        }
+
+        for (const preset of presets) {
+          const valores =
+            escopo === 'section'
+              ? [[null, preset.settings?.[id]]]
+              : (preset.blocks ?? []).map((b) => [b.type, b.settings?.[id]]);
+          for (const [tipo, valor] of valores) {
+            if (!preenchido(valor)) continue;
+            const nome = tipo ? `${tipo}.${id}` : id;
+            acusa(section, `fallback-preenchido:preset.${nome}`, `Preset "${preset.name}" preenche "${nome}" com ${JSON.stringify(valor)}: ${porque(id, chave, onde)}`, parsed.line);
+          }
+        }
+
+        for (const json of jsons) {
+          let dados;
+          try {
+            dados = lerJson(arquivos.get(json));
+          } catch {
+            continue; // JSON inválido é assunto de outra checagem.
+          }
+          for (const entrada of Object.values(dados.sections ?? {})) {
+            if (entrada?.type !== tipoDa(section)) continue;
+            const valores =
+              escopo === 'section'
+                ? [[null, entrada.settings?.[id]]]
+                : Object.values(entrada.blocks ?? {}).map((b) => [b.type, b.settings?.[id]]);
+            for (const [tipo, valor] of valores) {
+              if (!preenchido(valor)) continue;
+              const nome = [entrada.type, tipo, id].filter(Boolean).join('.');
+              acusa(json, `fallback-salvo:${nome}`, `O template salva "${nome}" = ${JSON.stringify(valor)}: ${porque(id, chave, onde)}`);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return [...achados.values()];
+}
+
+/** O tema do disco no formato que `fallbacksPreenchidos` recebe. */
+export function arquivosDoTema() {
+  const caminhos = [
+    ...list('sections'),
+    ...list('snippets'),
+    ...list('sections', '.json'),
+    ...list('templates', '.json', { recursive: true }),
+  ];
+  return new Map(caminhos.map((f) => [f, read(f)]));
 }
 
 /**
@@ -288,6 +414,12 @@ export function run() {
         })
       );
     }
+  }
+
+  // --- Modo 6: setting que nasce preenchido na frente de um texto traduzido ---
+  for (const achado of fallbacksPreenchidos(arquivosDoTema())) {
+    if (isAllowed('i18n', achado.file, achado.code)) continue;
+    offenses.push(achado);
   }
 
   // --- Chaves t: de schema apontando para lugar nenhum ---

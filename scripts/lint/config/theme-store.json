@@ -1,0 +1,179 @@
+{
+  "$comment": "Os recursos que a Theme Store exige, e onde cada um precisa aparecer em markup ATIVO. Lido pela regra `themestore` (scripts/lint/rules/themestore.mjs). Presença não é funcionamento: esta tabela verifica ESTRUTURA — o comportamento de cada recurso é dos testes da issue dele, em tests/ e e2e/.",
+  "$comment_fonte": "Requisitos conferidos em 26/09/2026 contra https://shopify.dev/docs/storefronts/themes/store/requirements. A Shopify muda essa página: reconfirmar antes de submeter, e mudar a tabela junto — nunca só a prosa de docs/THEME_STORE_SUBMISSION.md.",
+  "$comment_campos": "Cada linha: `id` (entra na impressão digital do baseline — renomear conta como requisito novo), `requisito`, `link` (obrigatório, em shopify.dev), `secao` (o título na página da Shopify), `issue` (obrigatório) e `verificacoes`. Linha sem `link` ou sem `issue` derruba a regra, pela mesma razão que design-exceptions.json exige `reason`.",
+  "$comment_verificacoes": "Cada verificação tem `onde` e pelo menos um de `precisa` / `schema`. `onde` é uma lista de alvos — caminho ou glob com `*` no nome do arquivo — cujo markup é SOMADO: o padrão precisa aparecer em algum deles ou no que eles renderizam ({% render %}, {% section %} e {% sections %}, recursivo). Para exigir o padrão em DOIS lugares, escreva duas verificações. Alvo que não existe (ou glob que não casa nada) é acusado, nunca pulado. `precisa`: texto literal, ou `/regex/` entre barras. `schema`: `{\"bloco\": \"@app\"}` exige um bloco daquele tipo; `{\"setting\": \"liquid\"}` exige um setting daquele tipo na section ou em algum bloco dela.",
+  "$comment_fora": "Fora desta tabela, de propósito: o ponto focal (#142), que PROÍBE um padrão em vez de exigir uma presença e terá regra própria; Lighthouse (#58), acessibilidade (e2e/) e o que só o revisor julga — nada disso existe no código-fonte para ser procurado.",
+  "requisitos": [
+    {
+      "id": "app-blocks",
+      "requisito": "Blocos de app (@app) na seção principal do produto e no produto em destaque",
+      "link": "https://shopify.dev/docs/storefronts/themes/store/requirements",
+      "secao": "Block and app block support requirements",
+      "issue": 133,
+      "verificacoes": [
+        { "onde": ["sections/main-product.liquid"], "schema": { "bloco": "@app" } },
+        { "onde": ["sections/highlighted-product.liquid"], "schema": { "bloco": "@app" } }
+      ]
+    },
+    {
+      "id": "checkout-acelerado",
+      "requisito": "Botões de checkout acelerado no produto e na página do carrinho",
+      "link": "https://shopify.dev/docs/storefronts/themes/store/requirements",
+      "secao": "Features › Accelerated checkout buttons",
+      "issue": 134,
+      "verificacoes": [
+        { "onde": ["sections/main-product.liquid"], "precisa": ["payment_button"] },
+        { "onde": ["sections/highlighted-product.liquid"], "precisa": ["payment_button"] },
+        { "onde": ["sections/main-cart.liquid"], "precisa": ["content_for_additional_checkout_buttons"] }
+      ]
+    },
+    {
+      "id": "selling-plans",
+      "requisito": "Selling plans: escolha no form de produto, plano na linha do carrinho e no pedido",
+      "link": "https://shopify.dev/docs/storefronts/themes/store/requirements",
+      "secao": "Features › Selling plans",
+      "issue": 135,
+      "verificacoes": [
+        { "onde": ["sections/main-product.liquid"], "precisa": ["/name=[\"']selling_plan[\"']/"] },
+        { "onde": ["sections/highlighted-product.liquid"], "precisa": ["/name=[\"']selling_plan[\"']/"] },
+        { "onde": ["sections/main-cart.liquid"], "precisa": ["selling_plan_allocation"] },
+        { "onde": ["sections/cart-drawer.liquid"], "precisa": ["selling_plan_allocation"] },
+        { "onde": ["templates/customers/order.liquid"], "precisa": ["selling_plan_allocation"] }
+      ]
+    },
+    {
+      "id": "preco-unitario",
+      "requisito": "Preço unitário no produto (inclusive na troca de variante), no card, no carrinho e no pedido",
+      "link": "https://shopify.dev/docs/storefronts/themes/store/requirements",
+      "secao": "Features › Unit pricing",
+      "issue": 136,
+      "verificacoes": [
+        { "onde": ["sections/main-product.liquid"], "precisa": ["unit_price"] },
+        { "onde": ["sections/highlighted-product.liquid"], "precisa": ["unit_price"] },
+        { "onde": ["src/js/price-component.js"], "precisa": ["unit_price"] },
+        { "onde": ["sections/main-collection.liquid"], "precisa": ["unit_price"] },
+        { "onde": ["sections/main-cart.liquid"], "precisa": ["unit_price"] },
+        { "onde": ["sections/cart-drawer.liquid"], "precisa": ["unit_price"] },
+        { "onde": ["templates/customers/order.liquid"], "precisa": ["unit_price"] }
+      ]
+    },
+    {
+      "id": "retirada",
+      "requisito": "Disponibilidade para retirada na loja, na página de produto",
+      "link": "https://shopify.dev/docs/storefronts/themes/store/requirements",
+      "secao": "Features › Pickup availability",
+      "issue": 137,
+      "verificacoes": [
+        {
+          "$comment": "A section é buscada pela Section Rendering API, não renderizada pela PDP — por isso o alvo é um glob, e não um {% render %} a seguir.",
+          "onde": ["sections/*pickup*.liquid"],
+          "precisa": ["store_availabilities"]
+        },
+        {
+          "$comment": "E a PDP precisa pedir por ela: section que nenhuma página busca é código que nada alcança.",
+          "onde": ["sections/main-product.liquid"],
+          "precisa": ["pickup"]
+        }
+      ]
+    },
+    {
+      "id": "shop-pay-installments",
+      "requisito": "Shop Pay Installments no form de produto",
+      "link": "https://shopify.dev/docs/storefronts/themes/store/requirements",
+      "secao": "Features › Shop Pay Installments",
+      "issue": 138,
+      "verificacoes": [
+        { "onde": ["sections/main-product.liquid"], "precisa": ["payment_terms"] },
+        { "onde": ["sections/highlighted-product.liquid"], "precisa": ["payment_terms"] }
+      ]
+    },
+    {
+      "id": "vale-presente-destinatario",
+      "requisito": "Vale-presente com opção de envio a um destinatário",
+      "link": "https://shopify.dev/docs/storefronts/themes/store/requirements",
+      "secao": "Product page requirements",
+      "issue": 139,
+      "verificacoes": [
+        { "onde": ["sections/main-product.liquid"], "precisa": ["__shopify_send_gift_card_to_recipient"] },
+        { "onde": ["sections/highlighted-product.liquid"], "precisa": ["__shopify_send_gift_card_to_recipient"] }
+      ]
+    },
+    {
+      "id": "complementares",
+      "requisito": "Recomendações complementares (intent=complementary) na página de produto",
+      "link": "https://shopify.dev/docs/storefronts/themes/store/requirements",
+      "secao": "Features › Complementary product recommendations",
+      "issue": 140,
+      "verificacoes": [
+        {
+          "$comment": "O intent pode viver no Liquid (na URL ou num data-atributo) ou no componente que monta a URL, então os três alvos somam. O regex pede `intent` e `complementary` na mesma linha: o nome de um bloco `complementary_products` sozinho não pede recomendação nenhuma.",
+          "onde": [
+            "sections/main-product.liquid",
+            "sections/product-recommendations.liquid",
+            "src/js/product-recommendations.js"
+          ],
+          "precisa": ["/intent[^\\n]{0,40}complementary/"]
+        }
+      ]
+    },
+    {
+      "id": "filtros-busca",
+      "requisito": "Filtros facetados na página de busca",
+      "link": "https://shopify.dev/docs/storefronts/themes/store/requirements",
+      "secao": "Features › Faceted search filtering",
+      "issue": 141,
+      "verificacoes": [
+        {
+          "$comment": "Um laço sobre os filtros: `for filter in search.filters`, ou sobre o mesmo objeto recebido por um snippet compartilhado com a coleção (`results.filters`). Procurar `.filters` sozinho casaria a chave de tradução `collection.filters.title`.",
+          "onde": ["sections/main-search.liquid"],
+          "precisa": ["/\\bfor\\s+\\w+\\s+in\\s+[\\w.]*filters\\b/"]
+        }
+      ]
+    },
+    {
+      "id": "imposto-incluso",
+      "requisito": "Indicação de imposto incluso (cart.taxes_included) no produto e no carrinho",
+      "link": "https://shopify.dev/docs/storefronts/themes/store/requirements",
+      "secao": "Product page requirements · Cart page requirements",
+      "issue": 143,
+      "verificacoes": [
+        { "onde": ["sections/main-product.liquid"], "precisa": ["taxes_included"] },
+        { "onde": ["sections/main-cart.liquid"], "precisa": ["taxes_included"] },
+        { "onde": ["sections/cart-drawer.liquid"], "precisa": ["taxes_included"] }
+      ]
+    },
+    {
+      "id": "descontos",
+      "requisito": "Desconto por item e do pedido inteiro, no carrinho e no pedido",
+      "link": "https://shopify.dev/docs/storefronts/themes/store/requirements",
+      "secao": "Features › Discounts",
+      "issue": 144,
+      "verificacoes": [
+        {
+          "onde": ["sections/main-cart.liquid"],
+          "precisa": ["line_level_discount_allocations", "cart_level_discount_applications"]
+        },
+        {
+          "onde": ["sections/cart-drawer.liquid"],
+          "precisa": ["line_level_discount_allocations", "cart_level_discount_applications"]
+        },
+        {
+          "onde": ["templates/customers/order.liquid"],
+          "precisa": ["line_level_discount_allocations", "cart_level_discount_applications"]
+        }
+      ]
+    },
+    {
+      "id": "custom-liquid",
+      "requisito": "Bloco Custom Liquid (setting do tipo liquid) onde há bloco de app",
+      "link": "https://shopify.dev/docs/storefronts/themes/store/requirements",
+      "secao": "Block and app block support requirements",
+      "issue": 145,
+      "verificacoes": [
+        { "onde": ["sections/main-product.liquid"], "schema": { "setting": "liquid" } },
+        { "onde": ["sections/highlighted-product.liquid"], "schema": { "setting": "liquid" } }
+      ]
+    }
+  ]
+}

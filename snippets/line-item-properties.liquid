@@ -1,0 +1,44 @@
+{%- comment -%}
+  As propriedades de uma linha — do carrinho ou do pedido. Ver #139.
+
+  Recebe `properties`: `item.properties` no carrinho, `line_item.properties`
+  no pedido.
+
+  É por aqui que a cliente vê para quem vai o vale-presente (`Recipient
+  email`, `Recipient name`, `Message`, `Send on`) e o que um app de
+  personalização gravou no item. Sem isto, ela compra um cartão para a amiga e
+  o carrinho não diz para quem.
+
+  Duas coisas ficam de fora, e quem diz é a Shopify, não o tema:
+
+  - chave que começa com `_` é privada do app que a gravou
+    (`__shopify_send_gift_card_to_recipient`, `__shopify_offset`);
+  - valor vazio não é informação, e renderizá-lo deixaria "Mensagem:" sozinha.
+
+  Sem nenhuma propriedade visível, o `<dl>` não é renderizado — nem o vão
+  dele. A decisão é Liquid puro (ADR 0014), e `tests/carrinho-liquid.test.mjs`
+  a exercita.
+
+  Arquivo enviado por app de personalização chega como URL de `/uploads/`, e
+  vira link com o nome do arquivo em vez da URL inteira.
+{%- endcomment -%}
+{%- capture linhas -%}
+  {%- for propriedade in properties -%}
+    {%- assign inicial = propriedade.first | slice: 0 -%}
+    {%- if propriedade.last != blank and inicial != '_' -%}
+      <div class="flex gap-1">
+        <dt class="shrink-0">{{ propriedade.first | escape }}:</dt>
+        <dd class="min-w-0 break-words">
+          {%- if propriedade.last contains '/uploads/' -%}
+            <a href="{{ propriedade.last | escape }}" class="underline">{{ propriedade.last | split: '/' | last | escape }}</a>
+          {%- else -%}
+            {{ propriedade.last | escape }}
+          {%- endif -%}
+        </dd>
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+{%- if linhas != blank -%}
+  <dl class="mt-1 space-y-0.5 text-xs text-foreground-muted">{{ linhas }}</dl>
+{%- endif -%}

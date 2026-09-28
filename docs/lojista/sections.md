@@ -5,7 +5,7 @@ alt: /merchant/sections.html
 
 # 3. As seções, uma a uma
 
-O tema tem **23 seções que você adiciona onde quiser**. Além delas, o **header**, o **rodapé** e **10 seções de página** já vêm montados — você ajusta, não adiciona.
+O tema tem **24 seções que você adiciona onde quiser**. Além delas, o **header**, o **rodapé** e **10 seções de página** já vêm montados — você ajusta, não adiciona.
 
 Todas têm **Esquema de cores** — veja [Cores e identidade](cores-e-marca.html).
 
@@ -105,9 +105,14 @@ Carrossel de cards livres — imagem, texto e link montados por você.
 **Use para:** o que não é produto: categorias, benefícios, posts.
 
 ### Recomendações de produto
-Produtos relacionados, escolhidos pela Shopify.
+Produtos escolhidos pela Shopify para a página de produto. Em **Tipo de recomendação** você escolhe a pergunta:
 
-**Use na:** página de produto, abaixo da descrição.
+- **Relacionados** — parecidos com o produto aberto. A Shopify monta sozinha.
+- **Complementares** — o que combina com ele: a sandália do vestido, o cinto da calça. Você cadastra os pares no app **Search & Discovery** (gratuito, da Shopify).
+
+**Use na:** página de produto. Para ter as duas, adicione a seção duas vezes — o modelo **Produtos complementares** já chega configurado.
+
+> Produto sem complementares cadastrados não mostra a seção, nem o título. Cadastre os pares aos poucos, começando pelos mais vendidos.
 
 ### Vistos recentemente
 Os produtos que a própria cliente abriu.
@@ -153,9 +158,9 @@ Configura: eyebrow, título, abrir o primeiro item. Cada pergunta é um bloco.
 ### Contagem Regressiva
 Relógio até uma data.
 
-Configura: tipo de contagem, data e hora, mostrar dias, estilo dos números, alinhamento, largura total, eyebrow, título, texto, imagem, scrim, botão.
+Configura: data e hora, mostrar dias, estilo dos números, alinhamento, largura total, eyebrow, título, texto, imagem, scrim, botão.
 
-> **Quando o relógio zera, a seção some da loja** — no editor ela continua visível, para você poder reconfigurar. Programe o fim junto com o fim real da promoção, ou a página fica com um buraco.
+> **Quando o relógio zera, a seção some da loja** — no editor ela continua visível, para você poder reconfigurar. Programe o fim junto com o fim real da promoção, ou a página fica com um buraco. Não existe contagem que recomeça todo dia: um relógio de urgência que nunca acaba é o que a Shopify proíbe em temas.
 
 ### Posts do Blog
 Últimos posts.
@@ -172,6 +177,13 @@ Configura: ativar, largura, imagem, título, texto, botão, delay, mostrar ao ro
 ### Apps
 Espaço para blocos de aplicativos instalados na loja.
 
+### Liquid personalizado
+Um espaço para código seu ou de um aplicativo: o trecho que o app pede para colar, um pixel de conversão só numa página, um campo personalizado (metafield) que o tema não mostra.
+
+Configura: o código, esquema de cores, espaçamento superior e inferior.
+
+> Vazia, a seção não aparece na loja. **Produto** e **Produto Destaque** aceitam o mesmo conteúdo como bloco — e também blocos de aplicativos —, para ficar junto do botão de comprar.
+
 ---
 
 ## Páginas fixas
@@ -182,11 +194,11 @@ Estas já vêm montadas na página a que pertencem. Você ajusta, não precisa a
 
 | Seção | Página | Principais opções |
 | --- | --- | --- |
-| **Produto** | produto | largura e layout da mídia, zoom, layout no celular; blocos de preço, variante, quantidade, estoque, descrição, linhas recolhíveis, selos, formas de pagamento |
+| **Produto** | produto | largura e layout da mídia, zoom, layout no celular; blocos de preço, variante, quantidade, estoque, botão de comprar (com botões de pagamento acelerado, ligados por padrão), descrição, linhas recolhíveis, selos, formas de pagamento, Liquid personalizado e aplicativos |
 | **Página de Coleção** | coleção | produtos por página e por linha, segunda imagem no hover, imagem e descrição da coleção, **filtros**, ordenação, "carregar mais" |
 | **Lista de coleções** | /collections | título, coleções por linha e por página, contagem de produtos |
 | **Carrinho** | carrinho | continuar comprando, observações, texto do botão de finalizar |
-| **Página de Busca** | busca | resultados por página, filtro por tipo, sugestões sem resultado, buscas populares |
+| **Página de Busca** | busca | resultados por página, filtro por tipo, **filtros**, ordenação, sugestões sem resultado, buscas populares |
 | **Blog Principal** | blog | artigos por página, colunas, filtro de tags, sidebar com busca/categorias/recentes |
 | **Artigo do Blog** | post | imagem destacada, autor, tags, compartilhamento, bio, relacionados, prev/next, comentários, sidebar |
 | **Página** | páginas | mostrar título, largura do texto |

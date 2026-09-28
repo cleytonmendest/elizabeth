@@ -12,6 +12,7 @@
 {%- endcomment -%}
 
 <div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  {%- render 'breadcrumb' -%}
   <div class="page-width py-12 md:py-16">
     <div class="mx-auto {% case section.settings.content_width %}{% when 'narrow' %}max-w-2xl{% when 'wide' %}max-w-5xl{% else %}max-w-3xl{% endcase %}">
 

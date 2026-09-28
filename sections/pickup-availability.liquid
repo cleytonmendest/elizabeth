@@ -1,0 +1,24 @@
+{%- comment -%}
+  Retirada na loja — o FRAGMENTO que a PDP pede na troca de variante (#137).
+
+  Não é uma section que a lojista posiciona. Ela existe porque a Section
+  Rendering API só devolve section: `<pickup-availability>` pede
+  `{raiz}variants/{id}/?section_id=pickup-availability`, e a resposta é o
+  mesmo snippet que a PDP pintou no carregamento, agora para a variante nova.
+
+  Nessa rota a variante chega como `product_variant`, um objeto que só existe
+  nela (é o que o Dawn lê na mesma section). O `default` cobre quem pedir a
+  section pela URL do produto (`?variant=…&section_id=…`).
+
+  ── Sem schema, de propósito ──────────────────────────────────────────────
+
+  Um schema aqui teria de trazer `color_scheme` (regra `editable`) e o
+  editor nunca o mostraria: a section não mora em template nenhum, então o
+  setting seria sempre o valor padrão. Seria controle prometido e não
+  entregue. As cores vêm do esquema da seção do produto, porque o fragmento é
+  inserido DENTRO dela, e o diálogo pinta fundo e texto com os tokens.
+{%- endcomment -%}
+{%- liquid
+  assign variante = product_variant | default: product.selected_or_first_available_variant
+-%}
+{%- render 'pickup-availability-info', variant: variante -%}

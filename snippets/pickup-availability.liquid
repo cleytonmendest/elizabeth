@@ -1,0 +1,26 @@
+{%- comment -%}
+  Retirada na loja, na PDP (#137). Renderizado logo abaixo do botão de comprar.
+
+  O resumo da variante inicial sai daqui, pintado pelo servidor: sem JS a
+  cliente já sabe onde retirar. Na troca de variante, `<pickup-availability>`
+  pede o mesmo snippet de novo, pela section `pickup-availability`, e troca o
+  conteúdo — ver `src/js/pickup-availability.js`.
+
+  O script é CO-LOCADO: só a PDP o baixa, e ele não entra no peso global.
+
+  `hidden` quando a variante não tem retirada: o elemento vazio continuaria
+  sendo um item do flex da coluna, e o `gap` dela abriria um vão sem nada
+  dentro. O componente mantém a mesma regra quando troca o conteúdo.
+
+  Recebe: product
+{%- endcomment -%}
+{%- liquid
+  assign variante = product.selected_or_first_available_variant
+-%}
+{%- capture conteudo -%}
+  {%- render 'pickup-availability-info', variant: variante -%}
+{%- endcapture -%}
+<script src="{{ 'pickup-availability.js' | asset_url }}" defer></script>
+<pickup-availability data-variant-id="{{ variante.id }}"{% if conteudo == blank %} hidden{% endif %}>
+  {{- conteudo -}}
+</pickup-availability>

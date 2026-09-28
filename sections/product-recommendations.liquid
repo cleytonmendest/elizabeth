@@ -1,14 +1,29 @@
 {%- comment -%}
-  Recomendações de produto — "Você também pode gostar".
-  Usa a API nativa de recommendations do Shopify (sem setup do lojista). O conteúdo
-  é carregado sob demanda via <product-recommendations> (fetch quando entra na tela).
+  Recomendações de produto — "Você também pode gostar" ou "Combina com".
+  Usa a API nativa de recommendations do Shopify. O conteúdo é carregado sob
+  demanda via <product-recommendations> (fetch quando entra na tela).
   Exibição adaptável (grid ou slider) via snippet product-showcase.
+
+  O setting `intent` escolhe a pergunta (issue #140):
+    related        parecidos com este produto — a Shopify gera sozinha
+    complementary  o que completa o look — a lojista cadastra os pares no app
+                   Search & Discovery; produto sem par não mostra nada
+  Para ter as duas na PDP, a lojista adiciona a section duas vezes. O preset
+  "Produtos complementares" já chega com o intent certo.
+
+  Sem JS a section não aparece: ela só tem conteúdo depois da resposta da API.
+  Resposta vazia ou erro esconde a section inteira (ver o componente).
 {%- endcomment -%}
 
 {%- liquid
+  assign intent = section.settings.intent
   assign heading = section.settings.heading
   if heading == blank
-    assign heading = 'product.recommendations.title' | t
+    if intent == 'complementary'
+      assign heading = 'product.recommendations.complementary_title' | t
+    else
+      assign heading = 'product.recommendations.title' | t
+    endif
   endif
   assign limit = section.settings.products_to_show | default: 8
   assign show_nav = false
@@ -19,7 +34,8 @@
 
 <product-recommendations
   class="block"
-  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ limit }}&intent=related"
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ limit }}"
+  data-intent="{{ intent }}"
 >
   {%- if recommendations.performed and recommendations.products_count > 0 -%}
     <div class="color-{{ section.settings.color_scheme }} color-background color-text">
@@ -57,6 +73,17 @@
     "templates": ["product"]
   },
   "settings": [
+    {
+      "type": "select",
+      "id": "intent",
+      "label": "t:sections.product_recommendations.settings.intent.label",
+      "info": "t:sections.product_recommendations.settings.intent.info",
+      "default": "related",
+      "options": [
+        { "value": "related", "label": "t:sections.product_recommendations.settings.intent.options.related" },
+        { "value": "complementary", "label": "t:sections.product_recommendations.settings.intent.options.complementary" }
+      ]
+    },
     {
       "type": "color_scheme",
       "id": "color_scheme",
@@ -138,6 +165,13 @@
   "presets": [
     {
       "name": "t:sections.product_recommendations.presets.name"
+    },
+    {
+      "name": "t:sections.product_recommendations.presets.complementary_name",
+      "settings": {
+        "intent": "complementary",
+        "products_to_show": 4
+      }
     }
   ]
 }

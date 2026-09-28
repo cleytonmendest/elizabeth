@@ -1,8 +1,43 @@
+{%- comment -%}
+  O form de produto da PDP e do produto em destaque.
+
+  O que mora dentro do `{% form 'product' %}` é o que a Shopify precisa ler do
+  form — por isso tudo aqui dentro, e não num bloco à parte:
+
+  - `payment_terms` (#138): o banner do Shop Pay Installments. Numa loja ou
+    moeda não elegível (toda loja brasileira, hoje) não renderiza nada, e o
+    `empty:hidden` impede o vão. Não contradiz a ADR 0008: o número é o do
+    checkout da Shopify, o tema só reserva o lugar.
+  - `gift-card-recipient-form` (#139): só em vale-presente.
+  - `payment_button` (#134): os botões de checkout acelerado, atrás de
+    `show_dynamic_checkout` (default ligado).
+
+  O acelerado NUNCA aparece em vale-presente, com a caixa do destinatário
+  marcada ou não. A validação do destinatário não funciona com ele (nota da
+  Shopify em "Add a gift card recipient form"), e esconder só com a caixa
+  marcada dependeria de JavaScript para ser correto: sem JS a caixa não existe
+  e os campos vão sempre no form, e um clique no acelerado compraria o cartão
+  sem destinatário, sem aviso. Mesma decisão do Dawn.
+
+  Variante esgotada ou inexistente também não oferece o acelerado: o input
+  `id` nasce `disabled` e o bloco do acelerado nasce `hidden`, e o
+  `<add-to-cart>` refaz as duas contas a cada `variant:change`.
+{%- endcomment -%}
+
+{%- liquid
+  assign sufixo = block.id | default: product.id
+
+  assign mostra_checkout_acelerado = block.settings.show_dynamic_checkout
+  if product.gift_card?
+    assign mostra_checkout_acelerado = false
+  endif
+-%}
+
 <add-to-cart>
   {%- form 'product',
     product,
     id: product.id,
-    class: 'form flex gap-3 w-full',
+    class: 'form flex flex-col gap-3 w-full',
     novalidate: 'novalidate',
     data-type: 'add-to-cart-form'
   -%}
@@ -15,37 +50,77 @@
         disabled
       {% endif %}
     >
-    {% if hasQtd %}
-      {% render 'quantity-selector', addToCart: true, height_class: 'h-12' %}
-    {% else %}
-      <input class="hidden" type="number" name="quantity" value="1" min="1">
-    {% endif %}
-    <button
-      type="submit"
-      name="add"
-      class="color-button w-full h-12 text-xs font-medium uppercase tracking-label transition-all hover:opacity-90 rounded-theme"
-      aria-haspopup="dialog"
-      aria-live="polite"
-      data-sold-out-message="true"
-      data-text-desktop="{% if block.settings.button_text != blank %}{{ block.settings.button_text }}{% else %}{{ 'product.general.add_to_cart' | t }}{% endif %}"
-      data-text-mobile="{{ 'product.general.add_to_cart' | t }}"
-      data-text-sold-out="{{ 'product.general.sold_out' | t }}"
-      data-text-unavailable="{{ 'product.general.unavailable' | t }}"
-      {% if product.selected_or_first_available_variant.available == false %}
-        disabled
+    {%- render 'selling-plan-picker', product: product -%}
+
+    <div class="empty:hidden">{{- form | payment_terms -}}</div>
+
+    {%- if product.gift_card? -%}
+      {%- render 'gift-card-recipient-form', form: form, sufixo: sufixo -%}
+    {%- endif -%}
+
+    <div class="flex gap-3 w-full">
+      {% if hasQtd %}
+        {% render 'quantity-selector', addToCart: true, height_class: 'h-12' %}
+      {% else %}
+        <input class="hidden" type="number" name="quantity" value="1" min="1">
       {% endif %}
-    >
+      <button
+        type="submit"
+        name="add"
+        class="color-button w-full h-12 text-xs font-medium uppercase tracking-label transition-all hover:opacity-90 rounded-theme"
+        aria-haspopup="dialog"
+        aria-live="polite"
+        data-sold-out-message="true"
+        data-text-desktop="{{ 'product.general.add_to_cart' | t }}"
+        data-text-sold-out="{{ 'product.general.sold_out' | t }}"
+        data-text-unavailable="{{ 'product.general.unavailable' | t }}"
+        {% if product.selected_or_first_available_variant.available == false %}
+          disabled
+        {% endif %}
+      >
+        {%- comment -%}
+          O texto inicial precisa bater com o que <add-to-cart> escreveria: o
+          componente só reescreve o botão na troca de variante, então renderizar
+          "ADICIONAR AO CARRINHO" num produto esgotado deixava o rótulo errado
+          até alguém mexer no seletor.
+
+          O texto é SÓ do locale, e não de um campo do bloco. A lojista o muda em
+          Loja virtual › Temas › Editar conteúdo padrão do tema, e a mudança vale
+          para esta PDP, a barra fixa e o card de uma vez, em cada idioma — os
+          três leem as mesmas chaves. O campo que havia aqui mudava só a PDP, e
+          a loja ficava com dois textos para o mesmo botão.
+        {%- endcomment -%}
+        {%- if product.selected_or_first_available_variant.available -%}
+          {{ 'product.general.add_to_cart' | t }}
+        {%- else -%}
+          {{ 'product.general.sold_out' | t }}
+        {%- endif -%}
+      </button>
+    </div>
+
+    {%- if mostra_checkout_acelerado -%}
       {%- comment -%}
-        O texto inicial precisa bater com o que <add-to-cart> escreveria: o
-        componente só reescreve o botão na troca de variante, então renderizar
-        "ADICIONAR AO CARRINHO" num produto esgotado deixava o rótulo errado
-        até alguém mexer no seletor.
+        Co-locado: forma dos botões de carteira e as cores do scheme no
+        "Compre já" sem marca. Fonte em src/checkout-acelerado.css. Fica FORA
+        do div abaixo, que se esconde quando está vazio.
       {%- endcomment -%}
-      {%- if product.selected_or_first_available_variant.available -%}
-        {% if block.settings.button_text != blank %}{{ block.settings.button_text }}{% else %}{{ 'product.general.add_to_cart' | t }}{% endif %}
-      {%- else -%}
-        {{ 'product.general.sold_out' | t }}
-      {%- endif -%}
-    </button>
+      {{ 'checkout-acelerado.css' | asset_url | stylesheet_tag }}
+      <div
+        class="empty:hidden"
+        data-checkout-acelerado
+        {% if product.selected_or_first_available_variant.available == false %}
+          hidden
+        {% endif %}
+      >
+        {{- form | payment_button -}}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%}
+      A recusa do `/cart/add.js` (estoque, limite de quantidade) aparece aqui,
+      com o texto da própria Shopify. O erro de campo do vale-presente não
+      passa por aqui: ele aparece ao lado do campo.
+    {%- endcomment -%}
+    <p class="text-sm color-error" role="alert" data-erro-carrinho hidden></p>
   {%- endform -%}
 </add-to-cart>

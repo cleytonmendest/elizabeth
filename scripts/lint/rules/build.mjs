@@ -4,8 +4,13 @@
  * São DOIS desde a #96, e a regra é a mesma para os dois: recompila para a
  * memória e compara byte a byte com o que está no disco.
  *
- *     src/tailwind.css → assets/application.css   (Tailwind)
- *     src/js/*.js      → assets/*.js              (esbuild)
+ *     src/tailwind.css           → assets/application.css         (Tailwind)
+ *     src/checkout-acelerado.css → assets/checkout-acelerado.css  (Tailwind)
+ *     src/js/*.js                → assets/*.js                    (esbuild)
+ *
+ * O segundo CSS é co-locado — só a PDP o carrega —, mas usa `@apply` para
+ * herdar os tokens, e por isso também é gerado. A lista de pares está em
+ * `scripts/build-css.mjs`.
  *
  * Se alguém adiciona uma classe e esquece de rodar o build, o commit passa em
  * todos os outros linters e a loja sobe sem o estilo. O mesmo vale para o JS,
@@ -27,35 +32,35 @@ import os from 'node:os';
 import path from 'node:path';
 import { ROOT, abs, offense } from '../lib.mjs';
 import { VENDORIZADOS, fontes, minifica, orfaos } from '../../build-js.mjs';
+import { CSS } from '../../build-css.mjs';
 
 export const meta = {
   name: 'build',
   title: 'Build do Tailwind',
-  description: 'assets/application.css e assets/*.js estão em dia com os fontes.',
+  description: 'Os CSS gerados pelo Tailwind e assets/*.js estão em dia com os fontes.',
   ratchet: false,
   slow: true,
 };
 
-const OUTPUT = 'assets/application.css';
 
 export function run() {
-  return [...cssDesatualizado(), ...jsDesatualizado()];
+  return [...CSS.flatMap(([fonte, destino]) => cssDesatualizado(fonte, destino)), ...jsDesatualizado()];
 }
 
-function cssDesatualizado() {
-  const tmp = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'theme-css-')), 'application.css');
+function cssDesatualizado(fonte, destino) {
+  const tmp = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'theme-css-')), path.basename(destino));
 
   try {
     execFileSync(
       'npx',
-      ['tailwindcss', '-i', './src/tailwind.css', '-o', tmp, '--minify'],
+      ['tailwindcss', '-i', `./${fonte}`, '-o', tmp, '--minify'],
       { cwd: ROOT, stdio: 'pipe' }
     );
   } catch (error) {
     return [
       offense({
         rule: 'build',
-        file: 'src/tailwind.css',
+        file: fonte,
         code: 'build-failed',
         message: `Build do Tailwind falhou: ${String(error.stderr || error.message).trim().split('\n').pop()}`,
       }),
@@ -63,7 +68,7 @@ function cssDesatualizado() {
   }
 
   const fresh = fs.readFileSync(tmp, 'utf8');
-  const committed = fs.existsSync(abs(OUTPUT)) ? fs.readFileSync(abs(OUTPUT), 'utf8') : '';
+  const committed = fs.existsSync(abs(destino)) ? fs.readFileSync(abs(destino), 'utf8') : '';
   fs.rmSync(path.dirname(tmp), { recursive: true, force: true });
 
   if (fresh === committed) return [];
@@ -71,9 +76,9 @@ function cssDesatualizado() {
   return [
     offense({
       rule: 'build',
-      file: OUTPUT,
+      file: destino,
       code: 'stale',
-      message: `${OUTPUT} está desatualizado em relação aos .liquid. Rode "npm run build" e inclua o resultado no commit.`,
+      message: `${destino} está desatualizado em relação a ${fonte} e aos .liquid. Rode "npm run build" e inclua o resultado no commit.`,
     }),
   ];
 }

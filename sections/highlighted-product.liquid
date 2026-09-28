@@ -19,6 +19,14 @@
             {% case block.type %}
               {%- when '@app' -%}
                 {% render block %}
+              {%- when 'custom_liquid' -%}
+                {%- comment -%}
+                  Setting `liquid` no schema do bloco, nunca global — ver o mesmo
+                  ramo em snippets/main-product-right.liquid (#145).
+                {%- endcomment -%}
+                {%- if block.settings.custom_liquid != blank -%}
+                  <div {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>
+                {%- endif -%}
               {%- when 'text' -%}
                 <p
                   class="product__text inline-richtext{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}"
@@ -39,7 +47,7 @@
 
               {%- when 'price' -%}
                 <div role="status" {{ block.shopify_attributes }}>
-                  {%- render 'price-v2', product: product, use_variant: true, pdp: true -%}
+                  {%- render 'price-v2', product: product, use_variant: true, pdp: true, tax_note: block.settings.show_tax_note -%}
                 </div>
 
               {%- when 'variant_picker' -%}
@@ -113,7 +121,16 @@
     {
       "type": "price",
       "name": "t:sections.highlighted_product.blocks.price.name",
-      "limit": 1
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_tax_note",
+          "label": "t:sections.highlighted_product.blocks.price.settings.show_tax_note.label",
+          "info": "t:sections.highlighted_product.blocks.price.settings.show_tax_note.info",
+          "default": true
+        }
+      ]
     },
     {
       "type": "quantity_selector",
@@ -182,10 +199,11 @@
           "content": "t:sections.highlighted_product.blocks.buy_button.settings.settings_header.content"
         },
         {
-          "type": "text",
-          "label": "t:sections.highlighted_product.blocks.buy_button.settings.button_text.label",
-          "id": "button_text",
-          "default": "ADICIONAR AO CARRINHO"
+          "type": "checkbox",
+          "id": "show_dynamic_checkout",
+          "label": "t:sections.highlighted_product.blocks.buy_button.settings.show_dynamic_checkout.label",
+          "info": "t:sections.highlighted_product.blocks.buy_button.settings.show_dynamic_checkout.info",
+          "default": true
         }
       ]
     },
@@ -227,6 +245,21 @@
           "type": "page",
           "id": "page",
           "label": "t:sections.highlighted_product.blocks.collapsible_tab.settings.page.label"
+        }
+      ]
+    },
+    {
+      "type": "@app"
+    },
+    {
+      "type": "custom_liquid",
+      "name": "t:sections.highlighted_product.blocks.custom_liquid.name",
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "custom_liquid",
+          "label": "t:sections.highlighted_product.blocks.custom_liquid.settings.custom_liquid.label",
+          "info": "t:sections.highlighted_product.blocks.custom_liquid.settings.custom_liquid.info"
         }
       ]
     }

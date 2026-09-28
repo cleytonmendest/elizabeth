@@ -1,0 +1,36 @@
+{%- comment -%}
+  A frase de impostos e frete do carrinho — na página e na gaveta. Ver #143.
+
+  Até a #143 as duas diziam sempre "Impostos e frete calculados no checkout",
+  sem olhar a loja. Para o público deste tema essa é justamente a frase
+  errada: loja brasileira costuma operar com "Todos os preços incluem
+  impostos" ligado, e "impostos calculados no checkout" promete à cliente um
+  acréscimo que não vai acontecer.
+
+  Quem decide são dois fatos da loja, e nenhum deles é setting do tema:
+
+  | `cart.taxes_included` | política de frete publicada | frase                                        |
+  | --------------------- | --------------------------- | -------------------------------------------- |
+  | sim                   | sim                         | Impostos incluídos. [Frete] calculado…       |
+  | sim                   | não                         | Impostos incluídos. Frete calculado…         |
+  | não                   | sim                         | Impostos e [frete] calculados…               |
+  | não                   | não                         | Impostos e frete calculados…                 |
+
+  O link vai para a política de frete quando ela existe (Configurações ›
+  Políticas, no admin), e é o próprio texto traduzido que o carrega.
+
+  Decisão em Liquid vira snippet testável (ADR 0014): este arquivo só lê
+  `cart` e `shop`, e `tests/carrinho-liquid.test.mjs` o renderiza nos quatro
+  casos. Quem chama cuida da aparência — a frase sai sem invólucro.
+{%- endcomment -%}
+{%- if cart.taxes_included -%}
+  {%- if shop.shipping_policy.body != blank -%}
+    {{ 'cart.general.taxes_included_shipping_policy_html' | t: link: shop.shipping_policy.url }}
+  {%- else -%}
+    {{ 'cart.general.taxes_included_shipping_checkout' | t }}
+  {%- endif -%}
+{%- elsif shop.shipping_policy.body != blank -%}
+  {{ 'cart.general.taxes_shipping_policy_html' | t: link: shop.shipping_policy.url }}
+{%- else -%}
+  {{ 'cart.general.taxes_shipping_checkout' | t }}
+{%- endif -%}

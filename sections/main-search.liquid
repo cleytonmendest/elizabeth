@@ -2,6 +2,7 @@
 {%- assign articles_per_page = 6 -%}
 
 <div class="color-{{ section.settings.color_scheme }} color-background color-text">
+  {%- render 'breadcrumb' -%}
   <div class="page-width py-8">
     <div class="text-center mb-10 md:mb-12">
       <h1 class="text-3xl md:text-4xl font-light tracking-title mb-5">
@@ -44,33 +45,152 @@
 
     {%- if search.performed -%}
       {%- paginate search.results by products_per_page -%}
-        {%- if search.results.size > 0 -%}
+        {%- comment -%}
+          A aba de tipo ativa é a da URL (`type=`), que a Shopify devolve em
+          `search.types`. Sem `type`, a busca usa os tipos padrão da loja.
+        {%- endcomment -%}
+        {%- liquid
+          assign active_type = 'all'
+          if search.types.size == 1 and shop.search_types.size > 1
+            assign active_type = search.types.first
+          endif
+          assign sort_by = search.sort_by | default: search.default_sort_by
+        -%}
+        {%- capture active_filter_count -%}{%- render 'facets', part: 'count', filters: search.filters -%}{%- endcapture -%}
+        {%- assign active_filter_count = active_filter_count | plus: 0 -%}
+
+        {%- comment -%}
+          Filtro facetado só fala de PRODUTO. A aba de artigos, ou uma busca que
+          só achou artigo e página, não ganha painel — ver 'relevant' no snippet.
+        {%- endcomment -%}
+        {%- assign show_filters = false -%}
+        {%- if section.settings.enable_filtering and search.types contains 'product' -%}
+          {%- capture filters_relevant -%}{%- render 'facets', part: 'relevant', filters: search.filters -%}{%- endcapture -%}
+          {%- if filters_relevant == 'true' -%}
+            {%- assign show_filters = true -%}
+          {%- endif -%}
+        {%- endif -%}
+
+        {%- capture clear_url -%}{{ routes.search_url }}?q={{ search.terms | url_encode }}{% if active_type != 'all' %}&type={{ active_type }}{% endif %}&sort_by={{ sort_by }}{%- endcapture -%}
+
+        {%- comment -%}
+          Abas por tipo: LINKS com `type=`, e não botões. Até a #141 eram botões
+          que escondiam em JS o que já tinha vindo — só na página atual, com
+          contagem da página atual, e a segunda página voltava misturada. O
+          `type` da própria busca filtra no servidor e atravessa a paginação, e
+          link funciona sem JS.
+        {%- endcomment -%}
+        {%- liquid
+          assign show_type_tabs = false
+          if section.settings.enable_type_filter and shop.search_types.size > 1
+            if search.results_count > 0 or active_type != 'all'
+              assign show_type_tabs = true
+            endif
+          endif
+        -%}
+        {%- if show_type_tabs -%}
+          <nav aria-label="{{ 'collection.filters.filter_by' | t }}" class="mb-10">
+            <ul class="flex flex-wrap gap-2 justify-center">
+              {%- assign type_tabs = 'all,product,article,page' | split: ',' -%}
+              {%- for type_tab in type_tabs -%}
+                {%- if type_tab == 'all' or shop.search_types contains type_tab -%}
+                  {%- liquid
+                    case type_tab
+                      when 'product'
+                        assign type_label = 'general.search.products' | t
+                      when 'article'
+                        assign type_label = 'general.search.articles' | t
+                      when 'page'
+                        assign type_label = 'general.search.pages' | t
+                      else
+                        assign type_label = 'general.search.all' | t
+                    endcase
+                  -%}
+                  <li>
+                    <a
+                      href="{{ routes.search_url }}?q={{ search.terms | url_encode }}{% if type_tab != 'all' %}&type={{ type_tab }}{% endif %}"
+                      class="inline-block px-5 py-2 border rounded-full text-xs uppercase tracking-label transition-colors {% if type_tab == active_type %}bg-foreground text-background border-foreground{% else %}border-border text-foreground/70 hover:border-foreground/30{% endif %}"
+                      {% if type_tab == active_type %}aria-current="page"{% endif %}
+                    >
+                      {{- type_label -}}
+                    </a>
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          </nav>
+        {%- endif -%}
+
+        {%- if search.results.size > 0 or active_filter_count > 0 -%}
           {%- comment -%} Separar resultados por tipo {%- endcomment -%}
           {%- assign products = search.results | where: 'object_type', 'product' -%}
           {%- assign articles = search.results | where: 'object_type', 'article' -%}
           {%- assign pages = search.results | where: 'object_type', 'page' -%}
 
-          {%- comment -%} Filtros de tipo {%- endcomment -%}
-          {%- if section.settings.enable_type_filter -%}
-            <div class="flex flex-wrap gap-2 justify-center mb-10">
-              <button class="filter-button active px-5 py-2 border border-border rounded-full text-xs uppercase tracking-[0.12em] text-foreground/70 transition-colors" data-filter="all">
-                {{ 'general.search.all' | t }} ({{ search.results_count }})
-              </button>
-              {%- if products.size > 0 -%}
-                <button class="filter-button px-5 py-2 border border-border rounded-full text-xs uppercase tracking-[0.12em] text-foreground/70 transition-colors" data-filter="products">
-                  {{ 'general.search.products' | t }} ({{ products.size }})
-                </button>
+          {%- comment -%}
+            O mesmo form da coleção: GET, sidebar no desktop, gaveta no celular.
+            `q` e `type` vão escondidos para o filtro refinar ESTA busca.
+          {%- endcomment -%}
+          <facet-filters class="block" data-reload-message="{{ 'collection.general.sort_reloaded' | t | escape }}">
+          <form data-filter-form action="{{ routes.search_url }}" method="get" class="flex flex-col lg:flex-row gap-8">
+          <input type="hidden" name="q" value="{{ search.terms | escape }}">
+          {%- if active_type != 'all' -%}
+            <input type="hidden" name="type" value="{{ active_type }}">
+          {%- endif -%}
+          {%- if show_filters -%}
+            {%- render 'facets',
+              part: 'panel',
+              filters: search.filters,
+              active_filter_count: active_filter_count,
+              sort_by: sort_by,
+              clear_url: clear_url
+            -%}
+          {%- endif -%}
+
+          <div class="flex-1 min-w-0">
+          {%- comment -%} As opções de ordem da busca (preço) só fazem sentido com produto {%- endcomment -%}
+          {%- liquid
+            assign show_sorting = false
+            if section.settings.enable_sorting and search.results.size > 0 and search.types contains 'product'
+              assign show_sorting = true
+            endif
+          -%}
+          {%- if show_filters or show_sorting -%}
+            <div class="flex items-center justify-between gap-3 mb-6">
+              <div>
+                {%- if show_filters -%}
+                  {%- render 'facets', part: 'trigger', active_filter_count: active_filter_count -%}
+                {%- endif -%}
+              </div>
+              {%- if show_sorting -%}
+                <div class="flex items-center gap-2">
+                  <label for="SortBy" class="text-sm font-medium hidden sm:inline">{{ 'collection.sorting.title' | t }}</label>
+                  <select
+                    id="SortBy"
+                    name="sort_by"
+                    class="border border-border rounded-theme px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/40"
+                    aria-describedby="a11y-refresh-page-message"
+                  >
+                    {%- for option in search.sort_options -%}
+                      <option value="{{ option.value | escape }}" {% if option.value == sort_by %}selected{% endif %}>{{ option.name | escape }}</option>
+                    {%- endfor -%}
+                  </select>
+                  <noscript>
+                    <button type="submit" class="border border-border rounded-theme px-3 py-2 text-sm">{{ 'collection.filters.apply' | t }}</button>
+                  </noscript>
+                </div>
               {%- endif -%}
-              {%- if articles.size > 0 -%}
-                <button class="filter-button px-5 py-2 border border-border rounded-full text-xs uppercase tracking-[0.12em] text-foreground/70 transition-colors" data-filter="articles">
-                  {{ 'general.search.articles' | t }} ({{ articles.size }})
-                </button>
-              {%- endif -%}
-              {%- if pages.size > 0 -%}
-                <button class="filter-button px-5 py-2 border border-border rounded-full text-xs uppercase tracking-[0.12em] text-foreground/70 transition-colors" data-filter="pages">
-                  {{ 'general.search.pages' | t }} ({{ pages.size }})
-                </button>
-              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          {%- if search.results.size == 0 -%}
+            {%- comment -%} Filtro sem resultado: a busca achou algo, o filtro é que zerou {%- endcomment -%}
+            <div class="text-center py-20">
+              <h2 class="text-2xl font-light tracking-title mb-2">{{ 'collection.general.no_results' | t }}</h2>
+              <p class="text-sm text-foreground-muted mb-8">{{ 'collection.general.no_results_text' | t }}</p>
+              <a href="{{ clear_url }}" class="inline-flex items-center color-button text-xs uppercase tracking-label px-6 py-3.5 hover:opacity-90 transition-opacity rounded-theme">
+                {{ 'collection.filters.clear' | t }}
+              </a>
             </div>
           {%- endif -%}
 
@@ -102,15 +222,17 @@
                     <a href="{{ article.url }}" class="block">
                       {%- if article.image -%}
                         <div class="aspect-video overflow-hidden bg-foreground/5">
-                          <img
-                            src="{{ article.image | image_url: width: 600 }}"
-                            alt="{{ article.image.alt | escape }}"
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            width="{{ article.image.width }}"
-                            height="{{ article.image.height }}"
-                            loading="lazy"
-                            decoding="async"
-                          >
+                          {%- comment -%} `image_tag` aplica o ponto focal no corte do `object-cover` (#142). {%- endcomment -%}
+                          {%- assign article_image_alt = article.image.alt | default: '' -%}
+                          {{
+                            article.image
+                            | image_url: width: 600
+                            | image_tag:
+                              alt: article_image_alt,
+                              class: 'w-full h-full object-cover transition-transform duration-500 group-hover:scale-105',
+                              loading: 'lazy',
+                              decoding: 'async'
+                          }}
                         </div>
                       {%- endif -%}
                       <div class="p-4">
@@ -159,6 +281,9 @@
               {%- render 'pagination', paginate: paginate -%}
             </div>
           {%- endif -%}
+          </div>
+          </form>
+          </facet-filters>
         {%- else -%}
           {%- comment -%} Nenhum resultado {%- endcomment -%}
           <div class="text-center py-20">
@@ -210,40 +335,10 @@
   </div>
 </div>
 
-<script>
-  // Filtro por tipo (se habilitado)
-  const filterButtons = document.querySelectorAll('.filter-button');
-  const searchSections = document.querySelectorAll('.search-section');
-
-  filterButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      const filter = this.getAttribute('data-filter');
-
-      // Atualizar botões ativos (aparência controlada pela regra CSS .filter-button.active)
-      filterButtons.forEach(btn => btn.classList.remove('active'));
-      this.classList.add('active');
-
-      // Filtrar seções
-      searchSections.forEach(section => {
-        if (filter === 'all') {
-          section.style.display = 'block';
-        } else {
-          section.style.display = section.getAttribute('data-section') === filter ? 'block' : 'none';
-        }
-      });
-    });
-  });
-
-</script>
-
-<style>
-  /* CSS real: o Tailwind não processa @apply em blocos de estilo dentro de .liquid */
-  .filter-button.active {
-    background-color: rgb(var(--color-foreground));
-    color: rgb(var(--color-background));
-    border-color: rgb(var(--color-foreground));
-  }
-</style>
+{%- if search.performed -%}
+  {%- comment -%} Gaveta, auto-envio e aviso de recarga: o mesmo componente da coleção {%- endcomment -%}
+  <script src="{{ 'facets.js' | asset_url }}" defer></script>
+{%- endif -%}
 
 {% schema %}
 {
@@ -281,6 +376,23 @@
     {
       "type": "header",
       "content": "t:sections.main_search.settings.filters_header.content"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.main_search.settings.filters_paragraph.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "label": "t:sections.main_search.settings.enable_filtering.label",
+      "info": "t:sections.main_search.settings.enable_filtering.info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "label": "t:sections.main_search.settings.enable_sorting.label",
+      "default": true
     },
     {
       "type": "checkbox",
