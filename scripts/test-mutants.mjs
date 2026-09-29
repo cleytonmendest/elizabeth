@@ -741,6 +741,31 @@ const MUTANTES = [
     para: '    pattern: /NUNCA_CASA_IMPORTANT/g,',
     teste: 'tests/tokens-important.test.mjs',
   },
+  // ── #154: cor fixa no CSS de dentro do Liquid ───────────────────────────
+  {
+    porque: 'a regra tokens volta a não ler o style= nem o <style> do Liquid, e o scrim e o gray-900 do cadastro passam calados',
+    arquivo: 'scripts/lint/rules/tokens.mjs',
+    de: '    pattern: /(?<!\\[)\\b(?:rgba?|hsla?)\\(\\s*[\\d.][^)]*\\)/g,',
+    para: '    pattern: /NUNCA_CASA_RGB/g,',
+    teste: 'tests/tokens-rgb.test.mjs',
+  },
+  {
+    porque: 'o valor arbitrário do Tailwind passa a ser acusado duas vezes, uma delas sem o nome da classe',
+    arquivo: 'scripts/lint/rules/tokens.mjs',
+    de: '    pattern: /(?<!\\[)\\b(?:rgba?|hsla?)\\(\\s*[\\d.][^)]*\\)/g,',
+    para: '    pattern: /\\b(?:rgba?|hsla?)\\(\\s*[\\d.][^)]*\\)/g,',
+    teste: 'tests/tokens-rgb.test.mjs',
+  },
+  {
+    // A exceção do scrim libera o PRETO. Alargada para qualquer rgb, ela vira
+    // licença para cor fixa no card inteiro, e ninguém repara: continua
+    // parecendo uma exceção com justificativa escrita.
+    porque: 'a exceção do scrim do card passa a liberar qualquer cor fixa, e não só o preto',
+    arquivo: 'scripts/lint/config/design-exceptions.json',
+    de: '        "bw:text-white",\n        "rgb:rgba(0,0,0,*)"',
+    para: '        "bw:text-white",\n        "rgb:*"',
+    teste: 'tests/tokens-rgb.test.mjs',
+  },
   // ── #157 e #152: os eventos de produto e o contrato que os descreve ──────
   {
     porque: 'a galeria volta a escutar no document, e a foto não acompanha a troca de variante da cliente',
@@ -2470,6 +2495,21 @@ const MUTANTES = [
  * código que decide se uma página passa ou não.
  */
 const MUTANTES_E2E = [
+  // ── #154: as bolinhas de cor do card, medidas em pixel ───────────────────
+  {
+    porque: 'a bolinha perde o aro preto, e cor clara sobre foto clara volta a sumir no scrim (1,7:1)',
+    arquivo: 'snippets/card-product-slider.liquid',
+    de: 'box-shadow:0 0 0 1px rgba(0,0,0,.55)"',
+    para: 'box-shadow:none"',
+    teste: 'e2e/bolinhas-do-card.spec.mjs',
+  },
+  {
+    porque: 'o fundo do "+N" volta a 30%, e o texto branco cai abaixo de 4,5:1 sobre foto clara',
+    arquivo: 'snippets/card-product-slider.liquid',
+    de: 'style="background:rgba(0,0,0,.5)"',
+    para: 'style="background:rgba(0,0,0,.3)"',
+    teste: 'e2e/bolinhas-do-card.spec.mjs',
+  },
   {
     porque: 'o scrim do cabeçalho some, e o texto fica sem ajuda onde o scrim do banner já virou transparente',
     arquivo: 'sections/header.liquid',

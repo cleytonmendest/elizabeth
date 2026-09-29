@@ -64,6 +64,9 @@ module.exports = {
       // corpo fica preservada por construção. Ver ADR 0003.
       // Os valores em px nos comentários são os de --font-scale: 1.
       fontSize: {
+        // 8px · o "+N" dentro da bolinha de cor de 14px do card (#154). Não é
+        // degrau de texto corrido — nada abaixo de `xs` deve ser lido como frase.
+        '2xs':  ['calc(0.5rem * var(--font-scale))', { lineHeight: '1' }],
         'xs':   ['calc(0.75rem * var(--font-scale))', { lineHeight: 'calc(1rem * var(--font-scale))' }],  // 12px · legendas, labels, textos legais
         'sm':   ['calc(0.875rem * var(--font-scale))', { lineHeight: 'calc(1.25rem * var(--font-scale))' }],  // 14px · CORPO (padrão)
         'base': ['calc(1rem * var(--font-scale))', { lineHeight: 'calc(1.5rem * var(--font-scale))' }],  // 16px · corpo destacado / títulos pequenos

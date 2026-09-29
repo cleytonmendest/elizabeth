@@ -416,15 +416,20 @@
     margin-bottom: 0;
   }
 
-  {%- comment -%} Custom checkbox styling {%- endcomment -%}
-  input[type="checkbox"]:checked {
-    background-color: rgb(17, 24, 39);
-    border-color: rgb(17, 24, 39);
+  {%- comment -%}
+    Checkbox na cor do scheme. Era `rgb(17, 24, 39)` — o gray-900 do Tailwind,
+    cravado — e o `background-color` do :checked nem pintava: o checkbox é
+    nativo (o tema não usa o plugin de forms), e checkbox nativo ignora fundo.
+    Quem pinta o marcado é o `accent-color`. O anel de foco usa o fundo e o
+    texto do scheme, para não virar um aro branco num scheme escuro (#154).
+  {%- endcomment -%}
+  input[type="checkbox"] {
+    accent-color: rgb(var(--color-foreground));
   }
 
   input[type="checkbox"]:focus {
     outline: 2px solid transparent;
     outline-offset: 2px;
-    box-shadow: 0 0 0 2px white, 0 0 0 4px rgb(17, 24, 39);
+    box-shadow: 0 0 0 2px rgb(var(--color-background)), 0 0 0 4px rgb(var(--color-foreground));
   }
 </style>

@@ -51,6 +51,22 @@ export const CHECKS = [
       `${v} ignora o color scheme. Use text-foreground / bg-background (ou registre a exceção se for scrim de imagem).`,
   },
   {
+    code: 'rgb',
+    // Cor fixa em CSS dentro do Liquid: `style="background:rgba(0,0,0,.3)"` ou
+    // um bloco `<style>`. A regra só lia CLASSE, e o scrim do card de produto
+    // passou calado — o mesmo buraco que os CSS_CHECKS fecharam para `assets/`,
+    // em outro contêiner (#154).
+    //
+    // Só com NÚMERO dentro, como no CSS: `rgb({{ value.swatch.color.rgb }})` é
+    // a cor que a lojista cadastrou, e `rgb(var(--color-border))` é o scheme.
+    // Valor arbitrário do Tailwind fica de fora, porque o check `arbitrary` já
+    // o acusa com o nome da classe: no meio dele o `_` antes do `rgba` apaga o
+    // `\b`, e no começo (`shadow-[rgba(…)]`) quem barra é o `(?<!\[)`.
+    pattern: /(?<!\[)\b(?:rgba?|hsla?)\(\s*[\d.][^)]*\)/g,
+    message: (v) =>
+      `Cor fixa ${v} — o lojista não consegue mudar pelo color scheme. Use rgb(var(--color-…)), com alfa se precisar: rgb(var(--color-foreground) / 0.6) (ou registre a exceção se for scrim de imagem).`,
+  },
+  {
     code: 'radius',
     // Qualquer rounded que não seja rounded-theme*, rounded-full ou rounded-none.
     // O segundo lookahead cobre a forma POR CANTO (`rounded-br-none`): ela é a
@@ -202,31 +218,38 @@ export function acusaCss(file, texto) {
   return offenses;
 }
 
+/**
+ * O que a regra acusa num Liquid. Pura, como `acusaCss`: recebe o nome — que
+ * decide as exceções — e o texto, e passa pelo mesmo `stripInert` e pelos
+ * mesmos checks que a varredura do tema.
+ */
+export function acusaLiquid(file, texto) {
+  const src = stripInert(texto);
+  const offenses = [];
+  for (const check of CHECKS) {
+    for (const match of src.matchAll(check.pattern)) {
+      const value = match[0];
+      const code = `${check.code}:${value}`;
+      if (isAllowed('tokens', file, code)) continue;
+      offenses.push(
+        offense({
+          rule: 'tokens',
+          file,
+          line: lineAt(src, match.index),
+          code,
+          message: check.message(value),
+        })
+      );
+    }
+  }
+  return offenses;
+}
+
 export function run() {
   const offenses = [];
 
   for (const file of cssDoTema()) offenses.push(...acusaCss(file, read(file)));
-
-  for (const file of allLiquid()) {
-    const src = stripInert(read(file));
-
-    for (const check of CHECKS) {
-      for (const match of src.matchAll(check.pattern)) {
-        const value = match[0];
-        const code = `${check.code}:${value}`;
-        if (isAllowed('tokens', file, code)) continue;
-        offenses.push(
-          offense({
-            rule: 'tokens',
-            file,
-            line: lineAt(src, match.index),
-            code,
-            message: check.message(value),
-          })
-        );
-      }
-    }
-  }
+  for (const file of allLiquid()) offenses.push(...acusaLiquid(file, read(file)));
 
   return offenses;
 }
