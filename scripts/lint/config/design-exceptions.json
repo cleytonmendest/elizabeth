@@ -35,6 +35,29 @@
       "reason": "O lightbox é um visualizador de imagem em tela cheia: fundo escuro e controles claros são o comportamento correto independentemente do color scheme, para não competir com a foto do produto."
     },
     {
+      "rule": "tokens",
+      "files": [
+        "snippets/card-product-slider.liquid"
+      ],
+      "codes": [
+        "bw:border-white",
+        "bw:text-white",
+        "rgb:rgba(0,0,0,*)"
+      ],
+      "reason": "As bolinhas de cor do card ficam SOBRE A FOTO do produto, em cima de um scrim preto (o gradiente do painel de hover no desktop, o chip no mobile). O fundo delas é a foto, não o color scheme: com as cores do scheme, um scheme escuro poria bolinha escura sobre scrim escuro. Aro branco separa a bolinha de foto escura, aro preto de foto clara, e o scrim preto é o que dá contraste ao texto branco do \"+N\". O rgba liberado é só o preto, com qualquer alfa — outra cor fixa neste arquivo continua reprovando. Medido na #154, sobre foto branca e creme: pior caso 3,5:1 para a bolinha e 6,1:1 para o \"+N\" (antes 1,7:1 e 3,1:1)."
+    },
+    {
+      "rule": "tokens",
+      "files": [
+        "sections/section-images-link.liquid",
+        "sections/slider-cards.liquid"
+      ],
+      "codes": [
+        "rgb:rgba(0,0,0,*)"
+      ],
+      "reason": "Gradiente preto que sobe da base da foto até a metade: é o scrim que torna legível o rótulo escrito sobre a imagem, qualquer que seja a foto que a lojista suba. Ele escurece a foto, não pinta superfície do tema, então não tem cor de scheme correspondente. Só o preto está liberado; outra cor fixa nestes arquivos continua reprovando. O texto branco do rótulo continua no baseline como dívida: se ele deve seguir o scheme é decisão separada."
+    },
+    {
       "rule": "templates",
       "files": [
         "templates/gift_card.liquid"

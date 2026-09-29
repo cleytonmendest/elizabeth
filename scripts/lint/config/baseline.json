@@ -1,6 +1,6 @@
 {
   "$comment": "Dívida técnica conhecida. Gerado por \"npm run lint:baseline\". Só deve encolher — nunca adicione entradas à mão para silenciar uma violação nova.",
-  "generated": "2026-09-28",
+  "generated": "2026-09-29",
   "counts": {
     "boundaries": 3,
     "i18n": 109,
@@ -8,9 +8,9 @@
     "settings": 3,
     "similarity": 5,
     "svgcolors": 3,
-    "tokens": 93
+    "tokens": 89
   },
-  "total": 217,
+  "total": 213,
   "fingerprints": [
     "boundaries|src/js/cart.js|section-rendering",
     "boundaries|src/js/pickup-availability.js|section-rendering",
@@ -188,11 +188,7 @@
     "tokens|sections/video.liquid|arbitrary:tracking-[0.16em]",
     "tokens|snippets/card-article.liquid|arbitrary:tracking-[0.12em]",
     "tokens|snippets/card-article.liquid|opacity-contrast:text-foreground/30",
-    "tokens|snippets/card-product-slider.liquid|arbitrary:text-[8px]",
     "tokens|snippets/card-product-slider.liquid|arbitrary:tracking-[0.14em]",
-    "tokens|snippets/card-product-slider.liquid|bw:bg-black",
-    "tokens|snippets/card-product-slider.liquid|bw:border-white",
-    "tokens|snippets/card-product-slider.liquid|bw:text-white",
     "tokens|snippets/card-product-slider.liquid|opacity-contrast:text-foreground/40",
     "tokens|snippets/card-product-slider.liquid|tracking:tracking-wide",
     "tokens|snippets/cart-drawer-item.liquid|arbitrary:flex-[1]",
