@@ -30,7 +30,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ARGUMENTOS, PASTA, avaliar, mudancasDoDiff } from '../scripts/adr.mjs';
+import { ARGUMENTOS, PASTA, adrsDaPasta, avaliar, divergenciasDoIndice, mudancasDoDiff } from '../scripts/adr.mjs';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -227,5 +227,71 @@ describe('os ADRs do repositório', () => {
 
     expect(numeros.length).toBeGreaterThan(0);
     expect(numeros).toEqual(numeros.map((_, i) => i + 1));
+  });
+});
+
+describe('o índice (#155)', () => {
+  // O índice pulou do 0011 para o 0016, e quatro ADRs aceitos ficaram sem
+  // linha. A checagem de append-only não via: o índice não perdeu linha,
+  // nunca as ganhou. Estes casos plantados são os que ela passa a pegar.
+  const ADRS = [
+    { numero: '0001', arquivo: '0001-a.md', titulo: 'Primeira decisão', status: 'Aceito' },
+    { numero: '0002', arquivo: '0002-b.md', titulo: 'Segunda decisão', status: 'Aceito' },
+  ];
+  const linha = ({ numero, arquivo, titulo, status }) => `| [${numero}](${arquivo}) | ${titulo} | ${status} |`;
+  const indice = (linhas) => ['## Índice', '', '| # | Decisão | Status |', '| --- | --- | --- |', ...linhas].join('\n');
+
+  it('índice em dia não acusa nada', () => {
+    expect(divergenciasDoIndice(ADRS, indice(ADRS.map(linha)))).toEqual([]);
+  });
+
+  it('ADR sem linha no índice reprova — o caso do 0012 ao 0015', () => {
+    const [divergencia, ...resto] = divergenciasDoIndice(ADRS, indice([linha(ADRS[0])]));
+
+    expect(resto).toEqual([]);
+    expect(divergencia).toContain('0002');
+    expect(divergencia).toContain('não tem linha');
+  });
+
+  it('linha que aponta para um arquivo que não existe reprova', () => {
+    const fantasma = { numero: '0003', arquivo: '0003-apagado.md', titulo: 'x', status: 'Aceito' };
+
+    expect(divergenciasDoIndice(ADRS, indice([...ADRS.map(linha), linha(fantasma)]))).toEqual([
+      'A linha 0003 aponta para 0003-apagado.md, que não existe.',
+    ]);
+  });
+
+  it('status diferente do arquivo reprova — o índice não pode dizer "Aceito" de um ADR superado', () => {
+    const superado = [ADRS[0], { ...ADRS[1], status: 'Substituído por 0003' }];
+
+    const divergencias = divergenciasDoIndice(superado, indice(ADRS.map(linha)));
+
+    expect(divergencias).toHaveLength(1);
+    expect(divergencias[0]).toContain('Substituído por 0003');
+  });
+
+  it('título: a caixa não conta, a palavra conta', () => {
+    const gritado = [{ ...ADRS[0], titulo: 'Primeira DECISÃO' }, ADRS[1]];
+    const outro = [{ ...ADRS[0], titulo: 'Outra decisão' }, ADRS[1]];
+
+    expect(divergenciasDoIndice(gritado, indice(ADRS.map(linha)))).toEqual([]);
+    expect(divergenciasDoIndice(outro, indice(ADRS.map(linha)))).toHaveLength(1);
+  });
+
+  it('número da linha diferente do arquivo para onde ela aponta reprova', () => {
+    const trocada = { ...ADRS[1], numero: '0009' };
+
+    expect(divergenciasDoIndice(ADRS, indice([linha(ADRS[0]), linha(trocada)]))).toEqual([
+      'A linha 0009 aponta para 0002-b.md, que é o 0002.',
+    ]);
+  });
+
+  it('o índice do repositório confere com a pasta', () => {
+    const adrs = adrsDaPasta();
+    const readme = fs.readFileSync(path.join(RAIZ, PASTA, 'README.md'), 'utf8');
+
+    expect(adrs.length).toBeGreaterThanOrEqual(17);
+    expect(adrs.every((adr) => adr.titulo && adr.status), 'todo ADR tem H1 e status').toBe(true);
+    expect(divergenciasDoIndice(adrs, readme)).toEqual([]);
   });
 });

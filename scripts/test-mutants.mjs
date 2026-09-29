@@ -172,6 +172,28 @@ const MUTANTES = [
     teste: 'tests/adr.test.mjs',
   },
   {
+    // O defeito da #155: quatro ADRs aceitos sem linha no índice, e nada via.
+    porque: 'o índice volta a poder esquecer um ADR, como esqueceu do 0012 ao 0015',
+    arquivo: 'scripts/adr.mjs',
+    de: '    if (!indexados.has(adr.arquivo)) divergencias.push(',
+    para: '    if (false) divergencias.push(',
+    teste: 'tests/adr.test.mjs',
+  },
+  {
+    porque: 'o índice pode continuar dizendo "Aceito" de um ADR que foi superado',
+    arquivo: 'scripts/adr.mjs',
+    de: '    if (linha.status !== adr.status) {',
+    para: '    if (false) {',
+    teste: 'tests/adr.test.mjs',
+  },
+  {
+    porque: 'uma linha some do índice, e quem procura o ADR 0013 não o encontra',
+    arquivo: 'docs/adr/README.md',
+    de: '| [0013](0013-o-js-servido-e-gerado-e-o-teste-le-o-gerado.md) | O JS servido é gerado, e o teste lê o gerado | Aceito |\n',
+    para: '',
+    teste: 'tests/adr.test.mjs',
+  },
+  {
     porque: 'pulo sem motivo volta a ser só um aviso, e o teste some do resumo em silêncio',
     arquivo: 'scripts/e2e.mjs',
     de: '  return pulos(relatorio).filter((g) => g.motivo === SEM_MOTIVO);',

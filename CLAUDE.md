@@ -396,7 +396,8 @@ ou busca.
   que ser verificável por comando; se não é testável, não é critério.
 - **Decisão estrutural** → ADR em `docs/adr/`. **Append-only**, e agora
   verificado: `scripts/adr.mjs` reprova o PR que remover linha de um ADR
-  existente. Para revogar ou corrigir uma decisão, escreva um ADR NOVO que
+  existente, e o índice de `docs/adr/README.md` que não conferir com a
+  pasta. Para revogar ou corrigir uma decisão, escreva um ADR NOVO que
   supersede o antigo — a decisão velha precisa continuar legível para quem for
   entender por que ela valia. Acrescentar texto ao ADR existente é permitido;
   renomear conta como apagar, porque o nome do arquivo é o alvo dos links.
