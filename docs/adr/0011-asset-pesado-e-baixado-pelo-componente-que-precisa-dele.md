@@ -153,3 +153,25 @@ Swiper assumir, e não rolável. Uma trilha rolável é outro tipo de contêiner
 o Chrome conta como salto a troca dela pelo `.swiper-wrapper`, sem nenhum
 pixel mudar de lugar (CLS 0,075). A trilha rolável fica só para quando não há
 script (`@media (scripting: none)`).
+
+## Adendo (#164): o download espera a página, e a cliente pode antecipá-lo
+
+Com o espaço reservado pela #161, o Swiper deixou de ser necessário para o
+primeiro paint, e o "sob demanda" desta ADR pôde ir além de "quando o elemento
+conecta". Conectar ainda era durante o carregamento: no Lighthouse mobile da
+home o bundle descia junto com a foto do LCP, e a execução dele eram as duas
+maiores tarefas longas do próprio tema.
+
+Agora o download sai depois do `load`, quando o navegador fica ocioso
+(`requestIdleCallback`, com teto de 2 s; no Safari, logo depois do `load`). A
+cliente que chega antes — toca, foca ou tecla no carrossel, ou usa uma seta —
+dispara o download na hora, e o que ela pediu fica guardado e é aplicado
+quando ele inicializa.
+
+Isso também fecha a corrida que a seção "Pagamos" registrou: a galeria da PDP
+não lê mais `container.swiper`, e sim `irPara(índice)` do `<my-slider>`, que
+funciona antes de o Swiper chegar. A troca de variante feita nesse intervalo
+deixa de se perder.
+
+Os testes do "quando" estão em `tests/carousel-manager.test.mjs`, com um
+mutante por comportamento.

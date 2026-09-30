@@ -12,7 +12,7 @@
  * à mão. Se um dia o nome do evento, o alvo ou a bolha divergirem entre os
  * dois, é aqui que aparece.
  */
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { loadAsset } from './helpers/load-asset.mjs';
 
 loadAsset('variations-selector.js');
@@ -74,6 +74,25 @@ describe('a troca de variante', () => {
 
     expect(g.currentIndex).toBe(0);
     expect(g.images[1].classList.contains('hidden')).toBe(true);
+  });
+});
+
+describe('o slider do celular acompanha a troca', () => {
+  it('pede ao <my-slider> o slide da variante, mesmo antes de o Swiper chegar (#164)', () => {
+    const largura = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { value: 400, configurable: true });
+    try {
+      monta();
+      const slider = document.createElement('my-slider');
+      slider.irPara = vi.fn();
+      document.querySelector('#pdp [data-product-gallery]').appendChild(slider);
+
+      escolhe('pdp-branco');
+
+      expect(slider.irPara).toHaveBeenCalledWith(1);
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { value: largura, configurable: true });
+    }
   });
 });
 

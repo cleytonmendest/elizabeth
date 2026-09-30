@@ -49,6 +49,10 @@ async function bundleChega() {
   window.Swiper = vi.fn(function Swiper() {
     this.slides = [];
     this.destroy = () => {};
+    this.params = {};
+    this.slideNext = vi.fn();
+    this.slidePrev = vi.fn();
+    this.slideToLoop = vi.fn();
   });
   bundles().forEach((tag) => tag.dispatchEvent(new Event('load')));
   await assentar();
@@ -65,6 +69,9 @@ afterEach(() => {
   document.head.innerHTML = '';
   delete window.Swiper;
   delete window.swiperCarregando;
+  delete window.swiperDepois;
+  delete window.requestIdleCallback;
+  delete document.readyState;
 });
 
 describe('quem NÃO tem carrossel não baixa o Swiper', () => {
@@ -153,5 +160,86 @@ describe('quando o bundle não vem', () => {
     await assentar();
 
     expect(bundles()).toHaveLength(2);
+  });
+});
+
+// ── Quando: depois da página, ou antes se a cliente chegar (#164) ─────────
+
+/**
+ * A página ainda carregando. O jsdom já nasce `complete`, e é isso que os
+ * testes acima usam; aqui o `readyState` é sobreposto até o `load` disparar.
+ */
+function paginaCarregando() {
+  Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true });
+}
+
+function paginaCarregou() {
+  delete document.readyState;
+  window.dispatchEvent(new Event('load'));
+}
+
+describe('o Swiper espera a página', () => {
+  it('enquanto a página carrega, nenhum slider baixa o bundle', async () => {
+    paginaCarregando();
+    document.body.innerHTML = markupDoSlider() + markupDoSlider({ items: 4 });
+    await assentar();
+    expect(bundles()).toHaveLength(0);
+
+    paginaCarregou();
+    await assentar();
+    expect(bundles()).toHaveLength(1);
+  });
+
+  it('depois do load, espera o navegador ficar ocioso quando ele oferece como', async () => {
+    let ocioso;
+    window.requestIdleCallback = vi.fn((cb) => (ocioso = cb));
+    paginaCarregando();
+    document.body.innerHTML = markupDoSlider();
+    paginaCarregou();
+    await assentar();
+
+    expect(window.requestIdleCallback).toHaveBeenCalledWith(expect.any(Function), { timeout: 2000 });
+    expect(bundles()).toHaveLength(0);
+
+    ocioso();
+    await assentar();
+    expect(bundles()).toHaveLength(1);
+  });
+});
+
+describe('a cliente que chega antes não espera', () => {
+  it('tocar no carrossel antes do load baixa na hora', async () => {
+    paginaCarregando();
+    document.body.innerHTML = markupDoSlider();
+    await assentar();
+
+    document.querySelector('my-slider').dispatchEvent(new Event('pointerdown'));
+    await assentar();
+
+    expect(bundles()).toHaveLength(1);
+  });
+
+  it('a seta usada antes do Swiper não se perde: ele chega e avança', async () => {
+    paginaCarregando();
+    document.body.innerHTML = markupDoSlider();
+    const slider = document.querySelector('my-slider');
+
+    slider.nextSlide();
+    await assentar();
+    expect(bundles()).toHaveLength(1);
+
+    await bundleChega();
+    expect(slider.swiper.slideNext).toHaveBeenCalledTimes(1);
+  });
+
+  it('irPara antes do Swiper vai para o slide pedido quando ele chega', async () => {
+    paginaCarregando();
+    document.body.innerHTML = markupDoSlider({ items: 4 });
+    const slider = document.querySelector('my-slider');
+
+    slider.irPara(2);
+    await bundleChega();
+
+    expect(slider.swiper.slideToLoop).toHaveBeenCalledWith(2, 300);
   });
 });
