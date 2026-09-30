@@ -1,0 +1,175 @@
+/*
+ * Carrosséis e barra de avisos. Global: `layout/theme.liquid` carrega em toda
+ * página.
+ *
+ * Passa pelo Tailwind só para sair minificado (#161): escrito à mão em
+ * `assets/`, ele viajava com comentários e indentação, e foi deles que saiu o
+ * espaço que a regra de pré-inicialização abaixo ocupa no teto do CSS global.
+ * `scripts/lint/rules/build.mjs` compara este fonte com o gerado.
+ */
+
+/* Custom element é inline por padrão; garante box em bloco para largura/posição. */
+my-slider {
+    display: block;
+}
+
+/* ==========================================================================
+   Antes do Swiper chegar (#161)
+
+   O Swiper é baixado pelo próprio <my-slider>, depois do HTML (ADR 0011). Até
+   ele inicializar, `.my-slider__container` ainda não tem `.swiper`, e sem esta
+   regra os slides apareciam EMPILHADOS. Quando o Swiper chegava, o slider
+   encolhia para a altura de um slide e a página inteira subia: CLS 0,206
+   medido no slider do topo, no celular, sempre que a página aparecia antes do
+   Swiper. É daí que vinha a nota do Lighthouse mobile oscilando de 50 a 90 no
+   mesmo tema.
+
+   A trilha já nasce na geometria que o Swiper vai dar: lado a lado, cada slide
+   com 100% dividido por quantos cabem na faixa. As quantidades vêm do Liquid
+   em --por-vez-mob, -tab e -desk, os mesmos valores dos `data-qty-*` que o
+   JS lê (`tests/slider-contrato.test.mjs` confere), e na falta deles valem os
+   mesmos padrões do JS: 1, 2 e 4. Os breakpoints são os do
+   `iniciar()` em `src/js/carousel-manager.js`, e o `peek` soma o mesmo 0,28
+   de lá; se um dos dois mudar só de um lado, `e2e/slider-sem-salto.spec.mjs`
+   mede o salto.
+
+   Sem JS a trilha rola (ver o `scripting: none` no fim): os slides continuam
+   alcançáveis, em vez de cortados.
+   ========================================================================== */
+my-slider[data-peek='true'] {
+    --peek: 0.28;
+}
+
+my-slider .my-slider__container:not(.swiper) {
+    display: flex;
+    overflow: hidden;
+}
+
+my-slider .my-slider__container:not(.swiper) > * {
+    flex: 0 0 calc(100% / (var(--por-vez-mob, 1) + var(--peek, 0)));
+    min-width: 0;
+}
+
+@media (min-width: 768px) {
+    my-slider .my-slider__container:not(.swiper) > * {
+        flex-basis: calc(100% / (var(--por-vez-tab, 2) + var(--peek, 0)));
+    }
+}
+
+@media (min-width: 1024px) {
+    my-slider .my-slider__container:not(.swiper) > * {
+        flex-basis: calc(100% / (var(--por-vez-desk, 4) + var(--peek, 0)));
+    }
+}
+
+/* Sem JS a trilha rola, com a barra escondida. SÓ sem JS: com JS ela fica
+   cortada até o Swiper assumir, porque uma trilha rolável é outro tipo de
+   contêiner, e o Chrome conta como salto a troca dele pelo `.swiper-wrapper`
+   (CLS 0,075 medido num carrossel de cards, sem nenhum pixel mudar de lugar).
+   O Lighthouse soma esse salto igual a um de verdade. */
+@media (scripting: none) {
+    my-slider .my-slider__container:not(.swiper) {
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    my-slider .my-slider__container:not(.swiper)::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.slider-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.slider-container .icon-angle-right,
+.slider-container .icon-angle-left {
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-item {
+    height: inherit;
+    padding: 1px;
+}
+
+/* ==========================================================================
+   Swiper — paginação (dots)
+   Mantém o comportamento legado do Owl: dots em fluxo normal abaixo do slider,
+   pílula ativa na cor do botão (token, scheme-aware).
+   ========================================================================== */
+.my-slider__container .swiper-pagination {
+    position: static;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.my-slider__container .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    margin: 0;
+    background: transparent;
+    border: 1px solid rgb(var(--color-foreground) / 0.4);
+    border-radius: 100%;
+    opacity: 1;
+    transition: all ease-in-out 0.4s;
+}
+
+.my-slider__container .swiper-pagination-bullet-active {
+    width: 35px;
+    background: rgb(var(--color-button));
+    border-color: rgb(var(--color-button));
+    border-radius: 20px;
+}
+
+/* ==========================================================================
+   Announcement bar — marquee em CSS puro (sem JS / sem jQuery.marquee)
+   Duas trilhas idênticas; o trilho anima translateX(0 -> -50%) garantindo
+   loop contínuo sem "pulo". O gap fica DENTRO de cada trilha (padding-inline-end)
+   para preservar o alinhamento do -50%.
+   ========================================================================== */
+.announcement-marquee {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    will-change: transform;
+    animation: announcement-scroll var(--marquee-duration, 40s) linear infinite;
+}
+
+.announcement-track {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    padding-inline-end: var(--marquee-gap, 0px);
+}
+
+/* Direção: "left" rola para a esquerda (padrão); "right" inverte. */
+announcement-bar[data-direction='right'] .announcement-marquee {
+    animation-direction: reverse;
+}
+
+/* Pausa no hover quando habilitado no editor. */
+announcement-bar[data-pausehover='true']:hover .announcement-marquee {
+    animation-play-state: paused;
+}
+
+@keyframes announcement-scroll {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* Acessibilidade: respeita preferência de movimento reduzido. */
+@media (prefers-reduced-motion: reduce) {
+    .announcement-marquee {
+        animation: none;
+    }
+}

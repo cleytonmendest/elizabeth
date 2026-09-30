@@ -319,7 +319,11 @@ shopify theme push    # deploy
   `connectedCallback`): para dependência PESADA que várias sections dividem.
   Hoje só o Swiper — ver [ADR 0011](docs/adr/0011-asset-pesado-e-baixado-pelo-componente-que-precisa-dele.md).
   O Liquid não deduplica entre sections; o JS sim, e o cache mora no `window`
-  para valer por página e não por cópia do arquivo.
+  para valer por página e não por cópia do arquivo. E o componente reserva, em
+  CSS que já está na página, o espaço que vai ocupar depois que o asset chegar:
+  sem isso a página salta quando ele chega ([#161](https://github.com/cleytonmendest/elizabeth/issues/161)).
+  Todo `<my-slider>` declara `--por-vez-mob`, `-tab` e `-desk`, e
+  `e2e/slider-sem-salto.spec.mjs` mede o salto.
 
 `npm run lint -- --rules=budget` reprova se o peso global passar do teto em
 `scripts/lint/config/perf-budget.json`. Ao adicionar script novo, co-locar é a

@@ -24,25 +24,41 @@
     {%- comment -%} LAYOUT: Stacked (empilhado desktop, slider mobile) {%- endcomment -%}
     {% when 'stacked' %}
       <div class="w-full lg:flex flex-col hidden gap-2">
+        {%- comment -%} Largura pedida à CDN, e não a foto original (#163). {%- endcomment -%}
         {%- for image in product.images -%}
-          <img
-            class="w-full"
-            src="{{ image | image_url }}"
-            alt="{{ product.title }}"
-            width="{{ image.width }}"
-            height="{{ image.height }}"
-            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-            decoding="async"
-          >
+          {%- liquid
+            assign carregamento = 'lazy'
+            if forloop.first
+              assign carregamento = 'eager'
+            endif
+          -%}
+          {{
+            image
+            | image_url: width: 1600
+            | image_tag:
+              widths: '800, 1000, 1200, 1600',
+              sizes: '(min-width: 1024px) 60vw, 100vw',
+              class: 'w-full',
+              alt: product.title,
+              loading: carregamento,
+              decoding: 'async'
+          }}
         {%- endfor -%}
       </div>
       <div class="w-full lg:hidden relative flex items-center">
-        {% render 'product-page-slider', qtd: 1 %}
+        {% render 'product-page-slider', qtd: 1, prioridade: true %}
       </div>
 
     {%- comment -%} LAYOUT: Two Columns (grid 2 colunas desktop, slider mobile) {%- endcomment -%}
     {% when 'two_columns' %}
       {% assign image_count = product.images.size %}
+      {%- comment -%} Duas colunas dentro da coluna da galeria: cada foto ocupa metade dela (#163). {%- endcomment -%}
+      {%- liquid
+        assign gallery_sizes = '(min-width: 1024px) 30vw, 100vw'
+        if image_count < 2
+          assign gallery_sizes = '(min-width: 1024px) 60vw, 100vw'
+        endif
+      -%}
       <div class="w-full hidden lg:grid lg:gap-4 {% if image_count > 1 %}lg:grid-cols-2{% else %}lg:grid-cols-1{% endif %}">
         {%- for image in product.images -%}
           {%- comment -%} `image_tag` aplica o ponto focal no corte do `object-cover` (#142). {%- endcomment -%}
@@ -54,8 +70,10 @@
           -%}
           {{
             image
-            | image_url
+            | image_url: width: 1200
             | image_tag:
+              widths: '400, 600, 800, 1000, 1200',
+              sizes: gallery_sizes,
               class: 'w-full h-full object-cover',
               alt: product.title,
               loading: gallery_loading,
@@ -64,16 +82,16 @@
         {%- endfor -%}
       </div>
       <div class="w-full lg:hidden relative flex items-center">
-        {% render 'product-page-slider', qtd: 1 %}
+        {% render 'product-page-slider', qtd: 1, prioridade: true %}
       </div>
 
     {%- comment -%} LAYOUT: Slider 1 imagem {%- endcomment -%}
     {% when 'one_images_slider' %}
-      {% render 'product-page-slider', qtd: 1 %}
+      {% render 'product-page-slider', qtd: 1, prioridade: true %}
 
     {%- comment -%} LAYOUT: Slider 2 imagens {%- endcomment -%}
     {% when 'two_images_slider' %}
-      {% render 'product-page-slider', qtd: 2 %}
+      {% render 'product-page-slider', qtd: 2, prioridade: true %}
 
     {%- comment -%} LAYOUT: Thumbnails Gallery (nova opção) {%- endcomment -%}
     {% when 'thumbnails_gallery' %}
@@ -180,6 +198,7 @@
             data-qty-desk="1"
             data-qty-tab="1"
             data-qty-mob="1"
+            style="--por-vez-mob: 1; --por-vez-tab: 1; --por-vez-desk: 1"
             data-dot="true"
           >
             <div class="my-slider__container">

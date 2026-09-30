@@ -53,12 +53,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { constroi } from './build-js.mjs';
+import { CSS } from './build-css.mjs';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const VITEST = path.join(ROOT, 'node_modules', '.bin', 'vitest');
 const PLAYWRIGHT = path.join(ROOT, 'node_modules', '.bin', 'playwright');
+const TAILWIND = path.join(ROOT, 'node_modules', '.bin', 'tailwindcss');
 
 /**
  * Propaga a mutação do fonte para o artefato que os testes leem.
@@ -77,8 +79,19 @@ const PLAYWRIGHT = path.join(ROOT, 'node_modules', '.bin', 'playwright');
  * programa, que é exatamente o que ele existe para detectar.
  */
 function propaga(arquivo) {
-  if (!arquivo.startsWith('src/js/')) return;
-  constroi(path.basename(arquivo));
+  if (arquivo.startsWith('src/js/')) return constroi(path.basename(arquivo));
+
+  // O mesmo vale para o CSS que passa pelo Tailwind (#161): o fonte de
+  // `carousel-style.css` mora em `src/`, e `e2e/slider-sem-salto.spec.mjs` lê
+  // o gerado. Sem isto, o mutante da regra de pré-inicialização mediria o CSS
+  // velho e sobreviveria sem ter sido testado.
+  const par = CSS.find(([fonte]) => fonte === arquivo);
+  if (!par) return;
+  const { status, stderr } = spawnSync(TAILWIND, ['-i', par[0], '-o', par[1], '--minify'], {
+    cwd: ROOT,
+    encoding: 'utf8',
+  });
+  if (status !== 0) throw new Error(`Tailwind falhou ao reconstruir ${par[1]}: ${stderr}`);
 }
 
 /**
@@ -740,6 +753,50 @@ const MUTANTES = [
     de: "    pattern: /(?<![^\\s\"'])![a-z0-9-]+:[^\\s\"'{}]+/g,",
     para: '    pattern: /NUNCA_CASA_IMPORTANT/g,',
     teste: 'tests/tokens-important.test.mjs',
+  },
+  // ── #163: toda foto é pedida à CDN numa largura ─────────────────────────
+  {
+    porque: 'a regra imagens para de acusar image_url sem largura, e a foto original volta a passar',
+    arquivo: 'scripts/lint/rules/imagens.mjs',
+    de: "    .filter(([, args = '']) => !/\\b(?:width|height)\\s*:/.test(args))",
+    para: '    .filter(() => false)',
+    teste: 'tests/imagens.test.mjs',
+  },
+  {
+    porque: 'o celular do slider do topo volta a ter uma largura só, e a tela pequena baixa a foto grande',
+    arquivo: 'sections/slider-image.liquid',
+    de: "assign larguras_mob = '375,550,750,1100' | split: ','",
+    para: "assign larguras_mob = '1100' | split: ','",
+    teste: 'tests/imagens.test.mjs',
+  },
+  {
+    porque: 'a galeria da PDP volta a baixar todas as fotos de imediato, e elas disputam banda com o LCP',
+    arquivo: 'snippets/product-page-slider.liquid',
+    de: "          assign carregamento = 'lazy'",
+    para: "          assign carregamento = 'eager'",
+    teste: 'tests/imagens.test.mjs',
+  },
+  {
+    porque: 'o Produto em destaque pede prioridade alta no meio da página, e rouba banda do que está no topo',
+    arquivo: 'snippets/product-page-slider.liquid',
+    de: '            if prioridade\n',
+    para: '            if true\n',
+    teste: 'tests/imagens.test.mjs',
+  },
+  // ── #161: todo <my-slider> declara quantos slides mostra por faixa ──────
+  {
+    porque: 'o slider do topo deixa de declarar a faixa do desktop, e lá a trilha nasce com o padrão do CSS',
+    arquivo: 'sections/slider-image.liquid',
+    de: '--por-vez-tab: {{ qty_tab }}; --por-vez-desk: {{ qty_desk }}"',
+    para: '--por-vez-tab: {{ qty_tab }}"',
+    teste: 'tests/slider-contrato.test.mjs',
+  },
+  {
+    porque: 'a vitrine de produtos declara para o CSS uma quantidade diferente da que o JS lê',
+    arquivo: 'snippets/product-showcase.liquid',
+    de: '--por-vez-desk: {{ columns }}"',
+    para: '--por-vez-desk: {{ cols_tab }}"',
+    teste: 'tests/slider-contrato.test.mjs',
   },
   // ── #154: cor fixa no CSS de dentro do Liquid ───────────────────────────
   {
@@ -2495,6 +2552,38 @@ const MUTANTES = [
  * código que decide se uma página passa ou não.
  */
 const MUTANTES_E2E = [
+  // ── #161: o carrossel não salta quando o Swiper chega ────────────────────
+  {
+    porque: 'os slides voltam a nascer empilhados, e a página salta quando o Swiper chega (CLS 0,23 no celular)',
+    arquivo: 'src/carousel-style.css',
+    de: 'my-slider .my-slider__container:not(.swiper) {\n    display: flex;\n    overflow: hidden;\n}',
+    para: 'my-slider .my-slider__container:not(.swiper) {\n    display: block;\n    overflow: hidden;\n}',
+    teste: 'e2e/slider-sem-salto.spec.mjs',
+  },
+  {
+    // Nenhum pixel muda de lugar, e o Chrome conta o salto mesmo assim: a
+    // trilha rolável é outro tipo de contêiner, e a troca dela pelo
+    // `.swiper-wrapper` vira layout-shift. Foi medido antes de virar regra.
+    porque: 'com JS a trilha volta a ser rolável, e a troca de contêiner conta como salto no Lighthouse',
+    arquivo: 'src/carousel-style.css',
+    de: 'my-slider .my-slider__container:not(.swiper) {\n    display: flex;\n    overflow: hidden;\n}',
+    para: 'my-slider .my-slider__container:not(.swiper) {\n    display: flex;\n    overflow-x: auto;\n}',
+    teste: 'e2e/slider-sem-salto.spec.mjs',
+  },
+  {
+    porque: 'o peek do CSS diverge do 0,28 do JS, e os cards nascem numa largura e o Swiper os troca por outra',
+    arquivo: 'src/carousel-style.css',
+    de: '    --peek: 0.28;',
+    para: '    --peek: 0.2;',
+    teste: 'e2e/slider-sem-salto.spec.mjs',
+  },
+  {
+    porque: 'o breakpoint do tablet diverge do 768 do Swiper, e em 800px a trilha nasce com a quantidade do celular',
+    arquivo: 'src/carousel-style.css',
+    de: '@media (min-width: 768px) {',
+    para: '@media (min-width: 900px) {',
+    teste: 'e2e/slider-sem-salto.spec.mjs',
+  },
   // ── #154: as bolinhas de cor do card, medidas em pixel ───────────────────
   {
     porque: 'a bolinha perde o aro preto, e cor clara sobre foto clara volta a sumir no scrim (1,7:1)',
