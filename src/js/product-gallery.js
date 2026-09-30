@@ -143,17 +143,12 @@ class ProductGallery {
 
       this.showImage(index);
 
-      // Sincroniza o slider mobile (Swiper) com a mídia da variante.
+      // O slider do celular vai junto. `irPara` funciona antes de o Swiper
+      // chegar: a troca fica guardada e é aplicada quando ele inicializa. Lendo
+      // `container.swiper` direto, como antes, a troca feita nesse intervalo
+      // se perdia — e desde a #164 o Swiper espera a página ficar ociosa.
       if (window.innerWidth < 1024) {
-        const sliderContainer = this.gallery.querySelector('my-slider .my-slider__container');
-        const swiper = sliderContainer?.swiper;
-        if (swiper) {
-          if (typeof swiper.slideToLoop === 'function' && swiper.params.loop) {
-            swiper.slideToLoop(index, 300);
-          } else {
-            swiper.slideTo(index, 300);
-          }
-        }
+        this.gallery.querySelector('my-slider')?.irPara?.(index);
       }
     });
   }
