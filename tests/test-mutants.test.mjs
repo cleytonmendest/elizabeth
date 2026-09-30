@@ -104,6 +104,7 @@ describe('o runner usa a poda de verdade', () => {
     'e2e/menu-desktop.spec.mjs',
     'e2e/header-transparente.spec.mjs',
     'e2e/bolinhas-do-card.spec.mjs',
+    'e2e/slider-sem-salto.spec.mjs',
   ];
 
   it('todo mutante de navegador roda contra um spec que não precisa de loja', () => {

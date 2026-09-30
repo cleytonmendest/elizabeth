@@ -5,7 +5,7 @@
   "description": "Tema Shopify Online Store 2.0 para moda feminina (TailwindCSS, vanilla JS, Swiper).",
   "scripts": {
     "tail": "tailwindcss -i ./src/tailwind.css -o ./assets/application.css --watch --minify",
-    "build": "tailwindcss -i ./src/tailwind.css -o ./assets/application.css --minify && tailwindcss -i ./src/checkout-acelerado.css -o ./assets/checkout-acelerado.css --minify && node scripts/build-js.mjs",
+    "build": "tailwindcss -i ./src/tailwind.css -o ./assets/application.css --minify && tailwindcss -i ./src/checkout-acelerado.css -o ./assets/checkout-acelerado.css --minify && tailwindcss -i ./src/carousel-style.css -o ./assets/carousel-style.css --minify && node scripts/build-js.mjs",
     "lint": "node scripts/lint/index.mjs",
     "lint:fast": "node scripts/lint/index.mjs --fast",
     "lint:baseline": "node scripts/lint/index.mjs --write-baseline",
@@ -13,7 +13,7 @@
     "test:watch": "vitest",
     "test:mutants": "node scripts/test-mutants.mjs",
     "test:e2e": "node scripts/e2e.mjs",
-    "test:e2e:gate": "node scripts/e2e.mjs e2e/gate.spec.mjs e2e/guarda-do-clique.spec.mjs e2e/menu-desktop.spec.mjs e2e/header-transparente.spec.mjs e2e/retirada.spec.mjs e2e/bolinhas-do-card.spec.mjs",
+    "test:e2e:gate": "node scripts/e2e.mjs e2e/gate.spec.mjs e2e/guarda-do-clique.spec.mjs e2e/menu-desktop.spec.mjs e2e/header-transparente.spec.mjs e2e/retirada.spec.mjs e2e/bolinhas-do-card.spec.mjs e2e/slider-sem-salto.spec.mjs",
     "test:e2e:baseline": "A11Y_BASELINE_WRITE=1 node scripts/e2e.mjs e2e/a11y.spec.mjs --workers=1",
     "status": "node scripts/status.mjs",
     "gate": "npm run build && npm run lint && npm test",

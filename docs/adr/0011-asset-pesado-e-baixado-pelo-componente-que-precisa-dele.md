@@ -127,3 +127,29 @@ os dois downloads começam no mesmo instante, na mesma origem.
 - ADR 0001 — o que precisa ser verdade é verificado por código: aqui o teto
   guarda o layout e o teste guarda o componente, porque nenhum dos dois
   alcança o que o outro vê
+
+## Adendo (#161): o componente reserva o próprio espaço antes de o asset chegar
+
+Uma consequência que nenhuma das acima previu, e que só apareceu medindo. Se o
+asset baixado em runtime é quem dá FORMA ao componente, a página tem um estado
+intermediário entre o HTML e a chegada dele, e esse estado também é desenhado.
+
+Até a #161 ninguém o desenhava. Antes de o Swiper inicializar, os slides do
+`<my-slider>` apareciam empilhados, e quando ele chegava a página inteira
+subia: CLS 0,23 no slider do topo, no celular, e 0,36 a 0,45 num carrossel de
+cards. Só havia salto quando a página aparecia antes do Swiper, e isso muda a
+cada carregamento. Por isso o Lighthouse mobile da home oscilava de 50 a 90 no
+mesmo tema.
+
+A regra que fica: **o componente que baixa o próprio asset reserva, em CSS
+que já está na página, o espaço que vai ocupar depois.** Aqui é
+`src/carousel-style.css` (global), a partir de `--por-vez-*` que cada
+consumidor declara (`tests/slider-contrato.test.mjs`). Quem verifica é
+`e2e/slider-sem-salto.spec.mjs`: o servidor segura o Swiper, a página
+aparece, e o CLS depois que ele assume tem que ser zero.
+
+Um detalhe medido que a regra carrega: com JS, a trilha fica CORTADA até o
+Swiper assumir, e não rolável. Uma trilha rolável é outro tipo de contêiner, e
+o Chrome conta como salto a troca dela pelo `.swiper-wrapper`, sem nenhum
+pixel mudar de lugar (CLS 0,075). A trilha rolável fica só para quando não há
+script (`@media (scripting: none)`).
