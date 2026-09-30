@@ -16,6 +16,19 @@
  * Agora quem pede o download é o próprio <my-slider>, no `connectedCallback`:
  * página sem slider não baixa byte nenhum, e página com seis sliders baixa uma
  * vez só.
+ *
+ * ── E ele espera a página (#164) ───────────────────────────────────────────
+ *
+ * Pedir no `connectedCallback` ainda era pedir DURANTE o carregamento: no
+ * Lighthouse mobile da home o bundle começava a descer aos 966 ms, junto com a
+ * foto do LCP, e a execução dele eram as duas maiores tarefas longas do tema
+ * (137 e 59 ms). Desde a #161 nada do primeiro paint depende do Swiper — a
+ * trilha já nasce na geometria final pelo CSS —, então ele pode esperar.
+ *
+ * O download sai depois do `load`, quando o navegador fica ocioso. Se a
+ * cliente chegar antes — tocar, focar ou teclar no carrossel, ou usar uma
+ * seta —, sai na hora; e o que ela pediu (a seta, ou a troca de variante da
+ * galeria da PDP) fica guardado e é aplicado quando ele inicializa.
  */
 
 /**
@@ -31,7 +44,7 @@ function carregarSwiper() {
   const { js, css } = urlsDoSwiper();
   if (!js) {
     return Promise.reject(
-      new Error('MySlider: a tag de carousel-manager.js não trouxe data-swiper-js — o Swiper não tem de onde vir.')
+      new Error('MySlider: sem data-swiper-js na tag do carousel-manager.js.')
     );
   }
 
@@ -66,6 +79,28 @@ function carregarSwiper() {
  * `currentScript` só existe durante a avaliação do arquivo — aqui a leitura
  * acontece depois, quando um <my-slider> conecta.
  */
+/**
+ * Resolve quando a página terminou de carregar e o navegador ficou ocioso. O
+ * teto de 2 s é para uma página que nunca fica ociosa não deixar os
+ * carrosséis parados. No Safari, que não tem `requestIdleCallback`, vale logo
+ * depois do `load`. Mora no `window` pelo mesmo motivo do cache do download.
+ */
+function depoisDaPagina() {
+  if (window.swiperDepois) return window.swiperDepois;
+  window.swiperDepois = new Promise((resolve) => {
+    const quandoOcioso = () => {
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(resolve, { timeout: 2000 });
+      } else {
+        setTimeout(resolve, 0);
+      }
+    };
+    if (document.readyState === 'complete') quandoOcioso();
+    else window.addEventListener('load', quandoOcioso, { once: true });
+  });
+  return window.swiperDepois;
+}
+
 function urlsDoSwiper() {
   const tag = document.querySelector('script[data-swiper-js]');
   return { js: tag?.dataset.swiperJs || '', css: tag?.dataset.swiperCss || '' };
@@ -81,11 +116,11 @@ function injetarCss(href) {
 
 class MySlider extends HTMLElement {
   connectedCallback() {
-    if (this.swiper || this.carregando) return; // evita dupla inicialização se reconectado
+    if (this.swiper || this.carregando || this.items) return; // evita dupla inicialização se reconectado
 
     this.container = this.querySelector('.my-slider__container');
     if (!this.container) {
-      console.warn('MySlider: .my-slider__container não encontrado dentro do elemento!');
+      console.warn('MySlider: sem .my-slider__container.');
       return;
     }
 
@@ -93,11 +128,24 @@ class MySlider extends HTMLElement {
     // Não inicia o slider se não houver itens suficientes — e, por isso mesmo,
     // não baixa o Swiper.
     if (items < 2) return;
+    this.items = items;
+
+    // A cliente chegando ao carrossel antes da página ficar ociosa:
+    // `pointerdown` cobre mouse e toque, e `focusin` chega antes de qualquer
+    // tecla. Os listeners ficam; depois do Swiper, `carregar` sai na 1ª linha.
+    const carregar = () => this.carregar();
+    ['pointerdown', 'focusin'].forEach((tipo) => this.addEventListener(tipo, carregar));
+    depoisDaPagina().then(carregar);
+  }
+
+  /** Baixa (uma vez, pelo cache) e inicializa. Chamado depois da página, ou antes, pela cliente. */
+  carregar() {
+    if (!this.items || this.swiper || this.carregando || !this.isConnected) return;
 
     this.carregando = carregarSwiper()
       .then(() => {
         this.carregando = null;
-        if (this.isConnected) this.iniciar(items);
+        if (this.isConnected) this.iniciar(this.items);
       })
       .catch((error) => {
         this.carregando = null;
@@ -163,6 +211,9 @@ class MySlider extends HTMLElement {
     };
 
     this.swiper = new window.Swiper(this.container, config);
+
+    // O que a cliente pediu antes de o Swiper chegar.
+    if (this.pendente) this.agir(...this.pendente);
   }
 
   /** Mantém `inert` em sincronia com aria-hidden nos slides (acessibilidade). */
@@ -231,12 +282,32 @@ class MySlider extends HTMLElement {
     }
   }
 
+  /**
+   * Chama `metodo` no Swiper. Antes de ele chegar, guarda o pedido (só o
+   * último vale) e antecipa o download; `iniciar` o aplica.
+   */
+  agir(metodo, ...args) {
+    if (this.swiper) return this.swiper[metodo](...args);
+    this.pendente = [metodo, ...args];
+    this.carregar();
+  }
+
   nextSlide() {
-    this.swiper?.slideNext();
+    this.agir('slideNext');
   }
 
   prevSlide() {
-    this.swiper?.slidePrev();
+    this.agir('slidePrev');
+  }
+
+  /**
+   * Vai para o slide `indice` (dos originais, não dos clones do loop). É o que
+   * a galeria da PDP usa para acompanhar a troca de variante, e funciona antes
+   * de o Swiper chegar. `slideToLoop` serve com e sem loop: no Swiper 11 ele só
+   * traduz o índice quando `params.loop` está ligado, e cai no `slideTo`.
+   */
+  irPara(indice) {
+    this.agir('slideToLoop', indice, 300);
   }
 }
 

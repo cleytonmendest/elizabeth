@@ -2050,6 +2050,42 @@ const MUTANTES = [
     para: '    if (false) return;',
     teste: 'tests/carousel-manager.test.mjs',
   },
+  // ── #164: o Swiper espera a página ──────────────────────────────────────
+  {
+    porque: 'o Swiper volta a descer durante o carregamento, disputando banda com a foto do LCP',
+    arquivo: 'src/js/carousel-manager.js',
+    de: "    if (document.readyState === 'complete') quandoOcioso();\n    else window.addEventListener('load', quandoOcioso, { once: true });",
+    para: '    quandoOcioso();',
+    teste: 'tests/carousel-manager.test.mjs',
+  },
+  {
+    porque: 'depois do load o Swiper não espera o navegador ficar ocioso, e roda no meio do que ainda está acontecendo',
+    arquivo: 'src/js/carousel-manager.js',
+    de: '      if (window.requestIdleCallback) {',
+    para: '      if (false) {',
+    teste: 'tests/carousel-manager.test.mjs',
+  },
+  {
+    porque: 'a cliente que toca no carrossel antes da página ficar ociosa espera à toa',
+    arquivo: 'src/js/carousel-manager.js',
+    de: "    ['pointerdown', 'focusin'].forEach((tipo) => this.addEventListener(tipo, carregar));",
+    para: '    void carregar;',
+    teste: 'tests/carousel-manager.test.mjs',
+  },
+  {
+    porque: 'a seta usada antes do Swiper chegar se perde, e o carrossel não anda',
+    arquivo: 'src/js/carousel-manager.js',
+    de: '    this.pendente = [metodo, ...args];',
+    para: '    void args;',
+    teste: 'tests/carousel-manager.test.mjs',
+  },
+  {
+    porque: 'a galeria da PDP volta a perder a troca de variante feita antes do Swiper chegar',
+    arquivo: 'src/js/product-gallery.js',
+    de: "        this.gallery.querySelector('my-slider')?.irPara?.(index);",
+    para: '        void index;',
+    teste: 'tests/product-gallery.test.mjs',
+  },
   {
     // O par que custou três semanas de `fixme` na #64: o clique dispara o POST
     // e `waitForLoadState('load')` resolve na hora, contra o documento velho.
