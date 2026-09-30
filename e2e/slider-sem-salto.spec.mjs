@@ -31,38 +31,13 @@ import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { motorDaLoja } from '../tests/helpers/liquid-loja.mjs';
+import { renderizaSection } from '../tests/helpers/section-liquid.mjs';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 // ── As sections, pelo Liquid real ─────────────────────────────────────────
-
-function motor() {
-  const engine = motorDaLoja();
-  // A foto é um objeto com `src`, `width` e `height`, como o da Shopify; a URL
-  // leva a largura pedida, para o `srcset` ser legível no teste.
-  engine.registerFilter('image_url', (imagem, ...args) => {
-    if (!imagem?.src) return '';
-    const largura = Object.fromEntries(args.filter(Array.isArray)).width;
-    return largura ? `${imagem.src}?width=${largura}` : imagem.src;
-  });
-  engine.registerFilter('image_tag', (url, ...args) => {
-    const attrs = Object.fromEntries(args.filter(Array.isArray));
-    return `<img src="${url}" alt="${attrs.alt ?? ''}" class="${attrs.class ?? ''}" loading="${attrs.loading ?? 'eager'}" width="600" height="800">`;
-  });
-  return engine;
-}
-
-function renderizaSection(arquivo, section) {
-  // Dois ajustes ao que o liquidjs aceita, nenhum no que a section desenha:
-  // o `schema` não é Liquid de vitrine, e o bloco `comment … endcomment` DENTRO
-  // de `{% liquid %}` é texto livre, que a Shopify aceita e o liquidjs não.
-  const fonte = fs
-    .readFileSync(path.join(RAIZ, 'sections', arquivo), 'utf8')
-    .replace(/\{%-?\s*schema\s*-?%\}[\s\S]*?\{%-?\s*endschema\s*-?%\}/, '')
-    .replace(/^[ \t]*comment[ \t]*\n[\s\S]*?^[ \t]*endcomment[ \t]*\n/gm, '');
-  return motor().parseAndRenderSync(fonte, { section });
-}
+// O renderizador é o de `tests/helpers/section-liquid.mjs`, o mesmo dos testes
+// de imagem: um só, para os dois não medirem sections diferentes.
 
 // O arquivo servido tem as dimensões declaradas, como na loja: uma foto de
 // proporção diferente da declarada troca de altura quando carrega, e o salto

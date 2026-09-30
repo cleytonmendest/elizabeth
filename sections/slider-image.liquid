@@ -7,6 +7,12 @@
 {% assign play_time = section.settings['play-time'] %}
 {% assign pause_hover = section.settings['pause-hover'] %}
 {% assign dot = section.settings.dot %}
+{%- comment -%} Larguras pedidas à CDN por fonte do <picture> (#163). {%- endcomment -%}
+{%- liquid
+  assign larguras_mob = '375,550,750,1100' | split: ','
+  assign larguras_tablet = '600,800,1024,1500' | split: ','
+  assign larguras_desktop = '1200,1600,1920,2560' | split: ','
+-%}
 
 <style>
   my-slider.hero-slider .swiper-pagination {
@@ -114,12 +120,39 @@
           endcase
         -%}
 
+        {%- comment -%}
+          Cada fonte é pedida em várias larguras, e o navegador escolhe pela tela
+          (#163). Sem largura, a CDN entregava a foto original, no formato
+          original: no Lighthouse mobile o LCP da home era `Banner_1_mobile.png`,
+          um PNG de 40 KB. Com `width` ela também converte para WebP ou AVIF.
+          As larguras cobrem a faixa de cada fonte até densidade 3 no celular.
+        {%- endcomment -%}
+        {%- capture srcset_desktop -%}
+          {%- for largura in larguras_desktop -%}
+            {%- assign largura_px = largura | plus: 0 -%}
+            {{- block.settings.imgDesktop | image_url: width: largura_px }} {{ largura_px }}w{% unless forloop.last %}, {% endunless -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+        {%- capture srcset_tablet -%}
+          {%- for largura in larguras_tablet -%}
+            {%- assign largura_px = largura | plus: 0 -%}
+            {{- block.settings.imgTablet | image_url: width: largura_px }} {{ largura_px }}w{% unless forloop.last %}, {% endunless -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+        {%- capture srcset_mob -%}
+          {%- for largura in larguras_mob -%}
+            {%- assign largura_px = largura | plus: 0 -%}
+            {{- block.settings.imgMob | image_url: width: largura_px }} {{ largura_px }}w{% unless forloop.last %}, {% endunless -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+
         {%- capture slide_picture -%}
           <picture>
             {% if block.settings.imgDesktop %}
               <source
                 media="(min-width: 1024px)"
-                srcset="{{ block.settings.imgDesktop | image_url }}"
+                srcset="{{ srcset_desktop }}"
+                sizes="100vw"
                 width="{{ block.settings.imgDesktopWidth | default: 1920 }}"
                 height="{{ block.settings.imgDesktopHeight | default: 540 }}"
                 class="w-full"
@@ -128,14 +161,17 @@
             {% if block.settings.imgTablet %}
               <source
                 media="(min-width: 500px)"
-                srcset="{{ block.settings.imgTablet | image_url }}"
+                srcset="{{ srcset_tablet }}"
+                sizes="100vw"
                 width="{{ block.settings.imgTabletWidth | default: 1024 }}"
                 height="{{ block.settings.imgTabletHeight | default: 540 }}"
                 class="w-full"
               >
             {% endif %}
             <img
-              src="{{ block.settings.imgMob | image_url }}"
+              src="{{ block.settings.imgMob | image_url: width: 750 }}"
+              srcset="{{ srcset_mob }}"
+              sizes="100vw"
               alt="{{ slide_alt | escape }}"
               width="{{ block.settings.imgMobWidth | default: 500 }}"
               height="{{ block.settings.imgMobHeight | default: 540 }}"

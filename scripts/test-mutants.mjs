@@ -754,6 +754,35 @@ const MUTANTES = [
     para: '    pattern: /NUNCA_CASA_IMPORTANT/g,',
     teste: 'tests/tokens-important.test.mjs',
   },
+  // ── #163: toda foto é pedida à CDN numa largura ─────────────────────────
+  {
+    porque: 'a regra imagens para de acusar image_url sem largura, e a foto original volta a passar',
+    arquivo: 'scripts/lint/rules/imagens.mjs',
+    de: "    .filter(([, args = '']) => !/\\b(?:width|height)\\s*:/.test(args))",
+    para: '    .filter(() => false)',
+    teste: 'tests/imagens.test.mjs',
+  },
+  {
+    porque: 'o celular do slider do topo volta a ter uma largura só, e a tela pequena baixa a foto grande',
+    arquivo: 'sections/slider-image.liquid',
+    de: "assign larguras_mob = '375,550,750,1100' | split: ','",
+    para: "assign larguras_mob = '1100' | split: ','",
+    teste: 'tests/imagens.test.mjs',
+  },
+  {
+    porque: 'a galeria da PDP volta a baixar todas as fotos de imediato, e elas disputam banda com o LCP',
+    arquivo: 'snippets/product-page-slider.liquid',
+    de: "          assign carregamento = 'lazy'",
+    para: "          assign carregamento = 'eager'",
+    teste: 'tests/imagens.test.mjs',
+  },
+  {
+    porque: 'o Produto em destaque pede prioridade alta no meio da página, e rouba banda do que está no topo',
+    arquivo: 'snippets/product-page-slider.liquid',
+    de: '            if prioridade\n',
+    para: '            if true\n',
+    teste: 'tests/imagens.test.mjs',
+  },
   // ── #161: todo <my-slider> declara quantos slides mostra por faixa ──────
   {
     porque: 'o slider do topo deixa de declarar a faixa do desktop, e lá a trilha nasce com o padrão do CSS',

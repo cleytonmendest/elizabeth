@@ -3,6 +3,22 @@
 {% endif %}
 
 {%- comment -%}
+  As fotos são pedidas na largura em que aparecem (#163): antes saíam no
+  tamanho original, e TODAS de imediato, inclusive no desktop, onde nos
+  layouts empilhado e de duas colunas este slider fica escondido. Agora só a
+  primeira carrega na hora; as outras esperam chegar perto da tela.
+
+  `prioridade`: a PDP passa `true`, porque ali a primeira foto é o LCP no
+  celular. O "Produto em destaque" não passa: numa section no meio da página,
+  pedir prioridade alta roubaria banda do que está no topo.
+{%- endcomment -%}
+{%- liquid
+  assign por_vez = qtd | default: 1
+  assign largura_desktop = 50 | divided_by: por_vez
+  assign tamanhos = '(min-width: 1024px) ' | append: largura_desktop | append: 'vw, 100vw'
+-%}
+
+{%- comment -%}
   Navegação por breakpoint:
   - Mobile: dots minimalistas + contador "X / N" (setas ocultas)
   - Desktop: setas ‹ › (dots/contador ocultos) — comportamento original preservado
@@ -39,13 +55,28 @@
   <div class="my-slider__container overflow-hidden">
     {%- for image in product.images -%}
       <div class="carousel-item flex justify-center">
-        <img
-          class="w-full"
-          src="{{ image | image_url }}"
-          alt="{{ product.title }}"
-          width="{{ image.width }}"
-          height="{{ image.height }}"
-        >
+        {%- liquid
+          assign carregamento = 'lazy'
+          assign prioridade_da_foto = 'auto'
+          if forloop.first
+            assign carregamento = 'eager'
+            if prioridade
+              assign prioridade_da_foto = 'high'
+            endif
+          endif
+        -%}
+        {{
+          image
+          | image_url: width: 1200
+          | image_tag:
+            widths: '400, 600, 800, 1000, 1200',
+            sizes: tamanhos,
+            class: 'w-full',
+            alt: product.title,
+            loading: carregamento,
+            fetchpriority: prioridade_da_foto,
+            decoding: 'async'
+        }}
       </div>
     {% endfor %}
   </div>
