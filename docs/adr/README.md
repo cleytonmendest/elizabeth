@@ -62,3 +62,4 @@ diverge do arquivo.
 | [0015](0015-o-cabecalho-transparente-herda-a-cor-do-heroi.md) | O cabeçalho transparente herda a cor do herói | Aceito |
 | [0016](0016-o-tema-nao-exibe-urgencia-que-nao-acaba.md) | O tema não exibe urgência que não acaba | Aceito |
 | [0017](0017-texto-de-botao-compartilhado-vem-do-locale.md) | Texto de botão que aparece em vários lugares vem do locale, não de um setting | Aceito |
+| [0018](0018-a-main-e-o-tema-e-cada-loja-e-uma-branch.md) | A `main` é o tema, e cada loja é uma branch que só puxa dela | Aceito |
