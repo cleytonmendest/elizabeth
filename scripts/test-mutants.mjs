@@ -2613,6 +2613,83 @@ const MUTANTES = [
     para: '      continue;',
     teste: 'tests/refs.test.mjs',
   },
+  {
+    porque: 'tudo vira conteúdo de loja, e uma correção de código feita na loja passa',
+    arquivo: 'scripts/lojas.mjs',
+    de: 'export const ehConteudoDaLoja = (caminho) => CONTEUDO_DA_LOJA.some((p) => casa(p, caminho));',
+    para: 'export const ehConteudoDaLoja = () => true;',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'o `*` passa a atravessar `/`, e os templates de conta viram conteúdo',
+    arquivo: 'scripts/lojas.mjs',
+    de: ".join('[^/]*')",
+    para: ".join('.*')",
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    // Comparada com a ponta da main, a loja que ainda não recebeu a propagação
+    // "mudou" todo o código novo da main, e reprova pelo que não fez.
+    porque: 'a conferência compara com a ponta da main, e a loja reprova pelo que a main andou',
+    arquivo: 'scripts/lojas.mjs',
+    de: "  const base = git(['merge-base', main, loja], { cwd }).trim();",
+    para: "  const base = git(['rev-parse', main], { cwd }).trim();",
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'chave nova num locale da loja volta a passar, e código entra pela porta do conteúdo',
+    arquivo: 'scripts/lojas.mjs',
+    de: '      if (!novas.length && !sumidas.length) continue;',
+    para: '      continue;',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'o validar deixa de buscar as lojas e diz "nenhuma loja" com a cara de "todas cabem"',
+    arquivo: 'scripts/lojas.mjs',
+    de: '      `+refs/heads/${PREFIXO}*:refs/remotes/origin/${PREFIXO}*`,',
+    para: '',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'a loja é validada contra o código DELA, e o setting renomeado no PR passa',
+    arquivo: 'scripts/lojas.mjs',
+    de: '    problemas: problemasDoConteudo(leitorDoRef(`origin/${loja}`, { cwd }), codigo),',
+    para: '    problemas: problemasDoConteudo(leitorDoRef(`origin/${loja}`, { cwd }), leitorDoRef(`origin/${loja}`, { cwd })),',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    // Sem isso, o git mescla por linha a home da loja com a da main, e sai um
+    // layout que ninguém montou — ou um conflito que trava a propagação.
+    porque: 'o conteúdo que a loja mudou deixa de voltar inteiro para ela',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  const restaurarDaLoja = mudadosPelaLoja.filter(ehConteudoDaLoja);',
+    para: '  const restaurarDaLoja = [];',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    // A primeira versão, rodada à mão, apagou uma edição não commitada do
+    // ci.yml e estes mesmos mutantes: o `checkout --force` da volta descarta
+    // o que não foi commitado.
+    porque: 'a propagação volta a rodar com a árvore suja, e o checkout --force apaga o que não foi commitado',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  if (sujos) {',
+    para: '  if (false) {',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'a loja reprovada na conferência é empurrada mesmo assim',
+    arquivo: 'scripts/lojas.mjs',
+    de: "  const problemas = conferirLoja({ loja: 'HEAD', main, cwd });",
+    para: '  const problemas = [];',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'commit do shopify[bot] na main passa mesmo com loja/* existindo',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  if (!lojas.length) {\n    return {',
+    para: '  if (true) {\n    return {',
+    teste: 'tests/lojas.test.mjs',
+  },
 ];
 
 

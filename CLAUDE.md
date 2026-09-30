@@ -394,6 +394,35 @@ ou busca.
 - Valor arbitrário (`text-[15px]`, `tracking-[0.18em]`) é violação: promova a
   token no config e use o token.
 
+## As lojas
+
+A `main` é o tema. Cada loja é uma branch `loja/<nome>`, conectada à sua loja
+pela integração GitHub da Shopify, que só recebe da `main` — ver
+[ADR 0018](docs/adr/0018-a-main-e-o-tema-e-cada-loja-e-uma-branch.md).
+
+Uma `loja/*` só difere da `main` no que o editor grava: `templates/*.json`,
+`sections/*.json`, `config/settings_data.json` e `config/markets.json`. Nos
+`locales/*.json` ela muda o valor de uma chave, não a lista de chaves. A lista
+que vale é `CONTEUDO_DA_LOJA`, em `scripts/lojas.mjs`, e `tests/lojas.test.mjs`
+exige que este parágrafo cite toda ela.
+
+**Correção de código achada numa loja vai na `main`**, e chega à loja pela
+propagação. Três verificações fazem isso valer:
+
+```bash
+node scripts/lojas.mjs conferir   # numa loja/*: só conteúdo mudou, e ele cabe no código dela?
+node scripts/lojas.mjs validar    # o JSON de cada loja/* cabe no código daqui? (job gate)
+node scripts/lojas.mjs propagar   # leva a main a cada loja/* (workflow Lojas; recusa árvore suja)
+```
+
+Na propagação, o arquivo de conteúdo que a loja mudou volta inteiro para ela.
+O git não mescla por linha a home da loja com a da `main`. Conflito fora do
+conteúdo reprova, inclusive num locale.
+
+Nenhuma loja fica conectada à `main`: um commit do `shopify[bot]` nela reprova
+o `propagar`. Enquanto não existir nenhuma `loja/*`, a `main` ainda é a loja
+conectada, e o script diz isso em vez de reprovar.
+
 ## Trabalhando aqui
 
 - **Feature ou bug** → abra uma issue com o template. O critério de aceite tem

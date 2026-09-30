@@ -57,8 +57,9 @@ verificação, na [issue #168](https://github.com/cleytonmendest/elizabeth/issue
 - a lista do que é conteúdo de loja mora num lugar só, `CONTEUDO_DA_LOJA` em
   `scripts/lojas.mjs`;
 - um diff de `loja/*` fora dessa lista reprova;
-- um job leva a `main` para cada `loja/*`, e um conflito em conteúdo fica com
-  a versão da loja;
+- um job leva a `main` para cada `loja/*`. Um arquivo de conteúdo que a loja
+  mudou volta inteiro para a versão dela, mesmo sem conflito, porque um merge
+  por linha montaria um layout que ninguém montou;
 - todo PR na `main` valida o conteúdo de cada loja contra o código novo;
 - um commit do `shopify[bot]` na `main` reprova.
 
@@ -112,9 +113,12 @@ tipo que este repositório já viu ser quebrada
 - A quebra de uma loja por uma mudança na `main` só é pega se a busca pelas
   `loja/*` funcionar dentro do PR. Com pastas, bastaria ler o disco.
 - Uma section nova chega a todas as lojas, mas colocá-la na página é decisão
-  de cada uma, no editor. Uma mudança no JSON padrão da `main`, como um bloco
-  novo na PDP, não chega às lojas que já existem. Isso é de propósito, e custa
-  trabalho repetido em cada loja.
+  de cada uma, no editor. Uma mudança num JSON padrão da `main`, como um bloco
+  novo na PDP, só chega à loja que nunca mexeu naquele arquivo. Isso é de
+  propósito, e custa trabalho repetido em cada loja.
+- Os locales misturam as duas coisas: a `main` acrescenta chave, e a loja muda
+  valor. O git os mescla por linha, e um conflito ali (as duas mudaram o mesmo
+  texto) trava a propagação daquela loja até alguém resolver à mão.
 - O job de merge pode empurrar para uma `loja/*` no mesmo instante em que a
   lojista salva no editor. A doc da integração diz que, nesse caso, o commit do
   bot pode ser recusado, e o remédio é "Reset to last commit" no card do tema.
