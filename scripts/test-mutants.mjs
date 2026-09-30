@@ -2579,6 +2579,40 @@ const MUTANTES = [
     para: '// mutante',
     teste: 'tests/product-recommendations.test.mjs',
   },
+  // ── #168: o JSON de cada loja contra o código ───────────────────────────
+  //
+  // Com uma loja por branch (ADR 0018), renomear um setting ou remover um
+  // bloco na `main` é a quebra mais provável de uma loja, e as duas passavam
+  // limpas por todos os verificadores. Cada caminho pelo qual elas voltariam a
+  // passar tem um mutante aqui.
+  {
+    porque: 'um bloco removido do schema volta a passar, e o JSON da loja aponta o que não existe',
+    arquivo: 'scripts/lint/rules/refs.mjs',
+    de: '      if (!doSchema) {',
+    para: '      if (!doSchema) continue;\n      if (false) {',
+    teste: 'tests/refs.test.mjs',
+  },
+  {
+    porque: 'um setting de section renomeado volta a passar, e a loja perde o valor em silêncio',
+    arquivo: 'scripts/lint/rules/refs.mjs',
+    de: '      if (settingsDaSection.has(chave)) continue;',
+    para: '      continue;',
+    teste: 'tests/refs.test.mjs',
+  },
+  {
+    porque: 'um setting de bloco renomeado volta a passar',
+    arquivo: 'scripts/lint/rules/refs.mjs',
+    de: '        if (settingsDoBloco.has(chave)) continue;',
+    para: '        continue;',
+    teste: 'tests/refs.test.mjs',
+  },
+  {
+    porque: 'um setting global renomeado volta a passar, no current e nos presets',
+    arquivo: 'scripts/lint/rules/refs.mjs',
+    de: '      if (declarados.has(chave) || ESTRUTURA_DO_SETTINGS_DATA.has(chave)) continue;',
+    para: '      continue;',
+    teste: 'tests/refs.test.mjs',
+  },
 ];
 
 

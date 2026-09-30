@@ -36,7 +36,15 @@ export const read = (relPath) => fs.readFileSync(abs(relPath), 'utf8');
  * nos arquivos de locale e nos templates JSON.
  */
 export function readJSONC(relPath) {
-  const raw = read(relPath).replace(/^﻿/, '');
+  return parseJSONC(read(relPath));
+}
+
+/**
+ * O mesmo, a partir do texto. Existe para quem não lê do disco: o
+ * `scripts/lojas.mjs` lê o JSON de cada loja com `git show`, de outra branch.
+ */
+export function parseJSONC(texto) {
+  const raw = texto.replace(/^﻿/, '');
   return JSON.parse(raw.replace(/^\s*\/\*[\s\S]*?\*\//, ''));
 }
 
