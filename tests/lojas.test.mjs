@@ -242,6 +242,31 @@ function repositorio() {
     g('checkout', '-q', 'main');
   };
 
+  /**
+   * Cria `loja/<nome>` a partir de OUTRO clone, como faz o `shopify[bot]`.
+   *
+   * O `criaLoja` empurra deste clone, e o `git push` já atualiza o
+   * `refs/remotes/origin/loja/*` daqui, então quem roda depois nunca precisa
+   * buscar nada. Foi assim que o mutante "o validar deixa de buscar as lojas"
+   * sobreviveu à primeira execução completa: o teste media uma loja que o
+   * clone conhecia por acaso. Na vida real a loja é escrita de fora.
+   */
+  const criaLojaDeFora = (nome, mexe = () => {}) => {
+    const fora = path.join(path.dirname(cwd), 'fora');
+    const f = (...args) => execFileSync('git', args, { cwd: fora, encoding: 'utf8', env: semGit, stdio: 'pipe' });
+    if (!fs.existsSync(fora)) {
+      execFileSync('git', ['clone', '-q', origem, fora], { env: semGit, stdio: 'pipe' });
+      f('config', 'user.email', 'bot@exemplo');
+      f('config', 'user.name', 'Bot');
+    }
+    f('fetch', '-q', 'origin');
+    f('checkout', '-q', '-B', `loja/${nome}`, 'origin/main');
+    mexe((caminho, texto) => fs.writeFileSync(path.join(fora, caminho), texto));
+    f('add', '-A');
+    f('commit', '-qm', `loja ${nome}`, '--allow-empty');
+    f('push', '-q', 'origin', `loja/${nome}`);
+  };
+
   /** Um commit na main, empurrado. */
   const naMain = (mexe, autor) => {
     g('checkout', '-q', 'main');
@@ -253,7 +278,7 @@ function repositorio() {
   /** Lê um arquivo de uma branch do remoto, sem checkout. */
   const doRemoto = (ref, caminho) => execFileSync('git', ['show', `${ref}:${caminho}`], { cwd: origem, encoding: 'utf8', env: semGit });
 
-  return { cwd, g, escreve, le, commit, criaLoja, naMain, doRemoto };
+  return { cwd, g, escreve, le, commit, criaLoja, criaLojaDeFora, naMain, doRemoto };
 }
 
 /** A conferência, como o CI a roda: na ponta da loja, depois de buscar. */
@@ -318,9 +343,11 @@ describe('validar: o código do PR cabe no JSON de cada loja?', () => {
   });
 
   it('REPROVA o setting renomeado no PR enquanto a loja ainda usa o nome velho', () => {
+    // As duas lojas nascem em outro clone: este só as conhece se o `validar`
+    // buscar. É o caso do CI, onde quem escreve na `loja/*` é o bot.
     const repo = repositorio();
-    repo.criaLoja('bebe', () => repo.escreve('templates/index.json', HOME('Berços')));
-    repo.criaLoja('moda');
+    repo.criaLojaDeFora('bebe', (escreve) => escreve('templates/index.json', HOME('Berços')));
+    repo.criaLojaDeFora('moda');
     // O PR, no disco: `heading` vira `titulo`.
     repo.escreve('sections/rich-text.liquid', SECTION(['titulo']));
     buscar({ cwd: repo.cwd });
