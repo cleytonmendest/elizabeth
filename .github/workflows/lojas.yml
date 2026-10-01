@@ -1,0 +1,111 @@
+name: Lojas
+
+# Uma loja por branch — ADR 0018, issue #168.
+#
+# A `main` é o tema. Cada loja é uma branch `loja/<nome>`, conectada à sua loja
+# pela integração GitHub da Shopify, e só recebe da `main`. Este workflow é o
+# que faz isso valer sem depender de ninguém lembrar:
+#
+#   conferir  em toda `loja/*`: ela só mudou conteúdo de loja, e o JSON dela
+#             aponta só o que o código dela tem
+#   propagar  a cada push na `main`: a `main` entra em cada `loja/*`
+#
+# A terceira metade, o JSON de cada loja contra o código de um PR, mora no
+# job `gate` do `ci.yml`, que é o que um PR para a `main` precisa passar.
+#
+# ── Por que um arquivo separado do ci.yml ──────────────────────────────────
+#
+# O `ci.yml` declara na abertura que nenhum job dele escreve no repositório, e
+# o `propagar` empurra para as `loja/*`. Mesmo motivo do `preview.yml`: a
+# permissão de escrita fica confinada ao único job que precisa dela.
+#
+# ── Os `if:` daqui são de branch, não de secret ─────────────────────────────
+#
+# O defeito que este repositório já pagou é o job que só roda quando um
+# secret existe: as execuções verdes não provavam nada. Aqui o `if:` separa
+# QUAL verificação cabe em qual branch, e nenhum job depende de secret para
+# rodar.
+#
+# ── O LOJAS_TOKEN ───────────────────────────────────────────────────────────
+#
+# O `propagar` empurra para as `loja/*`, e o GITHUB_TOKEN não empurra um ref
+# cujos arquivos de `.github/workflows/` mudam: a chave `permissions` não tem
+# escopo `workflows`. Sem outro token, toda mudança de workflow na `main`
+# seria recusada em todas as lojas (revisão do PR #169).
+#
+#   Settings → Secrets and variables → Actions → LOJAS_TOKEN
+#   token pessoal fine-grained, só este repositório,
+#   Contents: Read and write · Workflows: Read and write
+#
+# Sem o secret, o job roda e REPROVA com esse motivo assim que existir uma
+# `loja/*`, sem tocar em nenhuma: descobrir na primeira propagação é melhor que
+# descobrir na primeira mudança de workflow.
+#
+# Um efeito de usar o token pessoal: o push dele DISPARA workflows, ao
+# contrário do GITHUB_TOKEN. O merge que o `propagar` empurra numa loja roda o
+# `conferir` dela no GitHub, e isso é de propósito.
+
+on:
+  push:
+    branches: [main, 'loja/**']
+  pull_request:
+    branches: ['loja/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  conferir:
+    name: A loja só mudou conteúdo
+    # O push numa `loja/*` é, quase sempre, o commit do `shopify[bot]`: a
+    # lojista salvou no editor. É exatamente o que precisa ser conferido.
+    if: startsWith(github.ref, 'refs/heads/loja/') || startsWith(github.base_ref, 'loja/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # A conferência parte do merge-base com a `main`, e ele não existe
+          # num clone raso.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      # Sem `npm ci`: o script só usa módulos nativos do Node.
+      - name: Conferir a loja
+        run: node scripts/lojas.mjs conferir
+
+  propagar:
+    name: A main entra em cada loja
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    # Duas propagações ao mesmo tempo disputariam o push das mesmas branches.
+    # A segunda espera. O GitHub cancela a execução PENDENTE quando chega uma
+    # terceira, e isso não deixa nada sem conferir: a checagem do bot olha a
+    # `main` que ainda não chegou a cada loja, não o intervalo de um push.
+    concurrency:
+      group: lojas-propagar
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          # O token que fica no git do runner é o que o `propagar` usa no push.
+          # Sem o secret, cai no GITHUB_TOKEN só para o checkout funcionar: o
+          # `--exigir-token` abaixo reprova antes de qualquer push.
+          token: ${{ secrets.LOJAS_TOKEN || github.token }}
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      # O `propagar` confere cada merge antes de empurrar, e não empurra a
+      # loja que reprova.
+      - name: Propagar
+        env:
+          LOJAS_TOKEN: ${{ secrets.LOJAS_TOKEN }}
+        run: node scripts/lojas.mjs propagar --exigir-token

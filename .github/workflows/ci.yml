@@ -98,6 +98,25 @@ jobs:
           BASE_REF: ${{ github.base_ref || 'main' }}
         run: node scripts/adr.mjs --base-ref "$BASE_REF"
 
+      # ── O JSON de cada loja contra este código (ADR 0018, #168) ─────────
+      #
+      # Cada `loja/*` guarda o layout que a lojista montou no editor. Um PR
+      # que renomeia um setting ou remove um bloco que alguma loja usa faz essa
+      # loja perder o que salvou, sem erro nenhum, no dia em que a `main`
+      # chegar a ela. Aqui isso reprova ANTES do merge.
+      #
+      # Sem nenhuma `loja/*` no remoto, o script diz isso no resumo, em vez
+      # de passar com a mesma cara de "todas as lojas cabem".
+      #
+      # Reprova só o que ESTE código quebra, comparado com o da base: o
+      # problema que uma loja já tinha sai como aviso. Sem isso, uma chave
+      # órfã numa loja reprovaria até um PR que só muda o README.
+      - name: As lojas cabem neste código
+        if: always()
+        env:
+          BASE_REF: ${{ github.base_ref || 'main' }}
+        run: node scripts/lojas.mjs validar --base "origin/$BASE_REF"
+
   test:
     name: Testes unitários
     runs-on: ubuntu-latest
