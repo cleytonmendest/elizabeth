@@ -10,10 +10,7 @@
         "show_sidebar": true,
         "show_search": true,
         "show_sidebar_tags": true,
-        "show_recent_posts": true,
-        "show_newsletter": true,
-        "newsletter_title": "Receba novidades",
-        "newsletter_text": "Assine nossa newsletter e receba dicas de estilo em primeira mão."
+        "show_recent_posts": true
       }
     }
   },
