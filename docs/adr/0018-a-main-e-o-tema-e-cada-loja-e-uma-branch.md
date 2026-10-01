@@ -158,3 +158,11 @@ tipo que este repositório já viu ser quebrada
 - `docs/THEME_STORE_SUBMISSION.md` §4 e
   [issue #114](https://github.com/cleytonmendest/elizabeth/issues/114): os
   presets não mudam o layout
+
+## Atualização
+
+A regra da propagação para o conteúdo da loja foi corrigida pelo
+[ADR 0019](0019-o-conteudo-que-a-loja-tem-e-dela.md): todo arquivo de conteúdo
+que a loja tem é dela, mesmo o que ela nunca mexeu. Deixa de valer o que este
+ADR diz, em "Pagamos", sobre um JSON padrão da `main` chegar à loja que nunca
+mexeu naquele arquivo.
