@@ -17,7 +17,7 @@
  * bare e um clone, com commits de verdade.
  */
 import { describe, it, expect, afterAll } from 'vitest';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -29,12 +29,14 @@ import {
   buscar,
   chavesDivergentes,
   commitsDoBot,
-  commitsDoPush,
+  commitsDoBotAPropagar,
   conferirLoja,
   ehConteudoDaLoja,
   ehLocaleDeVitrine,
+  motivoDoPushRecusado,
   mudancasProibidas,
   planoDoMerge,
+  problemasNovos,
   propagar,
   validarLojas,
   vereditoDoBot,
@@ -251,20 +253,36 @@ function repositorio() {
    * sobreviveu à primeira execução completa: o teste media uma loja que o
    * clone conhecia por acaso. Na vida real a loja é escrita de fora.
    */
-  const criaLojaDeFora = (nome, mexe = () => {}) => {
-    const fora = path.join(path.dirname(cwd), 'fora');
-    const f = (...args) => execFileSync('git', args, { cwd: fora, encoding: 'utf8', env: semGit, stdio: 'pipe' });
+  const fora = path.join(path.dirname(cwd), 'fora');
+  const f = (...args) => execFileSync('git', args, { cwd: fora, encoding: 'utf8', env: semGit, stdio: 'pipe' });
+  const deFora = (nome, ponto, mexe) => {
     if (!fs.existsSync(fora)) {
       execFileSync('git', ['clone', '-q', origem, fora], { env: semGit, stdio: 'pipe' });
       f('config', 'user.email', 'bot@exemplo');
       f('config', 'user.name', 'Bot');
     }
     f('fetch', '-q', 'origin');
-    f('checkout', '-q', '-B', `loja/${nome}`, 'origin/main');
+    f('checkout', '-q', '-B', `loja/${nome}`, ponto);
     mexe((caminho, texto) => fs.writeFileSync(path.join(fora, caminho), texto));
     f('add', '-A');
     f('commit', '-qm', `loja ${nome}`, '--allow-empty');
     f('push', '-q', 'origin', `loja/${nome}`);
+  };
+  const criaLojaDeFora = (nome, mexe = () => {}) => deFora(nome, 'origin/main', mexe);
+
+  /** Um save no editor de uma loja que já existe: o commit do bot, feito de fora. */
+  const naLojaDeFora = (nome, mexe) => deFora(nome, `origin/loja/${nome}`, mexe);
+
+  /** Uma loja sem ancestral comum com a main: faz o git falhar no meio da propagação. */
+  const criaLojaOrfa = (nome) => {
+    deFora('rascunho', 'origin/main', () => {});
+    f('checkout', '-q', '--orphan', `loja/${nome}`);
+    f('rm', '-rqf', '.');
+    fs.writeFileSync(path.join(fora, 'LEIAME'), 'sem história em comum\n');
+    f('add', '-A');
+    f('commit', '-qm', 'órfã');
+    f('push', '-q', 'origin', `loja/${nome}`);
+    f('push', '-q', 'origin', '--delete', 'loja/rascunho');
   };
 
   /** Um commit na main, empurrado. */
@@ -278,7 +296,7 @@ function repositorio() {
   /** Lê um arquivo de uma branch do remoto, sem checkout. */
   const doRemoto = (ref, caminho) => execFileSync('git', ['show', `${ref}:${caminho}`], { cwd: origem, encoding: 'utf8', env: semGit });
 
-  return { cwd, g, escreve, le, commit, criaLoja, criaLojaDeFora, naMain, doRemoto };
+  return { cwd, g, escreve, le, commit, criaLoja, criaLojaDeFora, naLojaDeFora, criaLojaOrfa, naMain, doRemoto };
 }
 
 /** A conferência, como o CI a roda: na ponta da loja, depois de buscar. */
@@ -368,7 +386,37 @@ describe('validar: o código do PR cabe no JSON de cada loja?', () => {
     repo.escreve('sections/rich-text.liquid', SECTION(['heading', 'subtitulo']));
     buscar({ cwd: repo.cwd });
 
-    expect(validarLojas({ cwd: repo.cwd })).toEqual([{ loja: 'loja/bebe', problemas: [] }]);
+    expect(validarLojas({ cwd: repo.cwd })).toEqual([{ loja: 'loja/bebe', problemas: [], antigos: [] }]);
+  });
+
+  it('problema que a loja JÁ tinha não reprova o PR que não o causou — vira aviso', () => {
+    // O caso da revisão do #169: uma chave órfã no settings_data de uma loja
+    // reprovava qualquer PR, até um que só mexe no README.
+    const repo = repositorio();
+    repo.criaLojaDeFora('bebe', (escreve) =>
+      escreve('config/settings_data.json', JSON.stringify({ current: { page_width: 1200, largura_antiga: 1 } }))
+    );
+    repo.escreve('README.md', 'só o README mudou\n');
+    buscar({ cwd: repo.cwd });
+
+    const [resultado] = validarLojas({ cwd: repo.cwd });
+
+    expect(resultado.problemas).toEqual([]);
+    expect(resultado.antigos.map((p) => p.code)).toEqual(['missing-global-setting:largura_antiga']);
+  });
+
+  it('com o problema antigo presente, o que o PR quebra continua reprovando', () => {
+    const repo = repositorio();
+    repo.criaLojaDeFora('bebe', (escreve) =>
+      escreve('config/settings_data.json', JSON.stringify({ current: { page_width: 1200, largura_antiga: 1 } }))
+    );
+    repo.escreve('sections/rich-text.liquid', SECTION(['titulo']));
+    buscar({ cwd: repo.cwd });
+
+    const [resultado] = validarLojas({ cwd: repo.cwd });
+
+    expect(resultado.problemas.map((p) => p.code)).toEqual(['missing-setting:rich-text.heading']);
+    expect(resultado.antigos.map((p) => p.code)).toEqual(['missing-global-setting:largura_antiga']);
   });
 });
 
@@ -470,21 +518,309 @@ describe('propagar: a main entra em cada loja', () => {
     ]);
     expect(repo.doRemoto('loja/bebe', 'snippets/preco.liquid')).toBe('preço v2\n');
   });
-});
 
-describe('o bot na main, contra o git de verdade', () => {
-  it('acha o commit do shopify[bot] dentro do intervalo do push, e só ele', () => {
+  it('um ERRO do git numa loja não derruba as outras', () => {
+    // A revisão do #169: sem ancestral comum, o `merge-base` lança, e a
+    // primeira versão deixava a exceção sair do laço.
     const repo = repositorio();
-    const antes = repo.g('rev-parse', 'HEAD').trim();
-    repo.naMain(
-      () => repo.escreve('config/settings_data.json', JSON.stringify({ current: { page_width: 1400 } })),
-      `${BOT_DA_SHOPIFY} <79544226+shopify[bot]@users.noreply.github.com>`
+    repo.criaLojaOrfa('a-orfa');
+    repo.criaLoja('bebe', () => repo.escreve('templates/index.json', HOME('Berços')));
+    repo.naMain(() => repo.escreve('snippets/preco.liquid', 'preço v2\n'));
+    buscar({ cwd: repo.cwd });
+
+    const resultados = propagar({ cwd: repo.cwd });
+
+    expect(resultados.map((r) => [r.loja, r.estado])).toEqual([
+      ['loja/a-orfa', 'falhou'],
+      ['loja/bebe', 'atualizada'],
+    ]);
+    expect(resultados[0].motivo).toContain('erro inesperado do git');
+    expect(repo.g('status', '--porcelain')).toBe('');
+  });
+
+  it('problema de conteúdo que a loja JÁ tinha não a trava, e vira aviso', () => {
+    // Travar por ele deixaria a loja parada sem nada que a main pudesse fazer.
+    const repo = repositorio();
+    repo.criaLoja('bebe', () =>
+      repo.escreve('config/settings_data.json', JSON.stringify({ current: { page_width: 1200, largura_antiga: 1 } }))
     );
     repo.naMain(() => repo.escreve('snippets/preco.liquid', 'preço v2\n'));
-    const depois = repo.g('rev-parse', 'HEAD').trim();
+    buscar({ cwd: repo.cwd });
 
-    expect(commitsDoPush({ antes, depois, cwd: repo.cwd })).toHaveLength(1);
-    // O `antes` do push é o topo anterior: o que já estava lá não conta de novo.
-    expect(commitsDoPush({ antes: depois, depois, cwd: repo.cwd })).toHaveLength(0);
+    const [resultado] = propagar({ cwd: repo.cwd });
+
+    expect(resultado.estado).toBe('atualizada');
+    expect(resultado.avisos.map((p) => p.code)).toEqual(['missing-global-setting:largura_antiga']);
+    expect(repo.doRemoto('loja/bebe', 'snippets/preco.liquid')).toBe('preço v2\n');
+  });
+
+  it('REPROVA a main que tira um bloco que a loja usa, não empurra, e diz como sair', () => {
+    const repo = repositorio();
+    repo.criaLoja('bebe', () => repo.escreve('templates/index.json', HOME('Berços')));
+    repo.naMain(() =>
+      repo.escreve(
+        'sections/rich-text.liquid',
+        SECTION(['heading']).replace(/"blocks":\[[^\]]*\]\}\]/, '"blocks":[]')
+      )
+    );
+    buscar({ cwd: repo.cwd });
+
+    const [resultado] = propagar({ cwd: repo.cwd });
+
+    expect(resultado.estado).toBe('falhou');
+    expect(resultado.problemas.map((p) => p.code)).toEqual(['missing-block:rich-text/text']);
+    expect(resultado.motivo).toContain('editor da loja');
+    expect(repo.doRemoto('loja/bebe', 'sections/rich-text.liquid')).toBe(SECTION(['heading']));
+  });
+
+  it('o push recusado porque a loja andou culpa a corrida com o editor, com motivo', () => {
+    const repo = repositorio();
+    repo.criaLojaDeFora('bebe', (escreve) => escreve('templates/index.json', HOME('Berços')));
+    buscar({ cwd: repo.cwd });
+    repo.naMain(() => repo.escreve('snippets/preco.liquid', 'preço v2\n'));
+    // A lojista salva no editor depois da busca: o ref local fica para trás.
+    repo.naLojaDeFora('bebe', (escreve) => escreve('templates/index.json', HOME('Berços e cômodas')));
+
+    const [resultado] = propagar({ cwd: repo.cwd });
+
+    expect(resultado.estado).toBe('falhou');
+    expect(resultado.motivo).toContain('editor');
+    expect(repo.doRemoto('loja/bebe', 'templates/index.json')).toBe(HOME('Berços e cômodas'));
+  });
+});
+
+describe('o motivo do push recusado', () => {
+  it('a recusa por workflow aponta o LOJAS_TOKEN, e não a lojista', () => {
+    // O texto que o GitHub devolve ao GITHUB_TOKEN (comunidade, discussion #26164).
+    const erro =
+      ' ! [remote rejected] HEAD -> loja/bebe (refusing to allow a GitHub App to create or update ' +
+      'workflow `.github/workflows/lojas.yml` without `workflows` permission)\n' +
+      "error: failed to push some refs to 'https://github.com/x/y'";
+    const motivo = motivoDoPushRecusado(erro);
+
+    expect(motivo).toContain('LOJAS_TOKEN');
+    expect(motivo).not.toContain('lojista');
+  });
+
+  it('a recusa por fast-forward é a corrida com o editor', () => {
+    const erro = ' ! [rejected]        HEAD -> loja/bebe (fetch first)\nerror: failed to push some refs';
+    expect(motivoDoPushRecusado(erro)).toContain('editor');
+  });
+
+  it('o resto mostra o que o git disse, em vez de adivinhar', () => {
+    expect(motivoDoPushRecusado('fatal: could not read Username\n')).toContain('could not read Username');
+  });
+});
+
+describe('a catraca dos problemas da loja', () => {
+  it('só o que aparece depois e não estava antes', () => {
+    const antigo = { arquivo: 'config/settings_data.json', code: 'missing-global-setting:x' };
+    const novo = { arquivo: 'templates/index.json', code: 'missing-setting:rich-text.heading' };
+    expect(problemasNovos([antigo, novo], [antigo])).toEqual([novo]);
+  });
+});
+
+const AUTOR_DO_BOT = `${BOT_DA_SHOPIFY} <79544226+shopify[bot]@users.noreply.github.com>`;
+
+describe('o bot na main, contra o git de verdade', () => {
+  // A primeira versão procurava o bot no intervalo `antes..depois` do push, e
+  // o `concurrency` do workflow cancela a execução PENDENTE: o intervalo dela
+  // nunca era conferido. Agora a pergunta é o que ainda não chegou às lojas.
+
+  it('o commit do bot que ainda não chegou à loja é achado, e só ele', () => {
+    const repo = repositorio();
+    repo.criaLoja('bebe');
+    repo.naMain(
+      () => repo.escreve('config/settings_data.json', JSON.stringify({ current: { page_width: 1400 } })),
+      AUTOR_DO_BOT
+    );
+    repo.naMain(() => repo.escreve('snippets/preco.liquid', 'preço v2\n'));
+    buscar({ cwd: repo.cwd });
+
+    expect(commitsDoBotAPropagar({ cwd: repo.cwd, lojas: ['loja/bebe'] })).toHaveLength(1);
+  });
+
+  it('o commit do bot ANTERIOR à loja não é acusado — é o beac89f de hoje', () => {
+    const repo = repositorio();
+    repo.naMain(
+      () => repo.escreve('config/settings_data.json', JSON.stringify({ current: { page_width: 1400 } })),
+      AUTOR_DO_BOT
+    );
+    repo.criaLoja('moda');
+    buscar({ cwd: repo.cwd });
+
+    expect(commitsDoBotAPropagar({ cwd: repo.cwd, lojas: ['loja/moda'] })).toEqual([]);
+  });
+
+  it('depois de propagado, o commit do bot deixa de ser acusado', () => {
+    const repo = repositorio();
+    repo.criaLoja('bebe', () => repo.escreve('templates/index.json', HOME('Berços')));
+    repo.naMain(
+      () => repo.escreve('config/settings_data.json', JSON.stringify({ current: { page_width: 1400 } })),
+      AUTOR_DO_BOT
+    );
+    buscar({ cwd: repo.cwd });
+    propagar({ cwd: repo.cwd });
+    buscar({ cwd: repo.cwd });
+
+    expect(commitsDoBotAPropagar({ cwd: repo.cwd, lojas: ['loja/bebe'] })).toEqual([]);
+  });
+
+  it('acha o commit que falta a UMA das lojas, mesmo que a outra já o tenha', () => {
+    const repo = repositorio();
+    repo.criaLoja('a');
+    repo.naMain(
+      () => repo.escreve('config/settings_data.json', JSON.stringify({ current: { page_width: 1400 } })),
+      AUTOR_DO_BOT
+    );
+    repo.criaLoja('b');
+    buscar({ cwd: repo.cwd });
+
+    expect(commitsDoBotAPropagar({ cwd: repo.cwd, lojas: ['loja/a', 'loja/b'] })).toHaveLength(1);
+  });
+});
+
+// ── A linha de comando, como processo ───────────────────────────────────────
+
+describe('a CLI, executada como o CI a executa', () => {
+  // A revisão do #169 mutou os códigos de saída e todos sobreviveram: os
+  // testes acima chamam as funções, e o que o CI lê é o `exit` do processo.
+  // Um `validar` devolvendo 0 com a loja quebrada deixaria o gate verde para
+  // sempre. Aqui o script roda de verdade, com `--raiz` apontando o repo
+  // temporário, sem variável `GIT_*` e sem o resumo do Actions.
+  const SCRIPT = path.join(RAIZ, 'scripts/lojas.mjs');
+
+  const cli = (repo, args, extra = {}) => {
+    const env = { ...semGit, ...extra };
+    delete env.GITHUB_STEP_SUMMARY;
+    if (!('LOJAS_TOKEN' in extra)) delete env.LOJAS_TOKEN;
+    const r = spawnSync(process.execPath, [SCRIPT, ...args, '--raiz', repo.cwd], { encoding: 'utf8', env });
+    return { codigo: r.status, saida: `${r.stdout}${r.stderr}` };
+  };
+
+  describe('conferir', () => {
+    it('sai 0 na loja que só mudou conteúdo', () => {
+      const repo = repositorio();
+      repo.criaLojaDeFora('bebe', (escreve) => escreve('templates/index.json', HOME('Berços')));
+      expect(cli(repo, ['conferir', '--loja', 'origin/loja/bebe']).codigo).toBe(0);
+    });
+
+    it('sai 1 na loja que mudou código, e diz qual arquivo', () => {
+      const repo = repositorio();
+      repo.criaLojaDeFora('bebe', (escreve) => escreve('snippets/preco.liquid', 'preço da loja\n'));
+      const { codigo, saida } = cli(repo, ['conferir', '--loja', 'origin/loja/bebe']);
+
+      expect(codigo).toBe(1);
+      expect(saida).toContain('snippets/preco.liquid');
+    });
+
+    it('erro inesperado do git sai 1 com o motivo, e não com um stack trace', () => {
+      const repo = repositorio();
+      const { codigo, saida } = cli(repo, ['conferir', '--loja', 'origin/loja/nao-existe']);
+
+      expect(codigo).toBe(1);
+      expect(saida).toContain('lojas conferir:');
+      expect(saida).not.toMatch(/\n\s+at /);
+    });
+  });
+
+  describe('validar', () => {
+    it('sem loja/* sai 0, e diz que não havia o que validar', () => {
+      const repo = repositorio();
+      const { codigo, saida } = cli(repo, ['validar']);
+
+      expect(codigo).toBe(0);
+      expect(saida).toContain('nenhuma loja/*');
+    });
+
+    it('sai 1 quando o código do PR quebra uma loja', () => {
+      const repo = repositorio();
+      repo.criaLojaDeFora('bebe', (escreve) => escreve('templates/index.json', HOME('Berços')));
+      repo.escreve('sections/rich-text.liquid', SECTION(['titulo']));
+      const { codigo, saida } = cli(repo, ['validar']);
+
+      expect(codigo).toBe(1);
+      expect(saida).toContain('loja/bebe');
+    });
+
+    it('sai 0 com um problema antigo da loja, e o mostra como aviso', () => {
+      const repo = repositorio();
+      repo.criaLojaDeFora('bebe', (escreve) =>
+        escreve('config/settings_data.json', JSON.stringify({ current: { page_width: 1200, largura_antiga: 1 } }))
+      );
+      const { codigo, saida } = cli(repo, ['validar']);
+
+      expect(codigo).toBe(0);
+      expect(saida).toContain('Aviso');
+      expect(saida).toContain('largura_antiga');
+    });
+  });
+
+  describe('propagar', () => {
+    it('busca sozinho a loja que o bot criou, leva a main e sai 0', () => {
+      const repo = repositorio();
+      repo.criaLojaDeFora('bebe', (escreve) => escreve('templates/index.json', HOME('Berços')));
+      repo.naMain(() => repo.escreve('snippets/preco.liquid', 'preço v2\n'));
+      const { codigo, saida } = cli(repo, ['propagar']);
+
+      expect(codigo).toBe(0);
+      expect(saida).toContain('loja/bebe: atualizada');
+      expect(repo.doRemoto('loja/bebe', 'snippets/preco.liquid')).toBe('preço v2\n');
+    });
+
+    it('sai 1 quando uma loja falha, mesmo que a outra passe', () => {
+      const repo = repositorio();
+      repo.criaLojaDeFora('a-quebrada', (escreve) => escreve('snippets/preco.liquid', 'preço da loja\n'));
+      repo.criaLojaDeFora('bebe', (escreve) => escreve('templates/index.json', HOME('Berços')));
+      repo.naMain(() => repo.escreve('snippets/preco.liquid', 'preço v2\n'));
+      const { codigo, saida } = cli(repo, ['propagar']);
+
+      expect(codigo).toBe(1);
+      expect(saida).toContain('loja/a-quebrada: falhou');
+      expect(saida).toContain('loja/bebe: atualizada');
+    });
+
+    it('sai 1 com commit do bot na main ainda não propagado, e propaga mesmo assim', () => {
+      const repo = repositorio();
+      repo.criaLojaDeFora('bebe', (escreve) => escreve('templates/index.json', HOME('Berços')));
+      repo.naMain(
+        () => repo.escreve('config/settings_data.json', JSON.stringify({ current: { page_width: 1400 } })),
+        AUTOR_DO_BOT
+      );
+      const sha = repo.g('rev-parse', '--short=7', 'HEAD').trim();
+
+      const primeira = cli(repo, ['propagar']);
+      expect(primeira.codigo).toBe(1);
+      expect(primeira.saida).toContain(sha);
+      expect(primeira.saida).toContain('loja/bebe: atualizada');
+
+      // Já propagado, o commit deixa de ser acusado: o aviso não fica preso.
+      expect(cli(repo, ['propagar']).codigo).toBe(0);
+    });
+
+    it('com --exigir-token e sem LOJAS_TOKEN, sai 1 antes de tocar em qualquer loja', () => {
+      const repo = repositorio();
+      repo.criaLojaDeFora('bebe', (escreve) => escreve('templates/index.json', HOME('Berços')));
+      repo.naMain(() => repo.escreve('snippets/preco.liquid', 'preço v2\n'));
+      const { codigo, saida } = cli(repo, ['propagar', '--exigir-token']);
+
+      expect(codigo).toBe(1);
+      expect(saida).toContain('LOJAS_TOKEN');
+      expect(repo.doRemoto('loja/bebe', 'snippets/preco.liquid')).toBe('preço v1\n');
+    });
+
+    it('com --exigir-token e o LOJAS_TOKEN presente, propaga', () => {
+      const repo = repositorio();
+      repo.criaLojaDeFora('bebe', (escreve) => escreve('templates/index.json', HOME('Berços')));
+      repo.naMain(() => repo.escreve('snippets/preco.liquid', 'preço v2\n'));
+
+      expect(cli(repo, ['propagar', '--exigir-token'], { LOJAS_TOKEN: 'presente' }).codigo).toBe(0);
+      expect(repo.doRemoto('loja/bebe', 'snippets/preco.liquid')).toBe('preço v2\n');
+    });
+
+    it('sem loja/* sai 0 mesmo com --exigir-token: antes da fase 2 não há o que empurrar', () => {
+      const repo = repositorio();
+      expect(cli(repo, ['propagar', '--exigir-token']).codigo).toBe(0);
+    });
   });
 });

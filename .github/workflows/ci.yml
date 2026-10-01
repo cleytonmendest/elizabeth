@@ -107,9 +107,15 @@ jobs:
       #
       # Sem nenhuma `loja/*` no remoto, o script diz isso no resumo, em vez
       # de passar com a mesma cara de "todas as lojas cabem".
+      #
+      # Reprova só o que ESTE código quebra, comparado com o da base: o
+      # problema que uma loja já tinha sai como aviso. Sem isso, uma chave
+      # órfã numa loja reprovaria até um PR que só muda o README.
       - name: As lojas cabem neste código
         if: always()
-        run: node scripts/lojas.mjs validar
+        env:
+          BASE_REF: ${{ github.base_ref || 'main' }}
+        run: node scripts/lojas.mjs validar --base "origin/$BASE_REF"
 
   test:
     name: Testes unitários

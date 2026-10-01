@@ -25,6 +25,32 @@
  *   bot       um commit do `shopify[bot]` na `main` quer dizer que algum tema
  *             está conectado a ela, e isso reprova
  *
+ * A CLI aceita `--raiz <dir>` para rodar contra outro repositório. É o que
+ * deixa `tests/lojas.test.mjs` executar os três comandos como processo, e
+ * conferir o código de saída: até a revisão do PR #169 os testes só chamavam
+ * as funções, e um `validar` devolvendo 0 com a loja quebrada passava em todos.
+ *
+ * ── O bot é procurado na main que ainda não chegou às lojas ────────────────
+ *
+ * A primeira versão procurava o commit do bot no intervalo `antes..depois` do
+ * push. O `concurrency` do workflow cancela a execução PENDENTE quando chega
+ * uma nova, e o intervalo da cancelada nunca era conferido: um commit do bot
+ * ali passava. Um `--antes` fora do histórico derrubava o job.
+ *
+ * Agora a pergunta é "que commits da `main` ainda não entraram nesta loja",
+ * que não depende de qual execução rodou. O commit do bot reprova o job, mas a
+ * propagação segue: travá-la exigiria um jeito de destravar, e reverter não
+ * tira o commit do histórico. Ele é acusado até chegar a todas as lojas.
+ *
+ * ── O token ────────────────────────────────────────────────────────────────
+ *
+ * O `GITHUB_TOKEN` não empurra um ref cujos arquivos de `.github/workflows/`
+ * mudam: a chave `permissions` não tem escopo `workflows`. Toda mudança de
+ * workflow na `main` seria recusada em todas as lojas. Por isso o `propagar`
+ * do CI usa o secret `LOJAS_TOKEN`, e com `--exigir-token` reprova logo, com
+ * o motivo, quando há loja e o secret falta: descobrir na primeira propagação
+ * é melhor que descobrir meses depois, na primeira mudança de workflow.
+ *
  * ── Merge-base, e não a ponta da main ──────────────────────────────────────
  *
  * A pergunta do `conferir` é "o que ESTA LOJA mudou", e não "no que ela difere
@@ -198,10 +224,13 @@ export function commitsDoBot(log) {
  * Commit do bot na `main` reprova, desde que exista alguma `loja/*`. Antes
  * disso a `main` AINDA é a loja conectada — é o estado anterior à fase 2 da
  * #168 —, e reprovar ali deixaria a `main` vermelha a cada save da lojista.
+ *
+ * @param {{ commits: { sha: string }[], lojas: string[] }} entrada  `commits`
+ *   são os do bot que ainda não chegaram a alguma loja.
  */
 export function vereditoDoBot({ commits, lojas }) {
   if (!commits.length) {
-    return { ok: true, mensagem: `Nenhum commit do ${BOT_DA_SHOPIFY} neste push.` };
+    return { ok: true, mensagem: `Nenhum commit do ${BOT_DA_SHOPIFY} na main a propagar.` };
   }
   const shas = commits.map((c) => c.sha.slice(0, 7)).join(', ');
   if (!lojas.length) {
@@ -215,12 +244,53 @@ export function vereditoDoBot({ commits, lojas }) {
   return {
     ok: false,
     mensagem:
-      `Commit do ${BOT_DA_SHOPIFY} na main (${shas}): algum tema está conectado à main. Pelo ADR ` +
-      '0018 nenhuma loja fica conectada a ela, porque cada save no editor sobrescreve o conteúdo ' +
-      'da main. Remova esse tema da biblioteca (Loja virtual → Temas) e reverta o commit. ' +
-      'A propagação para as lojas não rodou.',
+      `Commit do ${BOT_DA_SHOPIFY} na main, ainda não propagado (${shas}): algum tema está ` +
+      'conectado à main. Pelo ADR 0018 nenhuma loja fica conectada a ela, porque cada save no ' +
+      'editor sobrescreve o conteúdo da main. Remova esse tema da biblioteca (Loja virtual → ' +
+      'Temas) e reverta o que ele gravou. A propagação rodou mesmo assim, e este aviso some ' +
+      'quando o commit chegar a todas as lojas.',
   };
 }
+
+/** Impressão digital de um problema: é o que a catraca compara. */
+const chaveDoProblema = (p) => `${p.arquivo}|${p.code}`;
+
+/**
+ * O que aparece em `depois` e não estava em `antes`. É a catraca do lint
+ * aplicada à loja: problema antigo dela não reprova um PR que não o causou.
+ */
+export function problemasNovos(depois, antes) {
+  const vistos = new Set(antes.map(chaveDoProblema));
+  return depois.filter((p) => !vistos.has(chaveDoProblema(p)));
+}
+
+/**
+ * Por que o push de uma loja foi recusado, a partir do que o git disse. A
+ * primeira versão culpava a lojista por qualquer recusa, inclusive pela do
+ * token sem permissão de workflows, que não tem nada a ver com ela.
+ */
+export function motivoDoPushRecusado(erro) {
+  const texto = String(erro ?? '');
+  if (/workflow/i.test(texto) && /refusing|permission/i.test(texto)) {
+    return (
+      'o push foi recusado porque o merge traz mudança em .github/workflows/, e o token não tem ' +
+      'permissão de workflows. O GITHUB_TOKEN nunca tem: o propagar precisa do secret LOJAS_TOKEN.'
+    );
+  }
+  if (/non-fast-forward|fetch first|\[rejected\]/i.test(texto)) {
+    return (
+      'o push foi recusado porque a branch andou durante a propagação. O mais provável é a ' +
+      'lojista ter salvo no editor nesse intervalo; rode o workflow de novo.'
+    );
+  }
+  return `o push foi recusado: ${primeiraLinha(texto) || 'o git não disse por quê'}`;
+}
+
+const primeiraLinha = (texto) =>
+  String(texto ?? '')
+    .split('\n')
+    .map((linha) => linha.trim())
+    .find(Boolean) ?? '';
 
 // ── O git ──────────────────────────────────────────────────────────────────
 
@@ -248,7 +318,19 @@ function git(args, { cwd = RAIZ, permitirFalha = false } = {}) {
   }
 }
 
-/** Traz a `main` e toda `loja/*` do remoto, e esquece as que foram apagadas lá. */
+/** Como `git`, mas devolve o que o git disse ao falhar, em vez de lançar. */
+function tentar(args, { cwd = RAIZ } = {}) {
+  try {
+    return { ok: true, saida: git(args, { cwd }) };
+  } catch (error) {
+    return { ok: false, erro: `${error.stderr ?? ''}` || `${error.message ?? ''}` };
+  }
+}
+
+/**
+ * Traz a `main` e toda `loja/*` do remoto, esquece as que foram apagadas lá, e
+ * devolve as que existem.
+ */
 export function buscar({ cwd = RAIZ } = {}) {
   git(
     [
@@ -261,6 +343,7 @@ export function buscar({ cwd = RAIZ } = {}) {
     ],
     { cwd }
   );
+  return lojasDoRemoto({ cwd });
 }
 
 /** As `loja/*` que o remoto tem, pelo nome da branch. */
@@ -327,8 +410,8 @@ export function problemasDoConteudo(conteudo, codigo) {
   return problemas;
 }
 
-/** Uma `loja/*` contra o merge-base com a `main`: só conteúdo mudou, e ele cabe no código dela. */
-export function conferirLoja({ loja = 'HEAD', main = 'origin/main', cwd = RAIZ } = {}) {
+/** O que uma `loja/*` mudou desde o merge-base com a `main` e não podia ter mudado. */
+export function mudancasDaLoja({ loja = 'HEAD', main = 'origin/main', cwd = RAIZ } = {}) {
   const base = git(['merge-base', main, loja], { cwd }).trim();
   const mudancas = mudancasDoDiff(git(['diff', '--name-status', '--no-renames', base, loja], { cwd }));
 
@@ -336,18 +419,30 @@ export function conferirLoja({ loja = 'HEAD', main = 'origin/main', cwd = RAIZ }
     antes: parseJSONC(git(['show', `${base}:${caminho}`], { cwd })),
     depois: parseJSONC(git(['show', `${loja}:${caminho}`], { cwd })),
   });
-
-  const daLoja = leitorDoRef(loja, { cwd });
-  return [...mudancasProibidas(mudancas, locale), ...problemasDoConteudo(daLoja, daLoja)];
+  return mudancasProibidas(mudancas, locale);
 }
 
-/** Toda `loja/*` do remoto contra o código do disco. */
-export function validarLojas({ cwd = RAIZ } = {}) {
+/** Uma `loja/*` contra o merge-base com a `main`: só conteúdo mudou, e ele cabe no código dela. */
+export function conferirLoja({ loja = 'HEAD', main = 'origin/main', cwd = RAIZ } = {}) {
+  const daLoja = leitorDoRef(loja, { cwd });
+  return [...mudancasDaLoja({ loja, main, cwd }), ...problemasDoConteudo(daLoja, daLoja)];
+}
+
+/**
+ * Toda `loja/*` contra o código do disco — o do PR. Reprova só o que ESTE
+ * código quebra: o problema que a loja já tinha com o código da base sai em
+ * `antigos`, como aviso. Sem isso, uma chave órfã numa loja reprovaria até um
+ * PR que só muda o README, e o gate da `main` ficaria refém de uma loja.
+ */
+export function validarLojas({ cwd = RAIZ, base = 'origin/main', lojas = lojasDoRemoto({ cwd }) } = {}) {
   const codigo = leitorDoDisco({ cwd });
-  return lojasDoRemoto({ cwd }).map((loja) => ({
-    loja,
-    problemas: problemasDoConteudo(leitorDoRef(`origin/${loja}`, { cwd }), codigo),
-  }));
+  const codigoDaBase = leitorDoRef(base, { cwd });
+  return lojas.map((loja) => {
+    const conteudo = leitorDoRef(`origin/${loja}`, { cwd });
+    const comEsteCodigo = problemasDoConteudo(conteudo, codigo);
+    const novos = problemasNovos(comEsteCodigo, problemasDoConteudo(conteudo, codigoDaBase));
+    return { loja, problemas: novos, antigos: problemasNovos(comEsteCodigo, novos) };
+  });
 }
 
 /** O commit onde o checkout está, para voltar a ele no fim. */
@@ -366,6 +461,8 @@ function propagarUma(loja, { cwd, main, empurrar }) {
   const mudadosPelaLoja = mudancasDoDiff(
     git(['diff', '--name-status', '--no-renames', base, remota], { cwd })
   ).map((m) => m.caminho);
+  const lojaAntes = leitorDoRef(remota, { cwd });
+  const problemasAntes = problemasDoConteudo(lojaAntes, lojaAntes);
 
   git(['checkout', '-q', '--force', '--detach', remota], { cwd });
   git([...IDENTIDADE, 'merge', '--no-ff', '--no-commit', main], { cwd, permitirFalha: true });
@@ -384,7 +481,7 @@ function propagarUma(loja, { cwd, main, empurrar }) {
     };
   }
 
-  const naLoja = new Set(leitorDoRef(remota, { cwd }).arquivos());
+  const naLoja = new Set(lojaAntes.arquivos());
   for (const caminho of restaurarDaLoja) {
     if (naLoja.has(caminho)) git(['checkout', remota, '--', caminho], { cwd });
     else git(['rm', '-q', '-f', '--ignore-unmatch', '--', caminho], { cwd });
@@ -392,30 +489,47 @@ function propagarUma(loja, { cwd, main, empurrar }) {
 
   git([...IDENTIDADE, 'commit', '-q', '-m', `A main entra em ${loja} (ADR 0018)`], { cwd });
 
-  const problemas = conferirLoja({ loja: 'HEAD', main, cwd });
-  if (problemas.length) {
-    return {
-      loja,
-      estado: 'falhou',
-      motivo: 'o resultado do merge não passa na conferência, e não foi empurrado',
-      problemas,
-    };
-  }
-
-  if (empurrar && git(['push', '-q', 'origin', `HEAD:refs/heads/${loja}`], { cwd, permitirFalha: true }) === null) {
+  const proibidas = mudancasDaLoja({ loja: 'HEAD', main, cwd });
+  if (proibidas.length) {
     return {
       loja,
       estado: 'falhou',
       motivo:
-        'o push foi recusado. O mais provável é a lojista ter salvo no editor durante a propagação; ' +
-        'rode o workflow de novo.',
+        `a loja tem código que a main não tem, e não recebe a main até isso sair. Reverta em ${loja} ` +
+        'o commit que o trouxe, ou leve a mudança para a main',
+      problemas: proibidas,
     };
   }
-  return { loja, estado: 'atualizada', commit: git(['rev-parse', 'HEAD'], { cwd }).trim() };
+
+  // Só o que o merge QUEBROU trava a loja. O problema de conteúdo que ela já
+  // tinha continua com ela, como aviso: travar por ele deixaria a loja parada
+  // sem nada que a main pudesse fazer.
+  const depois = leitorDoRef('HEAD', { cwd });
+  const comAMain = problemasDoConteudo(depois, depois);
+  const novos = problemasNovos(comAMain, problemasAntes);
+  if (novos.length) {
+    return {
+      loja,
+      estado: 'falhou',
+      motivo:
+        'a main quebra o JSON desta loja, e o merge não foi empurrado. No editor da loja, deixe de ' +
+        'usar o que a main tirou; a próxima propagação passa',
+      problemas: novos,
+    };
+  }
+  const avisos = problemasNovos(comAMain, novos);
+
+  if (empurrar) {
+    const push = tentar(['push', '-q', 'origin', `HEAD:refs/heads/${loja}`], { cwd });
+    if (!push.ok) return { loja, estado: 'falhou', motivo: motivoDoPushRecusado(push.erro), avisos };
+  }
+  return { loja, estado: 'atualizada', commit: git(['rev-parse', 'HEAD'], { cwd }).trim(), avisos };
 }
 
 /**
- * Leva a `main` a cada `loja/*` do remoto. Uma loja que falha não impede as outras.
+ * Leva a `main` a cada `loja/*` do remoto. Uma loja que falha não impede as
+ * outras — nem quando a falha é um erro inesperado do git, que a primeira
+ * versão deixava derrubar o laço inteiro.
  *
  * Recusa rodar com arquivo rastreado modificado. O merge de cada loja é feito
  * no próprio checkout, e voltar ao ponto de partida exige `--force`, que
@@ -436,7 +550,18 @@ export function propagar({ cwd = RAIZ, main = 'origin/main', empurrar = true } =
   const inicio = posicaoAtual({ cwd });
   const resultados = [];
   try {
-    for (const loja of lojasDoRemoto({ cwd })) resultados.push(propagarUma(loja, { cwd, main, empurrar }));
+    for (const loja of lojasDoRemoto({ cwd })) {
+      try {
+        resultados.push(propagarUma(loja, { cwd, main, empurrar }));
+      } catch (erroDaLoja) {
+        git(['merge', '--abort'], { cwd, permitirFalha: true });
+        resultados.push({
+          loja,
+          estado: 'falhou',
+          motivo: `erro inesperado do git: ${primeiraLinha(erroDaLoja.stderr) || erroDaLoja.message}`,
+        });
+      }
+    }
   } finally {
     git(['merge', '--abort'], { cwd, permitirFalha: true });
     git(['checkout', '-q', '--force', inicio], { cwd });
@@ -444,107 +569,149 @@ export function propagar({ cwd = RAIZ, main = 'origin/main', empurrar = true } =
   return resultados;
 }
 
-/** Os commits do bot entre dois pontos do push. Sem `antes` (branch nova, dispatch), só o `depois`. */
-export function commitsDoPush({ antes, depois, cwd = RAIZ }) {
-  const intervalo = !antes || /^0+$/.test(antes) ? ['-1', depois] : [`${antes}..${depois}`];
-  return commitsDoBot(git(['log', '--format=%H%x09%an%x09%ae', ...intervalo], { cwd }));
+/**
+ * Os commits do bot na `main` que ainda não chegaram a alguma loja. Não
+ * depende do intervalo do push: uma execução cancelada pelo `concurrency` não
+ * deixa nada sem conferir, porque o que não foi propagado continua aqui.
+ */
+export function commitsDoBotAPropagar({ cwd = RAIZ, main = 'origin/main', lojas }) {
+  const achados = new Map();
+  for (const loja of lojas) {
+    const log = git(['log', '--format=%H%x09%an%x09%ae', main, `^origin/${loja}`], { cwd });
+    for (const commit of commitsDoBot(log)) achados.set(commit.sha, commit);
+  }
+  return [...achados.values()];
 }
 
 // ── A linha de comando ─────────────────────────────────────────────────────
 
-const argumento = (nome) => {
-  const i = process.argv.indexOf(`--${nome}`);
-  return i === -1 ? undefined : process.argv[i + 1];
+const opcao = (argv, nome) => {
+  const i = argv.indexOf(`--${nome}`);
+  return i === -1 ? undefined : argv[i + 1];
 };
 
-function resumo(linhas) {
+function resumo(linhas, env) {
   const texto = linhas.join('\n');
   console.log(texto);
-  if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${texto}\n`);
+  if (env.GITHUB_STEP_SUMMARY) fs.appendFileSync(env.GITHUB_STEP_SUMMARY, `${texto}\n`);
 }
 
 const listar = (problemas) => problemas.map((p) => `  · ${p.arquivo}: ${p.message}`);
 
-function cmdConferir() {
-  buscar();
-  const problemas = conferirLoja({ loja: argumento('loja') ?? 'HEAD' });
-  if (!problemas.length) {
-    resumo(['Loja: só conteúdo de loja mudou, e ele cabe no código desta branch.']);
-    return 0;
-  }
-  resumo([
-    `Loja: ${problemas.length} problema(s).`,
-    ...listar(problemas),
-    '',
-    `Uma ${PREFIXO}* só difere da main em ${CONTEUDO_DA_LOJA.join(', ')}, e nos valores dos ` +
-      `${LOCALES_DE_VITRINE} (ADR 0018).`,
-  ]);
-  return 1;
+function cmdConferir({ cwd, argv, env }) {
+  buscar({ cwd });
+  const problemas = conferirLoja({ loja: opcao(argv, 'loja') ?? 'HEAD', cwd });
+  resumo(
+    problemas.length
+      ? [
+          `Loja: ${problemas.length} problema(s).`,
+          ...listar(problemas),
+          '',
+          `Uma ${PREFIXO}* só difere da main em ${CONTEUDO_DA_LOJA.join(', ')}, e nos valores dos ` +
+            `${LOCALES_DE_VITRINE} (ADR 0018). Problema de conteúdo se corrige no editor da loja.`,
+        ]
+      : ['Loja: só conteúdo de loja mudou, e ele cabe no código desta branch.'],
+    env
+  );
+  return problemas.length ? 1 : 0;
 }
 
-function cmdValidar() {
-  buscar();
-  const lojas = validarLojas();
-  if (!lojas.length) {
-    resumo([`Lojas: nenhuma ${PREFIXO}* no remoto, então não há JSON de loja para validar contra este código.`]);
-    return 0;
-  }
+function cmdValidar({ cwd, argv, env }) {
+  const lojas = validarLojas({
+    cwd,
+    base: opcao(argv, 'base') ?? 'origin/main',
+    lojas: buscar({ cwd }),
+  });
   const quebradas = lojas.filter((l) => l.problemas.length);
-  if (!quebradas.length) {
-    resumo([`Lojas: o JSON de ${lojas.map((l) => l.loja).join(', ')} cabe no código deste commit.`]);
-    return 0;
+  const linhas = [];
+
+  if (!lojas.length) {
+    linhas.push(`Lojas: nenhuma ${PREFIXO}* no remoto, então não há JSON de loja para validar contra este código.`);
+  } else if (!quebradas.length) {
+    linhas.push(`Lojas: este código não quebra o JSON de ${lojas.map((l) => l.loja).join(', ')}.`);
+  } else {
+    linhas.push(
+      'Lojas: este código quebra o JSON de loja/*.',
+      ...quebradas.flatMap((l) => [`${l.loja}:`, ...listar(l.problemas)]),
+      '',
+      'Um setting renomeado ou um bloco removido faz a loja perder o que salvou no editor. ' +
+        'Mantenha o nome antigo, ou mude o JSON da loja no editor dela antes deste merge.'
+    );
   }
-  resumo([
-    'Lojas: este código quebra o JSON de loja/*.',
-    ...quebradas.flatMap((l) => [`${l.loja}:`, ...listar(l.problemas)]),
-    '',
-    'Um setting renomeado ou um bloco removido faz a loja perder o que salvou no editor. ' +
-      'Mantenha o nome antigo, ou mude o JSON da loja no editor dela antes deste merge.',
-  ]);
-  return 1;
+
+  const comAntigos = lojas.filter((l) => l.antigos.length);
+  if (comAntigos.length) {
+    linhas.push(
+      '',
+      'Aviso — problema que a loja já tinha com o código da base, e que este PR não causou:',
+      ...comAntigos.flatMap((l) => [`${l.loja}:`, ...listar(l.antigos)]),
+      'Corrija no editor da loja.'
+    );
+  }
+
+  resumo(linhas, env);
+  return quebradas.length ? 1 : 0;
 }
 
-function cmdPropagar() {
-  buscar();
-  const depois = argumento('depois');
-  if (depois) {
-    const veredito = vereditoDoBot({
-      commits: commitsDoPush({ antes: argumento('antes'), depois }),
-      lojas: lojasDoRemoto(),
-    });
-    resumo([veredito.mensagem]);
-    if (!veredito.ok) return 1;
-  } else {
-    resumo(['Sem --depois: a checagem de commit do bot não se aplica a esta execução.']);
+function cmdPropagar({ cwd, argv, env }) {
+  const lojas = buscar({ cwd });
+  if (!lojas.length) {
+    resumo([`Propagação: nenhuma ${PREFIXO}* no remoto, nada a levar.`], env);
+    return 0;
   }
 
-  let resultados;
-  try {
-    resultados = propagar({ empurrar: !process.argv.includes('--sem-push') });
-  } catch (error) {
-    resumo([`Propagação: ${error.message}`]);
+  if (argv.includes('--exigir-token') && !env.LOJAS_TOKEN) {
+    resumo(
+      [
+        'Propagação: falta o secret LOJAS_TOKEN, e nenhuma loja foi tocada.',
+        'O GITHUB_TOKEN não empurra mudança de .github/workflows/, então a primeira mudança de ' +
+          'workflow na main seria recusada em todas as lojas. Crie um token pessoal fine-grained, ' +
+          'só deste repositório, com Contents e Workflows em leitura e escrita, e guarde-o em ' +
+          'Settings → Secrets and variables → Actions como LOJAS_TOKEN.',
+      ],
+      env
+    );
     return 1;
   }
-  if (!resultados.length) {
-    resumo([`Propagação: nenhuma ${PREFIXO}* no remoto, nada a levar.`]);
-    return 0;
-  }
+
+  const veredito = vereditoDoBot({ commits: commitsDoBotAPropagar({ cwd, lojas }), lojas });
+  const resultados = propagar({ cwd, empurrar: !argv.includes('--sem-push') });
   resumo(
-    resultados.flatMap((r) => [
-      `${r.loja}: ${r.estado}${r.motivo ? ` — ${r.motivo}` : ''}`,
-      ...listar(r.problemas ?? []),
-    ])
+    [
+      veredito.mensagem,
+      ...resultados.flatMap((r) => [
+        `${r.loja}: ${r.estado}${r.motivo ? ` — ${r.motivo}` : ''}`,
+        ...listar(r.problemas ?? []),
+        ...(r.avisos?.length
+          ? ['  aviso — problema que a loja já tinha, e que continua com ela:', ...listar(r.avisos)]
+          : []),
+      ]),
+    ],
+    env
   );
-  return resultados.some((r) => r.estado === 'falhou') ? 1 : 0;
+  const falhou = resultados.some((r) => r.estado === 'falhou');
+  return falhou || !veredito.ok ? 1 : 0;
 }
 
 const COMANDOS = { conferir: cmdConferir, validar: cmdValidar, propagar: cmdPropagar };
 
 if (process.argv[1] && process.argv[1].endsWith('lojas.mjs')) {
-  const comando = COMANDOS[process.argv[2]];
-  if (!comando) {
-    console.error(`Uso: node scripts/lojas.mjs <${Object.keys(COMANDOS).join('|')}>`);
+  const [comando, ...argv] = process.argv.slice(2);
+  const executa = COMANDOS[comando];
+  if (!executa) {
+    console.error(`Uso: node scripts/lojas.mjs <${Object.keys(COMANDOS).join('|')}> [--raiz <dir>]`);
     process.exit(2);
   }
-  process.exit(comando());
+
+  // Erro inesperado (git ausente, merge-base sem ancestral comum, árvore suja)
+  // vira saída 1 com a primeira linha do motivo, e não um stack trace no meio
+  // do resumo do CI.
+  let codigo;
+  try {
+    codigo = executa({ cwd: path.resolve(opcao(argv, 'raiz') ?? RAIZ), argv, env: process.env });
+  } catch (error) {
+    console.error(`lojas ${comando}: ${primeiraLinha(error.stderr) || error.message}`);
+    codigo = 1;
+  }
+  process.exit(codigo);
 }

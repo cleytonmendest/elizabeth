@@ -2653,8 +2653,8 @@ const MUTANTES = [
   {
     porque: 'a loja é validada contra o código DELA, e o setting renomeado no PR passa',
     arquivo: 'scripts/lojas.mjs',
-    de: '    problemas: problemasDoConteudo(leitorDoRef(`origin/${loja}`, { cwd }), codigo),',
-    para: '    problemas: problemasDoConteudo(leitorDoRef(`origin/${loja}`, { cwd }), leitorDoRef(`origin/${loja}`, { cwd })),',
+    de: '    const comEsteCodigo = problemasDoConteudo(conteudo, codigo);',
+    para: '    const comEsteCodigo = problemasDoConteudo(conteudo, conteudo);',
     teste: 'tests/lojas.test.mjs',
   },
   {
@@ -2677,10 +2677,10 @@ const MUTANTES = [
     teste: 'tests/lojas.test.mjs',
   },
   {
-    porque: 'a loja reprovada na conferência é empurrada mesmo assim',
+    porque: 'a loja com código que a main não tem é empurrada mesmo assim',
     arquivo: 'scripts/lojas.mjs',
-    de: "  const problemas = conferirLoja({ loja: 'HEAD', main, cwd });",
-    para: '  const problemas = [];',
+    de: "  const proibidas = mudancasDaLoja({ loja: 'HEAD', main, cwd });",
+    para: '  const proibidas = [];',
     teste: 'tests/lojas.test.mjs',
   },
   {
@@ -2688,6 +2688,119 @@ const MUTANTES = [
     arquivo: 'scripts/lojas.mjs',
     de: '  if (!lojas.length) {\n    return {',
     para: '  if (true) {\n    return {',
+    teste: 'tests/lojas.test.mjs',
+  },
+  // ── A revisão do PR #169 ────────────────────────────────────────────────
+  //
+  // O revisor mutou os códigos de saída da CLI e todos sobreviveram: nenhum
+  // teste executava o script como processo. Cada entrada abaixo é um caminho
+  // que ele apontou, ou um que a correção abriu.
+  {
+    porque: 'o conferir sai 0 com a loja reprovada, e a branch da loja fica verde sobre código mudado',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  return problemas.length ? 1 : 0;',
+    para: '  return 0;',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'o validar sai 0 com a loja quebrada, e o gate fica verde para sempre',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  return quebradas.length ? 1 : 0;',
+    para: '  return 0;',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'o propagar ignora o veredito do bot, e a regra só vale na função pura',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  return falhou || !veredito.ok ? 1 : 0;',
+    para: '  return falhou ? 1 : 0;',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'o propagar sai 0 com uma loja que falhou',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  return falhou || !veredito.ok ? 1 : 0;',
+    para: '  return !veredito.ok ? 1 : 0;',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'o propagar deixa de buscar, e a loja que o bot criou não recebe a main',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  const lojas = buscar({ cwd });',
+    para: '  const lojas = lojasDoRemoto({ cwd });',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'o validar da CLI deixa de buscar, e diz "nenhuma loja" com a cara de "todas cabem"',
+    arquivo: 'scripts/lojas.mjs',
+    de: '    lojas: buscar({ cwd }),',
+    para: '    lojas: lojasDoRemoto({ cwd }),',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'erro inesperado sai 0, e o CI fica verde sobre um script que nem rodou',
+    arquivo: 'scripts/lojas.mjs',
+    de: '    codigo = 1;',
+    para: '    codigo = 0;',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'sem o LOJAS_TOKEN o propagar segue, e só descobre na primeira mudança de workflow',
+    arquivo: 'scripts/lojas.mjs',
+    de: "  if (argv.includes('--exigir-token') && !env.LOJAS_TOKEN) {",
+    para: '  if (false) {',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'a recusa por workflow volta a culpar a lojista em vez do token',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  if (/workflow/i.test(texto) && /refusing|permission/i.test(texto)) {',
+    para: '  if (false) {',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'o push recusado é dado como sucesso, e a loja fica sem a main sem ninguém saber',
+    arquivo: 'scripts/lojas.mjs',
+    de: "    if (!push.ok) return { loja, estado: 'falhou', motivo: motivoDoPushRecusado(push.erro), avisos };",
+    para: '    // mutante',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'um erro do git numa loja volta a derrubar a propagação de todas',
+    arquivo: 'scripts/lojas.mjs',
+    de: '      } catch (erroDaLoja) {',
+    para: '      } catch (erroDaLoja) {\n        throw erroDaLoja;',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'o validar volta a reprovar todo PR por problema que a loja já tinha',
+    arquivo: 'scripts/lojas.mjs',
+    de: '    const novos = problemasNovos(comEsteCodigo, problemasDoConteudo(conteudo, codigoDaBase));',
+    para: '    const novos = comEsteCodigo;',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'a loja com problema antigo fica parada para sempre, sem nada que a main possa fazer',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  const novos = problemasNovos(comAMain, problemasAntes);',
+    para: '  const novos = comAMain;',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'a main que tira um bloco usado pela loja é empurrada mesmo assim',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  const novos = problemasNovos(comAMain, problemasAntes);',
+    para: '  const novos = [];',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    // O defeito que a revisão achou: o intervalo da execução cancelada pelo
+    // concurrency nunca era conferido. Sem a exclusão, o bot de antes da loja
+    // (o beac89f de hoje) passaria a ser acusado para sempre.
+    porque: 'o bot passa a ser procurado em toda a main, e o commit anterior à loja é acusado sem fim',
+    arquivo: 'scripts/lojas.mjs',
+    de: "    const log = git(['log', '--format=%H%x09%an%x09%ae', main, `^origin/${loja}`], { cwd });",
+    para: "    const log = git(['log', '--format=%H%x09%an%x09%ae', main], { cwd });",
     teste: 'tests/lojas.test.mjs',
   },
 ];

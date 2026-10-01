@@ -60,8 +60,11 @@ verificação, na [issue #168](https://github.com/cleytonmendest/elizabeth/issue
 - um job leva a `main` para cada `loja/*`. Um arquivo de conteúdo que a loja
   mudou volta inteiro para a versão dela, mesmo sem conflito, porque um merge
   por linha montaria um layout que ninguém montou;
-- todo PR na `main` valida o conteúdo de cada loja contra o código novo;
-- um commit do `shopify[bot]` na `main` reprova.
+- todo PR na `main` valida o conteúdo de cada loja contra o código novo. Ele
+  reprova só o que o PR quebra: o problema que a loja já tinha com o código
+  da base vira aviso, senão uma loja deixaria o gate da `main` refém dela;
+- um commit do `shopify[bot]` na `main` que ainda não chegou a alguma loja
+  reprova.
 
 A validação do PR precisa de um verificador novo, e isso foi medido antes de
 ser escrito. Com o `templates/product.json` apontando um bloco que não existe e
@@ -126,6 +129,12 @@ tipo que este repositório já viu ser quebrada
 - O preview de PR (`preview.yml`) e a suíte de navegador passam a mostrar a
   home neutra, e não a loja de moda. Ver uma mudança dentro de uma loja
   específica fica para depois.
+- A propagação precisa de um token pessoal, o secret `LOJAS_TOKEN`. O
+  `GITHUB_TOKEN` não empurra um ref cujos arquivos de `.github/workflows/`
+  mudam, então toda mudança de workflow na `main` seria recusada em todas as
+  lojas. O token expira e precisa ser renovado. Sem ele, o job reprova assim
+  que existir uma `loja/*`, sem tocar em nenhuma. E, ao contrário do
+  `GITHUB_TOKEN`, o push dele dispara os workflows da loja.
 - A migração é manual e tem ordem. A `loja/moda` precisa estar conectada e
   publicada **antes** de a `main` perder o conteúdo de moda. Na ordem inversa,
   a loja no ar passa a mostrar a home neutra.

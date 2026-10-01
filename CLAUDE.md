@@ -419,9 +419,19 @@ Na propagação, o arquivo de conteúdo que a loja mudou volta inteiro para ela.
 O git não mescla por linha a home da loja com a da `main`. Conflito fora do
 conteúdo reprova, inclusive num locale.
 
-Nenhuma loja fica conectada à `main`: um commit do `shopify[bot]` nela reprova
-o `propagar`. Enquanto não existir nenhuma `loja/*`, a `main` ainda é a loja
-conectada, e o script diz isso em vez de reprovar.
+O `validar` e o `propagar` usam a mesma catraca do lint: reprova o que o
+código novo quebra no JSON da loja, e o problema que ela já tinha vira aviso.
+Sem isso, uma chave órfã numa loja reprovaria até um PR que só mexe no README.
+
+Nenhuma loja fica conectada à `main`: um commit do `shopify[bot]` nela, que
+ainda não chegou a alguma loja, reprova o `propagar`. Enquanto não existir
+nenhuma `loja/*`, a `main` ainda é a loja conectada, e o script diz isso em
+vez de reprovar.
+
+O `propagar` do CI empurra com o secret `LOJAS_TOKEN` (token pessoal
+fine-grained, só este repositório, Contents e Workflows em leitura e
+escrita), porque o `GITHUB_TOKEN` não empurra mudança de `.github/workflows/`.
+Sem o secret, o job reprova com esse motivo assim que existir uma `loja/*`.
 
 ## Trabalhando aqui
 
