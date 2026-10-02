@@ -406,6 +406,13 @@ Uma `loja/*` só difere da `main` no que o editor grava: `templates/*.json`,
 que vale é `CONTEUDO_DA_LOJA`, em `scripts/lojas.mjs`, e `tests/lojas.test.mjs`
 exige que este parágrafo cite toda ela.
 
+O conteúdo da `main` é o do tema instalado do zero. Ele não aponta recurso de
+loja (`shopify://`, handle de coleção ou produto, menu além de `main-menu` e
+`footer`, logo). E a home usa toda section que pode entrar numa home, porque é
+a home que `e2e/a11y.spec.mjs` mede. **Section nova entra na home da `main`,
+a partir do preset dela**, ou em `FORA_DA_HOME` com o motivo. Quem verifica é
+a regra `neutra`, e é por ela que o gate não roda em PR para `loja/*`.
+
 **Correção de código achada numa loja vai na `main`**, e chega à loja pela
 propagação. Três verificações fazem isso valer:
 

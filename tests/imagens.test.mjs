@@ -105,6 +105,40 @@ describe('o slider do topo pede a foto em várias larguras, nas três fontes', (
   });
 });
 
+describe('o slide sem foto mostra o placeholder (#168)', () => {
+  // O estado de todo slide recém-adicionado no editor, e o da home da `main`.
+  const slides = (blocos) =>
+    new DOMParser().parseFromString(
+      renderizaSection('slider-image.liquid', {
+        id: 'heroi',
+        settings: { color_scheme: 'scheme-1', nav: false },
+        blocks: blocos.map((settings) => ({ settings })),
+      }),
+      'text/html'
+    );
+
+  it('sem foto nenhuma, nenhum <img>: o placeholder da Shopify, um diferente por slide', () => {
+    const doc = slides([{ heading: 'Um' }, { heading: 'Dois' }]);
+    expect(doc.querySelectorAll('img, picture')).toHaveLength(0);
+    expect([...doc.querySelectorAll('svg[data-placeholder]')].map((s) => s.dataset.placeholder)).toEqual([
+      'hero-apparel-1',
+      'hero-apparel-2',
+    ]);
+  });
+
+  it('o texto do slide continua por cima do placeholder', () => {
+    expect(slides([{ heading: 'Elegância em cada detalhe' }]).querySelector('h2').textContent).toBe(
+      'Elegância em cada detalhe'
+    );
+  });
+
+  it('uma foto em qualquer fonte basta para o <picture> de sempre', () => {
+    const doc = slides([{ imgDesktop: foto('desk.png') }]);
+    expect(doc.querySelectorAll('svg[data-placeholder]')).toHaveLength(0);
+    expect(doc.querySelector('picture source[media="(min-width: 1024px)"]')).not.toBeNull();
+  });
+});
+
 // ── A galeria da PDP ──────────────────────────────────────────────────────
 
 function galeria({ qtd = 1, prioridade } = {}) {

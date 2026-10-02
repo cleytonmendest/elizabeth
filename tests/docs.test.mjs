@@ -317,6 +317,21 @@ describe('o checklist de submissão aponta para a doc publicada', () => {
     expect(naTabela.sort()).toEqual([...presets].sort());
   });
 
+  it('a §4 lista os settings que os presets sobrescrevem, nem mais nem menos', () => {
+    // A frase dizia "treze settings", contava logo e favicon, e não batia
+    // nem com o arquivo de então: eram catorze chaves, com `logo_width` e
+    // `logo_svg` de fora. A #168 tirou logo, favicon e `logo_svg` dos presets
+    // (são da loja), e a lista passou a ser os ids, lidos daqui.
+    const presets = Object.values(readJSONC('config/settings_data.json').presets);
+    const chaves = [...new Set(presets.flatMap((p) => Object.keys(p)))].sort();
+    for (const preset of presets) expect(Object.keys(preset).sort()).toEqual(chaves);
+
+    const frase = trecho(checklist, '4. Presets / estilos').match(/sobrescreve os\s+mesmos settings:[\s\S]*?\n\n/);
+    expect(frase, 'a §4 perdeu a frase que lista os settings dos presets').not.toBeNull();
+    const naFrase = [...new Set([...frase[0].matchAll(/`([a-z_]+)`/g)].map((m) => m[1]))].sort();
+    expect(naFrase).toEqual(chaves);
+  });
+
   it('a §4 não promete que os presets mudam o layout', () => {
     // A primeira versão desta seção dizia que cada preset traz o próprio
     // `content_for_index`, "o arranjo da home é próprio de cada preset".

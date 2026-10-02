@@ -50,7 +50,7 @@
       "type": "header",
       "settings": {
         "color_scheme": "scheme-1",
-        "menu": "menu-principal",
+        "menu": "main-menu",
         "menu-type": "logo-left-centered-menu",
         "fixed_header": true
       }

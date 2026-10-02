@@ -146,7 +146,26 @@
           {%- endfor -%}
         {%- endcapture -%}
 
+        {%- comment -%}
+          Slide sem foto nenhuma: o placeholder da Shopify, como no image-banner.
+          Era um `<img>` com o src de uma foto vazia, e esse é o estado de todo
+          slide recém-adicionado no editor e o da home da `main` (#168). Com uma
+          foto em qualquer das três fontes, vale o `<picture>` de sempre.
+        {%- endcomment -%}
+        {%- liquid
+          assign sem_foto = false
+          if block.settings.imgMob == blank and block.settings.imgTablet == blank and block.settings.imgDesktop == blank
+            assign sem_foto = true
+          endif
+          assign placeholder = forloop.index0 | modulo: 2 | plus: 1 | prepend: 'hero-apparel-'
+        -%}
+
         {%- capture slide_picture -%}
+          {%- if sem_foto -%}
+            <div class="w-full aspect-portrait md:aspect-ultrawide bg-foreground/5">
+              {{ placeholder | placeholder_svg_tag: 'w-full h-full object-cover' }}
+            </div>
+          {%- else -%}
           <picture>
             {% if block.settings.imgDesktop %}
               <source
@@ -181,6 +200,7 @@
               {% if is_first_slide %}fetchpriority="high"{% endif %}
             >
           </picture>
+          {%- endif -%}
         {%- endcapture -%}
 
         {%- capture slide_overlay -%}

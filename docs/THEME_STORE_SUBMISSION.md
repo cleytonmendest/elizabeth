@@ -84,7 +84,7 @@ A Shopify **proíbe** Lorem Ipsum / texto de onboarding / placeholder / palavrõ
 - [ ] **Produtos:** descrições **únicas e autênticas** por produto (não repetir o mesmo texto), com variantes (Cor/Tamanho), preços realistas e alguns com "compare at" (preço riscado).
 - [ ] **Coleções** coerentes com o nicho e suficientes para exercitar navegação/filtros (ex.: Vestidos, Blusas, Novidades, Sale). Catálogo com volume convincente (mais que o mínimo de teste).
 - [ ] **Menus** (header + footer) montados com hierarquia real.
-- [ ] **Home** "merchandeada" contando a história da marca (hero, coleções em destaque, lookbook, depoimentos, newsletter…).
+- [ ] **Home** "merchandeada" contando a história da marca (hero, coleções em destaque, lookbook, depoimentos, newsletter…). Ela mora na branch da loja demo, e não na `main`: a home da `main` é a do tema instalado do zero, com toda section e nenhuma foto ([ADR 0018](adr/0018-a-main-e-o-tema-e-cada-loja-e-uma-branch.md)).
 - [ ] **Páginas:** Sobre, Contato, FAQ (usar a section `collapsible-content`), Política de Privacidade/Termos.
 - [ ] **Blog** com posts reais.
 - [ ] **Sem funcionalidade dependente de app de terceiros** (exceção: apps **gratuitos** de review e de tradução; se usar tradução, tudo precisa estar 100% traduzido).
@@ -108,15 +108,24 @@ demo em vez de quatro, 5-7 screenshots em vez de 20-28, e a pasta `/listings`
 deixa de se aplicar ([issue #114](https://github.com/cleytonmendest/elizabeth/issues/114)).
 A lojista não perde nada — os quatro presets continuam no editor.
 
-O tema tem quatro, em `config/settings_data.json`, e cada um sobrescreve treze
-settings: fonte de título e de corpo, os dois color schemes, largura, logo,
-favicon, valor do frete grátis e três redes sociais.
+O tema tem quatro, em `config/settings_data.json`, e cada um sobrescreve os
+mesmos settings: as fontes de título e de corpo (`type_header_font`,
+`type_body_font`), os color schemes (`color_schemes`), a largura da página e a
+do logo (`page_width`, `logo_width`), o valor do frete grátis
+(`cart_free_shipping_threshold`), três redes sociais (`social_facebook_link`,
+`social_instagram_link`, `social_youtube_link`) e `content_for_index`.
 
-**O que eles NÃO mudam é o layout.** O décimo terceiro setting é
-`content_for_index`, e ele está **vazio** nos quatro — é chave legada de tema
-pré-OS 2.0, quando o arranjo da home morava no `settings_data.json`. Aqui a
-home é o `templates/index.json`, um só, compartilhado. Trocar de preset muda
-cor, fonte, logo e largura; a ordem e o conteúdo das seções são idênticos.
+Logo, favicon e `logo_svg` saíram dos presets na fase 3 da
+[issue #168](https://github.com/cleytonmendest/elizabeth/issues/168). Eles são
+a identidade de uma loja, e um preset que os carregasse trocaria o logo de quem
+o escolhe pelo da Elizabeth Estudos. A regra `neutra` reprova quem os puser de
+volta.
+
+**O que eles NÃO mudam é o layout.** O último deles é `content_for_index`, e
+ele está **vazio** nos quatro — é chave legada de tema pré-OS 2.0, quando o
+arranjo da home morava no `settings_data.json`. Aqui a home é o
+`templates/index.json`, um só, compartilhado. Trocar de preset muda cor, fonte
+e largura; a ordem e o conteúdo das seções são idênticos.
 
 Isso é o problema da [issue #114](https://github.com/cleytonmendest/elizabeth/issues/114),
 e é o que a pasta `/listings` existe para resolver:
