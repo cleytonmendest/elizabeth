@@ -25,7 +25,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ambienteDoMutante, SAIDA_DO_MUTANTE } from '../scripts/test-mutants.mjs';
+import { ambienteDoMutante, MUTANTES, MUTANTES_E2E, SAIDA_DO_MUTANTE } from '../scripts/test-mutants.mjs';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -120,5 +120,30 @@ describe('o runner usa a poda de verdade', () => {
     for (const spec of SEM_LOJA) {
       expect(fs.readFileSync(path.join(RAIZ, spec), 'utf8')).not.toMatch(/THEME_URL/);
     }
+  });
+});
+
+describe('todo mutante acha o seu alvo', () => {
+  // O corredor só confere o alvo quando chega nele. Na #168, a reescrita da §4
+  // de THEME_STORE_SUBMISSION.md quebrou a linha no meio de um trecho mutado,
+  // e o gate passou verde. O corredor reclamou no mutante 268, depois de uma
+  // hora reconstruindo e testando os outros. Ler os arquivos leva milissegundos.
+  const todos = [...MUTANTES, ...MUTANTES_E2E];
+
+  it('a lista não está vazia — senão este teste mede o vazio', () => {
+    expect(MUTANTES.length).toBeGreaterThan(0);
+    expect(MUTANTES_E2E.length).toBeGreaterThan(0);
+  });
+
+  it('o trecho a mutar aparece exatamente uma vez no arquivo, e o teste existe', () => {
+    const semAlvo = todos.flatMap((m) => {
+      const fonte = fs.readFileSync(path.join(RAIZ, m.arquivo), 'utf8');
+      const vezes = fonte.split(m.de).length - 1;
+      const problemas = [];
+      if (vezes !== 1) problemas.push(`${m.arquivo}: o trecho aparece ${vezes} vez(es) — ${m.porque}`);
+      if (!fs.existsSync(path.join(RAIZ, m.teste))) problemas.push(`${m.teste} não existe — ${m.porque}`);
+      return problemas;
+    });
+    expect(semAlvo).toEqual([]);
   });
 });

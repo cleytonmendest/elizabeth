@@ -9,77 +9,61 @@
  */
 {
   "sections": {
-    "slider_image_9WNq4K": {
+    "slider_image": {
       "type": "slider-image",
       "blocks": {
-        "test_eTDrLU": {
+        "test_1": {
           "type": "test",
           "settings": {
-            "link": "",
-            "imgDesktop": "shopify://shop_images/Banner_1_desktop.png",
-            "imgDesktopWidth": 1920,
-            "imgDesktopHeight": 540,
-            "imgTablet": "shopify://shop_images/Banner_1_tablet.png",
-            "imgTabletWidth": 1024,
-            "imgTabletHeight": 540,
-            "imgMob": "shopify://shop_images/Banner_1_mobile.png",
-            "imgMobWidth": 500,
-            "imgMobHeight": 540
+            "eyebrow": "Nova coleção",
+            "heading": "Elegância em cada detalhe",
+            "cta_label": "Comprar agora",
+            "link": "/collections/all"
           }
         },
-        "test_Y8DFBc": {
+        "test_2": {
           "type": "test",
           "settings": {
-            "link": "",
-            "imgDesktop": "shopify://shop_images/Banner_2_desktop.png",
-            "imgDesktopWidth": 1920,
-            "imgDesktopHeight": 540,
-            "imgTablet": "shopify://shop_images/Banner_2_tablet.png",
-            "imgTabletWidth": 1024,
-            "imgTabletHeight": 540,
-            "imgMob": "shopify://shop_images/banner_2_mobile.png",
-            "imgMobWidth": 500,
-            "imgMobHeight": 540
+            "eyebrow": "Mais vendidos",
+            "heading": "As peças favoritas da estação",
+            "cta_label": "Ver todos",
+            "link": "/collections/all",
+            "content_position": "center",
+            "scrim": "full"
           }
         }
       },
       "block_order": [
-        "test_eTDrLU",
-        "test_Y8DFBc"
+        "test_1",
+        "test_2"
       ],
       "settings": {
-        "fullwidth": true,
-        "loop": true,
-        "nav": true,
-        "dot": false,
         "qty-desk": 1,
         "qty-tablet": 1,
         "qty-mob": 1,
-        "autoplay": true,
-        "play-time": 10,
-        "pause-hover": true
+        "dot": false
       }
     },
-    "trust_badges_KPYh8n": {
+    "trust_badges": {
       "type": "trust-badges",
       "blocks": {
-        "badge_XXFgE3": {
+        "badge_1": {
           "type": "badge",
           "settings": {
             "icon": "truck",
             "title": "Frete Grátis",
-            "description": "Acima de R$ 299"
+            "description": "Em compras acima de R$ 299"
           }
         },
-        "badge_BCXnDU": {
+        "badge_2": {
           "type": "badge",
           "settings": {
             "icon": "refresh",
-            "title": "Troca Fácil",
-            "description": "30 dias para trocar"
+            "title": "Troca Facilitada",
+            "description": "Até 30 dias"
           }
         },
-        "badge_wNF4FD": {
+        "badge_3": {
           "type": "badge",
           "settings": {
             "icon": "shield",
@@ -87,201 +71,199 @@
             "description": "100% protegida"
           }
         },
-        "badge_XcBQcT": {
+        "badge_4": {
           "type": "badge",
           "settings": {
             "icon": "credit-card",
             "title": "Parcele sem Juros",
-            "description": "Em até 6x no cartão"
+            "description": "Em até 3x no cartão"
           }
         }
       },
       "block_order": [
-        "badge_XXFgE3",
-        "badge_BCXnDU",
-        "badge_wNF4FD",
-        "badge_XcBQcT"
-      ],
-      "name": "Trust Badges",
-      "settings": {
-        "color_scheme": "scheme-1",
-        "mobile_layout": "grid-2"
-      }
-    },
-    "featured_collection_iqrCEN": {
-      "type": "featured-collection",
-      "settings": {
-        "collection": "new-in",
-        "heading": "Camisas",
-        "subtitle": "Experience Luxury in Every Stitch: Premium Quality Shirts",
-        "text_alignment": "left",
-        "desktop_layout": "slider",
-        "columns": 4,
-        "products_to_show": 8,
-        "show_second_image": true,
-        "show_quick_add": true
-      }
-    },
-    "highlighted_section_8DTzni": {
-      "type": "highlighted-section",
-      "blocks": {
-        "text_PhyGYF": {
-          "type": "text",
-          "settings": {
-            "pre_title": "Coleção Fiesta",
-            "title": "Vestidos para momentos inesquecíveis",
-            "text": "Descubra a elegância em cada detalhe com nossos vestidos para ocasiões especiais. Modelos que unem luxo e simplicidade, realçando sua beleza com sofisticação e conforto. Encontre o equilíbrio perfeito entre estilo e exclusividade."
-          }
-        },
-        "image_z4KWVE": {
-          "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/highlighted.png"
-          }
-        }
-      },
-      "block_order": [
-        "text_PhyGYF",
-        "image_z4KWVE"
+        "badge_1",
+        "badge_2",
+        "badge_3",
+        "badge_4"
       ],
       "settings": {}
     },
-    "slider_cards_6ciA3G": {
+    "featured_collection": {
+      "type": "featured-collection",
+      "settings": {}
+    },
+    "highlighted_section": {
+      "type": "highlighted-section",
+      "blocks": {
+        "image_1": {
+          "type": "image",
+          "settings": {}
+        },
+        "text_1": {
+          "type": "text",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "image_1",
+        "text_1"
+      ],
+      "settings": {}
+    },
+    "slider_cards": {
       "type": "slider-cards",
       "blocks": {
-        "card_XkTxwi": {
+        "card_1": {
           "type": "card",
           "settings": {
-            "title": "ACESSÓRIOS",
-            "link": "shopify://products/camisa-social-algodao-paccata",
-            "image": "shopify://shop_images/minibanner-ACESSORIOS.png"
+            "title": "Novidades",
+            "link": "/collections/all"
           }
         },
-        "card_8nYbGH": {
+        "card_2": {
           "type": "card",
           "settings": {
-            "title": "BLUSAS",
-            "link": "shopify://collections/calcas",
-            "image": "shopify://shop_images/minibanner-BLUSAS.png"
+            "title": "Mais vendidos",
+            "link": "/collections/all"
           }
         },
-        "card_GaYrHN": {
+        "card_3": {
           "type": "card",
           "settings": {
-            "title": "CASACOS",
-            "link": "shopify://collections/camisas",
-            "image": "shopify://shop_images/minibanner-CASACOS.png"
+            "title": "Promoções",
+            "link": "/collections/all"
           }
         },
-        "card_a7yFWE": {
+        "card_4": {
           "type": "card",
           "settings": {
-            "title": "KITS",
-            "link": "shopify://collections/coletes",
-            "image": "shopify://shop_images/minibanner-KITS.png"
-          }
-        },
-        "card_n7VpaF": {
-          "type": "card",
-          "settings": {
-            "title": "CALÇAS",
-            "link": "shopify://collections/coletes",
-            "image": "shopify://shop_images/minibanner-CALCAS.png"
-          }
-        },
-        "card_eRcrJe": {
-          "type": "card",
-          "settings": {
-            "title": "VESTIDOS",
-            "link": "shopify://collections/jaquetas",
-            "image": "shopify://shop_images/minibanner-VESTIDOS.png"
-          }
-        },
-        "card_MJ79rW": {
-          "type": "card",
-          "settings": {
-            "title": "SHORTS",
-            "link": "shopify://collections/regatas",
-            "image": "shopify://shop_images/minibanner-SHORTS.png"
+            "title": "Presentes",
+            "link": "/collections/all"
           }
         }
       },
       "block_order": [
-        "card_XkTxwi",
-        "card_8nYbGH",
-        "card_GaYrHN",
-        "card_a7yFWE",
-        "card_n7VpaF",
-        "card_eRcrJe",
-        "card_MJ79rW"
+        "card_1",
+        "card_2",
+        "card_3",
+        "card_4"
       ],
+      "settings": {}
+    },
+    "image_banner": {
+      "type": "image-banner",
       "settings": {
-        "title": "",
-        "loop": true,
-        "nav": false,
-        "dot": false,
-        "qty-desk": 6,
-        "qty-tablet": 3,
-        "qty-mob": 2,
-        "autoplay": false,
-        "play-time": 5,
-        "pause-hover": false
+        "eyebrow": "Nova coleção",
+        "heading": "Elegância em cada detalhe",
+        "button_label": "Comprar agora"
       }
     },
-    "section_images_link_hGgn7V": {
+    "multicolumn": {
+      "type": "multicolumn",
+      "blocks": {
+        "column_1": {
+          "type": "column",
+          "settings": {
+            "icon": "truck",
+            "heading": "Entrega para todo o Brasil",
+            "text": "<p>Enviamos com rastreio para todas as regiões.</p>"
+          }
+        },
+        "column_2": {
+          "type": "column",
+          "settings": {
+            "icon": "refresh",
+            "heading": "Troca facilitada",
+            "text": "<p>Até 30 dias para trocar suas peças.</p>"
+          }
+        },
+        "column_3": {
+          "type": "column",
+          "settings": {
+            "icon": "lock",
+            "heading": "Compra 100% segura",
+            "text": "<p>Seus dados protegidos do início ao fim.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "column_1",
+        "column_2",
+        "column_3"
+      ],
+      "settings": {}
+    },
+    "section_images_link": {
       "type": "section-images-link",
       "blocks": {
-        "image_fQAhyC": {
+        "image_1": {
           "type": "image",
           "settings": {
-            "link": "shopify://collections/calcas",
-            "image": "shopify://shop_images/new-in.png",
-            "label": "NEW IN"
+            "label": "Novidades",
+            "link": "/collections/all"
           }
         },
-        "image_LCEnJw": {
+        "image_2": {
           "type": "image",
           "settings": {
-            "link": "shopify://collections/camisas",
-            "image": "shopify://shop_images/sale.png",
-            "label": "SALE"
+            "label": "Promoções",
+            "link": "/collections/all"
           }
         }
       },
       "block_order": [
-        "image_fQAhyC",
-        "image_LCEnJw"
+        "image_1",
+        "image_2"
       ],
       "settings": {}
     },
-    "highlighted_section_6tn9tz": {
-      "type": "highlighted-section",
+    "lookbook": {
+      "type": "lookbook",
       "blocks": {
-        "image_yC3UPt": {
-          "type": "image",
+        "hotspot_1": {
+          "type": "hotspot",
           "settings": {
-            "image": "shopify://shop_images/about-us.png"
+            "horizontal": 35,
+            "vertical": 45
           }
         },
-        "text_PwNqGA": {
-          "type": "text",
+        "hotspot_2": {
+          "type": "hotspot",
           "settings": {
-            "pre_title": "Sobre Nós",
-            "title": "Elegância que inspira",
-            "text": "Na Elizabeth, acreditamos que a moda é uma extensão da personalidade, um reflexo da sofisticação e do encanto de cada mulher. Nossas modelagem é criada para celebrar momentos especiais, combinando luxo e simplicidade em cada detalhe.Com um olhar atento às tendências e um compromisso com a qualidade, selecionamos tecidos nobres e cortes impecáveis para garantir peças que realçam a beleza e a confiança feminina. Seja para um evento marcante ou uma ocasião única, nossos designs exclusivos traduzem o equilíbrio perfeito entre modernidade e atemporalidade.Vista-se com elegância. Vista-se com Elizabeth."
+            "horizontal": 65,
+            "vertical": 70
           }
         }
       },
       "block_order": [
-        "image_yC3UPt",
-        "text_PwNqGA"
+        "hotspot_1",
+        "hotspot_2"
       ],
       "settings": {}
     },
-    "testimonials_PRGmmP": {
+    "highlighted_product": {
+      "type": "highlighted-product",
+      "settings": {}
+    },
+    "video": {
+      "type": "video",
+      "settings": {
+        "eyebrow": "Bastidores",
+        "heading": "Assista à nova coleção"
+      }
+    },
+    "rich_text": {
+      "type": "rich-text",
+      "settings": {
+        "eyebrow": "Sobre a Elizabeth",
+        "heading": "Peças pensadas para momentos especiais",
+        "text": "<p>Conte a história da sua marca e conecte-se com suas clientes através de um texto que transmita seus valores e o cuidado por trás de cada peça.</p>"
+      }
+    },
+    "testimonials": {
       "type": "testimonials",
       "blocks": {
-        "testimonial_4DtbAM": {
+        "testimonial_1": {
           "type": "testimonial",
           "settings": {
             "customer_name": "Ana Carolina",
@@ -291,7 +273,7 @@
             "product_purchased": "Vestido Floral Midi"
           }
         },
-        "testimonial_3exxmW": {
+        "testimonial_2": {
           "type": "testimonial",
           "settings": {
             "customer_name": "Juliana Mendes",
@@ -301,7 +283,7 @@
             "product_purchased": "Vestido Longo Festa"
           }
         },
-        "testimonial_nqixzX": {
+        "testimonial_3": {
           "type": "testimonial",
           "settings": {
             "customer_name": "Fernanda Costa",
@@ -313,50 +295,82 @@
         }
       },
       "block_order": [
-        "testimonial_4DtbAM",
-        "testimonial_3exxmW",
-        "testimonial_nqixzX"
+        "testimonial_1",
+        "testimonial_2",
+        "testimonial_3"
       ],
-      "name": "Depoimentos de Clientes",
+      "settings": {}
+    },
+    "collapsible_content": {
+      "type": "collapsible-content",
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "heading": "Qual é o prazo de entrega?",
+            "content": "<p>Os prazos variam conforme a região. Você verá a estimativa no checkout antes de finalizar o pedido.</p>"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "heading": "Como funcionam as trocas e devoluções?",
+            "content": "<p>Você tem até 30 dias para solicitar a troca ou devolução das peças sem uso e com etiqueta.</p>"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "heading": "Quais formas de pagamento são aceitas?",
+            "content": "<p>Aceitamos cartões de crédito (em até 12x), Pix e boleto bancário.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3"
+      ],
+      "settings": {}
+    },
+    "blog_posts": {
+      "type": "blog-posts",
       "settings": {
-        "color_scheme": "",
-        "card_color_scheme": "scheme-1",
-        "heading": "O que nossos clientes dizem",
-        "subheading": "Confira a experiência de quem já comprou com a gente",
-        "autoplay": true,
-        "autoplay_speed": 5,
-        "show_navigation": true
+        "heading": "Últimas do Blog",
+        "subheading": "Fique por dentro das últimas tendências e novidades da moda",
+        "posts_to_show": 3,
+        "columns_desktop": 3,
+        "show_excerpt": true,
+        "show_tags": true,
+        "show_button": true
       }
     },
-    "newsletter_modal_xRB9nq": {
+    "recently_viewed": {
+      "type": "recently-viewed",
+      "settings": {}
+    },
+    "newsletter_modal": {
       "type": "newsletter-modal",
-      "name": "Modal Newsletter",
-      "settings": {
-        "enable_modal": true,
-        "color_scheme": "",
-        "modalWidth": 500,
-        "modal_title": "Receba ofertas exclusivas!",
-        "modal_text": "<p>Cadastre-se e receba em primeira mão nossas promoções e lançamentos.</p>",
-        "button_text": "Quero receber ofertas",
-        "delay_seconds": 5,
-        "scroll_percentage": 0,
-        "enable_exit_intent": true,
-        "cookie_days": 30,
-        "show_dont_show_again": true,
-        "success_message": "Obrigado! Você receberá nossas novidades em breve.",
-        "error_message": "Ops! Algo deu errado. Tente novamente."
-      }
+      "settings": {}
     }
   },
   "order": [
-    "slider_image_9WNq4K",
-    "trust_badges_KPYh8n",
-    "featured_collection_iqrCEN",
-    "highlighted_section_8DTzni",
-    "slider_cards_6ciA3G",
-    "section_images_link_hGgn7V",
-    "highlighted_section_6tn9tz",
-    "testimonials_PRGmmP",
-    "newsletter_modal_xRB9nq"
+    "slider_image",
+    "trust_badges",
+    "featured_collection",
+    "highlighted_section",
+    "slider_cards",
+    "image_banner",
+    "multicolumn",
+    "section_images_link",
+    "lookbook",
+    "highlighted_product",
+    "video",
+    "rich_text",
+    "testimonials",
+    "collapsible_content",
+    "blog_posts",
+    "recently_viewed",
+    "newsletter_modal"
   ]
 }

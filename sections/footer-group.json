@@ -14,25 +14,18 @@
     "footer": {
       "type": "footer",
       "blocks": {
-        "links_VA9WrW": {
+        "links_menu": {
           "type": "links",
           "settings": {
-            "sublink_title": "INSTITUCIONAL",
-            "linklist": "institucional"
+            "sublink_title": "NAVEGUE",
+            "linklist": "main-menu"
           }
         },
-        "links_V9fbij": {
+        "links_rodape": {
           "type": "links",
           "settings": {
-            "sublink_title": "POLITICAS",
-            "linklist": "politicas"
-          }
-        },
-        "links_wef9mJ": {
-          "type": "links",
-          "settings": {
-            "sublink_title": "CENTRAL DO CLIENTE",
-            "linklist": "central-do-cliente"
+            "sublink_title": "INFORMAÇÕES",
+            "linklist": "footer"
           }
         },
         "extra_zDmDmh": {
@@ -58,9 +51,8 @@
         }
       },
       "block_order": [
-        "links_VA9WrW",
-        "links_V9fbij",
-        "links_wef9mJ",
+        "links_menu",
+        "links_rodape",
         "extra_zDmDmh"
       ],
       "settings": {
