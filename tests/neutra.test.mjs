@@ -14,17 +14,22 @@
  */
 import { describe, it, expect } from 'vitest';
 import {
+  CAMINHOS_DE_TODA_LOJA,
   FORA_DA_HOME,
   IDENTIDADE_DA_LOJA,
   MENUS_DE_TODA_LOJA,
   apontaRecursoDeLoja,
+  caminhosDeLoja,
   contabilidadeDaHome,
   enderecosDeLoja,
+  linhaDoValor,
   podeIrNaHome,
   recursosDeLoja,
   recursosDoArquivo,
   run,
+  sectionsRenderizadas,
 } from '../scripts/lint/rules/neutra.mjs';
+import { lojaDoCheckout } from '../scripts/lojas.mjs';
 
 const SCHEMAS = {
   'slider-image': {
@@ -198,7 +203,7 @@ describe('recurso de loja no conteúdo da main', () => {
 
   it('acha `shopify://` em qualquer profundidade', () => {
     expect(enderecosDeLoja({ a: [{ b: 'shopify://x' }], c: 'https://exemplo.com', d: 3 })).toEqual([
-      { caminho: 'a.0.b', valor: 'shopify://x' },
+      { caminho: 'a.0.b', valor: 'shopify://x', endereco: 'shopify://x' },
     ]);
   });
 
@@ -207,6 +212,41 @@ describe('recurso de loja no conteúdo da main', () => {
     const achados = recursosDeLoja({ sections: { r: { type: 'rich-text', settings: { text: texto } } } });
     expect(codigos(achados)).toEqual(['shopify:sections.r.settings.text']);
     expect(achados[0].message).toContain('aponta shopify://collections/calcas, que');
+  });
+
+  // A revisão do #171 plantou `/collections/new-in` num link e a regra passou:
+  // sem `shopify://` e sem setting de tipo coleção, o handle escapava. Numa
+  // loja nova, é um 404.
+  it('o caminho relativo para um handle, digitado à mão num link', () => {
+    const home = {
+      sections: {
+        s: { type: 'slider-image', blocks: { b: { type: 'test', settings: { link: '/collections/new-in' } } } },
+      },
+    };
+    const achados = recursosDeLoja(home, { schemaDe });
+    expect(codigos(achados)).toEqual(['caminho:sections.s.blocks.b.settings.link']);
+    expect(achados[0].message).toContain('aponta /collections/new-in');
+    expect(achados[0].message).toContain('/collections/all');
+  });
+
+  it('e o de produto, página e blog, também dentro do texto rico', () => {
+    for (const caminho of ['/products/camisa', '/pages/sobre', '/blogs/moda']) {
+      const texto = `<p>Veja <a href="${caminho}">aqui</a></p>`;
+      expect(caminhosDeLoja(texto), caminho).toEqual([caminho]);
+    }
+  });
+
+  it('o caminho que toda loja tem, o de outro site e o sem handle passam', () => {
+    expect(CAMINHOS_DE_TODA_LOJA).toEqual(['/collections/all']);
+    expect(caminhosDeLoja('/collections/all')).toEqual([]);
+    expect(caminhosDeLoja('/collections/all?sort_by=price-ascending')).toEqual([]);
+    expect(caminhosDeLoja('https://exemplo.com/pages/sobre')).toEqual([]);
+    expect(caminhosDeLoja('/collections')).toEqual([]);
+    expect(caminhosDeLoja('/search')).toEqual([]);
+  });
+
+  it('um handle que só começa com "all" é outro handle', () => {
+    expect(caminhosDeLoja('/collections/all-new')).toEqual(['/collections/all-new']);
   });
 
   it('o tipo decide, campo por campo', () => {
@@ -315,11 +355,61 @@ describe('cada arquivo com a sua leitura', () => {
   });
 });
 
+describe('o que a página de fato renderiza', () => {
+  // A revisão do #171 desabilitou a `lookbook` e tirou o `video` do `order`, e
+  // a regra continuou em zero: ela contava toda section de `sections`. Nenhuma
+  // das duas aparece na página, e a suíte de navegador nunca as abre.
+  const home = {
+    sections: {
+      a: { type: 'slider-image' },
+      b: { type: 'lookbook', disabled: true },
+      c: { type: 'video' },
+      d: { type: 'rich-text', disabled: false },
+    },
+    order: ['a', 'b', 'd', 'fantasma'],
+  };
+
+  it('só as do `order`, na ordem dele, menos as desabilitadas', () => {
+    expect(sectionsRenderizadas(home)).toEqual(['slider-image', 'rich-text']);
+  });
+
+  it('a que ficou fora da página conta como fora da home', () => {
+    const conta = contabilidadeDaHome({
+      elegiveis: ['slider-image', 'lookbook', 'video', 'rich-text'],
+      usadas: sectionsRenderizadas(home),
+      foraDaHome: {},
+    });
+    expect(conta.esquecidas).toEqual(['lookbook', 'video']);
+  });
+
+  it('JSON sem `order` não renderiza nada', () => {
+    expect(sectionsRenderizadas({ sections: { a: { type: 'video' } } })).toEqual([]);
+    expect(sectionsRenderizadas(undefined)).toEqual([]);
+  });
+});
+
+describe('a linha da mensagem', () => {
+  it('um valor em lista, que o arquivo guarda indentado, aponta a linha certa', () => {
+    const src = '{\n  "a": 1,\n  "colecoes": [\n    "new-in",\n    "sale"\n  ]\n}';
+    expect(linhaDoValor(src, ['new-in', 'sale'])).toBe(4);
+  });
+
+  it('um texto aponta a linha dele', () => {
+    expect(linhaDoValor('{\n  "a": 1,\n  "link": "/collections/new-in"\n}', '/collections/new-in')).toBe(3);
+  });
+});
+
+// Num checkout de `loja/*`, o conteúdo do disco é da loja, e aponta a loja
+// dela. A regra só avisa ali (`lojaDoCheckout`), e este teste não tem o que
+// medir: ele é sobre a main.
+const loja = lojaDoCheckout();
+const pulado = loja ? ` (pulado: o checkout é a ${loja})` : '';
+
 describe('a main de hoje', () => {
   // A regra roda no disco. Sem este teste, um defeito no `run()` (o grupo do
   // cabeçalho fora da conta, o settings_data lido como template) só
   // apareceria no `npm run lint`, e nenhum mutante o pegaria.
-  it('não aponta recurso de loja, e a home usa toda section que pode', () => {
+  it.skipIf(loja)(`não aponta recurso de loja, e a home usa toda section que pode${pulado}`, () => {
     expect(run().map((o) => `${o.file}: ${o.code}`)).toEqual([]);
   });
 });

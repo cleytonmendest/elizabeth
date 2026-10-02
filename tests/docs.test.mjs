@@ -32,6 +32,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { ROOT, list, read, readJSONC, extractSchema, flatten } from '../scripts/lint/lib.mjs';
+import { lojaDoCheckout } from '../scripts/lojas.mjs';
 
 const DOCS = path.join(ROOT, 'docs');
 
@@ -317,7 +318,11 @@ describe('o checklist de submissão aponta para a doc publicada', () => {
     expect(naTabela.sort()).toEqual([...presets].sort());
   });
 
-  it('a §4 lista os settings que os presets sobrescrevem, nem mais nem menos', () => {
+  // Num checkout de `loja/*`, o settings_data é o da loja, com o logo dela:
+  // a §4 descreve os presets da main.
+  const loja = lojaDoCheckout();
+  const pulado = loja ? ` (pulado: o checkout é a ${loja})` : '';
+  it.skipIf(loja)(`a §4 lista os settings que os presets sobrescrevem, nem mais nem menos${pulado}`, () => {
     // A frase dizia "treze settings", contava logo e favicon, e não batia
     // nem com o arquivo de então: eram catorze chaves, com `logo_width` e
     // `logo_svg` de fora. A #168 tirou logo, favicon e `logo_svg` dos presets

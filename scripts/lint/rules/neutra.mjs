@@ -37,6 +37,11 @@
  * O tipo do setting vem do schema, e não do nome da chave: `link` pode ser
  * `url` numa section e `text` em outra.
  *
+ * E um quarto caminho, que a revisão do PR #171 achou: o link digitado à mão,
+ * relativo, para um handle (`/collections/new-in`, `/products/x`,
+ * `/pages/sobre`). Não tem `shopify://`, e numa loja nova é um 404. Só
+ * `/collections/all` existe em toda loja.
+ *
  * ── 2. A home usa toda section ─────────────────────────────────────────────
  *
  * O `e2e/a11y.spec.mjs` mede `/`. Com toda section na home, ele mede todos os
@@ -60,9 +65,14 @@
  * para isso que ele existe. O `scripts/lojas.mjs` confere o JSON das lojas só
  * contra o código (`referenciasDoTemplate`), e o gate não roda em PR para
  * `loja/*` (`.github/workflows/ci.yml`).
+ *
+ * Num checkout de `loja/*` (`lojaDoCheckout`), ela sai com um aviso em vez de
+ * reprovar. Sem isso, quem resolve à mão um conflito de locale numa loja, o
+ * caso que o ADR 0018 prevê, tinha o commit barrado pelo `pre-commit` por um
+ * conteúdo que é dela.
  */
 import { DIRS, extractSchema, lineAt, list, offense, read, readJSONC } from '../lib.mjs';
-import { ehConteudoDaLoja } from '../../lojas.mjs';
+import { ehConteudoDaLoja, lojaDoCheckout } from '../../lojas.mjs';
 import { schemaDoDisco } from './refs.mjs';
 
 export const meta = {
@@ -78,6 +88,23 @@ export const meta = {
  * aba. Vazios, o cabeçalho mostra o nome que a lojista deu à loja.
  */
 export const IDENTIDADE_DA_LOJA = ['logo', 'logo_svg', 'favicon'];
+
+/** Os caminhos relativos que existem em toda loja. */
+export const CAMINHOS_DE_TODA_LOJA = ['/collections/all'];
+
+/**
+ * Caminho relativo para o handle de um recurso: o começo da string, ou depois
+ * de aspas, espaço, `(` ou `=` (um `href` dentro de texto rico). Depois de um
+ * domínio não casa: `https://exemplo.com/pages/x` é de outro site.
+ */
+const CAMINHO_DE_RECURSO = /(?:^|["'\s(=])(\/(?:collections|products|pages|blogs)\/[\w-]+)/g;
+
+/** Os caminhos relativos de um texto que só existem na loja que os criou. */
+export function caminhosDeLoja(texto) {
+  return [...String(texto).matchAll(CAMINHO_DE_RECURSO)]
+    .map((m) => m[1])
+    .filter((c) => !CAMINHOS_DE_TODA_LOJA.includes(c));
+}
 
 /** Os menus que a Shopify cria com toda loja. */
 export const MENUS_DE_TODA_LOJA = ['main-menu', 'footer'];
@@ -136,12 +163,16 @@ export function apontaRecursoDeLoja(tipo, valor) {
 }
 
 /**
- * Toda string do JSON que contém `shopify://`, com o caminho até ela. Contém,
- * e não começa com: o texto rico guarda o link para uma coleção dentro do
- * HTML (`<a href="shopify://collections/calcas">`).
+ * Toda string do JSON que aponta a loja, com o caminho até ela: `shopify://`
+ * ou um caminho relativo para um handle (`caminhosDeLoja`). Contém, e não
+ * começa com: o texto rico guarda o link para uma coleção dentro do HTML
+ * (`<a href="shopify://collections/calcas">`).
  */
 export function enderecosDeLoja(valor, caminho = '') {
-  if (typeof valor === 'string') return valor.includes('shopify://') ? [{ caminho, valor }] : [];
+  if (typeof valor === 'string') {
+    const endereco = valor.match(/shopify:\/\/[^\s"'<>]*/)?.[0] ?? caminhosDeLoja(valor)[0];
+    return endereco ? [{ caminho, valor, endereco }] : [];
+  }
   if (!valor || typeof valor !== 'object') return [];
   return Object.entries(valor).flatMap(([chave, filho]) =>
     enderecosDeLoja(filho, caminho ? `${caminho}.${chave}` : chave)
@@ -157,13 +188,14 @@ export function enderecosDeLoja(valor, caminho = '') {
  * @returns {{ code: string, caminho: string, valor: unknown, message: string }[]}
  */
 export function recursosDeLoja(json, { schemaDe = () => null, settingsSchema } = {}) {
-  const achados = enderecosDeLoja(json).map(({ caminho, valor }) => ({
-    code: `shopify:${caminho}`,
+  const achados = enderecosDeLoja(json).map(({ caminho, valor, endereco }) => ({
+    code: `${endereco.startsWith('shopify://') ? 'shopify' : 'caminho'}:${caminho}`,
     caminho,
     valor,
     message:
-      `"${caminho}" aponta ${valor.match(/shopify:\/\/[^\s"'<>]*/)[0]}, que só existe na ` +
-      'loja que o escolheu. Numa instalação nova ele não resolve. Na main, deixe o campo vazio.',
+      `"${caminho}" aponta ${endereco}, que só existe na loja que o escolheu. Numa ` +
+      'instalação nova ele não resolve. Na main, deixe o campo vazio' +
+      (endereco.startsWith('/') ? `, ou use ${CAMINHOS_DE_TODA_LOJA.join(', ')}.` : '.'),
   }));
 
   const confere = (onde, declarados, valores) => {
@@ -206,7 +238,7 @@ export function recursosDeLoja(json, { schemaDe = () => null, settingsSchema } =
   const identidade = (onde, valores) => {
     for (const id of IDENTIDADE_DA_LOJA) {
       const valor = valores?.[id];
-      if (vazio(valor) || String(valor).includes('shopify://')) continue;
+      if (vazio(valor) || enderecosDeLoja(valor).length) continue;
       const caminho = `${onde}.${id}`;
       achados.push({
         code: `identidade:${caminho}`,
@@ -242,6 +274,28 @@ export function recursosDoArquivo(file, json, { schemaDe, settingsSchema }) {
   return recursosDeLoja(json, file === 'config/settings_data.json' ? { settingsSchema } : { schemaDe });
 }
 
+/**
+ * Os tipos das sections que um template ou section group de fato renderiza:
+ * as do `order`, menos as desabilitadas. A que está em `sections` e fora do
+ * `order` não aparece na página, e a suíte de navegador nunca a abre.
+ */
+export function sectionsRenderizadas(json) {
+  return (json?.order ?? [])
+    .map((id) => json?.sections?.[id])
+    .filter((section) => section && section.disabled !== true)
+    .map((section) => section.type);
+}
+
+/**
+ * A linha do valor no arquivo, para a mensagem apontar o lugar certo. Lista
+ * sai indentada no arquivo e compacta no `JSON.stringify`, então ela é
+ * procurada pelo primeiro item.
+ */
+export function linhaDoValor(src, valor) {
+  const alvo = Array.isArray(valor) ? valor[0] : valor;
+  return lineAt(src, Math.max(0, src.indexOf(JSON.stringify(alvo))));
+}
+
 /** O editor oferece esta section em "Adicionar section", na home? */
 export function podeIrNaHome(schema) {
   if (!schema?.presets?.length) return false;
@@ -275,6 +329,22 @@ const HOME = 'templates/index.json';
 
 export function run() {
   const ofensas = [];
+
+  const loja = lojaDoCheckout();
+  if (loja) {
+    return [
+      offense({
+        rule: 'neutra',
+        file: 'config/settings_data.json',
+        code: 'checkout-de-loja',
+        severity: 'warn',
+        message:
+          `Este checkout é a ${loja}, e o conteúdo dela aponta a loja dela: a regra \`neutra\` ` +
+          'vale para a main. Numa loja, quem confere é `node scripts/lojas.mjs conferir`.',
+      }),
+    ];
+  }
+
   const schemaGlobal = readJSONC('config/settings_schema.json');
 
   const conteudo = [
@@ -300,7 +370,7 @@ export function run() {
         offense({
           rule: 'neutra',
           file,
-          line: lineAt(src, Math.max(0, src.indexOf(JSON.stringify(achado.valor)))),
+          line: linhaDoValor(src, achado.valor),
           code: achado.code,
           message: achado.message,
         })
@@ -314,7 +384,7 @@ export function run() {
     .map(({ tipo }) => tipo);
 
   const usadas = [HOME, ...list(DIRS.sections, '.json')].flatMap((file) =>
-    Object.values(lidos.get(file)?.sections ?? {}).map((s) => s?.type)
+    sectionsRenderizadas(lidos.get(file))
   );
 
   const conta = contabilidadeDaHome({ elegiveis, usadas, foraDaHome: FORA_DA_HOME });
@@ -324,8 +394,9 @@ export function run() {
     reprova(
       HOME,
       `fora-da-home:${tipo}`,
-      `A section "${tipo}" pode entrar numa home e não está em ${HOME}, nem num section ` +
-        'group. A suíte de navegador mede a home, e nunca a abre. Ponha a section na home, ' +
+      `A section "${tipo}" pode entrar numa home e não é renderizada por ${HOME}, nem por ` +
+        'um section group (fora do `order`, ou desabilitada, conta como fora). A suíte de ' +
+        'navegador mede a home, e nunca a abre. Ponha a section na home, ' +
         'a partir do preset dela, ou em FORA_DA_HOME (scripts/lint/rules/neutra.mjs) com o motivo.'
     );
   }

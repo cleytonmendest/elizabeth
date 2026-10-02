@@ -132,10 +132,17 @@ describe('o slide sem foto mostra o placeholder (#168)', () => {
     );
   });
 
-  it('uma foto em qualquer fonte basta para o <picture> de sempre', () => {
-    const doc = slides([{ imgDesktop: foto('desk.png') }]);
+  // As três, e não só a do desktop: a primeira versão deste teste plantava só
+  // `imgDesktop`, e tirar `imgMob` ou `imgTablet` da condição passava verde. Um
+  // slide só com a foto do celular mostraria o placeholder (revisão do #171).
+  it.each([
+    ['imgMob', 'img[srcset*="/so-esta.png?width=375"]'],
+    ['imgTablet', 'source[media="(min-width: 500px)"][srcset*="/so-esta.png"]'],
+    ['imgDesktop', 'source[media="(min-width: 1024px)"][srcset*="/so-esta.png"]'],
+  ])('só com %s, vale o <picture> de sempre, com a foto dela', (fonte, seletor) => {
+    const doc = slides([{ [fonte]: foto('so-esta.png') }]);
     expect(doc.querySelectorAll('svg[data-placeholder]')).toHaveLength(0);
-    expect(doc.querySelector('picture source[media="(min-width: 1024px)"]')).not.toBeNull();
+    expect(doc.querySelector(`picture ${seletor}`)).not.toBeNull();
   });
 });
 
