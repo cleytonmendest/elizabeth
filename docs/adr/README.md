@@ -63,3 +63,4 @@ diverge do arquivo.
 | [0016](0016-o-tema-nao-exibe-urgencia-que-nao-acaba.md) | O tema não exibe urgência que não acaba | Aceito |
 | [0017](0017-texto-de-botao-compartilhado-vem-do-locale.md) | Texto de botão que aparece em vários lugares vem do locale, não de um setting | Aceito |
 | [0018](0018-a-main-e-o-tema-e-cada-loja-e-uma-branch.md) | A `main` é o tema, e cada loja é uma branch que só puxa dela | Aceito |
+| [0019](0019-o-conteudo-que-a-loja-tem-e-dela.md) | O conteúdo que a loja tem é dela, mesmo o que ela nunca mexeu | Aceito |

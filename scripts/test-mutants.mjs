@@ -2660,10 +2660,21 @@ const MUTANTES = [
   {
     // Sem isso, o git mescla por linha a home da loja com a da main, e sai um
     // layout que ninguém montou — ou um conflito que trava a propagação.
-    porque: 'o conteúdo que a loja mudou deixa de voltar inteiro para ela',
+    //
+    // E é TODO o conteúdo que a loja tem (ADR 0019), não só o que ela mudou:
+    // a Elizabeth Estudos mudou só o index.json, e a main neutra da fase 3
+    // teria trocado a PDP, o cabeçalho e as cores dela na loja no ar.
+    porque: 'o conteúdo da loja deixa de voltar inteiro para ela, e a main neutra apaga a Elizabeth',
     arquivo: 'scripts/lojas.mjs',
-    de: '  const restaurarDaLoja = mudadosPelaLoja.filter(ehConteudoDaLoja);',
+    de: '  const restaurarDaLoja = naLoja.filter(ehConteudoDaLoja);',
     para: '  const restaurarDaLoja = [];',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'o template que a loja apagou volta, ou trava a propagação num conflito',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  const apagadosPelaLoja = naBase.filter((c) => ehConteudoDaLoja(c) && !daLoja.has(c));',
+    para: '  const apagadosPelaLoja = [];',
     teste: 'tests/lojas.test.mjs',
   },
   {
