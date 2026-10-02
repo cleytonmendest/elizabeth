@@ -59,14 +59,24 @@
  * o código novo da `main`, e reprovaria por algo que não fez. Por isso a
  * comparação parte do merge-base: é o código que a loja de fato carrega.
  *
- * ── O que a loja mudou fica INTEIRO com ela ────────────────────────────────
+ * ── O conteúdo que a loja TEM fica inteiro com ela (ADR 0019) ─────────────
  *
  * O `propagar` não deixa o git mesclar linha a linha um arquivo de conteúdo
- * que a loja mudou. Um merge limpo de JSON pode produzir um arquivo válido e
+ * da loja. Um merge limpo de JSON pode produzir um arquivo válido e
  * incoerente: a `main` acrescenta um bloco à PDP, a loja reordenou a mesma PDP
  * no editor, e as duas metades se juntam sem conflito num layout que ninguém
- * montou. Arquivo de conteúdo que a loja mudou volta à versão dela, inteiro; o
- * que ela nunca tocou recebe o da `main`.
+ * montou.
+ *
+ * A primeira versão devolvia à loja só o arquivo que ela tinha MUDADO, e o
+ * que ela nunca tocou recebia o da `main`. Medido depois do primeiro save da
+ * Elizabeth Estudos: ela tinha mudado só o `index.json`. A PDP, o cabeçalho, o
+ * rodapé e o `settings_data.json` dela eram idênticos aos da `main` — herdados
+ * de quando a `main` ERA ela —, e a `main` neutra da fase 3 os teria trocado
+ * na loja no ar. "Nunca tocou" não quer dizer "não é dela".
+ *
+ * Agora todo arquivo de conteúdo que a loja tem volta à versão dela, o que ela
+ * apagou continua apagado, e da `main` só chega o arquivo de conteúdo que a
+ * loja nunca teve: um template de página novo, um section group novo.
  *
  * Os locales de vitrine são a exceção, porque misturam as duas coisas: a
  * `main` acrescenta chave (código) e a loja muda valor (conteúdo). O git os
@@ -197,15 +207,20 @@ export function mudancasProibidas(mudancas, locale) {
 }
 
 /**
- * O plano do merge da `main` numa loja: o que a loja mudou em conteúdo volta
- * inteiro para ela, e o conflito que sobra reprova.
+ * O plano do merge da `main` numa loja (ADR 0019): todo arquivo de conteúdo
+ * que a loja TEM volta inteiro para ela, mexido ou não; o que ela apagou
+ * continua apagado; e só o arquivo de conteúdo que ela nunca teve chega da
+ * `main`. O conflito que sobra, fora disso, reprova.
  *
- * @param {{ mudadosPelaLoja: string[], conflitos: string[] }} entrada
+ * @param {{ naLoja: string[], naBase: string[], conflitos: string[] }} entrada
+ *   os arquivos da loja, os do merge-base com a `main`, e os em conflito
  */
-export function planoDoMerge({ mudadosPelaLoja, conflitos }) {
-  const restaurarDaLoja = mudadosPelaLoja.filter(ehConteudoDaLoja);
-  const daLoja = new Set(restaurarDaLoja);
-  return { restaurarDaLoja, bloqueiam: conflitos.filter((c) => !daLoja.has(c)) };
+export function planoDoMerge({ naLoja, naBase, conflitos }) {
+  const daLoja = new Set(naLoja);
+  const restaurarDaLoja = naLoja.filter(ehConteudoDaLoja);
+  const apagadosPelaLoja = naBase.filter((c) => ehConteudoDaLoja(c) && !daLoja.has(c));
+  const resolvidos = new Set([...restaurarDaLoja, ...apagadosPelaLoja]);
+  return { restaurarDaLoja, apagadosPelaLoja, bloqueiam: conflitos.filter((c) => !resolvidos.has(c)) };
 }
 
 /** `git log --format=%H%x09%an%x09%ae` → os commits do `shopify[bot]`. */
@@ -458,9 +473,6 @@ function propagarUma(loja, { cwd, main, empurrar }) {
   }
 
   const base = git(['merge-base', main, remota], { cwd }).trim();
-  const mudadosPelaLoja = mudancasDoDiff(
-    git(['diff', '--name-status', '--no-renames', base, remota], { cwd })
-  ).map((m) => m.caminho);
   const lojaAntes = leitorDoRef(remota, { cwd });
   const problemasAntes = problemasDoConteudo(lojaAntes, lojaAntes);
 
@@ -468,7 +480,11 @@ function propagarUma(loja, { cwd, main, empurrar }) {
   git([...IDENTIDADE, 'merge', '--no-ff', '--no-commit', main], { cwd, permitirFalha: true });
 
   const conflitos = git(['diff', '--name-only', '--diff-filter=U'], { cwd }).split('\n').filter(Boolean);
-  const { restaurarDaLoja, bloqueiam } = planoDoMerge({ mudadosPelaLoja, conflitos });
+  const { restaurarDaLoja, apagadosPelaLoja, bloqueiam } = planoDoMerge({
+    naLoja: lojaAntes.arquivos(),
+    naBase: leitorDoRef(base, { cwd }).arquivos(),
+    conflitos,
+  });
 
   if (bloqueiam.length) {
     git(['merge', '--abort'], { cwd, permitirFalha: true });
@@ -481,11 +497,8 @@ function propagarUma(loja, { cwd, main, empurrar }) {
     };
   }
 
-  const naLoja = new Set(lojaAntes.arquivos());
-  for (const caminho of restaurarDaLoja) {
-    if (naLoja.has(caminho)) git(['checkout', remota, '--', caminho], { cwd });
-    else git(['rm', '-q', '-f', '--ignore-unmatch', '--', caminho], { cwd });
-  }
+  if (restaurarDaLoja.length) git(['checkout', remota, '--', ...restaurarDaLoja], { cwd });
+  if (apagadosPelaLoja.length) git(['rm', '-q', '-f', '--ignore-unmatch', '--', ...apagadosPelaLoja], { cwd });
 
   git([...IDENTIDADE, 'commit', '-q', '-m', `A main entra em ${loja} (ADR 0018)`], { cwd });
 
