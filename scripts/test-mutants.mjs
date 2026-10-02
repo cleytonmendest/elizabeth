@@ -151,7 +151,7 @@ function resgataMutanteOrfao() {
 
 const comE2E = process.argv.includes('--e2e');
 
-const MUTANTES = [
+export const MUTANTES = [
   // ── A #130: sete regras viviam só no CLAUDE.md ──────────────────────────
   //
   // Regra em prosa é pedido, e pedido pode ser atendido ou não. A do ADR já
@@ -2949,7 +2949,7 @@ const MUTANTES = [
  * navegador. Note que aqui o alvo NÃO é o tema: é `e2e/helpers/axe.mjs`, o
  * código que decide se uma página passa ou não.
  */
-const MUTANTES_E2E = [
+export const MUTANTES_E2E = [
   // ── #161: o carrossel não salta quando o Swiper chega ────────────────────
   {
     porque: 'os slides voltam a nascer empilhados, e a página salta quando o Swiper chega (CLS 0,23 no celular)',

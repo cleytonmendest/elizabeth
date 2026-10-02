@@ -121,8 +121,8 @@ a identidade de uma loja, e um preset que os carregasse trocaria o logo de quem
 o escolhe pelo da Elizabeth Estudos. A regra `neutra` reprova quem os puser de
 volta.
 
-**O que eles NÃO mudam é o layout.** O último deles é `content_for_index`, e
-ele está **vazio** nos quatro — é chave legada de tema pré-OS 2.0, quando o
+**O que eles NÃO mudam é o layout.** O último deles é `content_for_index`,
+e ele está **vazio** nos quatro — é chave legada de tema pré-OS 2.0, quando o
 arranjo da home morava no `settings_data.json`. Aqui a home é o
 `templates/index.json`, um só, compartilhado. Trocar de preset muda cor, fonte
 e largura; a ordem e o conteúdo das seções são idênticos.
