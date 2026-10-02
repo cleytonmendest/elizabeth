@@ -122,16 +122,26 @@ describe('as decisões, sem git', () => {
     expect(mudancasProibidas([{ status: 'M', caminho: 'templates/index.json' }], locale)).toEqual([]);
   });
 
-  it('o merge devolve à loja o conteúdo que ela mudou, e o conflito em código bloqueia', () => {
+  it('o merge devolve à loja TODO conteúdo que ela tem, e o conflito em código bloqueia', () => {
+    // ADR 0019: o `product.json` não foi mexido pela loja, e é dela do mesmo
+    // jeito. O `page.antiga.json` ela apagou, e continua apagado.
     expect(
       planoDoMerge({
-        mudadosPelaLoja: ['templates/index.json', 'locales/pt-BR.json'],
-        conflitos: ['templates/index.json', 'snippets/preco.liquid', 'locales/pt-BR.json'],
+        naLoja: ['templates/index.json', 'templates/product.json', 'locales/pt-BR.json', 'snippets/preco.liquid'],
+        naBase: ['templates/index.json', 'templates/product.json', 'templates/page.antiga.json'],
+        conflitos: ['templates/index.json', 'snippets/preco.liquid', 'locales/pt-BR.json', 'templates/page.antiga.json'],
       })
     ).toEqual({
-      restaurarDaLoja: ['templates/index.json'],
+      restaurarDaLoja: ['templates/index.json', 'templates/product.json'],
+      apagadosPelaLoja: ['templates/page.antiga.json'],
       bloqueiam: ['snippets/preco.liquid', 'locales/pt-BR.json'],
     });
+  });
+
+  it('o conteúdo que só a main tem não entra no plano: ele chega pelo merge', () => {
+    const plano = planoDoMerge({ naLoja: ['templates/index.json'], naBase: ['templates/index.json'], conflitos: [] });
+    expect(plano.restaurarDaLoja).not.toContain('templates/page.faq.json');
+    expect(plano.apagadosPelaLoja).toEqual([]);
   });
 
   it('o commit do bot é reconhecido pelo formato real, o do beac89f', () => {
@@ -439,16 +449,56 @@ describe('propagar: a main entra em cada loja', () => {
     expect(repo.doRemoto('loja/bebe', 'templates/index.json')).toBe(HOME('Berços'));
   });
 
-  it('o conteúdo que a loja nunca tocou recebe o da main', () => {
+  it('o caso da Elizabeth: o conteúdo que a loja nunca mexeu também é dela', () => {
+    // ADR 0019. A loja herdou o `settings_data.json` e o `index.json` de
+    // quando a main ERA ela, e só mexeu num locale. A main fica neutra (a fase
+    // 3 da #168), e a loja no ar não pode receber a home e as cores neutras.
     const repo = repositorio();
-    repo.criaLoja('bebe', () => repo.escreve('locales/pt-BR.json', LOCALE('COMPRAR')));
-    repo.naMain(() => repo.escreve('templates/index.json', HOME('Neutra')));
+    repo.criaLoja('elizabeth', () => repo.escreve('locales/pt-BR.json', LOCALE('COMPRAR')));
+    repo.naMain(() => {
+      repo.escreve('templates/index.json', HOME('Neutra'));
+      repo.escreve('config/settings_data.json', JSON.stringify({ current: { page_width: 1600 } }));
+      repo.escreve('snippets/preco.liquid', 'preço v2\n');
+    });
+    buscar({ cwd: repo.cwd });
+
+    const [resultado] = propagar({ cwd: repo.cwd });
+
+    expect(resultado.estado).toBe('atualizada');
+    expect(repo.doRemoto('loja/elizabeth', 'templates/index.json')).toBe(HOME('Moda'));
+    expect(repo.doRemoto('loja/elizabeth', 'config/settings_data.json')).toBe(
+      JSON.stringify({ current: { page_width: 1200 } })
+    );
+    // O código chega, e o valor do locale que a loja mudou continua o dela.
+    expect(repo.doRemoto('loja/elizabeth', 'snippets/preco.liquid')).toBe('preço v2\n');
+    expect(repo.doRemoto('loja/elizabeth', 'locales/pt-BR.json')).toBe(LOCALE('COMPRAR'));
+  });
+
+  it('o template que só a main tem chega à loja', () => {
+    // A única porta pela qual conteúdo da main entra numa loja que já existe.
+    const repo = repositorio();
+    repo.criaLoja('bebe', () => repo.escreve('templates/index.json', HOME('Berços')));
+    repo.naMain(() => repo.escreve('templates/page.faq.json', HOME('Perguntas')));
     buscar({ cwd: repo.cwd });
 
     propagar({ cwd: repo.cwd });
 
-    expect(repo.doRemoto('loja/bebe', 'templates/index.json')).toBe(HOME('Neutra'));
-    expect(repo.doRemoto('loja/bebe', 'locales/pt-BR.json')).toBe(LOCALE('COMPRAR'));
+    expect(repo.doRemoto('loja/bebe', 'templates/page.faq.json')).toBe(HOME('Perguntas'));
+  });
+
+  it('o template que a loja apagou continua apagado, mesmo que a main o mude', () => {
+    const repo = repositorio();
+    repo.escreve('templates/page.antiga.json', HOME('Antiga'));
+    repo.commit('página antiga');
+    repo.g('push', '-q', 'origin', 'main');
+    repo.criaLoja('bebe', () => fs.rmSync(path.join(repo.cwd, 'templates/page.antiga.json')));
+    repo.naMain(() => repo.escreve('templates/page.antiga.json', HOME('Antiga, revista')));
+    buscar({ cwd: repo.cwd });
+
+    const [resultado] = propagar({ cwd: repo.cwd });
+
+    expect(resultado.estado).toBe('atualizada');
+    expect(() => repo.doRemoto('loja/bebe', 'templates/page.antiga.json')).toThrow();
   });
 
   it('loja que já tem a main fica em dia, sem commit novo', () => {

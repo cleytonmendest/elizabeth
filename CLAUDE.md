@@ -415,7 +415,9 @@ node scripts/lojas.mjs validar    # o JSON de cada loja/* cabe no código daqui?
 node scripts/lojas.mjs propagar   # leva a main a cada loja/* (workflow Lojas; recusa árvore suja)
 ```
 
-Na propagação, o arquivo de conteúdo que a loja mudou volta inteiro para ela.
+Na propagação, todo arquivo de conteúdo que a loja tem volta inteiro para ela,
+mesmo o que ela nunca mexeu, e da `main` só chega o arquivo de conteúdo que a
+loja ainda não tem — ver [ADR 0019](docs/adr/0019-o-conteudo-que-a-loja-tem-e-dela.md).
 O git não mescla por linha a home da loja com a da `main`. Conflito fora do
 conteúdo reprova, inclusive num locale.
 
