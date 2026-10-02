@@ -151,7 +151,7 @@ function resgataMutanteOrfao() {
 
 const comE2E = process.argv.includes('--e2e');
 
-const MUTANTES = [
+export const MUTANTES = [
   // ── A #130: sete regras viviam só no CLAUDE.md ──────────────────────────
   //
   // Regra em prosa é pedido, e pedido pode ser atendido ou não. A do ADR já
@@ -2814,6 +2814,216 @@ const MUTANTES = [
     para: "    const log = git(['log', '--format=%H%x09%an%x09%ae', main], { cwd });",
     teste: 'tests/lojas.test.mjs',
   },
+
+  // ── #168, fase 3: a main é o tema instalado do zero ───────────────────────
+  //
+  // A regra `neutra` nasceu achando 51 pontos na main. Cada mutante abaixo é
+  // um caminho pelo qual um deles voltaria sem ninguém ver: a foto, o handle,
+  // o menu, o logotipo, a section que a suíte nunca abre.
+  {
+    porque: 'o menu "menu-principal" de uma loja volta a passar no cabeçalho da main',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: "  if (tipo === 'link_list') return !MENUS_DE_TODA_LOJA.includes(valor);",
+    para: "  if (tipo === 'link_list') return false;",
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'a coleção "new-in" volta a passar: handle sem `shopify://` aponta o nada numa loja nova',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: '  return TIPOS_DE_RECURSO.has(tipo);',
+    para: '  return false;',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    // O furo que a primeira versão tinha: o link para uma coleção dentro de um
+    // texto rico mora no meio do HTML, e procurar só no começo não o via.
+    porque: 'o link `shopify://` dentro de um texto rico volta a passar',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: "    const endereco = valor.match(/shopify:\\/\\/[^\\s\"'<>]*/)?.[0] ?? caminhosDeLoja(valor)[0];",
+    para: "    const endereco = valor.match(/^shopify:\\/\\/[^\\s\"'<>]*/)?.[0] ?? caminhosDeLoja(valor)[0];",
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'o logotipo da Elizabeth Estudos em SVG volta aos presets, e toda loja nova o herda',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: '      identidade(onde, valores);',
+    para: '',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'o logo `shopify://` passa a sair duas vezes, como recurso e como identidade',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: '      if (vazio(valor) || enderecosDeLoja(valor).length) continue;',
+    para: '      if (vazio(valor)) continue;',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'as recomendações de produto, presas à PDP, passam a ser cobradas na home',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: '  if (schema.enabled_on && !naHome(schema.enabled_on.templates)) return false;',
+    para: '',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'uma section barrada do index pelo `disabled_on` passa a ser cobrada na home',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: '  return !naHome(schema.disabled_on?.templates);',
+    para: '  return true;',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'uma section nova fora da home passa sem ninguém ver, e a suíte de navegador nunca a abre',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: '    esquecidas: elegiveis.filter((tipo) => !usada.has(tipo) && !(tipo in foraDaHome)),',
+    para: '    esquecidas: [],',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'FORA_DA_HOME vira o lugar onde se esconde da suíte uma section que já está na home',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: '    naHomeENaLista: listadas.filter((tipo) => usada.has(tipo)),',
+    para: '    naHomeENaLista: [],',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'uma section apagada ou renomeada continua em FORA_DA_HOME para sempre',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: '    quePodemIr: listadas.filter((tipo) => !pode.has(tipo)),',
+    para: '    quePodemIr: [],',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'uma section entra em FORA_DA_HOME sem motivo escrito',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: "    semMotivo: listadas.filter((tipo) => String(foraDaHome[tipo] ?? '').trim().length < 20),",
+    para: '    semMotivo: [],',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    // A barra de anúncio mora no grupo do cabeçalho. Sem os grupos na conta,
+    // a regra cobraria uma segunda barra na home, e a saída seria pôr a
+    // section em FORA_DA_HOME com um motivo falso.
+    porque: 'a section do grupo do cabeçalho deixa de contar como usada, e a home passa a cobrá-la',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: "  const usadas = [HOME, ...list(DIRS.sections, '.json')].flatMap((file) =>",
+    para: '  const usadas = [HOME].flatMap((file) =>',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    // Sobreviveu na primeira versão: com a main limpa, ler o settings_data
+    // como template também dá zero. A escolha virou função para ser plantada.
+    porque: 'o settings_data passa a ser lido como template, e o logotipo da loja deixa de ser visto',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: "  return recursosDeLoja(json, file === 'config/settings_data.json' ? { settingsSchema } : { schemaDe });",
+    para: '  return recursosDeLoja(json, { schemaDe });',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'o slide sem foto volta a sair como um <img> com o src de uma foto vazia',
+    arquivo: 'sections/slider-image.liquid',
+    de: '            assign sem_foto = true',
+    para: '            assign sem_foto = false',
+    teste: 'tests/imagens.test.mjs',
+  },
+  {
+    porque: 'o slide com foto só no desktop passa a mostrar o placeholder no lugar dela',
+    arquivo: 'sections/slider-image.liquid',
+    de: '          if block.settings.imgMob == blank and block.settings.imgTablet == blank and block.settings.imgDesktop == blank',
+    para: '          if block.settings.imgMob == blank',
+    teste: 'tests/imagens.test.mjs',
+  },
+  {
+    // A frase errada que estava lá contava "treze settings" com logo e favicon,
+    // e não batia nem com o arquivo de então.
+    porque: 'a §4 deixa de listar um setting que os presets sobrescrevem',
+    arquivo: 'docs/THEME_STORE_SUBMISSION.md',
+    de: 'do logo (`page_width`, `logo_width`), o valor do frete grátis',
+    para: 'do logo (`page_width`), o valor do frete grátis',
+    teste: 'tests/docs.test.mjs',
+  },
+
+  // ── #168, fase 3: o que a revisão do PR #171 achou ───────────────────────
+  //
+  // Cada um destes é um plantio da revisão que passou verde na primeira
+  // versão: a foto só do celular, o link relativo para um handle, a section
+  // desabilitada ou fora do `order`.
+  {
+    porque: 'o slide só com a foto do celular passa a mostrar o placeholder no lugar dela',
+    arquivo: 'sections/slider-image.liquid',
+    de: '          if block.settings.imgMob == blank and block.settings.imgTablet == blank and block.settings.imgDesktop == blank',
+    para: '          if block.settings.imgTablet == blank and block.settings.imgDesktop == blank',
+    teste: 'tests/imagens.test.mjs',
+  },
+  {
+    porque: 'o slide só com a foto do tablet passa a mostrar o placeholder no lugar dela',
+    arquivo: 'sections/slider-image.liquid',
+    de: '          if block.settings.imgMob == blank and block.settings.imgTablet == blank and block.settings.imgDesktop == blank',
+    para: '          if block.settings.imgMob == blank and block.settings.imgDesktop == blank',
+    teste: 'tests/imagens.test.mjs',
+  },
+  {
+    porque: 'o link relativo `/collections/new-in` volta a passar: sem `shopify://`, um 404 numa loja nova',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: "    const endereco = valor.match(/shopify:\\/\\/[^\\s\"'<>]*/)?.[0] ?? caminhosDeLoja(valor)[0];",
+    para: "    const endereco = valor.match(/shopify:\\/\\/[^\\s\"'<>]*/)?.[0];",
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: '`/collections/all`, que toda loja tem, passa a reprovar',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: '    .filter((c) => !CAMINHOS_DE_TODA_LOJA.includes(c));',
+    para: '    .filter(() => true);',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'o caminho de outro site (`https://exemplo.com/pages/x`) passa a contar como handle da loja',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: "const CAMINHO_DE_RECURSO = /(?:^|[\"'\\s(=])(\\/(?:collections|products|pages|blogs)\\/[\\w-]+)/g;",
+    para: "const CAMINHO_DE_RECURSO = /(?:)(\\/(?:collections|products|pages|blogs)\\/[\\w-]+)/g;",
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'o handle `all-new` passa como se fosse o `/collections/all` de toda loja',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: "const CAMINHO_DE_RECURSO = /(?:^|[\"'\\s(=])(\\/(?:collections|products|pages|blogs)\\/[\\w-]+)/g;",
+    para: "const CAMINHO_DE_RECURSO = /(?:^|[\"'\\s(=])(\\/(?:collections|products|pages|blogs)\\/\\w+)/g;",
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'a section desabilitada volta a contar como usada, e a suíte de navegador nunca a abre',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: '    .filter((section) => section && section.disabled !== true)',
+    para: '    .filter((section) => section)',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'a section fora do `order` volta a contar como usada, e ela não aparece na página',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: '  return (json?.order ?? [])',
+    para: '  return Object.keys(json?.sections ?? {})',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'um valor em lista volta a apontar a linha 1 do arquivo',
+    arquivo: 'scripts/lint/rules/neutra.mjs',
+    de: '  const alvo = Array.isArray(valor) ? valor[0] : valor;',
+    para: '  const alvo = valor;',
+    teste: 'tests/neutra.test.mjs',
+  },
+  {
+    porque: 'nenhum checkout é de loja, e o pre-commit volta a barrar o conflito resolvido à mão numa loja/*',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  return ramo?.startsWith(PREFIXO) ? ramo : null;',
+    para: '  return null;',
+    teste: 'tests/lojas.test.mjs',
+  },
+  {
+    porque: 'todo ramo vira loja, e a regra `neutra` só avisa num PR qualquer',
+    arquivo: 'scripts/lojas.mjs',
+    de: '  return ramo?.startsWith(PREFIXO) ? ramo : null;',
+    para: '  return ramo ?? null;',
+    teste: 'tests/lojas.test.mjs',
+  },
 ];
 
 
@@ -2822,7 +3032,7 @@ const MUTANTES = [
  * navegador. Note que aqui o alvo NÃO é o tema: é `e2e/helpers/axe.mjs`, o
  * código que decide se uma página passa ou não.
  */
-const MUTANTES_E2E = [
+export const MUTANTES_E2E = [
   // ── #161: o carrossel não salta quando o Swiper chega ────────────────────
   {
     porque: 'os slides voltam a nascer empilhados, e a página salta quando o Swiper chega (CLS 0,23 no celular)',

@@ -343,6 +343,21 @@ function tentar(args, { cwd = RAIZ } = {}) {
 }
 
 /**
+ * A `loja/*` em que este checkout está, ou `null`.
+ *
+ * É por ela que as verificações da `main` (a regra `neutra` e os testes que
+ * leem o conteúdo do disco) sabem que o conteúdo daqui é de uma loja, e que
+ * apontar a loja é para isso que ele existe. Sem isso, resolver à mão um
+ * conflito de locale numa loja (ADR 0018) esbarrava no `pre-commit`.
+ *
+ * HEAD destacado não é loja: é como o CI faz checkout de um PR para a `main`.
+ */
+export function lojaDoCheckout({ cwd = RAIZ } = {}) {
+  const ramo = git(['symbolic-ref', '--quiet', '--short', 'HEAD'], { cwd, permitirFalha: true })?.trim();
+  return ramo?.startsWith(PREFIXO) ? ramo : null;
+}
+
+/**
  * Traz a `main` e toda `loja/*` do remoto, esquece as que foram apagadas lá, e
  * devolve as que existem.
  */

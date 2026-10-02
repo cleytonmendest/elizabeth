@@ -12,6 +12,8 @@
  *              `loading`, `fetchpriority`. O teste mede a DECISÃO do Liquid
  *              (quais larguras, qual prioridade para qual foto), e não a
  *              Shopify.
+ *   placeholder_svg_tag  um `<svg>` vazio que diz qual placeholder foi
+ *              pedido (`data-placeholder`). O desenho é da Shopify.
  *
  * Usado pela suíte de navegador (`e2e/slider-sem-salto.spec.mjs`) e pelos
  * testes de imagem: um renderizador só, para os dois não medirem sections
@@ -34,6 +36,8 @@ export function motorComImagens() {
     const largura = width ?? height;
     return largura ? `${imagem.src}?width=${largura}` : imagem.src;
   });
+  // O SVG de verdade é da Shopify; o teste só precisa ver QUAL foi pedido.
+  engine.registerFilter('placeholder_svg_tag', (nome, classe = '') => `<svg class="${classe}" data-placeholder="${nome}"></svg>`);
   engine.registerFilter('image_tag', (url, ...args) => {
     const a = argumentos(args);
     const base = String(url).split('?')[0];

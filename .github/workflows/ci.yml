@@ -6,6 +6,11 @@ name: Gate
 
 on:
   pull_request:
+    # O gate mede a `main`. Um PR para uma `loja/*` é conferido pelo
+    # `lojas.yml` (só conteúdo mudou, e ele cabe no código), e aqui ele
+    # reprovaria pela regra `neutra`: o conteúdo de uma loja aponta a loja
+    # dela, e é para isso que ele existe (ADR 0018).
+    branches-ignore: ['loja/**']
   push:
     branches: [main]
   # Rodar o gate sem ter o que commitar. O caso que pediu isto: a baseline
