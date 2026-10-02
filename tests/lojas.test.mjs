@@ -33,6 +33,7 @@ import {
   conferirLoja,
   ehConteudoDaLoja,
   ehLocaleDeVitrine,
+  lojaDoCheckout,
   motivoDoPushRecusado,
   mudancasProibidas,
   planoDoMerge,
@@ -872,5 +873,48 @@ describe('a CLI, executada como o CI a executa', () => {
       const repo = repositorio();
       expect(cli(repo, ['propagar', '--exigir-token']).codigo).toBe(0);
     });
+  });
+});
+
+describe('lojaDoCheckout: este checkout é de uma loja?', () => {
+  // A regra `neutra` e os testes que leem o conteúdo do disco perguntam isso
+  // antes de reprovar o conteúdo de uma loja por apontar a loja dela. A
+  // revisão do #171 mostrou o custo de não perguntar: numa `loja/*`, o
+  // `pre-commit` barrava até o conflito de locale resolvido à mão.
+  const raiz = fs.mkdtempSync(path.join(os.tmpdir(), 'checkout-'));
+  temporarios.push(raiz);
+  const g = (...args) => execFileSync('git', args, { cwd: raiz, encoding: 'utf8', env: semGit, stdio: 'pipe' });
+  g('init', '-q', '-b', 'main');
+  g('config', 'user.email', 'teste@exemplo');
+  g('config', 'user.name', 'Teste');
+  g('commit', '-q', '--allow-empty', '-m', 'tema');
+
+  it('numa loja/*, devolve o nome dela', () => {
+    g('checkout', '-q', '-B', 'loja/bebe');
+    expect(lojaDoCheckout({ cwd: raiz })).toBe('loja/bebe');
+  });
+
+  it('na main, nenhuma', () => {
+    g('checkout', '-q', 'main');
+    expect(lojaDoCheckout({ cwd: raiz })).toBeNull();
+  });
+
+  it('um ramo com "loja" no meio do nome não é loja', () => {
+    g('checkout', '-q', '-B', 'claude/loja/teste');
+    expect(lojaDoCheckout({ cwd: raiz })).toBeNull();
+    g('checkout', '-q', '-B', 'lojas/teste');
+    expect(lojaDoCheckout({ cwd: raiz })).toBeNull();
+  });
+
+  it('HEAD destacado, como no checkout de PR do CI, não é loja', () => {
+    g('checkout', '-q', 'loja/bebe');
+    g('checkout', '-q', '--detach');
+    expect(lojaDoCheckout({ cwd: raiz })).toBeNull();
+  });
+
+  it('fora de um repositório git, nenhuma, e sem lançar', () => {
+    const solta = fs.mkdtempSync(path.join(os.tmpdir(), 'sem-git-'));
+    temporarios.push(solta);
+    expect(lojaDoCheckout({ cwd: solta })).toBeNull();
   });
 });
