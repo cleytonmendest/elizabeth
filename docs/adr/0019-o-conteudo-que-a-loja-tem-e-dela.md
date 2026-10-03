@@ -80,3 +80,11 @@ chave produz um layout que ninguém montou. É o mesmo motivo pelo qual o ADR
 - Commits `c197524` (Elizabeth Estudos) e `ac22c45` (Livia): o primeiro save
   de cada loja
 - `scripts/lojas.mjs` (`planoDoMerge`) e `tests/lojas.test.mjs`
+
+## Atualização
+
+Em "Pagamos", "se corrige no editor dela" não foi medido. O editor não mostra
+o setting que o schema não declara mais, e não se sabe se ele apaga essa chave
+ao salvar. O caminho garantido é um commit na `loja/*` que mude só o JSON
+dela: o `conferir` aceita, e a integração da Shopify o leva ao tema. As
+mensagens de `scripts/lojas.mjs` dizem isso (`COMO_CORRIGIR_O_CONTEUDO`).
