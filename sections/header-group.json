@@ -14,29 +14,15 @@
     "announcement_bar_ndFKWT": {
       "type": "announcement-bar",
       "blocks": {
-        "text_yEXBGj": {
+        "text_boas_vindas": {
           "type": "text",
           "settings": {
-            "text_item": "<p>Em até <strong>12x sem juros!</strong></p>"
-          }
-        },
-        "text_TAtTn3": {
-          "type": "text",
-          "settings": {
-            "text_item": "<p><strong>DESCONTO</strong> em pagamento a vista</p>"
-          }
-        },
-        "text_W7Lma4": {
-          "type": "text",
-          "settings": {
-            "text_item": "<p><strong>FRETE GRÁTIS</strong> para todo o Brasil</p>"
+            "text_item": "<p>Boas-vindas à nossa loja</p>"
           }
         }
       },
       "block_order": [
-        "text_yEXBGj",
-        "text_TAtTn3",
-        "text_W7Lma4"
+        "text_boas_vindas"
       ],
       "settings": {
         "color_scheme": "scheme-2",

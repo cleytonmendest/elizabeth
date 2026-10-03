@@ -64,6 +64,15 @@
           endif
 
           assign hp_alt = hp.featured_image.alt | default: hp.title | escape
+
+          comment
+            O rótulo do ponto é o título do produto, e só o padrão passa pelo `t`.
+            Na ordem antiga (título | default: chave | t), o título ia para o `t`,
+            e o leitor de tela anunciava "translation missing" em todo ponto com
+            produto (revisão retroativa da issue 168).
+          endcomment
+          assign rotulo_padrao = 'general.see_more' | t
+          assign hp_rotulo = hp.title | default: rotulo_padrao
         -%}
         <details
           class="lookbook-hotspot absolute z-above"
@@ -72,7 +81,7 @@
         >
           <summary
             class="hotspot-dot list-none cursor-pointer w-7 h-7 -ml-3.5 -mt-3.5 rounded-full bg-background text-foreground border border-foreground/15 shadow flex items-center justify-center transition-transform hover:scale-110"
-            aria-label="{{ hp.title | default: 'general.see_more' | t | escape }}"
+            aria-label="{{ hp_rotulo | escape }}"
           >
             {% render 'icon-plus', size: 14 %}
           </summary>

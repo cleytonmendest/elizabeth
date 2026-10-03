@@ -24,6 +24,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   BOT_DA_SHOPIFY,
+  COMO_CORRIGIR_O_CONTEUDO,
   CONTEUDO_DA_LOJA,
   LOCALES_DE_VITRINE,
   buscar,
@@ -620,7 +621,7 @@ describe('propagar: a main entra em cada loja', () => {
 
     expect(resultado.estado).toBe('falhou');
     expect(resultado.problemas.map((p) => p.code)).toEqual(['missing-block:rich-text/text']);
-    expect(resultado.motivo).toContain('editor da loja');
+    expect(resultado.motivo).toContain(COMO_CORRIGIR_O_CONTEUDO);
     expect(repo.doRemoto('loja/bebe', 'sections/rich-text.liquid')).toBe(SECTION(['heading']));
   });
 
