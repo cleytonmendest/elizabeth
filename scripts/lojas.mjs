@@ -121,6 +121,17 @@ export const PREFIXO = 'loja/';
 
 export const BOT_DA_SHOPIFY = 'shopify[bot]';
 
+/**
+ * Como se corrige o JSON de uma loja. O editor não basta: ele não mostra o
+ * setting que o schema não declara mais, e não foi medido se ele apaga essa
+ * chave ao salvar. O commit de conteúdo sempre resolve, e o `conferir` o
+ * aceita (revisão retroativa da #168).
+ */
+export const COMO_CORRIGIR_O_CONTEUDO =
+  `Corrija o JSON da loja num commit na ${PREFIXO}* que mude só conteúdo: o \`conferir\` aceita, e a ` +
+  'integração da Shopify o leva ao tema. O editor resolve a section ou o bloco que ele ainda mostra, ' +
+  'mas não mostra o setting que o schema não declara mais.';
+
 const IDENTIDADE = [
   '-c',
   'user.name=github-actions[bot]',
@@ -540,8 +551,8 @@ function propagarUma(loja, { cwd, main, empurrar }) {
       loja,
       estado: 'falhou',
       motivo:
-        'a main quebra o JSON desta loja, e o merge não foi empurrado. No editor da loja, deixe de ' +
-        'usar o que a main tirou; a próxima propagação passa',
+        'a main quebra o JSON desta loja, e o merge não foi empurrado. Deixe de usar o que a main ' +
+        `tirou, e a próxima propagação passa. ${COMO_CORRIGIR_O_CONTEUDO}`,
       problemas: novos,
     };
   }
@@ -636,7 +647,7 @@ function cmdConferir({ cwd, argv, env }) {
           ...listar(problemas),
           '',
           `Uma ${PREFIXO}* só difere da main em ${CONTEUDO_DA_LOJA.join(', ')}, e nos valores dos ` +
-            `${LOCALES_DE_VITRINE} (ADR 0018). Problema de conteúdo se corrige no editor da loja.`,
+            `${LOCALES_DE_VITRINE} (ADR 0018). ${COMO_CORRIGIR_O_CONTEUDO}`,
         ]
       : ['Loja: só conteúdo de loja mudou, e ele cabe no código desta branch.'],
     env
@@ -663,7 +674,7 @@ function cmdValidar({ cwd, argv, env }) {
       ...quebradas.flatMap((l) => [`${l.loja}:`, ...listar(l.problemas)]),
       '',
       'Um setting renomeado ou um bloco removido faz a loja perder o que salvou no editor. ' +
-        'Mantenha o nome antigo, ou mude o JSON da loja no editor dela antes deste merge.'
+        `Mantenha o nome antigo, ou mude o JSON da loja antes deste merge. ${COMO_CORRIGIR_O_CONTEUDO}`
     );
   }
 
@@ -673,7 +684,7 @@ function cmdValidar({ cwd, argv, env }) {
       '',
       'Aviso — problema que a loja já tinha com o código da base, e que este PR não causou:',
       ...comAntigos.flatMap((l) => [`${l.loja}:`, ...listar(l.antigos)]),
-      'Corrija no editor da loja.'
+      COMO_CORRIGIR_O_CONTEUDO
     );
   }
 

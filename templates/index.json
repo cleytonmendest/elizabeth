@@ -255,9 +255,9 @@
     "rich_text": {
       "type": "rich-text",
       "settings": {
-        "eyebrow": "Sobre a Elizabeth",
-        "heading": "Peças pensadas para momentos especiais",
-        "text": "<p>Conte a história da sua marca e conecte-se com suas clientes através de um texto que transmita seus valores e o cuidado por trás de cada peça.</p>"
+        "eyebrow": "Nossa história",
+        "heading": "Feito com cuidado, do começo ao fim",
+        "text": "<p>Conte a história da sua marca e conecte-se com suas clientes através de um texto que transmita seus valores e o cuidado por trás de cada produto.</p>"
       }
     },
     "testimonials": {
@@ -269,8 +269,7 @@
             "customer_name": "Ana Carolina",
             "customer_location": "Rio de Janeiro, RJ",
             "rating": 5,
-            "testimonial_text": "Adorei a qualidade dos vestidos! O tecido é excelente e o caimento perfeito. Com certeza voltarei a comprar.",
-            "product_purchased": "Vestido Floral Midi"
+            "testimonial_text": "Adorei a qualidade! O acabamento é excelente e chegou antes do prazo. Com certeza voltarei a comprar."
           }
         },
         "testimonial_2": {
@@ -279,8 +278,7 @@
             "customer_name": "Juliana Mendes",
             "customer_location": "Belo Horizonte, MG",
             "rating": 5,
-            "testimonial_text": "Atendimento impecável e entrega rápida. O vestido chegou exatamente como na foto. Super recomendo!",
-            "product_purchased": "Vestido Longo Festa"
+            "testimonial_text": "Atendimento impecável e entrega rápida. Chegou exatamente como na foto. Super recomendo!"
           }
         },
         "testimonial_3": {
@@ -289,8 +287,7 @@
             "customer_name": "Fernanda Costa",
             "customer_location": "São Paulo, SP",
             "rating": 5,
-            "testimonial_text": "Já é a terceira vez que compro e sempre me surpreendo com a qualidade. As peças são lindas e elegantes!",
-            "product_purchased": "Conjunto Blazer"
+            "testimonial_text": "Já é a terceira vez que compro e sempre me surpreendo com a qualidade. Recomendo de olhos fechados!"
           }
         }
       },
@@ -337,7 +334,7 @@
       "type": "blog-posts",
       "settings": {
         "heading": "Últimas do Blog",
-        "subheading": "Fique por dentro das últimas tendências e novidades da moda",
+        "subheading": "Fique por dentro das novidades da loja",
         "posts_to_show": 3,
         "columns_desktop": 3,
         "show_excerpt": true,
