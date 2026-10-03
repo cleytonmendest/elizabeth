@@ -81,8 +81,11 @@ jobs:
     name: A main entra em cada loja
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    # Leitura basta: o push sai com o LOJAS_TOKEN, que o checkout deixa no git
+    # do runner. Sem o secret, o `--exigir-token` reprova antes de empurrar, e
+    # o GITHUB_TOKEN nunca precisa escrever.
     permissions:
-      contents: write
+      contents: read
     # Duas propagações ao mesmo tempo disputariam o push das mesmas branches.
     # A segunda espera. O GitHub cancela a execução PENDENTE quando chega uma
     # terceira, e isso não deixa nada sem conferir: a checagem do bot olha a

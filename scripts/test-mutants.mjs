@@ -3024,6 +3024,16 @@ export const MUTANTES = [
     para: '  return ramo ?? null;',
     teste: 'tests/lojas.test.mjs',
   },
+
+  // ── #168: a revisão retroativa ──────────────────────────────────────────
+  {
+    // A ordem que estava no tema: o título do produto passava pelo `t`.
+    porque: 'o ponto do lookbook com produto volta a se anunciar como "translation missing"',
+    arquivo: 'sections/lookbook.liquid',
+    de: '          assign hp_rotulo = hp.title | default: rotulo_padrao',
+    para: "          assign hp_rotulo = hp.title | default: 'general.see_more' | t",
+    teste: 'tests/lookbook.test.mjs',
+  },
 ];
 
 

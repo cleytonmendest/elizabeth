@@ -166,3 +166,11 @@ A regra da propagação para o conteúdo da loja foi corrigida pelo
 que a loja tem é dela, mesmo o que ela nunca mexeu. Deixa de valer o que este
 ADR diz, em "Pagamos", sobre um JSON padrão da `main` chegar à loja que nunca
 mexeu naquele arquivo.
+
+Também em "Pagamos": o conflito de locale não exige que a `main` e a loja
+tenham mudado o mesmo texto. O git reprova mudanças em linhas vizinhas. Uma
+chave que a `main` acrescenta logo abaixo do valor que a loja mudou conflita,
+e uma chave no fim de um objeto conflita com a última linha dele, porque a
+vírgula muda a linha de cima. Medido com git na revisão retroativa da
+[issue #168](https://github.com/cleytonmendest/elizabeth/issues/168): a mesma
+chave, três linhas abaixo do valor da loja, mescla limpo.
