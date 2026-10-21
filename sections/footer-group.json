@@ -14,58 +14,58 @@
     "footer": {
       "type": "footer",
       "blocks": {
-        "links_VA9WrW": {
+        "links_shop": {
           "type": "links",
           "settings": {
-            "sublink_title": "INSTITUCIONAL",
-            "linklist": "institucional"
+            "sublink_title": "Shop",
+            "linklist": "footer"
           }
         },
-        "links_V9fbij": {
+        "links_help": {
           "type": "links",
           "settings": {
-            "sublink_title": "POLITICAS",
-            "linklist": "politicas"
+            "sublink_title": "Help",
+            "linklist": "help"
           }
         },
-        "links_wef9mJ": {
+        "links_about": {
           "type": "links",
           "settings": {
-            "sublink_title": "CENTRAL DO CLIENTE",
-            "linklist": "central-do-cliente"
+            "sublink_title": "About",
+            "linklist": "about"
           }
         },
         "extra_zDmDmh": {
           "type": "extra",
           "settings": {
             "active_social_media": true,
-            "title_social_media": "SIGA-NOS",
-            "title_payments": "FORMAS DE PAGAMENTO",
+            "title_social_media": "Follow us",
+            "title_payments": "We accept",
             "pay_mastercard": true,
             "pay_visa": true,
-            "pay_elo": true,
+            "pay_elo": false,
             "pay_dinners": true,
             "pay_american": true,
             "pay_jcb": true,
-            "pay_aura": true,
-            "pay_hiper": true,
-            "pay_sodexo": true,
-            "pay_boleto": true,
-            "pay_pix": true,
+            "pay_aura": false,
+            "pay_hiper": false,
+            "pay_sodexo": false,
+            "pay_boleto": false,
+            "pay_pix": false,
             "pay_gpay": true,
-            "pay_yapay": true
+            "pay_yapay": false
           }
         }
       },
       "block_order": [
-        "links_VA9WrW",
-        "links_V9fbij",
-        "links_wef9mJ",
+        "links_shop",
+        "links_help",
+        "links_about",
         "extra_zDmDmh"
       ],
       "settings": {
         "active_newsletter": true,
-        "newsletter_text": "<h2>INSCREVA-SE EM NOSSA NEWSLETTER</h2><p>Fique por dentro das novidades, promoções e muito mais.</p>"
+        "newsletter_text": "<h2>Join the list</h2><p>New pieces and stories from the Journal. Twice a month at most.</p>"
       }
     }
   },
