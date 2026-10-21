@@ -48,9 +48,23 @@
     },
     "header": {
       "type": "header",
+      "blocks": {
+        "menu_promo_linen": {
+          "type": "menu_promo",
+          "settings": {
+            "menu_item": "Shop",
+            "image": "shopify://shop_images/washed-linen-midi-dress-4.jpg",
+            "heading": "The Linen Edit",
+            "link": "shopify://collections/the-linen-edit"
+          }
+        }
+      },
+      "block_order": [
+        "menu_promo_linen"
+      ],
       "settings": {
         "color_scheme": "scheme-1",
-        "menu": "menu-principal",
+        "menu": "main-menu",
         "menu-type": "logo-left-centered-menu",
         "fixed_header": true
       }
