@@ -94,7 +94,15 @@ No editor, clique na seção **Header** e escolha o menu em **Menu Principal**.
 
 ### Mega menu
 
-Em **Header → Tipo de header desktop** há opções de layout. Se você escolher uma com mega menu, o menu principal passa a abrir em painel com os submenus visíveis.
+Você não escolhe o tipo de submenu: ele segue a estrutura que você montou em **Loja virtual → Navegação**.
+
+| Dentro do item do menu | O submenu abre como |
+| --- | --- |
+| Só links (ex.: *Vestidos* → Curtos, Longos, Festa) | **Lista** — uma caixa estreita logo abaixo do item |
+| Links que também têm links (ex.: *Roupas* → Vestidos → Curtos, Longos) | **Painel** — a largura da tela, com um grupo por coluna |
+| Uma imagem ligada ao item (veja abaixo) | Sempre **painel** |
+
+O painel se ajusta ao tamanho do seu menu, sem nada para configurar: com poucas colunas, elas ficam juntas no centro, ao lado da imagem; com muitas, ocupam a largura da página e quebram em novas linhas.
 
 Para colocar imagem no mega menu, adicione o bloco **Imagem no mega menu** dentro da seção Header.
 
