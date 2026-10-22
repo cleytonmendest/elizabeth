@@ -189,8 +189,8 @@
             >
           </div>
           <div class="ml-3">
-            {%- capture terms_link -%}<a href="{{ pages.termos-de-uso.url | default: '/pages/terms' }}" target="_blank" class="font-medium text-foreground hover:text-foreground/70 underline">{{ 'customer.register.terms_of_use' | t }}</a>{%- endcapture -%}
-            {%- capture privacy_link -%}<a href="{{ pages.politica-de-privacidade.url | default: '/pages/privacy' }}" target="_blank" class="font-medium text-foreground hover:text-foreground/70 underline">{{ 'customer.register.privacy_policy' | t }}</a>{%- endcapture -%}
+            {%- capture terms_link -%}<a href="{{ pages.terms-of-service.url | default: '/pages/terms' }}" target="_blank" class="font-medium text-foreground hover:text-foreground/70 underline">{{ 'customer.register.terms_of_use' | t }}</a>{%- endcapture -%}
+            {%- capture privacy_link -%}<a href="{{ pages.privacy-policy.url | default: '/pages/privacy' }}" target="_blank" class="font-medium text-foreground hover:text-foreground/70 underline">{{ 'customer.register.privacy_policy' | t }}</a>{%- endcapture -%}
             <label for="terms_acceptance" class="text-sm text-foreground/70">
               {{ 'customer.register.terms_agreement_html' | t: terms_link: terms_link, privacy_link: privacy_link }}
               <span class="color-error">*</span>
