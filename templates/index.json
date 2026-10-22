@@ -82,32 +82,32 @@
           "type": "badge",
           "settings": {
             "icon": "truck",
-            "title": "Frete Grátis",
-            "description": "Acima de R$ 299"
+            "title": "Free Shipping",
+            "description": "Over R$ 299"
           }
         },
         "badge_BCXnDU": {
           "type": "badge",
           "settings": {
             "icon": "refresh",
-            "title": "Troca Fácil",
-            "description": "30 dias para trocar"
+            "title": "Easy Exchanges",
+            "description": "30 days to exchange"
           }
         },
         "badge_wNF4FD": {
           "type": "badge",
           "settings": {
             "icon": "shield",
-            "title": "Compra Segura",
-            "description": "100% protegida"
+            "title": "Secure Shopping",
+            "description": "100% protected"
           }
         },
         "badge_XcBQcT": {
           "type": "badge",
           "settings": {
             "icon": "credit-card",
-            "title": "Parcele sem Juros",
-            "description": "Em até 6x no cartão"
+            "title": "Interest-Free Installments",
+            "description": "Up to 6x on your card"
           }
         }
       },
@@ -128,7 +128,7 @@
       "settings": {
         "color_scheme": "",
         "collection": "new-in",
-        "heading": "Camisas",
+        "heading": "Shirts",
         "subtitle": "Experience Luxury in Every Stitch: Premium Quality Shirts",
         "text_alignment": "left",
         "desktop_layout": "slider",
@@ -144,9 +144,9 @@
         "text_PhyGYF": {
           "type": "text",
           "settings": {
-            "pre_title": "Coleção Fiesta",
-            "title": "Vestidos para momentos inesquecíveis",
-            "text": "Descubra a elegância em cada detalhe com nossos vestidos para ocasiões especiais. Modelos que unem luxo e simplicidade, realçando sua beleza com sofisticação e conforto. Encontre o equilíbrio perfeito entre estilo e exclusividade.",
+            "pre_title": "Fiesta Collection",
+            "title": "Dresses for unforgettable moments",
+            "text": "Discover elegance in every detail with our dresses for special occasions. Designs that blend luxury and simplicity, enhancing your beauty with sophistication and comfort. Find the perfect balance between style and exclusivity.",
             "button_style": "primary",
             "button_label": "",
             "link": ""
@@ -176,7 +176,7 @@
         "card_XkTxwi": {
           "type": "card",
           "settings": {
-            "title": "ACESSÓRIOS",
+            "title": "ACCESSORIES",
             "link": "shopify://products/camisa-social-algodao-paccata",
             "image": "shopify://shop_images/minibanner-ACESSORIOS.png"
           }
@@ -184,7 +184,7 @@
         "card_8nYbGH": {
           "type": "card",
           "settings": {
-            "title": "BLUSAS",
+            "title": "BLOUSES",
             "link": "shopify://collections/calcas",
             "image": "shopify://shop_images/minibanner-BLUSAS.png"
           }
@@ -192,7 +192,7 @@
         "card_GaYrHN": {
           "type": "card",
           "settings": {
-            "title": "CASACOS",
+            "title": "COATS",
             "link": "shopify://collections/camisas",
             "image": "shopify://shop_images/minibanner-CASACOS.png"
           }
@@ -208,7 +208,7 @@
         "card_n7VpaF": {
           "type": "card",
           "settings": {
-            "title": "CALÇAS",
+            "title": "PANTS",
             "link": "shopify://collections/coletes",
             "image": "shopify://shop_images/minibanner-CALCAS.png"
           }
@@ -216,7 +216,7 @@
         "card_eRcrJe": {
           "type": "card",
           "settings": {
-            "title": "VESTIDOS",
+            "title": "DRESSES",
             "link": "shopify://collections/jaquetas",
             "image": "shopify://shop_images/minibanner-VESTIDOS.png"
           }
@@ -294,9 +294,9 @@
         "text_PwNqGA": {
           "type": "text",
           "settings": {
-            "pre_title": "Sobre Nós",
-            "title": "Elegância que inspira",
-            "text": "Na Elizabeth, acreditamos que a moda é uma extensão da personalidade, um reflexo da sofisticação e do encanto de cada mulher. Nossas modelagem é criada para celebrar momentos especiais, combinando luxo e simplicidade em cada detalhe.Com um olhar atento às tendências e um compromisso com a qualidade, selecionamos tecidos nobres e cortes impecáveis para garantir peças que realçam a beleza e a confiança feminina. Seja para um evento marcante ou uma ocasião única, nossos designs exclusivos traduzem o equilíbrio perfeito entre modernidade e atemporalidade.Vista-se com elegância. Vista-se com Elizabeth.",
+            "pre_title": "About Us",
+            "title": "Elegance that inspires",
+            "text": "At Elizabeth, we believe that fashion is an extension of personality, a reflection of the sophistication and charm of every woman. Our designs are created to celebrate special moments, combining luxury and simplicity in every detail. With a keen eye for trends and a commitment to quality, we select fine fabrics and impeccable cuts to ensure pieces that enhance feminine beauty and confidence. Whether for a landmark event or a one-of-a-kind occasion, our exclusive designs capture the perfect balance between modernity and timelessness. Dress with elegance. Dress with Elizabeth.",
             "button_style": "primary",
             "button_label": "",
             "link": ""
@@ -323,8 +323,8 @@
             "customer_name": "Ana Carolina",
             "customer_location": "Rio de Janeiro, RJ",
             "rating": 5,
-            "testimonial_text": "Adorei a qualidade dos vestidos! O tecido é excelente e o caimento perfeito. Com certeza voltarei a comprar.",
-            "product_purchased": "Vestido Floral Midi"
+            "testimonial_text": "Loved the quality of the dresses! The fabric is excellent and the fit is perfect. I will definitely buy again.",
+            "product_purchased": "Floral Midi Dress"
           }
         },
         "testimonial_3exxmW": {
@@ -333,8 +333,8 @@
             "customer_name": "Juliana Mendes",
             "customer_location": "Belo Horizonte, MG",
             "rating": 5,
-            "testimonial_text": "Atendimento impecável e entrega rápida. O vestido chegou exatamente como na foto. Super recomendo!",
-            "product_purchased": "Vestido Longo Festa"
+            "testimonial_text": "Impeccable service and fast delivery. The dress arrived exactly as pictured. Highly recommend!",
+            "product_purchased": "Long Party Dress"
           }
         },
         "testimonial_nqixzX": {
@@ -343,8 +343,8 @@
             "customer_name": "Fernanda Costa",
             "customer_location": "São Paulo, SP",
             "rating": 5,
-            "testimonial_text": "Já é a terceira vez que compro e sempre me surpreendo com a qualidade. As peças são lindas e elegantes!",
-            "product_purchased": "Conjunto Blazer"
+            "testimonial_text": "This is my third time buying and the quality always surprises me. The pieces are beautiful and elegant!",
+            "product_purchased": "Blazer Set"
           }
         }
       },
@@ -353,12 +353,12 @@
         "testimonial_3exxmW",
         "testimonial_nqixzX"
       ],
-      "name": "Depoimentos de Clientes",
+      "name": "Customer Testimonials",
       "settings": {
         "color_scheme": "",
         "card_color_scheme": "scheme-1",
-        "heading": "O que nossos clientes dizem",
-        "subheading": "Confira a experiência de quem já comprou com a gente",
+        "heading": "What our customers say",
+        "subheading": "See the experience of those who have already shopped with us",
         "autoplay": true,
         "autoplay_speed": 5,
         "show_navigation": true
