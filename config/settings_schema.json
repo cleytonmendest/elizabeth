@@ -362,14 +362,14 @@
         "type": "text",
         "id": "cart_free_shipping_message",
         "label": "t:settings_schema.cart.cart_free_shipping_message.label",
-        "default": "Faltam {valor} para o frete grátis",
+        "default": "You're {valor} away from free shipping",
         "info": "t:settings_schema.cart.cart_free_shipping_message.info"
       },
       {
         "type": "text",
         "id": "cart_free_shipping_success",
         "label": "t:settings_schema.cart.cart_free_shipping_success.label",
-        "default": "Você ganhou frete grátis!"
+        "default": "You got free shipping!"
       },
       {
         "type": "header",
@@ -407,13 +407,13 @@
         "type": "richtext",
         "id": "cookie_message",
         "label": "t:settings_schema.privacy.cookie_message.label",
-        "default": "<p>Usamos cookies para melhorar sua experiência, personalizar conteúdo e analisar o tráfego. Ao continuar navegando, você concorda com o uso de cookies.</p>"
+        "default": "<p>We use cookies to improve your experience, personalize content and analyze traffic. By continuing to browse, you agree to the use of cookies.</p>"
       },
       {
         "type": "text",
         "id": "cookie_accept_label",
         "label": "t:settings_schema.privacy.cookie_accept_label.label",
-        "default": "Aceitar"
+        "default": "Accept"
       },
       {
         "type": "checkbox",
@@ -425,7 +425,7 @@
         "type": "text",
         "id": "cookie_decline_label",
         "label": "t:settings_schema.privacy.cookie_decline_label.label",
-        "default": "Recusar"
+        "default": "Decline"
       },
       {
         "type": "url",
@@ -436,7 +436,7 @@
         "type": "text",
         "id": "cookie_privacy_label",
         "label": "t:settings_schema.privacy.cookie_privacy_label.label",
-        "default": "Política de privacidade"
+        "default": "Privacy policy"
       }
     ]
   }
