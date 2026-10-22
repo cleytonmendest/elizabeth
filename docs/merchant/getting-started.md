@@ -94,7 +94,15 @@ In the editor, click the **Header** section and pick your menu under **Main menu
 
 ### Mega menu
 
-Under **Header → Desktop header type** there are layout options. If you choose one with a mega menu, the main menu opens as a panel with submenus visible.
+You don't pick the submenu type: it follows the structure you built under **Online Store → Navigation**.
+
+| Inside the menu item | The submenu opens as |
+| --- | --- |
+| Only links (e.g. *Dresses* → Short, Long, Occasion) | A **list** — a narrow box right below the item |
+| Links that have links of their own (e.g. *Clothing* → Dresses → Short, Long) | A **panel** — full screen width, one group per column |
+| An image attached to the item (see below) | Always a **panel** |
+
+The panel adjusts to the size of your menu, with nothing to configure: with a few columns they stay together in the centre, next to the image; with many, they fill the page width and wrap onto new rows.
 
 To add an image to the mega menu, add the **Mega menu image** block inside the Header section.
 

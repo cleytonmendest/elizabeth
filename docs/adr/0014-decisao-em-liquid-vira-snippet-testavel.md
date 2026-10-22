@@ -87,3 +87,22 @@ não resolve: o CI só renderiza o que a loja de desenvolvimento tiver na
 Navegação. Um caminho que nenhum menu de lá exercita nunca é medido, e a
 ausência aparece como verde. Renderizar a partir de dados fabricados é o que
 permite cobrir os quatro casos da matriz sem depender de configuração de loja.
+
+## Adendo (2026-10-22): o bloco de promo passou a ser renderizado
+
+A seção "E o markup também passou a ser renderizado" diz que o bloco de promo
+"continua fora do alcance". Deixou de ser verdade. O painel de 3 colunas com
+imagem abria com mais de 1000px em branco entre a última coluna e a imagem, e
+esse defeito só existe quando o promo está na página — o teste precisava vê-lo.
+
+`e2e/menu-desktop.spec.mjs` agora registra `image_url` e `image_tag` como stubs
+no `liquidjs` e renderiza o promo. O que o teste mede dele é a **caixa** (onde
+cai, quanto espaço ocupa), nunca a imagem: URL e `srcset` seguem sem cobertura
+aqui, e o limite do `liquidjs` continua o mesmo — um filtro da Shopify só entra
+como stub quando o que se mede não depende do que ele produz.
+
+A moldura do cabeçalho também ganhou a regra `.page-width`, lida de
+`snippets/theme-styles.liquid`. Ela mora num `<style>` inline e não no
+`application.css`, então a moldura a usava sem tê-la, e o `settings.page_width`
+da lojista (padrão 1920px) não existia no teste. Mesma regra do restante do
+ADR: o que o navegador mede sai do arquivo que a loja serve, não de uma cópia.

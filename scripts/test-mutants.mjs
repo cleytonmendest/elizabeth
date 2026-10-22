@@ -3132,8 +3132,35 @@ export const MUTANTES_E2E = [
     // o corredor fazendo o trabalho dele.
     porque: 'o painel do mega menu volta a não ter teto, e menu grande fica inalcançável',
     arquivo: 'snippets/menu-item-desktop.liquid',
-    de: "assign miolo = 'page-width py-8 flex gap-10 justify-between max-h-below-header overflow-y-auto'",
-    para: "assign miolo = 'page-width py-8 flex gap-10 justify-between'",
+    de: "assign miolo = 'page-width py-8 flex gap-10 justify-center max-h-below-header overflow-y-auto'",
+    para: "assign miolo = 'page-width py-8 flex gap-10 justify-center'",
+    teste: 'e2e/menu-desktop.spec.mjs',
+  },
+  // ── O vão no meio do painel: 3 colunas e a imagem, 1000px em branco ──────
+  //
+  // O conteúdo era esticado até as duas pontas por duas classes, e cada uma
+  // tem o próprio mutante: qualquer das duas que volte reabre o vão.
+  {
+    porque: 'o miolo volta a empurrar a imagem para a borda, e o meio do painel fica vazio',
+    arquivo: 'snippets/menu-item-desktop.liquid',
+    de: 'flex gap-10 justify-center max-h-below-header',
+    para: 'flex gap-10 justify-between max-h-below-header',
+    teste: 'e2e/menu-desktop.spec.mjs',
+  },
+  {
+    porque: 'as colunas voltam a ocupar todo o espaço livre, e a imagem se afasta delas com a janela',
+    arquivo: 'snippets/menu-item-desktop.liquid',
+    de: "assign colunas = 'flex flex-wrap gap-x-12 gap-y-6'",
+    para: "assign colunas = 'flex flex-wrap gap-x-12 gap-y-6 flex-1'",
+    teste: 'e2e/menu-desktop.spec.mjs',
+  },
+  {
+    // O lado de menu GRANDE da mesma regra: sem `flex-1` as colunas têm o
+    // tamanho do conteúdo, e isso só é seguro enquanto puderem encolher.
+    porque: 'as colunas param de encolher, e um menu grande empurra a imagem para fora da janela',
+    arquivo: 'snippets/menu-item-desktop.liquid',
+    de: "assign colunas = 'flex flex-wrap gap-x-12 gap-y-6'",
+    para: "assign colunas = 'flex flex-wrap gap-x-12 gap-y-6 shrink-0'",
     teste: 'e2e/menu-desktop.spec.mjs',
   },
   {

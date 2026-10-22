@@ -16,8 +16,9 @@
   Isolado aqui, o item renderiza com `liquidjs` a partir de um `link`
   fabricado, e o que o navegador mede passa a ser a saída do MESMO arquivo que
   a loja serve. O bloco de promo usa filtros da Shopify (`image_url`,
-  `image_tag`) que o `liquidjs` não tem — e não precisa ter, porque ele só é
-  alcançado quando existe promo, e aí o teste é outro.
+  `image_tag`) que o `liquidjs` não tem: o teste os registra como stubs e mede
+  só a CAIXA do promo — onde ela cai e quanto espaço ocupa. A imagem em si
+  (URL, srcset) continua fora do alcance.
 
   Espera: `link`, `promo_blocks`.
 {%- endcomment -%}
@@ -71,11 +72,21 @@
               Painel: `static` no item faz o `absolute` escapar para o
               #main-header-container, que é o `relative` mais próximo — é assim
               que ele ganha a largura da viewport.
+
+              A CAIXA tem a largura da viewport; o CONTEÚDO não precisa ter. As
+              colunas e a imagem formam um grupo do tamanho do que a lojista
+              montou, centrado na caixa: menu pequeno fica compacto, menu
+              grande cresce até o `page-width` e então quebra em linhas.
+
+              Antes eram `flex-1` nas colunas e `justify-between` no miolo, que
+              esticam o conteúdo até as duas pontas. Com 3 colunas e o
+              page_width padrão (1920px) a imagem ia para a borda direita e
+              sobravam mais de 1000px em branco entre ela e a última coluna.
             endcomment
             assign ancoragem = 'static'
             assign caixa = 'left-0 w-full border-t border-border'
-            assign miolo = 'page-width py-8 flex gap-10 justify-between max-h-below-header overflow-y-auto'
-            assign colunas = 'flex flex-wrap gap-x-12 gap-y-6 flex-1'
+            assign miolo = 'page-width py-8 flex gap-10 justify-center max-h-below-header overflow-y-auto'
+            assign colunas = 'flex flex-wrap gap-x-12 gap-y-6'
           endif
         -%}
         <div class="{{ ancoragem }} flex justify-center items-center h-full group/menu" data-forma="{{ forma }}">

@@ -22,6 +22,14 @@
  *     da lojista. Enquanto o gatilho não acompanhava a linha (o `h-full` falhava
  *     em silêncio), nenhuma ponte fixa cobria.
  *
+ * ── O segundo defeito: o vão no meio do painel ─────────────────────────────
+ *
+ * O painel tem a largura da janela, e o conteúdo era esticado até as duas
+ * pontas. Num menu de 3 colunas com imagem, em um `page_width` de 1920px, as
+ * colunas ficavam à esquerda, a imagem à direita e o meio vazio. O conteúdo
+ * agora é um grupo do tamanho do que a lojista montou, centrado na caixa — e o
+ * que o teste trava é que ele NÃO cresce quando a janela cresce.
+ *
  * ── Por que a marcação vem do `liquidjs`, e não de uma cópia ───────────────
  *
  * Este arquivo remontava a marcação à mão a partir das classes do snippet. Essa
@@ -42,6 +50,32 @@ import { Liquid } from 'liquidjs';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const engine = new Liquid({ root: path.join(RAIZ, 'snippets'), extname: '.liquid' });
+
+// Os dois filtros de imagem da Shopify que o `liquidjs` não tem. O promo os usa,
+// e sem eles o snippet nem renderiza. São stubs de propósito: do promo, este
+// arquivo mede a CAIXA (onde ela cai e quanto espaço ocupa), nunca a imagem.
+engine.registerFilter('image_url', () => '');
+engine.registerFilter('image_tag', (_imagem, ...args) => {
+  const { class: classes = '', alt = '' } = Object.fromEntries(args);
+  return `<img class="${classes}" alt="${alt}">`;
+});
+
+/**
+ * A regra `.page-width`, lida de onde a loja a serve.
+ *
+ * Ela mora num <style> inline de `snippets/theme-styles.liquid` — não no
+ * `application.css` —, então a moldura abaixo a usava sem a ter: o miolo do
+ * painel ocupava a janela inteira, e o teto que a lojista escolhe
+ * (`settings.page_width`) não existia aqui.
+ */
+function regraPageWidth() {
+  const src = fs.readFileSync(path.join(RAIZ, 'snippets/theme-styles.liquid'), 'utf8');
+  const achado = src.match(/\.page-width\s*\{[^}]*\}/);
+  if (!achado) {
+    throw new Error('snippets/theme-styles.liquid não tem mais a regra .page-width — o teste perdeu o alvo.');
+  }
+  return achado[0];
+}
 
 /**
  * Uma classe literal de um fonte do tema.
@@ -77,14 +111,32 @@ const item = (n, comFilhos = 0) => ({
  *
  * O logo é um bloco de altura explícita porque é ELE que define a altura da
  * linha, e a altura da linha é o que determina a faixa.
+ *
+ * `promo` liga o bloco de imagem do item, casado pelo título como na loja.
+ * `larguraDaPagina` é o `settings.page_width`: o padrão do tema é 1920, e é
+ * com ele que o miolo do painel chega perto da janela inteira.
  */
-async function monta(page, link, { alturaDoLogo = 48, largura = 1400, altura = 900 } = {}) {
+async function monta(
+  page,
+  link,
+  { alturaDoLogo = 48, largura = 1400, altura = 900, promo = false, larguraDaPagina = 1920 } = {}
+) {
   await page.setViewportSize({ width: largura, height: altura });
-  const itemHtml = await engine.renderFile('menu-item-desktop', { link, promo_blocks: [] });
+  const promo_blocks = promo
+    ? [
+        {
+          type: 'menu_promo',
+          shopify_attributes: '',
+          settings: { menu_item: link.title, image: 'imagem', heading: 'Edição', link: '/promo' },
+        },
+      ]
+    : [];
+  const itemHtml = await engine.renderFile('menu-item-desktop', { link, promo_blocks });
 
   await page.setContent(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
 <style>:root{--color-background:255 255 255;--color-foreground:20 20 20;--color-border:220 220 220;
---color-shadow:0 0 0;--page-width:1200px;--radius:8px;--font-scale:1}</style></head>
+--color-shadow:0 0 0;--page-width:${larguraDaPagina}px;--radius:8px;--font-scale:1}
+${regraPageWidth()}</style></head>
 <body><div class="w-full"><main-header class="w-full block relative">
 <div id="main-header-container" class="color-background color-text w-full group relative">
   <div class="!py-3 page-width w-full"><div class="flex justify-between">
@@ -207,6 +259,95 @@ test('lista longa continua dropdown, em duas colunas', async ({ page }) => {
     .evaluate((e) => getComputedStyle(e).gridTemplateColumns.split(' ').length);
 
   expect(colunas, 'a lista longa ficou em uma coluna só e estica para fora da tela').toBe(2);
+});
+
+/** Onde as colunas e a imagem do painel caem na janela, em pixels. */
+const geometria = (page) =>
+  painel(page).evaluate((p) => {
+    const caixa = (e) => e.getBoundingClientRect();
+    const colunas = [...p.querySelectorAll('.min-w-menu-col')].map(caixa);
+    const promo = p.querySelector('.mega-promo');
+    return {
+      janela: window.innerWidth,
+      colunas: colunas.length,
+      esquerda: Math.min(...colunas.map((c) => c.left)),
+      direita: Math.max(...colunas.map((c) => c.right)),
+      promo: promo ? { esquerda: caixa(promo).left, direita: caixa(promo).right } : null,
+    };
+  });
+
+/** Abre o painel e espera a animação terminar, para medir onde ele pousou. */
+async function abreEMede(page, link, opcoes) {
+  await monta(page, link, opcoes);
+  await page.locator('[data-forma] > a').first().hover();
+  await expect(painel(page)).toHaveCSS('opacity', '1');
+  return geometria(page);
+}
+
+for (const comPromo of [false, true]) {
+  test(`painel pequeno ${comPromo ? 'com' : 'sem'} imagem: um grupo centrado, e não espalhado até as pontas`, async ({
+    page,
+  }) => {
+    // O sintoma: 3 colunas e a imagem num `page_width` de 1920px. As colunas
+    // ficavam coladas à esquerda e a imagem na borda direita, com mais de
+    // 1000px em branco no meio — o `flex-1` das colunas e o `justify-between`
+    // do miolo esticavam o conteúdo até as duas pontas.
+    //
+    // O que se trava é a INDEPENDÊNCIA da janela, não um número: o conteúdo
+    // tem o tamanho do que a lojista montou, e a janela só decide de que lado
+    // sobra espaço. Medido em duas larguras, com o teto da página aberto.
+    const medidas = [];
+    for (const largura of [1400, 2400]) {
+      const g = await abreEMede(page, item(3, 3), { largura, promo: comPromo, larguraDaPagina: 2560 });
+      expect(g.colunas, 'o teste perdeu as colunas do painel').toBe(3);
+      expect(Boolean(g.promo), 'a imagem do item não renderizou').toBe(comPromo);
+
+      const fim = g.promo ? g.promo.direita : g.direita;
+      medidas.push({
+        largura,
+        grupo: fim - g.esquerda,
+        vao: g.promo ? g.promo.esquerda - g.direita : 0,
+        margemEsquerda: g.esquerda,
+        margemDireita: g.janela - fim,
+      });
+    }
+
+    for (const m of medidas) {
+      expect(
+        Math.abs(m.margemEsquerda - m.margemDireita),
+        `janela de ${m.largura}px: o conteúdo deixou de ficar centrado na caixa ` +
+          `(${m.margemEsquerda}px à esquerda, ${m.margemDireita}px à direita)`
+      ).toBeLessThanOrEqual(1);
+    }
+
+    const [estreita, larga] = medidas;
+    expect(
+      Math.abs(larga.grupo - estreita.grupo),
+      `o grupo foi de ${estreita.grupo}px para ${larga.grupo}px só por a janela ter crescido — ` +
+        'o conteúdo voltou a ser esticado até as pontas'
+    ).toBeLessThanOrEqual(1);
+    expect(
+      Math.abs(larga.vao - estreita.vao),
+      `o vão entre as colunas e a imagem foi de ${estreita.vao}px para ${larga.vao}px com a janela`
+    ).toBeLessThanOrEqual(1);
+  });
+}
+
+test('painel grande com imagem: as colunas quebram em linhas, e nenhuma invade a imagem', async ({ page }) => {
+  // O outro lado da regra. Tirar o `flex-1` deixou as colunas com o tamanho do
+  // próprio conteúdo, e isso só é seguro enquanto elas puderem ENCOLHER e
+  // quebrar. Se um dia não puderem (`shrink-0`, `flex-none`), 12 grupos somam
+  // mais que a janela: a imagem sai da tela e o painel ganha rolagem lateral.
+  const g = await abreEMede(page, item(12, 12), { largura: 1400, promo: true });
+
+  expect(g.colunas, 'o teste perdeu as colunas do painel').toBe(12);
+  expect(g.direita, 'uma coluna invadiu a imagem').toBeLessThanOrEqual(g.promo.esquerda);
+  expect(g.promo.direita, 'a imagem passou da janela').toBeLessThanOrEqual(g.janela);
+
+  const rolaNoX = await painel(page)
+    .locator('> div')
+    .evaluate((e) => e.scrollWidth > e.clientWidth);
+  expect(rolaNoX, 'o painel ganhou rolagem lateral — as colunas pararam de quebrar').toBe(false);
 });
 
 test('painel com muitos grupos cabe na janela, e o miolo é que rola', async ({ page }) => {
