@@ -11,7 +11,7 @@
             {{ 'customer.orders.order_label' | t }} #{{ order.name }}
           </h1>
           <p class="text-sm text-foreground/60">
-            {%- capture order_date -%}{{ order.created_at | date: "%d de %B de %Y às %H:%M" }}{%- endcapture -%}
+            {%- capture order_date -%}{{ order.created_at | date: format: 'long_date_time' }}{%- endcapture -%}
             {{ 'customer.orders.placed_on' | t: date: order_date }}
           </p>
         </div>
@@ -60,7 +60,7 @@
             </div>
             <div class="ml-4">
               <p class="text-sm font-bold text-foreground">{{ 'customer.orders.timeline_placed' | t }}</p>
-              <p class="text-xs text-foreground/60 mt-1">{{ order.created_at | date: "%d/%m/%Y às %H:%M" }}</p>
+              <p class="text-xs text-foreground/60 mt-1">{{ order.created_at | date: format: 'short_date_time' }}</p>
             </div>
           </div>
 

@@ -166,7 +166,7 @@
                       {{ 'customer.orders.order_label' | t }} #{{ order.name }}
                     </a>
                     <p class="text-xs text-foreground/60 mt-1">
-                      {{ order.created_at | date: "%d/%m/%Y às %H:%M" }}
+                      {{ order.created_at | date: format: 'short_date_time' }}
                     </p>
                   </div>
                   <div class="flex items-center space-x-3">
