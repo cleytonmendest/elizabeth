@@ -96,6 +96,9 @@
     },
     "currency": {
       "currency_label": "Moeda"
+    },
+    "payment_icons": {
+      "boleto": "Boleto Bancário"
     }
   },
   "header": {
@@ -671,5 +674,10 @@
     "video": {
       "play": "Reproduzir vídeo"
     }
+  },
+  "date_formats": {
+    "long_date": "%d de %B de %Y",
+    "long_date_time": "%d de %B de %Y às %H:%M",
+    "short_date_time": "%d/%m/%Y às %H:%M"
   }
 }

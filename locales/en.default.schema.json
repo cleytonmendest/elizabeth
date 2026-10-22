@@ -2166,11 +2166,17 @@
         "shadow": {
           "label": "Shadows"
         },
+        "badges_header": {
+          "content": "Badges and highlights"
+        },
         "badge_background": {
           "label": "Badge background"
         },
         "badge_text": {
           "label": "Badge text"
+        },
+        "feedback_header": {
+          "content": "Feedback"
         },
         "success": {
           "label": "Success"

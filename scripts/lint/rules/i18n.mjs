@@ -9,6 +9,7 @@
  *   4. chave órfã acumulando no locale (aviso — não quebra a loja)
  *   5. frase cravada num `| default:` do Liquid
  *   6. setting que nasce preenchido na frente de um texto traduzido
+ *   7. palavra cravada num formato de data, ou formato nomeado que falta no locale
  *
  * O que NÃO é violação, por decisão: `default` de setting e blocos `presets`
  * são conteúdo do lojista (texto literal é o correto — é lá que o texto do
@@ -90,6 +91,64 @@ export function tDefault(file, src) {
         'verdade em pt-BR e en.default.',
     });
   });
+}
+
+/**
+ * Datas. A Shopify guarda formato de data em `date_formats`, no locale, e o
+ * Liquid o chama pelo nome: `{{ x | date: format: 'long_date' }}`. É o único
+ * jeito de a ordem (dia/mês ou mês/dia) e o nome do mês acompanharem o idioma
+ * da loja. O que fica cravado num `date: '%d de %B de %Y às %H:%M'` — "de" e
+ * "às" inclusive — é português na loja em inglês.
+ *
+ * Duas coisas, uma de cada lado da chamada:
+ *   - formato LITERAL com palavra (duas letras seguidas depois de tirar as
+ *     diretivas `%X`): erro. `%Y-%m-%dT%H:%M:%S%z` passa — o `T` é uma letra só.
+ *   - formato NOMEADO: `date_formats.<nome>` precisa existir nos dois locales,
+ *     porque a Shopify renderiza erro de Liquid no lugar da data quando falta;
+ *     e conta como chave usada, senão o locale a acusa de órfã. Os nomes que a
+ *     própria Shopify entrega (`abbreviated_date`, `basic`…) não moram no nosso
+ *     locale e ficam de fora.
+ *
+ * Exportada pelo mesmo motivo de `tDefault`: o teste injeta o Liquid.
+ */
+const FILTRO_DE_DATA = /\|\s*(?:date|time_tag)\s*:\s*(format\s*:\s*)?(['"])([^'"]*)\2/g;
+const FORMATOS_NATIVOS = new Set([
+  'abbreviated_date',
+  'basic',
+  'date',
+  'date_at_time',
+  'default',
+  'on_date',
+  'short',
+  'long',
+]);
+const DIRETIVA_DE_DATA = /%[-_0^#:]*[A-Za-z%]/g;
+
+export function formatosDeData(file, src) {
+  const literais = [];
+  const nomes = [];
+  for (const match of src.matchAll(FILTRO_DE_DATA)) {
+    const [, nomeado, , valor] = match;
+    const line = lineAt(src, match.index);
+    if (nomeado) {
+      if (!FORMATOS_NATIVOS.has(valor)) nomes.push({ nome: valor, line });
+      continue;
+    }
+    if (!/[A-Za-zÀ-ÿ]{2,}/.test(valor.replace(DIRETIVA_DE_DATA, ' '))) continue;
+    literais.push(
+      offense({
+        rule: 'i18n',
+        file,
+        line,
+        code: `date-literal:${valor}`,
+        message:
+          `Formato de data com palavra cravada: ${JSON.stringify(valor)} — não passa por locale, ` +
+          'então a loja em outro idioma mostra isso em português. Crie o formato em ' +
+          '`date_formats` (pt-BR e en.default) e chame por `date: format: \'nome\'`.',
+      })
+    );
+  }
+  return { literais, nomes };
 }
 
 /**
@@ -350,10 +409,15 @@ export function run() {
         // aninhado. Iterar só o nível de cima perde os 16 labels que vivem ali
         // (Fundo, Texto, Botão primário…) — e perder cobertura em silêncio é
         // pior que não ter a regra.
+        //
+        // E o `header` que separa os campos ("Badges e Destaques", "Feedback")
+        // não tem `label` nem id: o texto dele é o `content`, que esta lista
+        // não olhava — o mesmo ponto cego do nível de cima, uma camada abaixo.
         for (const field of setting.definition ?? []) {
-          const fieldId = `${id}.definition:${field.id ?? field.type}`;
+          const fieldId = `${id}.definition:${field.id ?? `${field.type}:${(field.content ?? '').slice(0, 40)}`}`;
           check(field.label, `${fieldId}.label`, `Campo "${field.id ?? field.type}" de "${id}"`);
           check(field.info, `${fieldId}.info`, `Campo "${field.id ?? field.type}" de "${id}" (info)`);
+          check(field.content, `${fieldId}.content`, `Campo "${field.id ?? field.type}" de "${id}" (content)`);
         }
       }
     });
@@ -390,6 +454,29 @@ export function run() {
     for (const achado of tDefault(file, src)) {
       if (isAllowed('i18n', file, achado.code)) continue;
       offenses.push(achado);
+    }
+
+    // `| date: '...'` — ver `formatosDeData`.
+    const datas = formatosDeData(file, src);
+    for (const achado of datas.literais) {
+      if (isAllowed('i18n', file, achado.code)) continue;
+      offenses.push(achado);
+    }
+    for (const { nome, line } of datas.nomes) {
+      const key = `date_formats.${nome}`;
+      usedStorefrontKeys.add(key);
+      for (const [locale, keys] of Object.entries(storefront)) {
+        if (hasKey(keys, key)) continue;
+        offenses.push(
+          offense({
+            rule: 'i18n',
+            file,
+            line,
+            code: `missing-date-format:${locale}:${nome}`,
+            message: `Formato de data "${nome}" não existe em \`date_formats\` de ${STOREFRONT[locale]} — a Shopify renderiza erro de Liquid no lugar da data.`,
+          })
+        );
+      }
     }
 
     // `| default: 'frase'` — a última porta por onde português entra no

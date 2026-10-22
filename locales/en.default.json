@@ -96,6 +96,9 @@
     },
     "currency": {
       "currency_label": "Currency"
+    },
+    "payment_icons": {
+      "boleto": "Boleto (bank slip)"
     }
   },
   "header": {
@@ -671,5 +674,10 @@
     "video": {
       "play": "Play video"
     }
+  },
+  "date_formats": {
+    "long_date": "%B %d, %Y",
+    "long_date_time": "%B %d, %Y at %H:%M",
+    "short_date_time": "%d/%m/%Y at %H:%M"
   }
 }

@@ -17,7 +17,7 @@
         "text_boas_vindas": {
           "type": "text",
           "settings": {
-            "text_item": "<p>Boas-vindas à nossa loja</p>"
+            "text_item": "<p>Welcome to our store</p>"
           }
         }
       },
