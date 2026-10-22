@@ -2166,11 +2166,17 @@
         "shadow": {
           "label": "Sombras"
         },
+        "badges_header": {
+          "content": "Badges e Destaques"
+        },
         "badge_background": {
           "label": "Fundo de badge"
         },
         "badge_text": {
           "label": "Texto de badge"
+        },
+        "feedback_header": {
+          "content": "Feedback"
         },
         "success": {
           "label": "Sucesso"
