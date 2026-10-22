@@ -70,7 +70,7 @@
           "type": "collapsible_tab",
           "settings": {
             "heading": "Entrega e devoluções",
-            "content": "<p>Enviamos para todo o Brasil. Você pode trocar ou devolver em até 30 dias após o recebimento. Edite este texto no editor de tema (seção Produto → bloco \"Entrega e devoluções\").</p>"
+            "content": "<p>Enviamos para todo o Brasil. Você pode trocar ou devolver em até 30 dias após o recebimento.</p>"
           }
         }
       },

@@ -100,7 +100,7 @@
           },
           {
             "type": "header",
-            "content": "Badges e Destaques"
+            "content": "t:settings_schema.colors.color_schemes.badges_header.content"
           },
           {
             "type": "color",
@@ -116,7 +116,7 @@
           },
           {
             "type": "header",
-            "content": "Feedback"
+            "content": "t:settings_schema.colors.color_schemes.feedback_header.content"
           },
           {
             "type": "color",

@@ -50,7 +50,7 @@
           {% endif %}
           <div class="flex items-center gap-3 text-sm text-foreground/60">
             <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
-              {{ article.published_at | date: '%d de %B de %Y' }}
+              {{ article.published_at | date: format: 'long_date' }}
             </time>
             <span class="text-foreground-muted">•</span>
             {% assign word_count = article.content | strip_html | split: ' ' | size %}
@@ -209,7 +209,7 @@
                         </div>
                         <div class="flex-1">
                           <p class="font-medium text-foreground">{{ comment.author }}</p>
-                          <p class="text-xs text-foreground/60">{{ comment.created_at | date: '%d/%m/%Y às %H:%M' }}</p>
+                          <p class="text-xs text-foreground/60">{{ comment.created_at | date: format: 'short_date_time' }}</p>
                         </div>
                       </div>
                       <div class="text-foreground/70">{{ comment.content }}</div>
