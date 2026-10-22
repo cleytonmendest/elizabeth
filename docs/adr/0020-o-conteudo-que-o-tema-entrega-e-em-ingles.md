@@ -79,3 +79,21 @@ reescreve na língua dela no editor; é para isso que ele é conteúdo.
 - [ADR 0017](0017-texto-de-botao-compartilhado-vem-do-locale.md): o que vem do locale e o que é conteúdo.
 - [ADR 0018](0018-a-main-e-o-tema-e-cada-loja-e-uma-branch.md): a `main` é o conteúdo do tema instalado do zero.
 - `scripts/lint/rules/i18n.mjs`: o que a regra verifica (e o que, de propósito, não).
+
+## Nota (2026-10-22): o que este ADR alcança de fato
+
+A seção Consequências diz que, sem `loja/*`, a `main` é a loja conectada e que
+ela recebe o conteúdo em inglês no deploy. Isso estava errado. Já existiam
+`loja/elizabeth` (o tema publicado) e `loja/livia`, e o `propagar` as atualizou
+minutos depois do merge.
+
+Pelo [ADR 0019](0019-o-conteudo-que-a-loja-tem-e-dela.md), o conteúdo que a loja
+já tem (`templates/*.json`, grupos de seção) é dela e não muda com a `main`. O
+que chegou às lojas foi o código e o que não é conteúdo salvo: os 6 `default`
+globais (barra de frete grátis e banner de cookies), que passaram a valer em
+inglês onde a loja não salvou valor. Nenhuma das duas salvou.
+
+**Pagamos, além do que está acima:** uma loja com conteúdo em português e
+defaults em inglês mistura os dois idiomas até o conteúdo dela ser reescrito. O
+conteúdo em inglês da `main` só chega a uma loja quando o conteúdo dela muda —
+pela lojista, no editor, ou por PR para a `loja/*`.
