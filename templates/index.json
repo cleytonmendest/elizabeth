@@ -15,21 +15,21 @@
         "test_eTDrLU": {
           "type": "test",
           "settings": {
-            "link": "",
-            "imgDesktop": "shopify://shop_images/Banner_1_desktop.png",
-            "imgDesktopWidth": 1920,
-            "imgDesktopHeight": 540,
-            "imgTablet": "shopify://shop_images/Banner_1_tablet.png",
-            "imgTabletWidth": 1024,
-            "imgTabletHeight": 540,
-            "imgMob": "shopify://shop_images/Banner_1_mobile.png",
-            "imgMobWidth": 500,
-            "imgMobHeight": 540,
-            "alt_text": "",
-            "eyebrow": "",
-            "heading": "",
-            "cta_label": "",
-            "content_position": "left",
+            "link": "/collections/all",
+            "imgDesktop": "shopify://shop_images/slider-1-desktop.jpg",
+            "imgDesktopWidth": 2520,
+            "imgDesktopHeight": 1080,
+            "imgTablet": "shopify://shop_images/slider-1-tablet.jpg",
+            "imgTabletWidth": 1600,
+            "imgTabletHeight": 1200,
+            "imgMob": "shopify://shop_images/slider-1-mobile.jpg",
+            "imgMobWidth": 1125,
+            "imgMobHeight": 1500,
+            "alt_text": "Woman in a knit polo top and cream trousers leaning against a beige wall",
+            "eyebrow": "New collection",
+            "heading": "Elegance in every detail",
+            "cta_label": "Discover the collection",
+            "content_position": "right",
             "scrim": "side",
             "scrim_opacity": 30
           }
@@ -37,20 +37,20 @@
         "test_Y8DFBc": {
           "type": "test",
           "settings": {
-            "link": "",
-            "imgDesktop": "shopify://shop_images/Banner_2_desktop.png",
-            "imgDesktopWidth": 1920,
-            "imgDesktopHeight": 540,
-            "imgTablet": "shopify://shop_images/Banner_2_tablet.png",
-            "imgTabletWidth": 1024,
-            "imgTabletHeight": 540,
-            "imgMob": "shopify://shop_images/banner_2_mobile.png",
-            "imgMobWidth": 500,
-            "imgMobHeight": 540,
-            "alt_text": "",
-            "eyebrow": "",
-            "heading": "",
-            "cta_label": "",
+            "link": "/collections/all",
+            "imgDesktop": "shopify://shop_images/slider-2-desktop.jpg",
+            "imgDesktopWidth": 2520,
+            "imgDesktopHeight": 1080,
+            "imgTablet": "shopify://shop_images/slider-2-tablet.jpg",
+            "imgTabletWidth": 1600,
+            "imgTabletHeight": 1200,
+            "imgMob": "shopify://shop_images/slider-2-mobile.jpg",
+            "imgMobWidth": 1125,
+            "imgMobHeight": 1500,
+            "alt_text": "Woman in a white linen shirt against a beige background, hand on her face",
+            "eyebrow": "Best sellers",
+            "heading": "Season favorites",
+            "cta_label": "Shop favorites",
             "content_position": "left",
             "scrim": "side",
             "scrim_opacity": 30
@@ -261,7 +261,7 @@
           "type": "image",
           "settings": {
             "link": "shopify://collections/calcas",
-            "image": "shopify://shop_images/new-in.png",
+            "image": "shopify://shop_images/novidades-bloco.jpg",
             "label": "NEW IN"
           }
         },
@@ -269,7 +269,7 @@
           "type": "image",
           "settings": {
             "link": "shopify://collections/camisas",
-            "image": "shopify://shop_images/sale.png",
+            "image": "shopify://shop_images/promocoes-bloco.jpg",
             "label": "SALE"
           }
         }
@@ -288,7 +288,7 @@
         "image_yC3UPt": {
           "type": "image",
           "settings": {
-            "image": "shopify://shop_images/about-us.png"
+            "image": "shopify://shop_images/atelier-destaque.jpg"
           }
         },
         "text_PwNqGA": {
