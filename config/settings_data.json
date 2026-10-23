@@ -19,7 +19,7 @@
     "social_facebook_link": "https://facebook.com",
     "social_instagram_link": "https://instagram.com",
     "social_youtube_link": "https://www.youtube.com",
-    "cart_free_shipping_threshold": 600,
+    "cart_free_shipping_threshold": 150,
     "content_for_index": [],
     "blocks": {
       "14826766009936288847": {
@@ -61,6 +61,23 @@
           "success": "#10b981",
           "error": "#ef4444",
           "warning": "#fbbf24"
+        }
+      },
+      "scheme-3": {
+        "settings": {
+          "background": "#f2efea",
+          "background_gradient": "",
+          "text": "#121212",
+          "button": "#121212",
+          "button_label": "#ffffff",
+          "secondary_button_label": "#121212",
+          "border": "#e4e0da",
+          "shadow": "#121212",
+          "badge_background": "#dc2626",
+          "badge_text": "#ffffff",
+          "success": "#059669",
+          "error": "#dc2626",
+          "warning": "#f59e0b"
         }
       }
     }

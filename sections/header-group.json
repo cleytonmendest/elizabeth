@@ -17,19 +17,19 @@
         "text_yEXBGj": {
           "type": "text",
           "settings": {
-            "text_item": "<p>Up to <strong>12x interest-free!</strong></p>"
+            "text_item": "<p>New linen pieces, <strong>just in</strong></p>"
           }
         },
         "text_TAtTn3": {
           "type": "text",
           "settings": {
-            "text_item": "<p><strong>DISCOUNT</strong> on upfront payment</p>"
+            "text_item": "<p><strong>30-day returns</strong> on full-price pieces</p>"
           }
         },
         "text_W7Lma4": {
           "type": "text",
           "settings": {
-            "text_item": "<p><strong>FREE SHIPPING</strong> across Brazil</p>"
+            "text_item": "<p>Shipping to the US and <strong>worldwide</strong></p>"
           }
         }
       },

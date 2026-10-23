@@ -9,127 +9,103 @@
  */
 {
   "sections": {
-    "slider_image_9WNq4K": {
+    "hero": {
       "type": "slider-image",
-      "blocks": {
-        "test_eTDrLU": {
-          "type": "test",
-          "settings": {
-            "link": "/collections/all",
-            "imgDesktop": "shopify://shop_images/slider-1-desktop.jpg",
-            "imgDesktopWidth": 2520,
-            "imgDesktopHeight": 1080,
-            "imgTablet": "shopify://shop_images/slider-1-tablet.jpg",
-            "imgTabletWidth": 1600,
-            "imgTabletHeight": 1200,
-            "imgMob": "shopify://shop_images/slider-1-mobile.jpg",
-            "imgMobWidth": 1125,
-            "imgMobHeight": 1500,
-            "alt_text": "Woman in a knit polo top and cream trousers leaning against a beige wall",
-            "eyebrow": "New collection",
-            "heading": "Elegance in every detail",
-            "cta_label": "Discover the collection",
-            "content_position": "right",
-            "scrim": "side",
-            "scrim_opacity": 30
-          }
-        },
-        "test_Y8DFBc": {
-          "type": "test",
-          "settings": {
-            "link": "/collections/all",
-            "imgDesktop": "shopify://shop_images/slider-2-desktop.jpg",
-            "imgDesktopWidth": 2520,
-            "imgDesktopHeight": 1080,
-            "imgTablet": "shopify://shop_images/slider-2-tablet.jpg",
-            "imgTabletWidth": 1600,
-            "imgTabletHeight": 1200,
-            "imgMob": "shopify://shop_images/slider-2-mobile.jpg",
-            "imgMobWidth": 1125,
-            "imgMobHeight": 1500,
-            "alt_text": "Woman in a white linen shirt against a beige background, hand on her face",
-            "eyebrow": "Best sellers",
-            "heading": "Season favorites",
-            "cta_label": "Shop favorites",
-            "content_position": "left",
-            "scrim": "side",
-            "scrim_opacity": 30
-          }
-        }
-      },
-      "block_order": [
-        "test_eTDrLU",
-        "test_Y8DFBc"
-      ],
       "settings": {
-        "color_scheme": "",
+        "color_scheme": "scheme-1",
         "fullwidth": true,
-        "loop": true,
-        "nav": true,
+        "loop": false,
+        "nav": false,
         "dot": false,
         "qty-desk": 1,
         "qty-tablet": 1,
         "qty-mob": 1,
-        "autoplay": true,
-        "play-time": 10,
+        "autoplay": false,
+        "play-time": 5,
         "pause-hover": true
-      }
-    },
-    "trust_badges_KPYh8n": {
-      "type": "trust-badges",
+      },
       "blocks": {
-        "badge_XXFgE3": {
-          "type": "badge",
+        "slide_linen": {
+          "type": "test",
           "settings": {
-            "icon": "truck",
-            "title": "Free Shipping",
-            "description": "Over R$ 299"
-          }
-        },
-        "badge_BCXnDU": {
-          "type": "badge",
-          "settings": {
-            "icon": "refresh",
-            "title": "Easy Exchanges",
-            "description": "30 days to exchange"
-          }
-        },
-        "badge_wNF4FD": {
-          "type": "badge",
-          "settings": {
-            "icon": "shield",
-            "title": "Secure Shopping",
-            "description": "100% protected"
-          }
-        },
-        "badge_XcBQcT": {
-          "type": "badge",
-          "settings": {
-            "icon": "credit-card",
-            "title": "Interest-Free Installments",
-            "description": "Up to 6x on your card"
+            "link": "shopify://collections/new-in",
+            "imgDesktop": "shopify://shop_images/home-hero-1.jpg",
+            "imgDesktopWidth": 3000,
+            "imgDesktopHeight": 2000,
+            "imgTablet": "shopify://shop_images/home-hero-1.jpg",
+            "imgTabletWidth": 3000,
+            "imgTabletHeight": 2000,
+            "imgMob": "shopify://shop_images/home-hero-2.jpg",
+            "imgMobWidth": 3000,
+            "imgMobHeight": 4500,
+            "alt_text": "Woman in a white linen dress walking through a coastal meadow",
+            "eyebrow": "The new season",
+            "heading": "Fewer pieces. More years.",
+            "cta_label": "Shop new in",
+            "content_position": "right",
+            "scrim": "side",
+            "scrim_opacity": 45
           }
         }
       },
       "block_order": [
-        "badge_XXFgE3",
-        "badge_BCXnDU",
-        "badge_wNF4FD",
-        "badge_XcBQcT"
-      ],
-      "name": "Trust Badges",
+        "slide_linen"
+      ]
+    },
+    "badges": {
+      "type": "trust-badges",
       "settings": {
         "color_scheme": "scheme-1",
         "mobile_layout": "grid-2"
-      }
+      },
+      "blocks": {
+        "badge_fibres": {
+          "type": "badge",
+          "settings": {
+            "icon": "check-circle",
+            "title": "Natural fibres",
+            "description": "Linen and cotton, nothing else"
+          }
+        },
+        "badge_runs": {
+          "type": "badge",
+          "settings": {
+            "icon": "star",
+            "title": "Small runs",
+            "description": "Made in limited batches"
+          }
+        },
+        "badge_returns": {
+          "type": "badge",
+          "settings": {
+            "icon": "refresh",
+            "title": "30-day returns",
+            "description": "Unworn, with the tags on"
+          }
+        },
+        "badge_shipping": {
+          "type": "badge",
+          "settings": {
+            "icon": "truck",
+            "title": "Ships worldwide",
+            "description": "Tracked from our studio"
+          }
+        }
+      },
+      "block_order": [
+        "badge_fibres",
+        "badge_runs",
+        "badge_returns",
+        "badge_shipping"
+      ]
     },
-    "featured_collection_iqrCEN": {
+    "new_in": {
       "type": "featured-collection",
       "settings": {
-        "color_scheme": "",
+        "color_scheme": "scheme-1",
         "collection": "new-in",
-        "heading": "Shirts",
-        "subtitle": "Experience Luxury in Every Stitch: Premium Quality Shirts",
+        "heading": "New in",
+        "subtitle": "Just arrived for the season",
         "text_alignment": "left",
         "desktop_layout": "slider",
         "columns": 4,
@@ -138,241 +114,472 @@
         "show_quick_add": true
       }
     },
-    "highlighted_section_8DTzni": {
-      "type": "highlighted-section",
-      "blocks": {
-        "text_PhyGYF": {
-          "type": "text",
-          "settings": {
-            "pre_title": "Fiesta Collection",
-            "title": "Dresses for unforgettable moments",
-            "text": "Discover elegance in every detail with our dresses for special occasions. Designs that blend luxury and simplicity, enhancing your beauty with sophistication and comfort. Find the perfect balance between style and exclusivity.",
-            "button_style": "primary",
-            "button_label": "",
-            "link": ""
-          }
-        },
-        "image_z4KWVE": {
-          "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/highlighted.png"
-          }
-        }
-      },
-      "block_order": [
-        "text_PhyGYF",
-        "image_z4KWVE"
-      ],
-      "settings": {
-        "color_scheme": "",
-        "background_accent_scheme": "",
-        "text_alignment": "center",
-        "enable_curved_background": false
-      }
-    },
-    "slider_cards_6ciA3G": {
+    "categories": {
       "type": "slider-cards",
-      "blocks": {
-        "card_XkTxwi": {
-          "type": "card",
-          "settings": {
-            "title": "ACCESSORIES",
-            "link": "shopify://products/camisa-social-algodao-paccata",
-            "image": "shopify://shop_images/minibanner-ACESSORIOS.png"
-          }
-        },
-        "card_8nYbGH": {
-          "type": "card",
-          "settings": {
-            "title": "BLOUSES",
-            "link": "shopify://collections/calcas",
-            "image": "shopify://shop_images/minibanner-BLUSAS.png"
-          }
-        },
-        "card_GaYrHN": {
-          "type": "card",
-          "settings": {
-            "title": "COATS",
-            "link": "shopify://collections/camisas",
-            "image": "shopify://shop_images/minibanner-CASACOS.png"
-          }
-        },
-        "card_a7yFWE": {
-          "type": "card",
-          "settings": {
-            "title": "KITS",
-            "link": "shopify://collections/coletes",
-            "image": "shopify://shop_images/minibanner-KITS.png"
-          }
-        },
-        "card_n7VpaF": {
-          "type": "card",
-          "settings": {
-            "title": "PANTS",
-            "link": "shopify://collections/coletes",
-            "image": "shopify://shop_images/minibanner-CALCAS.png"
-          }
-        },
-        "card_eRcrJe": {
-          "type": "card",
-          "settings": {
-            "title": "DRESSES",
-            "link": "shopify://collections/jaquetas",
-            "image": "shopify://shop_images/minibanner-VESTIDOS.png"
-          }
-        },
-        "card_MJ79rW": {
-          "type": "card",
-          "settings": {
-            "title": "SHORTS",
-            "link": "shopify://collections/regatas",
-            "image": "shopify://shop_images/minibanner-SHORTS.png"
-          }
-        }
-      },
-      "block_order": [
-        "card_XkTxwi",
-        "card_8nYbGH",
-        "card_GaYrHN",
-        "card_a7yFWE",
-        "card_n7VpaF",
-        "card_eRcrJe",
-        "card_MJ79rW"
-      ],
       "settings": {
-        "color_scheme": "",
-        "title": "",
-        "loop": true,
-        "nav": false,
+        "color_scheme": "scheme-1",
+        "title": "Shop by category",
+        "loop": false,
+        "nav": true,
         "dot": false,
         "peek": true,
-        "qty-desk": 6,
+        "qty-desk": 5,
         "qty-tablet": 3,
         "qty-mob": 2,
         "autoplay": false,
         "play-time": 5,
         "pause-hover": false
-      }
-    },
-    "section_images_link_hGgn7V": {
-      "type": "section-images-link",
+      },
       "blocks": {
-        "image_fQAhyC": {
-          "type": "image",
+        "card_dresses": {
+          "type": "card",
           "settings": {
-            "link": "shopify://collections/calcas",
-            "image": "shopify://shop_images/novidades-bloco.jpg",
-            "label": "NEW IN"
+            "title": "Dresses",
+            "link": "shopify://collections/dresses",
+            "image": "shopify://shop_images/tiered-linen-maxi-dress-1.jpg"
           }
         },
-        "image_LCEnJw": {
-          "type": "image",
+        "card_shirts_blouses": {
+          "type": "card",
           "settings": {
-            "link": "shopify://collections/camisas",
-            "image": "shopify://shop_images/promocoes-bloco.jpg",
-            "label": "SALE"
+            "title": "Shirts & Blouses",
+            "link": "shopify://collections/shirts-blouses",
+            "image": "shopify://shop_images/oversized-linen-shirt-1.jpg"
+          }
+        },
+        "card_knitwear": {
+          "type": "card",
+          "settings": {
+            "title": "Knitwear",
+            "link": "shopify://collections/knitwear",
+            "image": "shopify://shop_images/chunky-knit-cardigan-1.jpg"
+          }
+        },
+        "card_trousers": {
+          "type": "card",
+          "settings": {
+            "title": "Trousers",
+            "link": "shopify://collections/trousers",
+            "image": "shopify://shop_images/wide-leg-linen-trousers-1.jpg"
+          }
+        },
+        "card_skirts": {
+          "type": "card",
+          "settings": {
+            "title": "Skirts",
+            "link": "shopify://collections/skirts",
+            "image": "shopify://shop_images/gathered-cotton-midi-skirt-1.jpg"
+          }
+        },
+        "card_jumpsuits": {
+          "type": "card",
+          "settings": {
+            "title": "Jumpsuits",
+            "link": "shopify://collections/jumpsuits",
+            "image": "shopify://shop_images/linen-jumpsuit-1.jpg"
+          }
+        },
+        "card_tailoring": {
+          "type": "card",
+          "settings": {
+            "title": "Tailoring",
+            "link": "shopify://collections/tailoring",
+            "image": "shopify://shop_images/unlined-linen-blazer-1.jpg"
+          }
+        },
+        "card_accessories": {
+          "type": "card",
+          "settings": {
+            "title": "Accessories",
+            "link": "shopify://collections/accessories",
+            "image": "shopify://shop_images/woven-straw-tote-1.jpg"
           }
         }
       },
       "block_order": [
-        "image_fQAhyC",
-        "image_LCEnJw"
-      ],
-      "settings": {
-        "color_scheme": ""
-      }
+        "card_dresses",
+        "card_shirts_blouses",
+        "card_knitwear",
+        "card_trousers",
+        "card_skirts",
+        "card_jumpsuits",
+        "card_tailoring",
+        "card_accessories"
+      ]
     },
-    "highlighted_section_6tn9tz": {
-      "type": "highlighted-section",
+    "lookbook": {
+      "type": "lookbook",
+      "settings": {
+        "color_scheme": "scheme-3",
+        "image": "shopify://shop_images/lookbook-5.jpg",
+        "alt_text": "Open grey coat over a crochet top and white skirt in a mountain landscape",
+        "heading": "Shop the look",
+        "text": "<p>A crochet top, a white midi skirt and a coat for the wind. Tap a piece to see it.</p>"
+      },
       "blocks": {
-        "image_yC3UPt": {
-          "type": "image",
+        "spot_top": {
+          "type": "hotspot",
           "settings": {
-            "image": "shopify://shop_images/atelier-destaque.jpg"
+            "product": "sleeveless-crochet-top",
+            "horizontal": 54,
+            "vertical": 62
           }
         },
-        "text_PwNqGA": {
+        "spot_skirt": {
+          "type": "hotspot",
+          "settings": {
+            "product": "gathered-cotton-midi-skirt",
+            "horizontal": 56,
+            "vertical": 88
+          }
+        },
+        "spot_coat": {
+          "type": "hotspot",
+          "settings": {
+            "product": "oversized-blazer",
+            "horizontal": 43,
+            "vertical": 70
+          }
+        }
+      },
+      "block_order": [
+        "spot_top",
+        "spot_skirt",
+        "spot_coat"
+      ]
+    },
+    "linen_edit": {
+      "type": "highlighted-section",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "background_accent_scheme": "scheme-3",
+        "text_alignment": "left",
+        "enable_curved_background": false
+      },
+      "blocks": {
+        "image": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/linen-edit-promo-1.jpg"
+          }
+        },
+        "text": {
           "type": "text",
           "settings": {
-            "pre_title": "About Us",
-            "title": "Elegance that inspires",
-            "text": "At Elizabeth, we believe that fashion is an extension of personality, a reflection of the sophistication and charm of every woman. Our designs are created to celebrate special moments, combining luxury and simplicity in every detail. With a keen eye for trends and a commitment to quality, we select fine fabrics and impeccable cuts to ensure pieces that enhance feminine beauty and confidence. Whether for a landmark event or a one-of-a-kind occasion, our exclusive designs capture the perfect balance between modernity and timelessness. Dress with elegance. Dress with Elizabeth.",
+            "pre_title": "The Linen Edit",
+            "title": "Linen, the way it should be",
+            "text": "It creases from the first wear and gets softer with every wash. Dresses, shirts and trousers in washed linen, cut to last for years.",
             "button_style": "primary",
-            "button_label": "",
-            "link": ""
+            "button_label": "Shop the edit",
+            "link": "shopify://collections/the-linen-edit"
           }
         }
       },
       "block_order": [
-        "image_yC3UPt",
-        "text_PwNqGA"
-      ],
+        "image",
+        "text"
+      ]
+    },
+    "feature": {
+      "type": "highlighted-product",
       "settings": {
-        "color_scheme": "",
-        "background_accent_scheme": "",
-        "text_alignment": "center",
-        "enable_curved_background": false
+        "color_scheme": "scheme-3",
+        "product": "washed-linen-midi-dress",
+        "media_position": "left"
+      },
+      "blocks": {
+        "eyebrow": {
+          "type": "text",
+          "settings": {
+            "text": "<strong>The dress we wear most</strong>"
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {
+            "show_tax_note": false
+          }
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "circle"
+          }
+        },
+        "buy_button": {
+          "type": "buy_button",
+          "settings": {
+            "show_dynamic_checkout": false
+          }
+        },
+        "care": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Fabric and care",
+            "content": "<p>Washed linen. Machine wash cold, line dry, and wear it creased.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "eyebrow",
+        "title",
+        "price",
+        "variant_picker",
+        "buy_button",
+        "care"
+      ]
+    },
+    "two_up": {
+      "type": "section-images-link",
+      "settings": {
+        "color_scheme": "scheme-1"
+      },
+      "blocks": {
+        "tailoring": {
+          "type": "image",
+          "settings": {
+            "link": "shopify://collections/tailoring",
+            "image": "shopify://shop_images/collection-banners-2.jpg",
+            "label": "Tailoring"
+          }
+        },
+        "accessories": {
+          "type": "image",
+          "settings": {
+            "link": "shopify://collections/accessories",
+            "image": "shopify://shop_images/collection-banners-3.jpg",
+            "label": "Accessories"
+          }
+        }
+      },
+      "block_order": [
+        "tailoring",
+        "accessories"
+      ]
+    },
+    "dresses": {
+      "type": "image-banner",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "fullwidth": true,
+        "image": "shopify://shop_images/collection-banners-1.jpg",
+        "alt_text": "Woman in a white strappy dress on the coast",
+        "height": "large",
+        "eyebrow": "Dresses",
+        "heading": "Made for long summer days",
+        "text": "<p>Slip, shift and maxi dresses in linen and cotton.</p>",
+        "content_position": "left",
+        "scrim": "side",
+        "scrim_opacity": 45,
+        "button_label": "Shop dresses",
+        "link": "shopify://collections/dresses"
       }
     },
-    "testimonials_PRGmmP": {
-      "type": "testimonials",
+    "sale": {
+      "type": "featured-collection",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "collection": "sale",
+        "heading": "Sale",
+        "subtitle": "Past-season pieces at 20% off",
+        "text_alignment": "left",
+        "desktop_layout": "grid",
+        "columns": 4,
+        "products_to_show": 4,
+        "show_second_image": true,
+        "show_quick_add": true
+      }
+    },
+    "approach": {
+      "type": "multicolumn",
+      "settings": {
+        "color_scheme": "scheme-3",
+        "eyebrow": "Our approach",
+        "heading": "Fewer pieces, made with care",
+        "columns_desktop": 3,
+        "alignment": "left"
+      },
       "blocks": {
-        "testimonial_4DtbAM": {
-          "type": "testimonial",
+        "fabric": {
+          "type": "column",
           "settings": {
-            "customer_name": "Ana Carolina",
-            "customer_location": "Rio de Janeiro, RJ",
-            "rating": 5,
-            "testimonial_text": "Loved the quality of the dresses! The fabric is excellent and the fit is perfect. I will definitely buy again.",
-            "product_purchased": "Floral Midi Dress"
+            "image": "shopify://shop_images/about-2.jpg",
+            "icon": "none",
+            "heading": "Fabric first",
+            "text": "<p>We start with linen and cotton that breathe, soften with every wash and age well.</p>"
           }
         },
-        "testimonial_3exxmW": {
-          "type": "testimonial",
+        "cut": {
+          "type": "column",
           "settings": {
-            "customer_name": "Juliana Mendes",
-            "customer_location": "Belo Horizonte, MG",
-            "rating": 5,
-            "testimonial_text": "Impeccable service and fast delivery. The dress arrived exactly as pictured. Highly recommend!",
-            "product_purchased": "Long Party Dress"
+            "image": "shopify://shop_images/about-1.jpg",
+            "icon": "none",
+            "heading": "Cut to last",
+            "text": "<p>Simple shapes and clean seams, made in small runs so nothing goes to waste.</p>",
+            "link_label": "Our story",
+            "link": "shopify://pages/about"
           }
         },
-        "testimonial_nqixzX": {
-          "type": "testimonial",
+        "pattern": {
+          "type": "column",
           "settings": {
-            "customer_name": "Fernanda Costa",
-            "customer_location": "São Paulo, SP",
-            "rating": 5,
-            "testimonial_text": "This is my third time buying and the quality always surprises me. The pieces are beautiful and elegant!",
-            "product_purchased": "Blazer Set"
+            "image": "shopify://shop_images/journal-3.jpg",
+            "icon": "none",
+            "heading": "Made to be worn",
+            "text": "<p>Pieces you reach for every week, not once a season.</p>"
           }
         }
       },
       "block_order": [
-        "testimonial_4DtbAM",
-        "testimonial_3exxmW",
-        "testimonial_nqixzX"
-      ],
-      "name": "Customer Testimonials",
+        "fabric",
+        "cut",
+        "pattern"
+      ]
+    },
+    "testimonials": {
+      "type": "testimonials",
       "settings": {
-        "color_scheme": "",
-        "card_color_scheme": "scheme-1",
-        "heading": "What our customers say",
-        "subheading": "See the experience of those who have already shopped with us",
-        "autoplay": true,
+        "color_scheme": "scheme-1",
+        "card_color_scheme": "scheme-3",
+        "heading": "From our customers",
+        "subheading": "What people say after a season of wearing Elizabeth",
+        "autoplay": false,
         "autoplay_speed": 5,
         "show_navigation": true
+      },
+      "blocks": {
+        "t1": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Hannah R.",
+            "customer_location": "Portland, OR",
+            "rating": 5,
+            "testimonial_text": "The linen softened after two washes, just like they said. I wear it twice a week.",
+            "product_purchased": "Washed Linen Midi Dress"
+          }
+        },
+        "t2": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Claire M.",
+            "customer_location": "Austin, TX",
+            "rating": 5,
+            "testimonial_text": "Wide, light and still sharp enough for the office. I bought a second pair.",
+            "product_purchased": "Wide-Leg Linen Trousers"
+          }
+        },
+        "t3": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Sophie L.",
+            "customer_location": "Brooklyn, NY",
+            "rating": 5,
+            "testimonial_text": "Good weight, honest buttons, and the fit was right in my usual size.",
+            "product_purchased": "Oversized Linen Shirt"
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3"
+      ]
+    },
+    "faq": {
+      "type": "collapsible-content",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "eyebrow": "Help",
+        "heading": "Before you order",
+        "open_first": true
+      },
+      "blocks": {
+        "fit": {
+          "type": "item",
+          "settings": {
+            "heading": "How do your sizes run?",
+            "content": "<p>Most pieces have a relaxed fit. If you are between sizes, size down. Each product page lists the fit.</p>"
+          }
+        },
+        "care": {
+          "type": "item",
+          "settings": {
+            "heading": "How should I wash linen?",
+            "content": "<p>Machine wash cold on a gentle cycle and line dry. Skip the tumble dryer; the creases are part of it.</p>"
+          }
+        },
+        "ship": {
+          "type": "item",
+          "settings": {
+            "heading": "Where do you ship?",
+            "content": "<p>Within the United States and to most countries worldwide. Shipping costs show at checkout, before you pay.</p>"
+          }
+        },
+        "returns": {
+          "type": "item",
+          "settings": {
+            "heading": "Can I return something?",
+            "content": "<p>Yes, within 30 days of delivery, unworn and with the tags on. Sale pieces are returned for store credit.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "fit",
+        "care",
+        "ship",
+        "returns"
+      ]
+    },
+    "journal": {
+      "type": "blog-posts",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "heading": "From the Journal",
+        "subheading": "Notes on fabric, fit and getting dressed",
+        "blog": "journal",
+        "posts_to_show": 3,
+        "columns_desktop": 3,
+        "show_excerpt": true,
+        "show_author": false,
+        "show_tags": true,
+        "show_button": true,
+        "button_text": "Read the Journal"
+      }
+    },
+    "recently_viewed": {
+      "type": "recently-viewed",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "heading": "Recently viewed",
+        "text_alignment": "left",
+        "desktop_layout": "slider",
+        "columns": 4,
+        "products_to_show": 4,
+        "show_second_image": true,
+        "show_quick_add": true
       }
     }
   },
   "order": [
-    "slider_image_9WNq4K",
-    "trust_badges_KPYh8n",
-    "featured_collection_iqrCEN",
-    "highlighted_section_8DTzni",
-    "slider_cards_6ciA3G",
-    "section_images_link_hGgn7V",
-    "highlighted_section_6tn9tz",
-    "testimonials_PRGmmP"
+    "hero",
+    "badges",
+    "new_in",
+    "categories",
+    "lookbook",
+    "linen_edit",
+    "feature",
+    "two_up",
+    "dresses",
+    "sale",
+    "approach",
+    "testimonials",
+    "faq",
+    "journal",
+    "recently_viewed"
   ]
 }

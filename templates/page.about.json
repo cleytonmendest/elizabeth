@@ -1,0 +1,131 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero": {
+      "type": "image-banner",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "fullwidth": true,
+        "image": "shopify://shop_images/password-1.jpg",
+        "alt_text": "Close-up of beige linen weave",
+        "height": "small",
+        "eyebrow": "About Elizabeth",
+        "heading": "Fewer pieces. More years.",
+        "content_position": "center",
+        "scrim": "none",
+        "scrim_opacity": 0
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "show_title": false,
+        "content_width": "narrow"
+      }
+    },
+    "studio": {
+      "type": "highlighted-section",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "background_accent_scheme": "scheme-3",
+        "text_alignment": "left",
+        "enable_curved_background": false
+      },
+      "blocks": {
+        "image": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/about-1.jpg"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "pre_title": "The studio",
+            "title": "Cut by hand, in small runs",
+            "text": "Every pattern starts on paper. We cut and sew each style in small batches, so we can change what does not work and make more of what does.",
+            "button_style": "link",
+            "button_label": "Read the Journal",
+            "link": "shopify://blogs/journal"
+          }
+        }
+      },
+      "block_order": [
+        "image",
+        "text"
+      ]
+    },
+    "values": {
+      "type": "multicolumn",
+      "settings": {
+        "color_scheme": "scheme-3",
+        "eyebrow": "What we hold to",
+        "heading": "Three things we do not change",
+        "columns_desktop": 3,
+        "alignment": "left"
+      },
+      "blocks": {
+        "fibres": {
+          "type": "column",
+          "settings": {
+            "icon": "check-circle",
+            "heading": "Natural fibres",
+            "text": "<p>Linen and cotton only. They breathe, soften and last.</p>"
+          }
+        },
+        "runs": {
+          "type": "column",
+          "settings": {
+            "icon": "star",
+            "heading": "Small runs",
+            "text": "<p>We make a little and make it again, instead of making too much once.</p>"
+          }
+        },
+        "care": {
+          "type": "column",
+          "settings": {
+            "icon": "refresh",
+            "heading": "Care that lasts",
+            "text": "<p>Wash cold, dry on the line, wear it creased. Returns within 30 days.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "fibres",
+        "runs",
+        "care"
+      ]
+    },
+    "linen": {
+      "type": "featured-collection",
+      "settings": {
+        "color_scheme": "scheme-1",
+        "collection": "the-linen-edit",
+        "heading": "The Linen Edit",
+        "subtitle": "Where to start",
+        "text_alignment": "left",
+        "desktop_layout": "slider",
+        "columns": 4,
+        "products_to_show": 8,
+        "show_second_image": true,
+        "show_quick_add": true
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "main",
+    "studio",
+    "values",
+    "linen"
+  ]
+}
