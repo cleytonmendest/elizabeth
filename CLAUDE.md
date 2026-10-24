@@ -353,7 +353,7 @@ ela era uma cópia do código que ninguém conferia, e faltavam dois.
 | `cart-update` | `document` | o **carrinho** (`items`, `item_count`, `total_price`) |
 | `quantity-update` | `document` | o **carrinho** |
 | `cart:item-added` | `document` | o **item** que acabou de entrar (o que `/cart/add.js` devolve) |
-| `cart-error` | `document`, e no form do produto, borbulhando, para quem mora dentro dele | o erro |
+| `cart-error` | `document`, e no form do produto (ou no próprio `<add-to-cart>`, quando não há form: o quick-add do card), borbulhando, para quem mora dentro dele | o erro |
 | `variant:change` | contexto do produto | `{ variant }`: a variante escolhida, ou `undefined` |
 | `quantity:change` | contexto do produto | `{ quantity }` |
 | `selling-plan:change` | contexto do produto | `{ sellingPlanId, variantId, prices }` |
