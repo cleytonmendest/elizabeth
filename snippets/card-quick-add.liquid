@@ -7,8 +7,15 @@
   - button_class: classes do botão/link (obrigatório)
 {%- endcomment -%}
 
+{%- comment -%}
+  `<add-to-cart>` é um custom element, e custom element nasce `inline`. Dentro
+  do painel do hover (`flex-col items-center`) ele encolhia ao conteúdo, e o
+  `w-full` do form e do botão só enchia esse encolhimento: o botão do produto
+  de 1 variante saía pequeno, enquanto o `<a>` do de várias saía cheio. Por
+  isso `block w-full` aqui, e não no painel: o `<a>` abaixo já não precisa.
+{%- endcomment -%}
 {%- if product.variants.size == 1 -%}
-  <add-to-cart>
+  <add-to-cart class="block w-full">
     {%- form 'product', product, class: 'w-full', data-type: 'add-to-cart-form' -%}
       <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
       <input type="hidden" name="quantity" value="1">
