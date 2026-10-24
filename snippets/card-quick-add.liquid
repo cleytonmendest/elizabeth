@@ -5,25 +5,36 @@
   Parâmetros:
   - product: objeto do produto (obrigatório)
   - button_class: classes do botão/link (obrigatório)
-{%- endcomment -%}
 
-{%- comment -%}
-  `<add-to-cart>` é um custom element, e custom element nasce `inline`. Dentro
-  do painel do hover (`flex-col items-center`) ele encolhia ao conteúdo, e o
-  `w-full` do form e do botão só enchia esse encolhimento: o botão do produto
-  de 1 variante saía pequeno, enquanto o `<a>` do de várias saía cheio. Por
-  isso `block w-full` aqui, e não no painel: o `<a>` abaixo já não precisa.
+  O ramo de 1 variante NÃO tem `<form>`, e é de propósito (ADR 0021): o card
+  mora dentro do form de filtros da coleção e da busca, e o HTML não aninha
+  formulários. O parser descarta o `<form>` interno; o botão passava a ser do
+  form de FILTROS e recarregava a página com `id`, `add` e os filtros na URL,
+  em vez de adicionar. Como o `</form>` interno ainda fechava o form de
+  filtros, o defeito aparecia no primeiro card de 1 variante de cada página.
+  O botão carrega a variante em `data-variant-id`, e o `<add-to-cart>` monta o
+  envio (`AddToCart._dadosDoCard`, em src/js/cart.js). `type="button"` é o que
+  impede o form de filtros de enviar o clique. Sem JavaScript o botão fica
+  inerte — o preço de não depender de um `<form>` onde ele não cabe.
+
+  `<add-to-cart>` é um custom element, e custom element nasce `display: inline`.
+  Dentro do painel do hover (`flex-col items-center`) ele encolhia ao conteúdo,
+  e o `w-full` do botão só enchia esse encolhimento: o botão do produto de 1
+  variante saía pequeno, enquanto o `<a>` do de várias saía cheio. Por isso
+  `block w-full` aqui, e não no painel: o `<a>` abaixo já não precisa.
 {%- endcomment -%}
 {%- if product.variants.size == 1 -%}
   <add-to-cart class="block w-full">
-    {%- form 'product', product, class: 'w-full', data-type: 'add-to-cart-form' -%}
-      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-      <input type="hidden" name="quantity" value="1">
-      <button type="submit" name="add" aria-haspopup="dialog" class="{{ button_class }}">
-        {% render 'icon-cart', size: 15 %}
-        {{ 'product.general.add_to_cart_short' | t }}
-      </button>
-    {%- endform -%}
+    <button
+      type="button"
+      name="add"
+      data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+      aria-haspopup="dialog"
+      class="{{ button_class }}"
+    >
+      {% render 'icon-cart', size: 15 %}
+      {{ 'product.general.add_to_cart_short' | t }}
+    </button>
   </add-to-cart>
 {%- else -%}
   <a href="{{ product.url }}" class="{{ button_class }}">

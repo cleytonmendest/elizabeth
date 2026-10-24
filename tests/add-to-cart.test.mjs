@@ -6,7 +6,7 @@
  *
  *   snippets/add-to-cart.liquid         botão com os data-text-*, sem texto curto
  *   snippets/sticky-add-to-cart.liquid  ícone de sacola + `[data-rotulo]`, sem texto curto
- *   snippets/card-quick-add.liquid      botão com SVG dentro e NENHUM data-text-*
+ *   snippets/card-quick-add.liquid      botão com SVG dentro, NENHUM data-text-* e NENHUM form
  *
  * O terceiro é um `<add-to-cart>` legítimo. Escrever `textContent` nele apaga
  * o ícone. O segundo tem ícone E texto, e o componente escreve só no rótulo.
@@ -57,15 +57,15 @@ function montaPDP({ variantId = '42', texto = 'ADICIONAR AO CARRINHO', disabled 
   };
 }
 
-/** Quick-add do card: ícone dentro do botão, nenhum data-text-*. */
+/**
+ * Quick-add do card: ícone dentro do botão, nenhum data-text-*, e NENHUM form —
+ * a variante vai em `data-variant-id` (ADR 0021; o envio é de
+ * `tests/quick-add-do-card.test.mjs`).
+ */
 function montaQuickAdd() {
   document.body.innerHTML = `
     <add-to-cart>
-      <form>
-        <input type="hidden" name="id" value="42">
-        <input type="hidden" name="quantity" value="1">
-        <button type="submit" name="add"><svg class="icon-cart"></svg> COMPRAR</button>
-      </form>
+      <button type="button" name="add" data-variant-id="42"><svg class="icon-cart"></svg> COMPRAR</button>
     </add-to-cart>`;
   return { botao: document.querySelector('button[name="add"]') };
 }
