@@ -994,6 +994,53 @@ export const MUTANTES = [
     teste: 'tests/add-to-cart.test.mjs',
   },
   {
+    // O quick-add do card não tem <form> (ADR 0021): o clique do botão faz o
+    // papel do submit. Sem este ouvinte, o botão volta a parecer vivo e não faz
+    // nada — o sintoma que a cliente via, por outro caminho.
+    porque: 'o quick-add do card deixa de escutar o clique, e o botão sem form não adiciona nada',
+    arquivo: 'src/js/cart.js',
+    de: "this.form ? 'submit' : 'click'",
+    para: "this.form ? 'submit' : 'dblclick'",
+    teste: 'tests/quick-add-do-card.test.mjs',
+  },
+  {
+    porque: 'o quick-add manda `id=undefined` em vez da variante que o card carrega',
+    arquivo: 'src/js/cart.js',
+    de: 'new URLSearchParams({ id: this.button.dataset.variantId, quantity: 1 })',
+    para: 'new URLSearchParams({ id: this.button.dataset.id, quantity: 1 })',
+    teste: 'tests/quick-add-do-card.test.mjs',
+  },
+  {
+    porque: 'addToCart volta a exigir um <form>, e o corpo já montado do quick-add lança',
+    arquivo: 'src/js/cart.js',
+    de: 'const formData = dados.elements ? new FormData(dados) : dados;',
+    para: 'const formData = new FormData(dados);',
+    teste: 'tests/cart.test.mjs',
+  },
+  {
+    porque: 'a recusa do /cart/add.js no quick-add volta a lançar, por o card não ter this.form',
+    arquivo: 'src/js/cart.js',
+    de: 'const alvo = this.form ?? this;',
+    para: 'const alvo = this.form;',
+    teste: 'tests/quick-add-do-card.test.mjs',
+  },
+  {
+    // O defeito original, e o único mutante de marcação aqui: um botão que
+    // submete, dentro do form de filtros da coleção, envia os filtros.
+    porque: 'o botão do card volta a ser submit, e dentro do form de filtros ele envia a coleção em vez de adicionar',
+    arquivo: 'snippets/card-quick-add.liquid',
+    de: '      type="button"\n      name="add"\n',
+    para: '      type="submit"\n      name="add"\n',
+    teste: 'tests/card-quick-add.test.mjs',
+  },
+  {
+    porque: 'o botão do card perde a variante, e o componente passa a enviar `id=undefined`',
+    arquivo: 'snippets/card-quick-add.liquid',
+    de: '      data-variant-id="{{ product.selected_or_first_available_variant.id }}"\n',
+    para: '',
+    teste: 'tests/card-quick-add.test.mjs',
+  },
+  {
     porque: 'o botão da PDP volta a ler um texto só dele, e a loja fica com um texto na PDP e outro no card',
     arquivo: 'snippets/add-to-cart.liquid',
     de: "        data-text-desktop=\"{{ 'product.general.add_to_cart' | t }}\"",

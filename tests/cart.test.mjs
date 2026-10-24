@@ -194,6 +194,23 @@ describe('CartManager', () => {
       expect(config.body.get('quantity')).toBe('2');
     });
 
+    it('aceita o corpo já montado, sem form: é o que o quick-add do card envia', async () => {
+      // O card mora dentro do form de filtros e não tem <form> próprio (ADR
+      // 0021). O corpo é o que o form levaria — variante e uma unidade — e vai
+      // como está: `new FormData(corpo)` lançaria com um URLSearchParams.
+      const fetch = respondeCom({ id: 42, quantity: 1 });
+      const corpo = new URLSearchParams({ id: 42, quantity: 1 });
+
+      await CartManager.addToCart(corpo);
+
+      const [url, config] = fetch.mock.calls[0];
+      expect(url).toBe('/carrinho/add');
+      expect(config.body).toBe(corpo);
+      expect(config.body.get('id')).toBe('42');
+      expect(config.headers).not.toHaveProperty('Content-Type');
+      expect(eventos.map((e) => e.nome)).toEqual(['cart:item-added']);
+    });
+
     it('publica cart:item-added — NÃO cart-update', async () => {
       // A primeira versão deste teste afirmava `cart-update`, porque eu
       // transcrevi o que o código fazia e chamei aquilo de contrato. Estava

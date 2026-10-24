@@ -65,3 +65,4 @@ diverge do arquivo.
 | [0018](0018-a-main-e-o-tema-e-cada-loja-e-uma-branch.md) | A `main` é o tema, e cada loja é uma branch que só puxa dela | Aceito |
 | [0019](0019-o-conteudo-que-a-loja-tem-e-dela.md) | O conteúdo que a loja tem é dela, mesmo o que ela nunca mexeu | Aceito |
 | [0020](0020-o-conteudo-que-o-tema-entrega-e-em-ingles.md) | O conteúdo que o tema entrega é escrito em inglês | Aceito |
+| [0021](0021-o-quick-add-do-card-nao-tem-form-porque-o-card-mora-dentro-de-forms.md) | O quick-add do card não tem `<form>`, porque o card mora dentro de formulários | Aceito |
