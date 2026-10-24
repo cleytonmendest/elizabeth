@@ -64,8 +64,10 @@ class CartManager {
         }
     }
 
-    static async addToCart(form) {
-        const formData = new FormData(form);
+    static async addToCart(dados) {
+        // Um <form>, ou o corpo já montado: o quick-add do card não tem form
+        // (ver AddToCart e o ADR 0021). Só o form tem `elements`.
+        const formData = dados.elements ? new FormData(dados) : dados;
         const config = fetchConfig('javascript');
         config.headers['X-Requested-With'] = 'XMLHttpRequest';
         delete config.headers['Content-Type'];
@@ -258,9 +260,11 @@ class AddToCart extends HTMLElement {
     }
 
     connectedCallback() {
-        if (this.form) {
-            this.form.addEventListener('submit', this.submitHandler.bind(this));
-        }
+        // Quick-add do card: sem <form> (ADR 0021), o clique do botão faz o papel
+        // do submit. O card mora dentro do form de filtros, e o parser descarta
+        // um <form> aninhado. Que o botão traga `data-variant-id` é garantia do
+        // snippet, e `tests/card-quick-add.test.mjs` a cobra.
+        (this.form ?? this.button)?.addEventListener(this.form ? 'submit' : 'click', this.submitHandler.bind(this));
 
         this.productContext = this.closest('[product-context]');
         if (this.productContext) {
@@ -286,13 +290,6 @@ class AddToCart extends HTMLElement {
     }
 
     disconnectedCallback() {
-        if (this.form) {
-            this.form.removeEventListener('submit', this.submitHandler);
-        }
-        if (this.productContext) {
-            this.productContext.removeEventListener('variant:change', this._onVariantChange.bind(this));
-        }
-
         // Remove listener de resize
         if (this.mediaQuery.removeEventListener) {
             this.mediaQuery.removeEventListener('change', this.resizeHandler);
@@ -403,7 +400,7 @@ class AddToCart extends HTMLElement {
         this._escondeErro();
         let abreODrawer = true;
         try {
-            const resultado = await CartManager.addToCart(this.form);
+            const resultado = await CartManager.addToCart(this.form ?? new URLSearchParams({ id: this.button.dataset.variantId, quantity: 1 }));
             // `/cart/add.js` recusa com 4xx e um JSON `{ status, message,
             // description }` — e `fetch` não rejeita por status. Sem esta
             // checagem a recusa seguia o caminho do sucesso: o drawer abria
@@ -436,7 +433,8 @@ class AddToCart extends HTMLElement {
      * barra fixa), devolve `false` e o drawer abre como antes.
      */
     _mostraErro(resultado) {
-        const tratado = !this.form.dispatchEvent(
+        const alvo = this.form ?? this;
+        const tratado = !alvo.dispatchEvent(
             new CustomEvent(PUB_SUB_EVENTS.cartError, { bubbles: true, cancelable: true, detail: resultado }),
         );
         if (tratado) return true;
